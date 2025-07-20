@@ -203,6 +203,24 @@
       "parentUuid": "03392dda_f9d9c3f9",
       "revId": "6f58e72aa2d66e8e6ce349845d96a558c863359a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c9fb3cb1_d6e4debe",
+        "filename": "mcp/server.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1128941
+      },
+      "writtenOn": "2025-07-20T17:31:49Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "6cf34f39_0744b196",
+      "revId": "6f58e72aa2d66e8e6ce349845d96a558c863359a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
