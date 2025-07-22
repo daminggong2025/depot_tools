@@ -46,6 +46,53 @@ async def get_build_status(
             return f'Exception calling prpc return {e}'
 
 
+async def search_builds(
+    ctx: fastmcp.Context,
+    builder_name: str | None = None,
+    builder_bucket: str | None = None,
+    builder_project: str | None = None,
+) -> str:
+    """Searches for builds
+
+  Args:
+    builder_name: The name of the builder the returned builds belong to.
+    builder_bucket: The bucket (e.g. "try" or "ci") the builder and its builds
+      belongs to.
+    builder_project: The project (e.g. "chromium") the builder and its builds belong to.
+  """
+    with tracer.start_as_current_span('chromium.mcp.search_builds'):
+        command = [
+            'prpc',
+            'call',
+            'cr-buildbucket.appspot.com',
+            'buildbucket.v2.Builds.SearchBuilds',
+        ]
+        try:
+            request = {
+                'predicate': {
+                    'builder': {
+                        'builder': builder_name,
+                        'bucket': builder_bucket,
+                        'project': builder_project
+                    }
+                }
+            }
+
+            result = subprocess.run(
+                command,
+                capture_output=True,
+                input=json.dumps(request),
+                check=True,
+                text=True,
+            )
+            await ctx.info(result.stdout)
+            await ctx.info(result.stderr)
+            return json.loads(result.stdout)['status']
+        except Exception as e:
+            await ctx.info('Exception calling prpc')
+            return f'Exception calling prpc return {e}'
+
+
 async def get_build_from_id(
     ctx: fastmcp.Context,
     build_id: str,
