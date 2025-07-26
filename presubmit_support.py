@@ -2541,6 +2541,7 @@ def main(argv=None):
                         action='store_true',
                         help='Assume that all "modified" files have no diffs.')
     options = parser.parse_args(argv)
+    options.files = [f for f in options.files if f.strip()]
 
     log_level = logging.ERROR
     if options.verbose >= 2:
