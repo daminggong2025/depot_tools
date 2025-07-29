@@ -22,6 +22,76 @@
       },
       "revId": "005084b22b8b453f37d0b95e20e274fa9d431993",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6006aae4_9ecb6124",
+        "filename": "recipes/recipe_modules/gsutil/api.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 1170419
+      },
+      "writtenOn": "2025-07-29T16:36:58Z",
+      "side": 1,
+      "message": "It\u0027ll put a key-val pairs in the [\"output\"][\"properties\"] section of what bb returns, eg: `bb get -json -A $BUILD_ID | jq .output.properties`",
+      "parentUuid": "d3cb485d_8c4eedd9",
+      "range": {
+        "startLine": 116,
+        "startChar": 6,
+        "endLine": 116,
+        "endChar": 36
+      },
+      "revId": "005084b22b8b453f37d0b95e20e274fa9d431993",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c2316300_a30681e2",
+        "filename": "recipes/recipe_modules/gsutil/api.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 1170419
+      },
+      "writtenOn": "2025-07-29T16:36:58Z",
+      "side": 1,
+      "message": "http URLs are nice for humans, and humans consume milo presentation. Hence why the log link uses the http URL.\n\nBut output props aren\u0027t strictly for humans, and are more for automation. So I think it\u0027d be more appropriate to use the GS url (eg `gs://...`) in the output props? Should be pretty easy for humans to convert from one to the other if they need to.",
+      "range": {
+        "startLine": 116,
+        "startChar": 50,
+        "endLine": 116,
+        "endChar": 54
+      },
+      "revId": "005084b22b8b453f37d0b95e20e274fa9d431993",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f77d3f4a_a709bc09",
+        "filename": "recipes/recipe_modules/gsutil/api.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 1170419
+      },
+      "writtenOn": "2025-07-29T16:36:58Z",
+      "side": 1,
+      "message": "This should probably be put in a grouped dict, something like `result.presentation.properties[\u0027gsutil_urls\u0027][link_name] \u003d link`\n\nThat way the URLs don\u0027t flood the top level output props dict.",
+      "range": {
+        "startLine": 116,
+        "startChar": 37,
+        "endLine": 116,
+        "endChar": 46
+      },
+      "revId": "005084b22b8b453f37d0b95e20e274fa9d431993",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
