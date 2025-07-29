@@ -108,8 +108,12 @@ class GSUtilApi(recipe_api.RecipeApi):
 
     if link_name:
       is_dir = '-r' in args or '--recursive' in args
-      result.presentation.links[link_name] = self._http_url(
-          bucket, dest, is_directory=is_dir, is_anonymous=unauthenticated_url)
+      link = self._http_url(bucket,
+                            dest,
+                            is_directory=is_dir,
+                            is_anonymous=unauthenticated_url)
+      result.presentation.links[link_name] = link
+      result.presentation.properties[link_name] = link
     return result
 
   def download(self, bucket, source, dest, args=None, **kwargs):
