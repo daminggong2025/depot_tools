@@ -212,6 +212,30 @@
       },
       "revId": "005084b22b8b453f37d0b95e20e274fa9d431993",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1d5253bf_e9dd5410",
+        "filename": "recipes/recipe_modules/gsutil/api.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 3481761
+      },
+      "writtenOn": "2025-07-30T14:04:31Z",
+      "side": 1,
+      "message": "Great, I\u0027ll look for that when the time comes. Thanks to both of you for your help!",
+      "parentUuid": "6006aae4_9ecb6124",
+      "range": {
+        "startLine": 116,
+        "startChar": 6,
+        "endLine": 116,
+        "endChar": 36
+      },
+      "revId": "005084b22b8b453f37d0b95e20e274fa9d431993",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
