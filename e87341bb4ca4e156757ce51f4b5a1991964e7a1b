@@ -16,6 +16,23 @@
       "message": "ddoman: Please review this change. Thanks!",
       "revId": "e87341bb4ca4e156757ce51f4b5a1991964e7a1b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b88bbb0c_9ceea990",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1003325
+      },
+      "writtenOn": "2025-07-30T23:42:35Z",
+      "side": 1,
+      "message": "tluk: Can you stamp this CL? Thanks! \n\nApparently I don\u0027t count as a Google employee in depot_tools?",
+      "revId": "e87341bb4ca4e156757ce51f4b5a1991964e7a1b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
