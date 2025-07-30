@@ -140,6 +140,78 @@
       },
       "revId": "005084b22b8b453f37d0b95e20e274fa9d431993",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "cb51537c_690f7131",
+        "filename": "recipes/recipe_modules/gsutil/api.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-07-30T13:13:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7bccd38d_cfd8127f",
+      "range": {
+        "startLine": 116,
+        "startChar": 50,
+        "endLine": 116,
+        "endChar": 54
+      },
+      "revId": "005084b22b8b453f37d0b95e20e274fa9d431993",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "51dd949a_471bd565",
+        "filename": "recipes/recipe_modules/gsutil/api.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-07-30T13:13:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6006aae4_9ecb6124",
+      "range": {
+        "startLine": 116,
+        "startChar": 6,
+        "endLine": 116,
+        "endChar": 36
+      },
+      "revId": "005084b22b8b453f37d0b95e20e274fa9d431993",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "710fa5d5_7ee9fbba",
+        "filename": "recipes/recipe_modules/gsutil/api.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-07-30T13:13:13Z",
+      "side": 1,
+      "message": "\u003e Is properties[\u0027gsutil_urls\u0027][step_name] better since a step name should be unique?\n\nI implemented with step name. PTAL",
+      "parentUuid": "e60abbca_e7bbee5f",
+      "range": {
+        "startLine": 116,
+        "startChar": 37,
+        "endLine": 116,
+        "endChar": 46
+      },
+      "revId": "005084b22b8b453f37d0b95e20e274fa9d431993",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
