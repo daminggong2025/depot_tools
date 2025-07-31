@@ -33,6 +33,24 @@
       "message": "tluk: Can you stamp this CL? Thanks! \n\nApparently I don\u0027t count as a Google employee in depot_tools?",
       "revId": "e87341bb4ca4e156757ce51f4b5a1991964e7a1b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ea629743_763c9ab0",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2025-07-31T16:43:55Z",
+      "side": 1,
+      "message": "It appears that your chromium account is not linked to your Corp account. I\u0027d be surprised if your chromium account is considered as a Google account in any other repos in chromium.",
+      "parentUuid": "b88bbb0c_9ceea990",
+      "revId": "e87341bb4ca4e156757ce51f4b5a1991964e7a1b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ],
   "submitRequirementResults": [
