@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "58d4a3c6_aa263176",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-08-01T02:50:44Z",
+      "side": 1,
+      "message": "Hi Scott,\n\nI\u0027m helping ayatane@ on the ReAuth project.\n\nWe\u0027d like to check if it\u0027s okay to add a self-contained FIDO2 security key plugin (this CL) to depot_tools, so that `git-credential-luci` can use the plugin for a ReAuth security key challenges.\n\nCommitters will need the plugin after ReAuth rollout. So we think it\u0027s best to distribute the plugin with git-credential-luci (already in depot_tools).",
+      "revId": "73903bd29e37482892b35c0a8c2ddd8d0b3387ba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
