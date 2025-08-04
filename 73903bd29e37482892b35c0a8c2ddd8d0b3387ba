@@ -33,6 +33,212 @@
       "message": "I don\u0027t have much context about this feature, and I can see that all other CLs in the bug were stamped by ayatane@. Can you get a stamp from someone who has enough context about this feature first and then add me back with a bit of introduction context?",
       "revId": "73903bd29e37482892b35c0a8c2ddd8d0b3387ba",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b4eb5a1a_1532ac78",
+        "filename": "luci-auth-fido2-plugin.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 3355336
+      },
+      "writtenOn": "2025-08-04T22:02:21Z",
+      "side": 1,
+      "message": "sort imports, incl. imported members",
+      "range": {
+        "startLine": 37,
+        "startChar": 6,
+        "endLine": 43,
+        "endChar": 35
+      },
+      "revId": "73903bd29e37482892b35c0a8c2ddd8d0b3387ba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "23c11c9b_c6010052",
+        "filename": "luci-auth-fido2-plugin.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 3355336
+      },
+      "writtenOn": "2025-08-04T22:02:21Z",
+      "side": 1,
+      "message": "do we need to check admin?  I assume the win32 API works for admin too?",
+      "range": {
+        "startLine": 49,
+        "startChar": 29,
+        "endLine": 49,
+        "endChar": 63
+      },
+      "revId": "73903bd29e37482892b35c0a8c2ddd8d0b3387ba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "19fc06c0_cb049fa2",
+        "filename": "luci-auth-fido2-plugin.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 3355336
+      },
+      "writtenOn": "2025-08-04T22:02:21Z",
+      "side": 1,
+      "message": "Should get tests for some of these",
+      "revId": "73903bd29e37482892b35c0a8c2ddd8d0b3387ba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "44015567_06a14a7a",
+        "filename": "luci-auth-fido2-plugin.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 3355336
+      },
+      "writtenOn": "2025-08-04T22:02:21Z",
+      "side": 1,
+      "message": "this doesn\u0027t match the function name",
+      "range": {
+        "startLine": 77,
+        "startChar": 24,
+        "endLine": 77,
+        "endChar": 49
+      },
+      "revId": "73903bd29e37482892b35c0a8c2ddd8d0b3387ba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "28143994_3fc646f4",
+        "filename": "luci-auth-fido2-plugin.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 3355336
+      },
+      "writtenOn": "2025-08-04T22:02:21Z",
+      "side": 1,
+      "message": "can be `x or y`",
+      "revId": "73903bd29e37482892b35c0a8c2ddd8d0b3387ba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b5a4a31d_fc203af3",
+        "filename": "luci-auth-fido2-plugin.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 146,
+      "author": {
+        "id": 3355336
+      },
+      "writtenOn": "2025-08-04T22:02:21Z",
+      "side": 1,
+      "message": "s//encode_/",
+      "range": {
+        "startLine": 146,
+        "startChar": 4,
+        "endLine": 146,
+        "endChar": 7
+      },
+      "revId": "73903bd29e37482892b35c0a8c2ddd8d0b3387ba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "aa23febd_d2d1adda",
+        "filename": "luci-auth-fido2-plugin.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 162,
+      "author": {
+        "id": 3355336
+      },
+      "writtenOn": "2025-08-04T22:02:21Z",
+      "side": 1,
+      "message": "we should print this directly and not through logging (e.g., disabling logging shouldn\u0027t silence this)",
+      "range": {
+        "startLine": 162,
+        "startChar": 9,
+        "endLine": 162,
+        "endChar": 20
+      },
+      "revId": "73903bd29e37482892b35c0a8c2ddd8d0b3387ba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fc5d6f42_a9fecdaf",
+        "filename": "luci-auth-fido2-plugin.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 182,
+      "author": {
+        "id": 3355336
+      },
+      "writtenOn": "2025-08-04T22:02:21Z",
+      "side": 1,
+      "message": "move down since unused by winclient",
+      "range": {
+        "startLine": 182,
+        "startChar": 4,
+        "endLine": 182,
+        "endChar": 20
+      },
+      "revId": "73903bd29e37482892b35c0a8c2ddd8d0b3387ba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "891014d2_a8367dfa",
+        "filename": "luci-auth-fido2-plugin.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 227,
+      "author": {
+        "id": 3355336
+      },
+      "writtenOn": "2025-08-04T22:02:21Z",
+      "side": 1,
+      "message": "re-raise is redundant?",
+      "revId": "73903bd29e37482892b35c0a8c2ddd8d0b3387ba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5f70000c_0371e5f6",
+        "filename": "luci-auth-fido2-plugin.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 251,
+      "author": {
+        "id": 3355336
+      },
+      "writtenOn": "2025-08-04T22:02:21Z",
+      "side": 1,
+      "message": "should pass these as kwargs, since there\u0027s a lot",
+      "revId": "73903bd29e37482892b35c0a8c2ddd8d0b3387ba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
