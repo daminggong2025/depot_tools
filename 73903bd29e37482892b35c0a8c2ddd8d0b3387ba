@@ -37,6 +37,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "20cdb8d3_9f7d25af",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2025-08-09T00:39:24Z",
+      "side": 1,
+      "message": "@ayatane@chromium.org\n\nThis CL description is effectively empty, and the description in b/433851494 doesn\u0027t really contain any useful information. I can review CL for Python syntax and general best practices, but to make CL review more useful, CL and bug descriptions should contain enough information so that reviewers can understand the intent of the CL",
+      "parentUuid": "95510742_dd40904a",
+      "revId": "73903bd29e37482892b35c0a8c2ddd8d0b3387ba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "b4eb5a1a_1532ac78",
         "filename": "luci-auth-fido2-plugin.py",
         "patchSetId": 7
