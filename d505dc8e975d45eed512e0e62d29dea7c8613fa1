@@ -1,0 +1,147 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b210b924_5986fd74",
+        "filename": "luci_auth_fido2_plugin.py",
+        "patchSetId": 14
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2025-08-09T01:11:25Z",
+      "side": 1,
+      "message": "line too long",
+      "range": {
+        "startLine": 38,
+        "startChar": 0,
+        "endLine": 41,
+        "endChar": 0
+      },
+      "revId": "d505dc8e975d45eed512e0e62d29dea7c8613fa1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d9d0aa7a_8f2b50e0",
+        "filename": "luci_auth_fido2_plugin.py",
+        "patchSetId": 14
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2025-08-09T01:11:25Z",
+      "side": 1,
+      "message": "line too long",
+      "range": {
+        "startLine": 75,
+        "startChar": 0,
+        "endLine": 76,
+        "endChar": 9
+      },
+      "revId": "d505dc8e975d45eed512e0e62d29dea7c8613fa1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7833af00_23dcd773",
+        "filename": "luci_auth_fido2_plugin.py",
+        "patchSetId": 14
+      },
+      "lineNbr": 128,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2025-08-09T01:11:25Z",
+      "side": 1,
+      "message": "line too long",
+      "revId": "d505dc8e975d45eed512e0e62d29dea7c8613fa1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f31fcc73_4addaae5",
+        "filename": "luci_auth_fido2_plugin.py",
+        "patchSetId": 14
+      },
+      "lineNbr": 131,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2025-08-09T01:11:25Z",
+      "side": 1,
+      "message": "line too long",
+      "revId": "d505dc8e975d45eed512e0e62d29dea7c8613fa1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e89d62d5_279e62bf",
+        "filename": "luci_auth_fido2_plugin.py",
+        "patchSetId": 14
+      },
+      "lineNbr": 190,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2025-08-09T01:11:25Z",
+      "side": 1,
+      "message": "it might be helpful for trouble shootings in the future, if this logs that the user is admin.\n\ne.g.,\n```\nlogging.info(\"the user is admin; use Fido2Client instead of WindowsClient\")\n```\n\nAlso, it\u0027d still be informative to print a log, indicating that it will use the windows client, when all the conditions are met (for trouble shooting in the future)",
+      "range": {
+        "startLine": 190,
+        "startChar": 6,
+        "endLine": 190,
+        "endChar": 53
+      },
+      "revId": "d505dc8e975d45eed512e0e62d29dea7c8613fa1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "00673e7e_4934bc96",
+        "filename": "luci_auth_fido2_plugin.py",
+        "patchSetId": 14
+      },
+      "lineNbr": 197,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2025-08-09T01:11:25Z",
+      "side": 1,
+      "message": "line too long.\n\n```\ndesc_str \u003d (\n   f\"CtapHidDevice {desc.product_name} \" +\n   f\"(VID 0x{desc.vid:04x}, \" +\n   ...\n)\n```",
+      "revId": "d505dc8e975d45eed512e0e62d29dea7c8613fa1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7af320e9_908f5fd1",
+        "filename": "luci_auth_fido2_plugin.py",
+        "patchSetId": 14
+      },
+      "lineNbr": 262,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2025-08-09T01:11:25Z",
+      "side": 1,
+      "message": "wouldn\u0027t this cancel all the other futures?",
+      "range": {
+        "startLine": 262,
+        "startChar": 16,
+        "endLine": 262,
+        "endChar": 28
+      },
+      "revId": "d505dc8e975d45eed512e0e62d29dea7c8613fa1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

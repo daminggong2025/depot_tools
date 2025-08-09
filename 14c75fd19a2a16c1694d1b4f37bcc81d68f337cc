@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8e4d88df_5379cd7c",
+        "filename": "luci_auth_fido2_plugin.py",
+        "patchSetId": 13
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2025-08-09T01:11:25Z",
+      "side": 1,
+      "message": "unused import",
+      "range": {
+        "startLine": 30,
+        "startChar": 0,
+        "endLine": 30,
+        "endChar": 9
+      },
+      "revId": "14c75fd19a2a16c1694d1b4f37bcc81d68f337cc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "eb6a86f1_4cd4fcb9",
+        "filename": "luci_auth_fido2_plugin.py",
+        "patchSetId": 13
+      },
+      "lineNbr": 275,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2025-08-09T01:11:25Z",
+      "side": 1,
+      "message": "line too long",
+      "revId": "14c75fd19a2a16c1694d1b4f37bcc81d68f337cc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
