@@ -16,6 +16,23 @@
       "message": "HONOR",
       "revId": "5d3a0d63c179fb55be1be6b6ca3015889265937b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "53a13e90_365ea2a6",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 4265851
+      },
+      "writtenOn": "2025-08-09T05:09:09Z",
+      "side": 1,
+      "message": "HTTP/1.1 200 OK\n  Content-Type: application/json; charset\u003dUTF-8\n\n  )]}\u0027\n  {\n    \"FAILURE\": [\n      \"changeId1\"\n    ],\n    \"NOT_UNIQUE\": [\n      \"changeId2\"\n    ].\n    \"SUCCESS\": [\n      \"changeId3\",\n      \"changeId4\"\n    ]\n  }",
+      "revId": "5d3a0d63c179fb55be1be6b6ca3015889265937b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
