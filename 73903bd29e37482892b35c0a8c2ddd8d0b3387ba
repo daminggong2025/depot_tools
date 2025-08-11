@@ -159,6 +159,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "733b07dd_3af94344",
+        "filename": "luci-auth-fido2-plugin.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 3355336
+      },
+      "writtenOn": "2025-08-11T21:41:32Z",
+      "side": 1,
+      "message": "done, we can adjust this per future testing",
+      "parentUuid": "23c11c9b_c6010052",
+      "range": {
+        "startLine": 49,
+        "startChar": 29,
+        "endLine": 49,
+        "endChar": 63
+      },
+      "revId": "73903bd29e37482892b35c0a8c2ddd8d0b3387ba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "19fc06c0_cb049fa2",
