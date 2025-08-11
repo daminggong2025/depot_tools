@@ -16,6 +16,24 @@
       "message": "nit: should probably output a log here saying that the flag is being added because GEMINI_CLI was set.",
       "revId": "4474a0f025e5d7c95c07402d92de27a72aadce81",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "103d54c1_a3373838",
+        "filename": "autoninja.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 259,
+      "author": {
+        "id": 1128941
+      },
+      "writtenOn": "2025-08-11T19:07:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4c5375d6_9f973310",
+      "revId": "4474a0f025e5d7c95c07402d92de27a72aadce81",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
