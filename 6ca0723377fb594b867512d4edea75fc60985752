@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "dc354da3_02ae2f16",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1163549
+      },
+      "writtenOn": "2025-08-12T20:54:13Z",
+      "side": 1,
+      "message": "PTAL",
+      "revId": "6ca0723377fb594b867512d4edea75fc60985752",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "50646cbc_7fd886a5",
+        "filename": "mcp/buildbucket.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 392,
+      "author": {
+        "id": 1163549
+      },
+      "writtenOn": "2025-08-12T20:54:13Z",
+      "side": 1,
+      "message": "Other `subprocess.run` calls in this file pass `check\u003dFalse`, but it seems like we should be checking whether the command ran successfully instead of blindly returning whatever it spits out.",
+      "range": {
+        "startLine": 392,
+        "startChar": 12,
+        "endLine": 392,
+        "endChar": 22
+      },
+      "revId": "6ca0723377fb594b867512d4edea75fc60985752",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b7e16d7c_2eed7234",
+        "filename": "mcp/buildbucket.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 398,
+      "author": {
+        "id": 1163549
+      },
+      "writtenOn": "2025-08-12T20:54:13Z",
+      "side": 1,
+      "message": "As a note, this differs from other error catching in this file since this raises an exception instead of returning a string. `fastmcp` automatically catches any raised exceptions and sends a response to the client, so IMO this is better than returning a string.",
+      "range": {
+        "startLine": 398,
+        "startChar": 8,
+        "endLine": 398,
+        "endChar": 13
+      },
+      "revId": "6ca0723377fb594b867512d4edea75fc60985752",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
