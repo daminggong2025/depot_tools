@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "50f997bd_a3337dea",
+        "filename": "presubmit_support.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 2254,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2025-08-12T17:32:20Z",
+      "side": 1,
+      "message": "add \u003cdescription\u003e here too",
+      "range": {
+        "startLine": 2254,
+        "startChar": 58,
+        "endLine": 2254,
+        "endChar": 59
+      },
+      "revId": "18c3d40b7fe025609b0654e5aca7109d5db51156",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
