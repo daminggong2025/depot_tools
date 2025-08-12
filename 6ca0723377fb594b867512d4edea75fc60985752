@@ -62,6 +62,30 @@
       },
       "revId": "6ca0723377fb594b867512d4edea75fc60985752",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a1204514_b2b812db",
+        "filename": "mcp/buildbucket.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 398,
+      "author": {
+        "id": 1513262
+      },
+      "writtenOn": "2025-08-12T21:15:04Z",
+      "side": 1,
+      "message": "Ah good point. I\u0027ll update the other ones to do the same",
+      "parentUuid": "b7e16d7c_2eed7234",
+      "range": {
+        "startLine": 398,
+        "startChar": 8,
+        "endLine": 398,
+        "endChar": 13
+      },
+      "revId": "6ca0723377fb594b867512d4edea75fc60985752",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
