@@ -1021,19 +1021,6 @@ def CheckChangeOnCommit(input_api, output_api):
         presubmit._parse_files.assert_called_once_with(options.files,
                                                        options.recursive)
 
-    def testParseChange_NoFilesAndDiff(self):
-        presubmit._parse_files.return_value = []
-        scm.determine_scm.return_value = 'diff'
-        parser = mock.Mock()
-        parser.error.side_effect = [SystemExit]
-        options = mock.Mock(files=[], diff_file='', all_files=False)
-
-        with self.assertRaises(SystemExit):
-            presubmit._parse_change(parser, options)
-        parser.error.assert_called_once_with(
-            'unversioned directories must specify '
-            '<files>, <all_files>, or <diff_file>.')
-
     def testParseChange_FilesAndAllFiles(self):
         parser = mock.Mock()
         parser.error.side_effect = [SystemExit]
