@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f3c2364c_7f390474",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1513262
+      },
+      "writtenOn": "2025-08-13T23:57:05Z",
+      "side": 1,
+      "message": "Please feel free to reject if you don\u0027t want owners",
+      "revId": "d862bfc924efd8e592bdf849034d5c646b5be069",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
