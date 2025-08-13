@@ -1,0 +1,119 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9281ce37_a42d43a0",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 743,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2025-08-13T17:29:39Z",
+      "side": 1,
+      "message": "wdyt about `Bypass-CheckLicense` to match the format of other footers in https://chromium.googlesource.com/chromium/src/+/HEAD/docs/contributing.md#cl-footer-reference, and would be scalable w/ future presubmit checks",
+      "range": {
+        "startLine": 743,
+        "startChar": 26,
+        "endLine": 743,
+        "endChar": 40
+      },
+      "revId": "160003dbf6547bb9464aa4023ca680cb3928e44a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "332a2e99_e0847d72",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 743,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2025-08-13T17:29:39Z",
+      "side": 1,
+      "message": "nit: move up to top w/ other consts",
+      "range": {
+        "startLine": 743,
+        "startChar": 0,
+        "endLine": 743,
+        "endChar": 22
+      },
+      "revId": "160003dbf6547bb9464aa4023ca680cb3928e44a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b8396fb2_49cd3fdb",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 753,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2025-08-13T17:29:39Z",
+      "side": 1,
+      "message": "we should use GitFootersFromDescription for working with `:` footers",
+      "range": {
+        "startLine": 753,
+        "startChar": 18,
+        "endLine": 753,
+        "endChar": 43
+      },
+      "revId": "160003dbf6547bb9464aa4023ca680cb3928e44a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9da306aa_da5e46a9",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 757,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2025-08-13T17:29:39Z",
+      "side": 1,
+      "message": "let\u0027s use `:` here and below since `\u003d` footers aren\u0027t supported by Gerrit",
+      "range": {
+        "startLine": 757,
+        "startChar": 26,
+        "endLine": 757,
+        "endChar": 27
+      },
+      "revId": "160003dbf6547bb9464aa4023ca680cb3928e44a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4dc21fb7_75c53b49",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 759,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2025-08-13T17:29:39Z",
+      "side": 1,
+      "message": "we should use the pythonic `is not None`",
+      "range": {
+        "startLine": 759,
+        "startChar": 7,
+        "endLine": 759,
+        "endChar": 21
+      },
+      "revId": "160003dbf6547bb9464aa4023ca680cb3928e44a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
