@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "000ac872_6d41f51d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1163549
+      },
+      "writtenOn": "2025-08-13T23:43:23Z",
+      "side": 1,
+      "message": "PTAL",
+      "revId": "f0fd9b84f24598102a040d87895df9a9766cc1cb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9cdbe9d8_ffcf1c2f",
+        "filename": "mcp/git_cl.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1163549
+      },
+      "writtenOn": "2025-08-13T23:43:23Z",
+      "side": 1,
+      "message": "The linter was complaining about this redefining the builtin `format` function.",
+      "range": {
+        "startLine": 74,
+        "startChar": 10,
+        "endLine": 74,
+        "endChar": 25
+      },
+      "revId": "f0fd9b84f24598102a040d87895df9a9766cc1cb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
