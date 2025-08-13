@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "bc6cfe2b_b9d0ad2b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-08-13T07:27:18Z",
+      "side": 1,
+      "message": "+ayatane for review\n+fancl for owners 😊",
+      "revId": "158b34ae6fb0d0382b0e283c9add20de4f858311",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
