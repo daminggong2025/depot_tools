@@ -16,6 +16,7 @@ sys.path.insert(
 import telemetry
 
 import buildbucket
+import git_cl
 
 from absl import app
 
@@ -38,6 +39,10 @@ def main(argv: Sequence[str]) -> None:
     mcp.add_tool(buildbucket.get_build_from_build_number)
     mcp.add_tool(buildbucket.get_build_from_id)
     mcp.add_tool(buildbucket.get_build_status)
+    mcp.add_tool(git_cl.try_builder_results)
+    mcp.add_tool(git_cl.get_current_changes)
+    mcp.add_tool(git_cl.format)
+    mcp.add_tool(git_cl.upload_change_list)
     mcp.run()
 
 
