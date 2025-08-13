@@ -46,6 +46,30 @@
       },
       "revId": "bc1e64be25211fd2f86230977aa0977f310782c0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "39820898_b284272c",
+        "filename": "autoninja.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 261,
+      "author": {
+        "id": 1126674
+      },
+      "writtenOn": "2025-08-13T15:07:17Z",
+      "side": 1,
+      "message": "My thinking was that people should be able to copy \u0026 paste the commands gemini runs and get the same result.",
+      "parentUuid": "27bcf7f1_3253f7d1",
+      "range": {
+        "startLine": 259,
+        "startChar": 0,
+        "endLine": 261,
+        "endChar": 0
+      },
+      "revId": "bc1e64be25211fd2f86230977aa0977f310782c0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ],
   "submitRequirementResults": [
