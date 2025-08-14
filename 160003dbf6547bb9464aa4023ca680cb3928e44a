@@ -47,6 +47,54 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "01bedbf0_3b9c94c5",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 743,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2025-08-14T01:00:39Z",
+      "side": 1,
+      "message": "In depot_tools, I found that there is a tendency to declare global constants right above the functions that use the constants, and the same goes in this file.\n- https://source.chromium.org/chromium/chromium/tools/depot_tools/+/main:presubmit_canned_checks.py;l\u003d915\n- https://source.chromium.org/chromium/chromium/tools/depot_tools/+/main:presubmit_canned_checks.py;l\u003d2676",
+      "parentUuid": "332a2e99_e0847d72",
+      "range": {
+        "startLine": 743,
+        "startChar": 0,
+        "endLine": 743,
+        "endChar": 22
+      },
+      "revId": "160003dbf6547bb9464aa4023ca680cb3928e44a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7f59ce31_a398d6e3",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 743,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2025-08-14T01:00:39Z",
+      "side": 1,
+      "message": "git_footers.py normalize the key names by `title()`, so it changes the key name to `Bypass-Checklicense`. I added \u0027-\u0027 to prevent the normalization.",
+      "parentUuid": "9281ce37_a42d43a0",
+      "range": {
+        "startLine": 743,
+        "startChar": 26,
+        "endLine": 743,
+        "endChar": 40
+      },
+      "revId": "160003dbf6547bb9464aa4023ca680cb3928e44a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "b8396fb2_49cd3fdb",
@@ -60,6 +108,30 @@
       "writtenOn": "2025-08-13T17:29:39Z",
       "side": 1,
       "message": "we should use GitFootersFromDescription for working with `:` footers",
+      "range": {
+        "startLine": 753,
+        "startChar": 18,
+        "endLine": 753,
+        "endChar": 43
+      },
+      "revId": "160003dbf6547bb9464aa4023ca680cb3928e44a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1f18e287_8747565f",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 753,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2025-08-14T01:00:39Z",
+      "side": 1,
+      "message": "done",
+      "parentUuid": "b8396fb2_49cd3fdb",
       "range": {
         "startLine": 753,
         "startChar": 18,
@@ -93,6 +165,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "d35f3d9d_718b1ca4",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 757,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2025-08-14T01:00:39Z",
+      "side": 1,
+      "message": "done",
+      "parentUuid": "9da306aa_da5e46a9",
+      "range": {
+        "startLine": 757,
+        "startChar": 26,
+        "endLine": 757,
+        "endChar": 27
+      },
+      "revId": "160003dbf6547bb9464aa4023ca680cb3928e44a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "4dc21fb7_75c53b49",
@@ -106,6 +202,30 @@
       "writtenOn": "2025-08-13T17:29:39Z",
       "side": 1,
       "message": "we should use the pythonic `is not None`",
+      "range": {
+        "startLine": 759,
+        "startChar": 7,
+        "endLine": 759,
+        "endChar": 21
+      },
+      "revId": "160003dbf6547bb9464aa4023ca680cb3928e44a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "024d6d4a_269c259e",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 759,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2025-08-14T01:00:39Z",
+      "side": 1,
+      "message": "oops; fixed",
+      "parentUuid": "4dc21fb7_75c53b49",
       "range": {
         "startLine": 759,
         "startChar": 7,
