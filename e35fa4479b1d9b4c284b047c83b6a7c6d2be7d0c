@@ -18,6 +18,29 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": true,
+      "key": {
+        "uuid": "c4dfc40c_cca5e3fa",
+        "filename": "PRESUBMIT.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2025-08-14T17:49:41Z",
+      "side": 1,
+      "message": "`r\u0027^mcp/.*\\.py$\u0027,`",
+      "range": {
+        "startLine": 68,
+        "startChar": 7,
+        "endLine": 68,
+        "endChar": 10
+      },
+      "revId": "e35fa4479b1d9b4c284b047c83b6a7c6d2be7d0c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": false,
       "key": {
         "uuid": "c51894aa_17c65b04",
