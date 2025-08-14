@@ -37,6 +37,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "019a161b_5eef797c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1163549
+      },
+      "writtenOn": "2025-08-14T18:14:11Z",
+      "side": 1,
+      "message": "Right, I remember having to add that to Chromium\u0027s .vpython3 file as well. IIRC there wasn\u0027t anything else, though.",
+      "parentUuid": "6ae43195_3f1a6bf9",
+      "revId": "e35fa4479b1d9b4c284b047c83b6a7c6d2be7d0c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "c4dfc40c_cca5e3fa",
         "filename": "PRESUBMIT.py",
         "patchSetId": 1
