@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "effee1e9_dbc0f1f7",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 756,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2025-08-14T01:54:57Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "49998e03_33c52e32",
+      "range": {
+        "startLine": 756,
+        "startChar": 7,
+        "endLine": 756,
+        "endChar": 23
+      },
+      "revId": "888c5aaabcfc9881a3c439fcab2e83b554540530",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "03eed680_e8b1a125",
@@ -47,6 +71,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "45e0895d_bba70c98",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 866,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2025-08-14T01:54:57Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "03eed680_e8b1a125",
+      "range": {
+        "startLine": 866,
+        "startChar": 28,
+        "endLine": 866,
+        "endChar": 29
+      },
+      "revId": "888c5aaabcfc9881a3c439fcab2e83b554540530",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "531e81d0_373e103c",
@@ -60,6 +108,30 @@
       "writtenOn": "2025-08-14T01:12:16Z",
       "side": 1,
       "message": "```suggestion\n                \u0027a footer with \"{key}: \u003creason\u003e\" to skip this check.\u0027.format(\n```",
+      "range": {
+        "startLine": 876,
+        "startChar": 37,
+        "endLine": 876,
+        "endChar": 38
+      },
+      "revId": "888c5aaabcfc9881a3c439fcab2e83b554540530",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "cf1d3c08_e2638133",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 876,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2025-08-14T01:54:57Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "531e81d0_373e103c",
       "range": {
         "startLine": 876,
         "startChar": 37,
