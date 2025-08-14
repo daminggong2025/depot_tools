@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3afcb7e6_1d7a2405",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1163549
+      },
+      "writtenOn": "2025-08-14T17:38:23Z",
+      "side": 1,
+      "message": "PTAL",
+      "revId": "e35fa4479b1d9b4c284b047c83b6a7c6d2be7d0c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c51894aa_17c65b04",
+        "filename": "mcp/server.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1163549
+      },
+      "writtenOn": "2025-08-14T17:38:23Z",
+      "side": 1,
+      "message": "This is caused by the fact that this is in `mcp/`, which conflicts with the third-party `mcp` module. Fixing this will require a three-part rename of this directory since this MCP server is already in use by Chromium developers.",
+      "range": {
+        "startLine": 17,
+        "startChar": 50,
+        "endLine": 17,
+        "endChar": 61
+      },
+      "revId": "e35fa4479b1d9b4c284b047c83b6a7c6d2be7d0c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
