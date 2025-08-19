@@ -16,6 +16,23 @@
       "message": "FWIW, the code style inherits from Bazel one, where there\u0027s no limit https://bazel.build/build/style-guide#differences-python-style-guide\n\nThe guide even says \"It should not be enforced in code reviews or presubmit scripts\" 😮",
       "revId": "d4334e83d1164ce56e582608d7c4fbcf6e87e7c7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "90b8f489_79dd8d18",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2025-08-19T23:02:12Z",
+      "side": 1,
+      "message": "LGTM. If it turns out that the line length limit keeps bothering engineers, I\u0027d support removing the line length limit.",
+      "revId": "d4334e83d1164ce56e582608d7c4fbcf6e87e7c7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
