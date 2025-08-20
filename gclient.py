@@ -2899,7 +2899,11 @@ class GcsDependency(Dependency):
                     self.output_dir, f'.{self.file_prefix}_content_names')
                 self.WriteToFile(json.dumps(tar.getnames()), tar_content_file)
 
-                tar.extractall(path=self.output_dir)
+                try:
+                    tar.extractall(path=self.output_dir)
+                except PermissionError as e:
+                    # Skip the permission error for remote depot_tools usage.
+                    print(f"Skipping permission denied during extraction: {e}")
 
         if os.getenv('GCLIENT_TEST') != '1':
             code, err = download_from_google_storage.set_executable_bit(
