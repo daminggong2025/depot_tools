@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e9f952e8_40f53e91",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1395734
+      },
+      "writtenOn": "2025-08-21T08:22:36Z",
+      "side": 1,
+      "message": "This breaks landing patches for me at least:\n\n```\ncheckReAuthNeeded: check Gerrit ReAuth: check rapt: rpc error: code \u003d NotFound desc \u003d not found\n```\n\nAnd `git credential-luci login` fails with:\n```\nReAuth failed: renew RAPT: GetRAPT: handler reauth.chainHandler reports itself not available\n```",
+      "revId": "778a576e20053a8d1edf8e7d7185bacc02bc1a7a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
