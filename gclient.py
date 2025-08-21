@@ -841,8 +841,7 @@ class Dependency(gclient_utils.WorkItem, DependencySettings):
                 # Check if at least one object needs to be downloaded.
                 needs_download = any(gcs.IsDownloadNeeded() for gcs in gcs_deps)
                 # When IsEnvCog(), gcs sources are already present and are not managed by gclient.
-                if not gclient_utils.IsEnvCog(
-                ) and needs_download and os.path.exists(gcs_deps[0].output_dir):
+                if needs_download and os.path.exists(gcs_deps[0].output_dir):
                     # Since we don't know what old content to remove, we remove
                     # the entire output_dir. All gcs_deps are expected to have
                     # the same output_dir, so we get the first one, which must
@@ -2756,6 +2755,8 @@ class GcsDependency(Dependency):
 
     def IsDownloadNeeded(self):
         """Check if download and extract is needed."""
+        if gclient_utils.IsEnvCog():
+            return False
         if not self.should_process:
             return False
         if not os.path.exists(self.artifact_output_file):
@@ -2899,7 +2900,12 @@ class GcsDependency(Dependency):
                     self.output_dir, f'.{self.file_prefix}_content_names')
                 self.WriteToFile(json.dumps(tar.getnames()), tar_content_file)
 
-                tar.extractall(path=self.output_dir)
+                try:
+                    tar.extractall(path=self.output_dir)
+                except PermissionError as e:
+                    # Skip the permission error for cog depot_tools usage.
+                    if not gclient_utils.IsEnvCog():
+                        raise
 
         if os.getenv('GCLIENT_TEST') != '1':
             code, err = download_from_google_storage.set_executable_bit(
