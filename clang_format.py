@@ -85,12 +85,25 @@ def FindClangFormatScriptInChromiumTree(script_name):
     return script_path
 
 
+def AttemptFallbackOutsideChromiumTree(args, failmsg):
+    """Try to find a clang-format outside of chromium's tree and run that instead.
+  Otherwise, error out as before."""
+    options = gclient_paths.FindAllPossibleExecutables("clang-format")
+    for candidate in options:
+        if not "buildtools" in candidate and not "depot_tools" in candidate:
+            return subprocess.call([candidate] + args)
+
+    # If we didn't find a candidate that we could execute, just print the actual
+    # NotFoundError() message from earlier.
+    sys.stderr.write("%s\n" % failmsg)
+    return 1
+
+
 def main(args):
     try:
         tool = FindClangFormatToolInChromiumTree()
     except NotFoundError as e:
-        sys.stderr.write("%s\n" % str(e))
-        return 1
+        return AttemptFallbackOutsideChromiumTree(args, str(e))
 
     # Add some visibility to --help showing where the tool lives, since this
     # redirection can be a little opaque.

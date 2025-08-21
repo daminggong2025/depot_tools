@@ -178,3 +178,42 @@ def GetGClientPrimarySolutionURL(gclient_root_dir_path):
     if solutions:
         return solutions[0].get('url')
     return None
+
+
+def FindAllPossibleExecutables(cmd):
+    """A basic implementation of `which -a` that attempts to find all executables
+  with this name. Based on the implementation of python's shutil.which()."""
+
+    path = os.environ.get("PATH", None)
+    if path is None:
+        try:
+            path = os.confstr("CS_PATH")
+        except (AttributeError, ValueError):
+            path = os.defpath
+
+    path = path.split(os.pathsep)
+
+    if sys.platform == "win32":
+        pathext_source = os.getenv(
+            "PATHEXT") or ".COM;.EXE;.BAT;.CMD;.VBS;.JS;.WS;.MSC"
+        pathext = pathext_source.split(os.pathsep)
+        pathext = [ext.rstrip('.') for ext in pathext if ext]
+
+        files = [cmd + ext for ext in pathext]
+        files.insert(0, cmd)
+    else:
+        files = [cmd]
+
+    candidates = set()
+    seen_dirs = set()
+    for directory in path:
+        normdir = os.path.normcase(directory)
+        if normdir not in seen_dirs:
+            seen_dirs.add(normdir)
+            for thefile in files:
+                name = os.path.join(directory, thefile)
+                if (os.path.exists(name) and os.access(name, os.R_OK | os.X_OK)
+                        and not os.path.isdir(name)):
+                    candidates.add(name)
+
+    return candidates
