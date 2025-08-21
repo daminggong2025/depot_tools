@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "24f4898a_236e38d6",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 6
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2025-08-21T17:38:24Z",
+      "side": 1,
+      "message": "please rewrite this commit message header to be under 72 chars",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 7,
+        "endChar": 112
+      },
+      "revId": "8ef247c6feb1b6b57eb4613099ddc549a0cce393",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
