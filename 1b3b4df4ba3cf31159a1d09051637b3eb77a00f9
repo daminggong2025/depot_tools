@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a40bc5ac_8fe37fba",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2025-08-25T21:19:55Z",
+      "side": 1,
+      "message": "Thanks for the patch and sorry for the delay. I was also sent https://crrev.com/c/6872983 which I believe is a better alternative to fixing this issue.",
+      "revId": "1b3b4df4ba3cf31159a1d09051637b3eb77a00f9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
