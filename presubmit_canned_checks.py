@@ -160,17 +160,6 @@ def CheckChangeHasDescription(input_api, output_api):
     return []
 
 
-def CheckChangeWasUploaded(input_api, output_api):
-    """Checks that the issue was uploaded before committing."""
-    if input_api.is_committing and not input_api.change.issue:
-        message = 'Issue wasn\'t uploaded. Please upload first.'
-        if input_api.no_diffs:
-            # Make this just a message with presubmit --all and --files
-            return [output_api.PresubmitNotifyResult(message)]
-        return [output_api.PresubmitError(message)]
-    return []
-
-
 def CheckDescriptionUsesColonInsteadOfEquals(input_api, output_api):
     """Checks that the CL description uses a colon after 'Bug' and 'Fixed' tags
     instead of equals.
@@ -1799,10 +1788,6 @@ def PanProjectChecks(input_api,
             # the tree. Skipping these saves a bit of time and avoids having
             # redundant output. This was initially designed for use by
             # third_party/blink/PRESUBMIT.py.
-            snapshot("checking was uploaded")
-            results.extend(
-                input_api.canned_checks.CheckChangeWasUploaded(
-                    input_api, output_api))
             snapshot("checking description")
             results.extend(
                 input_api.canned_checks.CheckChangeHasDescription(
