@@ -16,6 +16,24 @@
       "message": "Figure I might as well just upload this for review -- let me know if this change isn\u0027t suitable.\n\nThe functionality of `gclient_paths.FindAllPossibleExecutables` is pretty much ripped wholesale from python\u0027s `shutil.which` (https://github.com/python/cpython/blob/main/Lib/shutil.py#L1575). Unfortunately it doesn\u0027t natively support `which -a`-style behaviour, so we have to reimplement a bunch of it in order to return a list and not just the first one that matches.\n\nTested locally (Ubuntu 25.04), seems to work ok.\n\nChoosing Gavin to review because I *guess* there\u0027s a ga... @google.com on the original bug; fingers crossed it\u0027s the same person (external, so can\u0027t see full emails/names).",
       "revId": "e148ad4676d93491417870343a1048b3ab82da6e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7069f167_f3d947d4",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3252038
+      },
+      "writtenOn": "2025-08-26T00:30:55Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8ace3d68_eab24d52",
+      "revId": "e148ad4676d93491417870343a1048b3ab82da6e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
