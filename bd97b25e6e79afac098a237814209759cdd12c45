@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": true,
+      "key": {
+        "uuid": "e4ba3c25_58fc07ad",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1450817
+      },
+      "writtenOn": "2025-08-26T01:53:12Z",
+      "side": 1,
+      "message": "I\u0027d love to do that, but unfortunately `is_committing` bypasses many of the checks, and downgrades others from errors to warnings.\n\nThis includes both test failures and lint errors, neither of which should be warnings. They\u0027re set to warnings to allow users to upload incomplete CLs, but the jj workflow for that would be:\n```\n$ jj upload\n\u003cgit cl presubmit error\u003e\nHint: If you really want to upload with these failures, run with --no-presubmit\n$ jj upload --no-presubmit\n```",
+      "parentUuid": "c6ca09d1_cc957b7d",
+      "range": {
+        "startLine": 10,
+        "startChar": 0,
+        "endLine": 13,
+        "endChar": 59
+      },
+      "revId": "bd97b25e6e79afac098a237814209759cdd12c45",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": false,
       "key": {
         "uuid": "9d2743e5_269c2fc0",
