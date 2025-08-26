@@ -16,6 +16,24 @@
       "message": "Thanks for the patch and sorry for the delay. I was also sent https://crrev.com/c/6872983 which I believe is a better alternative to fixing this issue.",
       "revId": "1b3b4df4ba3cf31159a1d09051637b3eb77a00f9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fdedeeea_6f53b026",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3252038
+      },
+      "writtenOn": "2025-08-26T00:30:33Z",
+      "side": 1,
+      "message": "No worries. I\u0027m just happy it\u0027s fixed -- thanks heaps!",
+      "parentUuid": "a40bc5ac_8fe37fba",
+      "revId": "1b3b4df4ba3cf31159a1d09051637b3eb77a00f9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
