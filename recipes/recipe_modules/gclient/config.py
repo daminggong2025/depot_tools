@@ -406,6 +406,16 @@ def dawn(c):
   soln.url = 'https://dawn.googlesource.com/dawn.git'
   c.got_revision_mapping['dawn'] = 'got_revision'
 
+
+@config_ctx(includes=['dawn'])
+def dawn_node(c):
+  for i in range(len(c.solutions)):
+    soln = c.solutions[i]
+    if soln.name != 'dawn':
+      continue  # pragma:nocover
+    soln.custom_vars['dawn_node'] = True
+    break
+
 @config_ctx()
 def celab(c):
   soln = c.solutions.add()
