@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c6ca09d1_cc957b7d",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2025-08-26T01:32:41Z",
+      "side": 1,
+      "message": "1. As L165 in CheckChangeWasUploaded() shows, the check takes effect only if `input_api.is_committing` is set.\n\n2. If one runs `git cl presubmit`, it runs the presubmit checks for committing. If the intent was to run presubmit hooks for uploads, jj should run `git cl presubmit --upload`.\nhttps://source.chromium.org/chromium/chromium/tools/depot_tools/+/main:git_cl.py;l\u003d5056-5059\n\n3. If jj runs `git cl presubmit --upload`, is_committing will be set to false, and it should be fine.\n\nI\u0027m leaning towards updating jj to pass `--upload` to presubmit, because there might be other presubmit checks alternating the behaviour if `is_committing` is set.",
+      "range": {
+        "startLine": 10,
+        "startChar": 0,
+        "endLine": 13,
+        "endChar": 59
+      },
+      "revId": "bd97b25e6e79afac098a237814209759cdd12c45",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9d2743e5_269c2fc0",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2025-08-26T01:32:41Z",
+      "side": 1,
+      "message": "https://source.chromium.org/search?q\u003dCheckChangeWasUploaded%20-file:presubmit_canned_checks.py\u0026sq\u003d\n\nthere are PRESUBMIT.py(s) that call the function directly. So, we cannot simply remove the check function until we remove them from the couple of PRESUBMIT.py(s).\n\nIt sounds ok to remove the check from PanProjectChecks(), but",
+      "revId": "bd97b25e6e79afac098a237814209759cdd12c45",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
