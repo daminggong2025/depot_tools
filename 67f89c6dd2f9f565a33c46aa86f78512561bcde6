@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "56b14f18_ffc87015",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1163549
+      },
+      "writtenOn": "2025-08-26T22:30:18Z",
+      "side": 1,
+      "message": "PTAL\n\nThe intention is to set [this](https://source.chromium.org/chromium/chromium/src/+/main:third_party/dawn/DEPS;l\u003d19?q\u003d-file:%5Eout%20-file:%5Egen%20dawn%2FDEPS) gclient variable to true on relevant [Dawn builders](https://source.chromium.org/chromium/chromium/src/+/main:third_party/dawn/infra/config/global/gn_standalone_ci.star;l\u003d57). If there\u0027s a better way of doing so, I\u0027ll happily switch - this approach doesn\u0027t feel quite right to me, but I didn\u0027t see a better option available.\n\nI also haven\u0027t tested that this actually works as intended since AFAIK you can\u0027t use `led edit-gerrit-cl` to apply a depot_tools CL to a Dawn builder?",
+      "revId": "67f89c6dd2f9f565a33c46aa86f78512561bcde6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
