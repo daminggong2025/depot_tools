@@ -37,6 +37,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "98cfc283_cf8abad2",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1163549
+      },
+      "writtenOn": "2025-08-27T17:40:18Z",
+      "side": 1,
+      "message": "How does the `includes` argument work in that case? Will I still be able to do `@config_ctx(includes\u003d[\u0027dawn\u0027])`, or will I need to duplicate the contents of the `dawn` config in the build repo?",
+      "parentUuid": "5683a370_7ade71c6",
+      "revId": "8d486bf81ee759fbaa86797a61eb30b4957ae6af",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "e210a9d9_8946c36b",
         "filename": "recipes/recipe_modules/gclient/config.py",
         "patchSetId": 2
