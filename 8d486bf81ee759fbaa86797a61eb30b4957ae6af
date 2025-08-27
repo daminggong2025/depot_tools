@@ -55,6 +55,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "5efef4ad_d88575b6",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1289180
+      },
+      "writtenOn": "2025-08-27T18:06:53Z",
+      "side": 1,
+      "message": "The `includes` mechanism will work the same, the gclient config context has to be imported in order to add additional configs to it and `includes` looks for configs within that context.",
+      "parentUuid": "98cfc283_cf8abad2",
+      "revId": "8d486bf81ee759fbaa86797a61eb30b4957ae6af",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "e210a9d9_8946c36b",
         "filename": "recipes/recipe_modules/gclient/config.py",
         "patchSetId": 2
