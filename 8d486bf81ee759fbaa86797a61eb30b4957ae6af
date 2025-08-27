@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "98e0fd3c_4bfa2ba2",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2025-08-27T04:49:58Z",
+      "side": 1,
+      "message": "lgtm because it shouldn\u0027t hurt anything, but I recommend asking some browser eng folks if this is the best approach",
+      "revId": "8d486bf81ee759fbaa86797a61eb30b4957ae6af",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
