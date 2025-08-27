@@ -16,6 +16,46 @@
       "message": "lgtm because it shouldn\u0027t hurt anything, but I recommend asking some browser eng folks if this is the best approach",
       "revId": "8d486bf81ee759fbaa86797a61eb30b4957ae6af",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5683a370_7ade71c6",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1289180
+      },
+      "writtenOn": "2025-08-27T17:26:02Z",
+      "side": 1,
+      "message": "You might want to consider adding this in the build repo instead. That will make it easier to test changes to it since the recipe that uses it is there.",
+      "revId": "8d486bf81ee759fbaa86797a61eb30b4957ae6af",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e210a9d9_8946c36b",
+        "filename": "recipes/recipe_modules/gclient/config.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 417,
+      "author": {
+        "id": 1289180
+      },
+      "writtenOn": "2025-08-27T17:26:02Z",
+      "side": 1,
+      "message": "```suggestion\n  for soln in c.solutions:\n    if soln.name \u003d\u003d \u0027dawn\u0027:\n      soln.custom_vars[\u0027dawn_node\u0027] \u003d True\n      break\n```\nI think this should work and its a bit more concise/straightforward",
+      "range": {
+        "startLine": 412,
+        "startChar": 0,
+        "endLine": 417,
+        "endChar": 9
+      },
+      "revId": "8d486bf81ee759fbaa86797a61eb30b4957ae6af",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
