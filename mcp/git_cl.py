@@ -20,7 +20,7 @@ async def try_builder_results(
 
     Returns:
       A json list of builds that either ran or are still running on the current
-      CL
+      CL associated with the current branch.
     """
     with tracer.start_as_current_span('chromium.mcp.try_builder_results'):
         command = [
