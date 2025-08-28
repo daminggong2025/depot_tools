@@ -50,6 +50,30 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "84b84234_f78c0349",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2025-08-28T16:51:52Z",
+      "side": 1,
+      "message": "acked; sgtm and resolving",
+      "parentUuid": "e4ba3c25_58fc07ad",
+      "range": {
+        "startLine": 10,
+        "startChar": 0,
+        "endLine": 13,
+        "endChar": 59
+      },
+      "revId": "bd97b25e6e79afac098a237814209759cdd12c45",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "9d2743e5_269c2fc0",
         "filename": "/PATCHSET_LEVEL",
         "patchSetId": 2
