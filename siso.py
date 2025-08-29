@@ -16,7 +16,7 @@ import caffeinate
 import gclient_paths
 
 
-def checkOutdir(args):
+def parse_args(args):
     subcmd = ''
     out_dir = "."
     for i, arg in enumerate(args):
@@ -27,8 +27,10 @@ def checkOutdir(args):
             out_dir = args[i + 1]
         elif arg.startswith("-C"):
             out_dir = arg[2:]
-    if subcmd != "ninja":
-        return
+    return subcmd, out_dir
+
+
+def check_outdir(subcmd, out_dir):
     ninja_marker = os.path.join(out_dir, ".ninja_deps")
     if os.path.exists(ninja_marker):
         print("depot_tools/siso.py: %s contains Ninja state file.\n"
@@ -89,9 +91,11 @@ def main(args):
 
     environ = os.environ.copy()
 
+    subcmd, out_dir = parse_args(args[1:])
+
     # Get gclient root + src.
-    primary_solution_path = gclient_paths.GetPrimarySolutionPath()
-    gclient_root_path = gclient_paths.FindGclientRoot(os.getcwd())
+    primary_solution_path = gclient_paths.GetPrimarySolutionPath(out_dir)
+    gclient_root_path = gclient_paths.FindGclientRoot(out_dir)
     gclient_src_root_path = None
     if gclient_root_path:
         gclient_src_root_path = os.path.join(gclient_root_path, 'src')
@@ -150,7 +154,7 @@ def main(args):
         ]
         for siso_path in siso_paths:
             if siso_path and os.path.isfile(siso_path):
-                checkOutdir(args[1:])
+                check_outdir(subcmd, out_dir)
                 return caffeinate.run([siso_path] + args[1:], env=env)
         print(
             'depot_tools/siso.py: Could not find siso in third_party/siso '
