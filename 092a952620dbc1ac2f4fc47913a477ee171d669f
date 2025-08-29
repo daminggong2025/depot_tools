@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f25da6e2_beb82264",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-08-29T05:53:00Z",
+      "side": 1,
+      "message": "/cc kuanhuang (Chrome Trooper), bryner (Source/depot_tools OnCall)\n/cc jingjingwa, xingkhuang (GoB OnCall)\n/cc ayatane (FYI)\n\nThis roll enables ReAuth in depot_tools by default.\n\nTroubleshoot instructions are included in the CLI. So hopefully users will onboard, or troubleshoot / unblock themselves :)",
+      "revId": "092a952620dbc1ac2f4fc47913a477ee171d669f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
