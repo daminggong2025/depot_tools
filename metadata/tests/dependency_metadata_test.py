@@ -135,6 +135,91 @@ class DependencyValidationTest(unittest.TestCase):
         self.assertEqual(results[0].get_reason(),
                          "Versioning fields are insufficient.")
 
+    def test_cpe_prefix_and_version_validation(self):
+        """Check validation for CPEPrefix and Version fields."""
+        with self.subTest(msg="CPEPrefix without version, N/A Version"):
+            dependency = dm.DependencyMetadata()
+            dependency.add_entry(known_fields.NAME.get_name(), "Test")
+            dependency.add_entry(known_fields.URL.get_name(),
+                                 "https://example.com")
+            dependency.add_entry(known_fields.LICENSE.get_name(), "MIT")
+            dependency.add_entry(known_fields.LICENSE_FILE.get_name(),
+                                 "LICENSE")
+            dependency.add_entry(known_fields.VERSION.get_name(), "N/A")
+            dependency.add_entry(known_fields.SECURITY_CRITICAL.get_name(),
+                                 "no")
+            dependency.add_entry(known_fields.REVISION.get_name(), "1234abcdef1234")
+            dependency.add_entry(known_fields.SHIPPED.get_name(), "no")
+            dependency.add_entry(known_fields.CPE_PREFIX.get_name(),
+                                 "cpe:/a:vendor:product")
+            results = dependency.validate(
+                source_file_dir=os.path.join(_THIS_DIR, "data"),
+                repo_root_dir=_THIS_DIR)
+            self.assertEqual(len(results), 1)
+            reasons = {r.get_reason() for r in results}
+            self.assertIn(
+                "CPEPrefix is missing a version, and no Version is specified.",
+                reasons)
+
+        with self.subTest(msg="CPEPrefix without version, with Version"):
+            dependency = dm.DependencyMetadata()
+            dependency.add_entry(known_fields.NAME.get_name(), "Test")
+            dependency.add_entry(known_fields.URL.get_name(),
+                                 "https://example.com")
+            dependency.add_entry(known_fields.LICENSE.get_name(), "MIT")
+            dependency.add_entry(known_fields.LICENSE_FILE.get_name(),
+                                 "LICENSE")
+            dependency.add_entry(known_fields.SECURITY_CRITICAL.get_name(),
+                                 "no")
+            dependency.add_entry(known_fields.SHIPPED.get_name(), "no")
+            dependency.add_entry(known_fields.CPE_PREFIX.get_name(),
+                                 "cpe:/a:vendor:product")
+            dependency.add_entry(known_fields.VERSION.get_name(), "1.0")
+            results = dependency.validate(
+                source_file_dir=os.path.join(_THIS_DIR, "data"),
+                repo_root_dir=_THIS_DIR)
+            self.assertEqual(len(results), 0)
+
+        with self.subTest(msg="CPEPrefix with version, N/A Version"):
+            dependency = dm.DependencyMetadata()
+            dependency.add_entry(known_fields.NAME.get_name(), "Test")
+            dependency.add_entry(known_fields.URL.get_name(),
+                                 "https://example.com")
+            dependency.add_entry(known_fields.LICENSE.get_name(), "MIT")
+            dependency.add_entry(known_fields.LICENSE_FILE.get_name(),
+                                 "LICENSE")
+            dependency.add_entry(known_fields.SECURITY_CRITICAL.get_name(),
+                                 "no")
+            dependency.add_entry(known_fields.VERSION.get_name(), "N/A")
+            dependency.add_entry(known_fields.REVISION.get_name(), "1234abcdef1234")
+            dependency.add_entry(known_fields.SHIPPED.get_name(), "no")
+            dependency.add_entry(known_fields.CPE_PREFIX.get_name(),
+                                 "cpe:/a:vendor:product:1.0")
+            results = dependency.validate(
+                source_file_dir=os.path.join(_THIS_DIR, "data"),
+                repo_root_dir=_THIS_DIR)
+            self.assertEqual(len(results), 0)
+            reasons = {r.get_reason() for r in results}
+
+        with self.subTest(msg="CPEPrefix unknown, N/A Version"):
+            dependency = dm.DependencyMetadata()
+            dependency.add_entry(known_fields.NAME.get_name(), "Test")
+            dependency.add_entry(known_fields.URL.get_name(),
+                                 "https://example.com")
+            dependency.add_entry(known_fields.LICENSE.get_name(), "MIT")
+            dependency.add_entry(known_fields.LICENSE_FILE.get_name(),
+                                 "LICENSE")
+            dependency.add_entry(known_fields.VERSION.get_name(), "N/A")
+            dependency.add_entry(known_fields.REVISION.get_name(), "1234abcdef1234")
+            dependency.add_entry(known_fields.SECURITY_CRITICAL.get_name(),
+                                 "no")
+            dependency.add_entry(known_fields.SHIPPED.get_name(), "no")
+            dependency.add_entry(known_fields.CPE_PREFIX.get_name(), "unknown")
+            results = dependency.validate(
+                source_file_dir=os.path.join(_THIS_DIR, "data"),
+                repo_root_dir=_THIS_DIR)
+            self.assertEqual(len(results), 0)
+
     def test_versioning_with_invalid_revision(self):
         """Check that a validation error is returned for insufficient
         versioning info."""

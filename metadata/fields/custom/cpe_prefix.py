@@ -52,6 +52,30 @@ def is_adequate_cpe_urn(value) -> bool:
     return len(non_empty_components) > 0
 
 
+def has_version_component(value: str) -> bool:
+    """Returns whether a given CPE value has a version component."""
+    if util.matches(_PATTERN_CPE_FORMATTED_STRING, value):
+        # cpe:2.3:part:vendor:product:version:...
+        # The version is the 6th component.
+        parts = value.split(':')
+        if len(parts) >= 6 and parts[5] not in ('*', '-'):
+            return True
+        return False
+
+    m = _PATTERN_CPE_URN.match(value)
+    if m:
+        # cpe:/part:vendor:product:version:...
+        # The part is optional in the regex group.
+        # group(1) will be ":vendor:product:version"
+        cpe_components = m.group(1).split(':')
+        non_empty_components = list(filter(len, cpe_components))
+        # Components are vendor, product, version, ...
+        # If there are more than 2 components, a version is present.
+        return len(non_empty_components) > 2
+
+    return False
+
+
 class CPEPrefixField(field_types.SingleLineTextField):
     """Custom field for the package's CPE."""
     def __init__(self):
