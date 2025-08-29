@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "28c4edf2_878adcfa",
+        "filename": "metadata/dependency_metadata.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 242,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2025-08-29T09:14:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "59fdb873_2c21b611",
+      "range": {
+        "startLine": 242,
+        "startChar": 8,
+        "endLine": 242,
+        "endChar": 24
+      },
+      "revId": "3fb75f14b03b0e8a36b71a5987984ba32afc50ba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d9753d4b_b98fc16a",
@@ -47,6 +71,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "6bd40848_06649ca6",
+        "filename": "metadata/dependency_metadata.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 245,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2025-08-29T09:14:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d9753d4b_b98fc16a",
+      "range": {
+        "startLine": 244,
+        "startChar": 8,
+        "endLine": 245,
+        "endChar": 123
+      },
+      "revId": "3fb75f14b03b0e8a36b71a5987984ba32afc50ba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "2ae10062_615537f8",
@@ -60,6 +108,30 @@
       "writtenOn": "2025-08-29T07:10:09Z",
       "side": 1,
       "message": "Is it?",
+      "range": {
+        "startLine": 73,
+        "startChar": 10,
+        "endLine": 73,
+        "endChar": 45
+      },
+      "revId": "3fb75f14b03b0e8a36b71a5987984ba32afc50ba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5554271f_0d4db5d7",
+        "filename": "metadata/fields/custom/cpe_prefix.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2025-08-29T09:14:28Z",
+      "side": 1,
+      "message": "Yes, I cleaned up the comment so it\u0027s clearer.",
+      "parentUuid": "2ae10062_615537f8",
       "range": {
         "startLine": 73,
         "startChar": 10,

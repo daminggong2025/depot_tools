@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2444affe_de85caf3",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2025-08-29T09:14:28Z",
+      "side": 1,
+      "message": "Thanks! The formatter was not working in cider-g for depot_tools, hence the initial cl with bad format, my bad for not double checking, it should be good now.",
+      "revId": "6b9fd6aae34d9f545e2f10773856c6ca63f25ebe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
