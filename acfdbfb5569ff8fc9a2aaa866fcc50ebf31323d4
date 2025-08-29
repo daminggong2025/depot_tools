@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "018890cd_099752b6",
+        "filename": "siso.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2025-08-29T02:09:27Z",
+      "side": 1,
+      "message": "Follow\nhttps://google.github.io/styleguide/pyguide.html#316-naming\n?",
+      "range": {
+        "startLine": 19,
+        "startChar": 4,
+        "endLine": 19,
+        "endChar": 13
+      },
+      "revId": "acfdbfb5569ff8fc9a2aaa866fcc50ebf31323d4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
