@@ -17,6 +17,7 @@ _ROOT_DIR = os.path.abspath(os.path.join(_THIS_DIR, ".."))
 sys.path.insert(0, _ROOT_DIR)
 
 import metadata.fields.field_types as field_types
+import metadata.fields.custom.cpe_prefix as cpe_prefix_util
 import metadata.fields.custom.license as license_util
 import metadata.fields.custom.version as version_util
 import metadata.fields.custom.mitigated as mitigated_util
@@ -235,6 +236,24 @@ class DependencyMetadata:
                 error = vr.ValidationError(
                     reason=f"Required field '{field_name}' is missing.")
                 results.append(error)
+
+        # If CPEPrefix is provided without a version, the Version field must be
+        # present.
+        cpe_prefix = self._metadata.get(known_fields.CPE_PREFIX)
+        version = self._metadata.get(known_fields.VERSION)
+        cpe_provided = cpe_prefix and not util.is_unknown(cpe_prefix)
+        version_is_valid = version and not util.is_not_applicable(version)
+        cpe_has_version = cpe_prefix and cpe_prefix_util.has_version_component(cpe_prefix)
+        if cpe_provided and not (version_is_valid or cpe_has_version):
+            error = vr.ValidationError(
+                reason="CPEPrefix is missing a version, and no Version is "
+                "specified.",
+                additional=[
+                    "When the 'Version' field is not provided, the 'CPEPrefix' "
+                    "must include a version component."
+                ])
+            error.set_lines(self.get_field_line_numbers(known_fields.CPE_PREFIX))
+            results.append(error)
 
         # If the repository is hosted somewhere (i.e. Chromium isn't the
         # canonical repositroy of the dependency), at least one of the fields
