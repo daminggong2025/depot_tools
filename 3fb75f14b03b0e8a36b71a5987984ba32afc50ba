@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "59fdb873_2c21b611",
+        "filename": "metadata/dependency_metadata.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 242,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-08-29T07:10:09Z",
+      "side": 1,
+      "message": "for simplicity, just `cpe_prefix` and `version`.",
+      "range": {
+        "startLine": 242,
+        "startChar": 8,
+        "endLine": 242,
+        "endChar": 24
+      },
+      "revId": "3fb75f14b03b0e8a36b71a5987984ba32afc50ba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d9753d4b_b98fc16a",
+        "filename": "metadata/dependency_metadata.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 245,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-08-29T07:10:09Z",
+      "side": 1,
+      "message": "This doesn\u0027t look like the right format.\n\n`git cl format --python` pls... If formatter produced this, I shall curse py.\n\n----\n\nAlternativelly, consider breaking down terms into a temp var (it\u0027s fine to introduce single-use vars to improve readability)\n\nlike\n\n```\ncpe_provided \u003d ...\ncpe_has_version \u003d cpe_value and ...... and ....\nversion_is_valid \u003d ..... and .... and ...\n\nif cpe_provided and not (cpe_has_version or version_is_valid)\n```",
+      "range": {
+        "startLine": 244,
+        "startChar": 8,
+        "endLine": 245,
+        "endChar": 123
+      },
+      "revId": "3fb75f14b03b0e8a36b71a5987984ba32afc50ba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2ae10062_615537f8",
+        "filename": "metadata/fields/custom/cpe_prefix.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-08-29T07:10:09Z",
+      "side": 1,
+      "message": "Is it?",
+      "range": {
+        "startLine": 73,
+        "startChar": 10,
+        "endLine": 73,
+        "endChar": 45
+      },
+      "revId": "3fb75f14b03b0e8a36b71a5987984ba32afc50ba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
