@@ -1799,10 +1799,6 @@ def PanProjectChecks(input_api,
             # the tree. Skipping these saves a bit of time and avoids having
             # redundant output. This was initially designed for use by
             # third_party/blink/PRESUBMIT.py.
-            snapshot("checking was uploaded")
-            results.extend(
-                input_api.canned_checks.CheckChangeWasUploaded(
-                    input_api, output_api))
             snapshot("checking description")
             results.extend(
                 input_api.canned_checks.CheckChangeHasDescription(

@@ -3015,6 +3015,7 @@ class Changelist(object):
                 for opt in all_push_options:
                     push_cmd.extend(['-o', opt])
 
+            breakpoint()
             push_stdout = gclient_utils.CheckCallAndFilter(
                 push_cmd,
                 env=env,
