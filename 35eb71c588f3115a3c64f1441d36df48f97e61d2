@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ad122e5c_d8ea71cc",
+        "filename": "metadata/dependency_metadata.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 498,
+      "author": {
+        "id": 1544922
+      },
+      "writtenOn": "2025-09-01T07:52:30Z",
+      "side": 1,
+      "message": "Having this simple string check can lead to false positives, as any of the URLs in a dependency\u0027s metadata would only have to include either \"git\" or \"googlesource\" as a substring. This doesn\u0027t actually enforce the domain.\n\ne.g. `swingit.com` would pass this check.\n\nConsidering this is within the function `vuln_scan_sufficiency`, I don\u0027t think it would be good to introduce the potential for false positives in a sufficiency check.",
+      "revId": "35eb71c588f3115a3c64f1441d36df48f97e61d2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
