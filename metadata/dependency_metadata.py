@@ -245,7 +245,7 @@ class DependencyMetadata:
         version_is_valid = version and not util.is_not_applicable(version)
         cpe_has_version = cpe_prefix and cpe_prefix_util.has_version_component(cpe_prefix)
         if cpe_provided and not (version_is_valid or cpe_has_version):
-            error = vr.ValidationError(
+            error = vr.ValidationWarning(
                 reason="CPEPrefix is missing a version, and no Version is "
                 "specified.",
                 additional=[
