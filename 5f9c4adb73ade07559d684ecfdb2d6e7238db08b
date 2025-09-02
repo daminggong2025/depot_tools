@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e306b2a2_ba6b7ae3",
+        "filename": "metadata/dependency_metadata.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 499,
+      "author": {
+        "id": 1544922
+      },
+      "writtenOn": "2025-09-02T02:54:56Z",
+      "side": 1,
+      "message": "This function doesn\u0027t have to be internally defined here. You could make it take in a list of strings as input and define it outside of the class, even.\n\nIs there a specific reason why it\u0027s limited to this scope?",
+      "revId": "5f9c4adb73ade07559d684ecfdb2d6e7238db08b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1f5bc088_0bbe06ac",
+        "filename": "metadata/dependency_metadata.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 518,
+      "author": {
+        "id": 1544922
+      },
+      "writtenOn": "2025-09-02T02:54:56Z",
+      "side": 1,
+      "message": "This could be a module-level constant.",
+      "revId": "5f9c4adb73ade07559d684ecfdb2d6e7238db08b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8dc1e612_fa698ff8",
+        "filename": "metadata/dependency_metadata.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 520,
+      "author": {
+        "id": 1544922
+      },
+      "writtenOn": "2025-09-02T02:54:56Z",
+      "side": 1,
+      "message": "This will only check the first non-empty URL, so if a dep has a homepage followed by its git repo as its metadata URLs, it would be considered not git-clonable.",
+      "revId": "5f9c4adb73ade07559d684ecfdb2d6e7238db08b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
