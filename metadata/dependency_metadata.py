@@ -8,10 +8,14 @@ import os
 import sys
 import itertools
 from typing import Dict, List, Set, Tuple, Union, Optional, Literal, Any
+from urllib.parse import urlparse
 
 _THIS_DIR = os.path.abspath(os.path.dirname(__file__))
 # The repo's root directory.
 _ROOT_DIR = os.path.abspath(os.path.join(_THIS_DIR, ".."))
+
+# Used to identify git clonable domains.
+GIT_DOMAIN_INDICATORS = ["git", "googlesource", "bitbucket", "github", "gitlab"]
 
 # Add the repo's root directory for clearer imports.
 sys.path.insert(0, _ROOT_DIR)
@@ -239,12 +243,7 @@ class DependencyMetadata:
 
         # If CPEPrefix is provided without a version, the Version field must be
         # present.
-        cpe_prefix = self._metadata.get(known_fields.CPE_PREFIX)
-        version = self._metadata.get(known_fields.VERSION)
-        cpe_provided = cpe_prefix and not util.is_unknown(cpe_prefix)
-        version_is_valid = version and not util.is_not_applicable(version)
-        cpe_has_version = cpe_prefix and cpe_prefix_util.has_version_component(cpe_prefix)
-        if cpe_provided and not (version_is_valid or cpe_has_version):
+        if self._cpe_prefix_lacks_version():
             error = vr.ValidationWarning(
                 reason="CPEPrefix is missing a version, and no Version is "
                 "specified.",
@@ -333,6 +332,17 @@ class DependencyMetadata:
                     ]))
 
         return results
+
+    def _cpe_prefix_lacks_version(self) -> List[vr.ValidationResult]:
+        """Validates that if CPEPrefix is provided without a version, the
+        Version field must be present."""
+        cpe_prefix = self._metadata.get(known_fields.CPE_PREFIX)
+        version = self._metadata.get(known_fields.VERSION)
+        cpe_provided = cpe_prefix and not util.is_unknown(cpe_prefix)
+        version_is_valid = version and not util.is_not_applicable(version)
+        cpe_has_version = cpe_prefix and cpe_prefix_util.has_version_component(
+            cpe_prefix)
+        return cpe_provided and not (version_is_valid or cpe_has_version)
 
     def _mitigations_from_entries(self) -> Dict[str, str]:
         result = {}
@@ -472,13 +482,35 @@ class DependencyMetadata:
         return self._return_as_property(known_fields.UPDATE_MECHANISM)
 
     @property
+    def url_is_git_clonable(self) -> bool:
+        """
+        Checks if any of the provided URLs appear to be a clonable Git repository.
+
+        This is determined by checking for:
+        - The 'git://' protocol.
+        - A path ending in '.git'.
+        - subdomain matching. See GIT_DOMAIN_INDICATORS for the full list.
+        """
+        for u in self.url:
+            if not u:
+                continue
+            parsed = urlparse(u)
+            if parsed.scheme == "git" or parsed.path.endswith(".git"):
+                return True
+            if parsed.netloc:
+                domain_parts = parsed.netloc.split(".")
+                if any(gi in domain_parts for gi in GIT_DOMAIN_INDICATORS):
+                    return True
+        return False
+
+    @property
     def vuln_scan_sufficiency(self) -> str:
         """Determines if the dependency metadata is sufficient for vulnerability scanning.
 
         Returns:
             A string indicating the sufficiency status:
-            - 'sufficient:CPE' if a CPE prefix is provided.
-            - 'sufficient:URL and Revision' if URL and Revision are provided.
+            - 'sufficient:CPE' if a CPE prefix is provided and a version is included in the README.
+            - 'sufficient:URL and Revision' if URL is a git url and a Revision is provided.
             - 'sufficient:URL and Revision[DEPS]' as above, but 'Revision:DEPS'.
             - 'sufficient:URL and Version' if URL and version are provided.
             - 'ignore:Canonical' if the dependency is the canonical repository.
@@ -486,10 +518,11 @@ class DependencyMetadata:
             - 'ignore:Static' if the dependency's update mechanism is static.
             - 'insufficient' otherwise.
         """
-        if self.cpe_prefix:
+
+        if self.cpe_prefix and not self._cpe_prefix_lacks_version():
             return "sufficient:CPE"
         if self.url:
-            if self.revision:
+            if self.revision and self.url_is_git_clonable:
                 return "sufficient:URL and Revision"
             if self.revision_in_deps:
                 return "sufficient:URL and Revision[DEPS]"
