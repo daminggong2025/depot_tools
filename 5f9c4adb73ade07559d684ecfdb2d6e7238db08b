@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "dbaa6f54_3037eb49",
+        "filename": "metadata/dependency_metadata.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 499,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2025-09-02T03:45:21Z",
+      "side": 1,
+      "message": "I included it in the body to keep the logic together, but I\u0027ll move it to its own.",
+      "parentUuid": "e306b2a2_ba6b7ae3",
+      "revId": "5f9c4adb73ade07559d684ecfdb2d6e7238db08b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "1f5bc088_0bbe06ac",
@@ -35,6 +53,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "d465b62c_ec2aa283",
+        "filename": "metadata/dependency_metadata.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 518,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2025-09-02T03:45:21Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1f5bc088_0bbe06ac",
+      "revId": "5f9c4adb73ade07559d684ecfdb2d6e7238db08b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "8dc1e612_fa698ff8",
@@ -48,6 +84,24 @@
       "writtenOn": "2025-09-02T02:54:56Z",
       "side": 1,
       "message": "This will only check the first non-empty URL, so if a dep has a homepage followed by its git repo as its metadata URLs, it would be considered not git-clonable.",
+      "revId": "5f9c4adb73ade07559d684ecfdb2d6e7238db08b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "60b8feaa_2195031c",
+        "filename": "metadata/dependency_metadata.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 520,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2025-09-02T03:45:21Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8dc1e612_fa698ff8",
       "revId": "5f9c4adb73ade07559d684ecfdb2d6e7238db08b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
