@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "1753c6f2_d849a20a",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 8
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2025-09-02T05:08:10Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1c3c18bb_0a1a9d32",
+      "revId": "504afe10e3053f223bdf799c4906db9c715fe158",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "463bff8a_7b6514d3",
@@ -31,6 +49,24 @@
       "writtenOn": "2025-09-02T04:20:16Z",
       "side": 1,
       "message": "nit: `subdomain matching. See GIT_DOMAIN_INDICATORS for the full list.`",
+      "revId": "504afe10e3053f223bdf799c4906db9c715fe158",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "42e8e3be_02634a01",
+        "filename": "metadata/dependency_metadata.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 493,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2025-09-02T05:08:10Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "463bff8a_7b6514d3",
       "revId": "504afe10e3053f223bdf799c4906db9c715fe158",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
