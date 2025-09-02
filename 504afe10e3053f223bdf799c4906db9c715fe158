@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1c3c18bb_0a1a9d32",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 8
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1544922
+      },
+      "writtenOn": "2025-09-02T04:20:16Z",
+      "side": 1,
+      "message": "Should be updated for the other supported git domains.",
+      "revId": "504afe10e3053f223bdf799c4906db9c715fe158",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "463bff8a_7b6514d3",
+        "filename": "metadata/dependency_metadata.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 493,
+      "author": {
+        "id": 1544922
+      },
+      "writtenOn": "2025-09-02T04:20:16Z",
+      "side": 1,
+      "message": "nit: `subdomain matching. See GIT_DOMAIN_INDICATORS for the full list.`",
+      "revId": "504afe10e3053f223bdf799c4906db9c715fe158",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
