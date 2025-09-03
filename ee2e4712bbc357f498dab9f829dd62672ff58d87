@@ -16,6 +16,24 @@
       "message": "nit: Add a TODO and link a fix depot_tools RPC / cleanup bug ?",
       "revId": "ee2e4712bbc357f498dab9f829dd62672ff58d87",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "39219bd4_59ab0541",
+        "filename": "auth.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 241,
+      "author": {
+        "id": 3355336
+      },
+      "writtenOn": "2025-09-03T01:29:44Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4d855d8b_dfb85f91",
+      "revId": "ee2e4712bbc357f498dab9f829dd62672ff58d87",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
