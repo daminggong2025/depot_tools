@@ -75,7 +75,36 @@ class GitLoginRequiredError(Exception):
 
     @property
     def login_command(self) -> str:
-        return 'git-credential-luci login'
+        return 'git credential-luci login'
+
+
+class GitReAuthRequiredError(Exception):
+    """Interaction with the user is required to ReAuth.
+
+    This is for git-credential-luci, not luci-auth.
+    """
+
+    def __init__(self):
+        msg = ('You have not done ReAuth. Please run and try again:\n'
+               '  %s' % self.reauth_command)
+        super(GitReAuthRequiredError, self).__init__(msg)
+
+    @property
+    def reauth_command(self) -> str:
+        return 'git credential-luci reauth'
+
+
+class GitUnknownError(Exception):
+    """Unknown error from git-credential-luci."""
+
+    def __init__(self):
+        msg = ('Unknown error from git-credential-luci. Try logging in? Run:\n'
+               '  %s' % self.login_command)
+        super(GitLoginRequiredError, self).__init__(msg)
+
+    @property
+    def login_command(self) -> str:
+        return 'git credential-luci login'
 
 
 def has_luci_context_local_auth():
@@ -232,15 +261,17 @@ class GerritAuthenticator(object):
         try:
             access_token = self._get_luci_auth_token()
             if not access_token:
-                logging.debug('Failed to create access token')
-                raise GitLoginRequiredError()
+                raise GitUnknownError()
             return access_token
         except subprocess2.CalledProcessError as e:
             # subprocess2.CalledProcessError.__str__ nicely formats
             # stdout/stderr.
             logging.error('git-credential-luci failed: %s', e)
-            logging.debug('Failed to create access token')
-            raise GitLoginRequiredError()
+            if e.returncode == 2:
+                raise GitLoginRequiredError()
+            if e.returncode == 3:
+                raise GitReAuthRequiredError()
+            raise GitUnknownError()
 
     def _get_luci_auth_token(self) -> Optional[str]:
         logging.debug('Running git-credential-luci')
