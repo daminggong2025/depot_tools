@@ -666,7 +666,10 @@ def _ComputeFormatDiffLineRanges(files, upstream_commit, expand=0):
                                 upstream_commit,
                                 files,
                                 allow_prefix=True)
+    return _ParseDiffOutput(diff_output)
 
+
+def _ParseDiffOutput(diff_output):
     pattern = r'(?:^diff --git a/(?:.*) b/(.*))|(?:^@@.*\+(.*) @@)'
     # 2 capture groups
     # 0 == fname of diff file
@@ -7038,6 +7041,24 @@ def _RunLUCICfgFormat(opts, paths, top_dir, upstream_commit):
 FormatterFunction = Callable[[Any, list[str], str, str], int]
 
 
+def _FindFilesToFormat(opts, files, upstream_commit):
+    """Returns a list of the files to format and the diff contents.
+
+    Returns empty diff_content if opts.full is set.
+    """
+    if opts.input_diff_file:
+        with open(opts.input_diff_file) as f:
+          diffs = f.read()
+          return _ParseDiffOutput(diffs).keys(), diffs
+
+    files = RunGitDiffCmd(['--name-only', '--diff-filter=d'],
+                          upstream_commit, files).splitlines()
+    if opts.full:
+        return files, ''
+
+    return files, RunGitDiffCmd(['-U0'], upstream_commit, files)
+
+
 @subcommand.usage('[files or directories to diff]')
 @metrics.collector.collect_metrics('git cl format')
 def CMDformat(parser: optparse.OptionParser, args: list[str]):
@@ -7110,21 +7131,38 @@ def CMDformat(parser: optparse.OptionParser, args: list[str]):
         dest='use_swift_format',
         action='store_false',
         help='Disables formatting of Swift file types using swift-format.')
-
+    parser.add_argument('--input_diff_file',
+                        help='File to read input change diff from. '
+                        'If given, the added blocks of the files in the diff '
+                        'will be formatted.')
     parser.add_option('--mojom',
                       action='store_true',
                       help='Enables formatting of .mojom files.')
-
     parser.add_option('--no-java',
                       action='store_true',
                       help='Disable auto-formatting of .java')
-
     parser.add_option('--lucicfg',
                       action='store_true',
                       help='Enables formatting of .star files.')
 
     opts, files = parser.parse_args(args)
     opts.full = opts.full or settings.GetFormatFullByDefault()
+    if opts.input_diff_file:
+        if opts.full:
+            print('--full and --input_diff_file cannot be used together.',
+                  file=sys.stderr)
+            return 1
+        if files:
+            print('No file paths to format are allowed '
+                  'if --input_diff_file is given')
+            return 1
+    elif gclient_utils.IsEnvCog():
+        print(
+            'format command is not supported in non-git environment. Please '
+            'use the "Format Modified Lines in All Files (git cl format)" '
+            'functionality in the command palette in the editor instead.',
+            file=sys.stderr)
+        return 1
 
     # Normalize files against the current path, so paths relative to the
     # current directory are still resolved as expected.
@@ -7153,10 +7191,16 @@ def CMDformat(parser: optparse.OptionParser, args: list[str]):
         DieWithError('Could not find base commit for this branch. '
                      'Are you in detached state?')
 
-    # Filter out deleted files
-    diff_output = RunGitDiffCmd(['--name-only', '--diff-filter=d'],
-                                upstream_commit, files)
-    diff_files = diff_output.splitlines()
+    # git diff generates paths against the root of the repository.  Change
+    # to that directory so clang-format can find files even within subdirs.
+    rel_base_path = settings.GetRelativeRoot()
+    if rel_base_path:
+        os.chdir(rel_base_path)
+
+    # Normalize files against the current path, so paths relative to the
+    # current directory are still resolved as expected.
+    files = [os.path.join(os.getcwd(), file) for file in files]
+    diff_files = _FindFilesToFormat(files, upstream_commit)
 
     if opts.js:
         clang_exts.extend(['.js', '.ts'])
