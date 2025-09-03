@@ -390,68 +390,68 @@ infra/tools/luci/led/windows-arm64
 	NgR0T5fKqCuv3xVEXknq9ajfFuMJm4x4f9RZz1fnT9MC
 
 infra/tools/luci/luci-auth-ssh-helper/linux-386
-	git_revision:b1791fdbc3b9e725724e5964c0e13901078491c3
-	HLNglmntbOvoGefe0hZluHWvirZrNZa4eCwK938G2cYC
+	git_revision:0ff6e38043daec0a3e3bea265820a63eab6bf21d
+	u4jN2haAF0K70yqtViUGTgwD_4PGPfUnaPmcdo5uhXIC
 
 infra/tools/luci/luci-auth-ssh-helper/linux-amd64
-	git_revision:b1791fdbc3b9e725724e5964c0e13901078491c3
-	WABnUsOPFcfwZPb2BUbouacbnIpUA0eqww6CdFXrKioC
+	git_revision:0ff6e38043daec0a3e3bea265820a63eab6bf21d
+	9ENQvWAkh-b4H-BCr4Mi5NMwZg7Q_JQ4ot7MFJFHj6wC
 
 infra/tools/luci/luci-auth-ssh-helper/linux-arm64
-	git_revision:b1791fdbc3b9e725724e5964c0e13901078491c3
-	JBjAI9aCX0etVws6rCghYNujtLjHxWGfd_-_T-HShpQC
+	git_revision:0ff6e38043daec0a3e3bea265820a63eab6bf21d
+	e9ulWnQAOPGJZm_5qjr6Enqlbz_gqMfTytfWiRs45eMC
 
 infra/tools/luci/luci-auth-ssh-helper/linux-armv6l
-	git_revision:b1791fdbc3b9e725724e5964c0e13901078491c3
-	WKHSgrX3etI7DnSXhOiOHXMlq3d-r1EitqGBWL87R4AC
+	git_revision:0ff6e38043daec0a3e3bea265820a63eab6bf21d
+	cmkALmIB43PJju-WSqveHGLodpp68Wk_2h9UVpTA4i0C
 
 infra/tools/luci/luci-auth-ssh-helper/linux-loong64
-	git_revision:b1791fdbc3b9e725724e5964c0e13901078491c3
-	h4pwrCx_99WdOOwnZJyPvTUP1eLjBChqZRvSpT4nVNIC
+	git_revision:0ff6e38043daec0a3e3bea265820a63eab6bf21d
+	-brHlKNOysTo87DavgcdE6ViWtrJBmQBLljoiuGKqFAC
 
 infra/tools/luci/luci-auth-ssh-helper/linux-mips64
-	git_revision:b1791fdbc3b9e725724e5964c0e13901078491c3
-	7nZ4HP7jUgyzlvXRkcpjGi8__V5zAGW-f3AJwDvQ8kIC
+	git_revision:0ff6e38043daec0a3e3bea265820a63eab6bf21d
+	we1suAoyadLMUuAcpbbq2YCBQR6xtZTpPc_Kea-ZSMgC
 
 infra/tools/luci/luci-auth-ssh-helper/linux-mips64le
-	git_revision:b1791fdbc3b9e725724e5964c0e13901078491c3
-	gtk_Tj65bQq7OZLsyYNkMGOW22UH0M3rt3k6Mlb3x8IC
+	git_revision:0ff6e38043daec0a3e3bea265820a63eab6bf21d
+	IKUqnt93F9kxLC6Sk_dFgwW63XYvCNZQ-8HfyGu1fEQC
 
 infra/tools/luci/luci-auth-ssh-helper/linux-mipsle
-	git_revision:b1791fdbc3b9e725724e5964c0e13901078491c3
-	xYXlWgw6Q-xn4_p37TSaSJrdhsKNs3Dm8c1JErAgbLcC
+	git_revision:0ff6e38043daec0a3e3bea265820a63eab6bf21d
+	tb0G-ic8Do9OUTslJ5lUOzSN7dRP3Tcg10fFbfmsRO0C
 
 infra/tools/luci/luci-auth-ssh-helper/linux-ppc64
-	git_revision:b1791fdbc3b9e725724e5964c0e13901078491c3
-	nzdlWrqceHD8Ea56AGPo8ieZKCxi2IjACD496qdaaacC
+	git_revision:0ff6e38043daec0a3e3bea265820a63eab6bf21d
+	-1KQvJSTcZVP7nqlpeW7Y-yHsWjrC7QTb3AU2zNJGk8C
 
 infra/tools/luci/luci-auth-ssh-helper/linux-ppc64le
-	git_revision:b1791fdbc3b9e725724e5964c0e13901078491c3
-	IApEue52O_NOkg43ghb1fyZNG3Ny3gJ_CNhQyLeW6AwC
+	git_revision:0ff6e38043daec0a3e3bea265820a63eab6bf21d
+	WxHW0I4IDrDfFeBnoZ2siibo-WoDPu0b-PY-6k_DIq0C
 
 infra/tools/luci/luci-auth-ssh-helper/linux-riscv64
-	git_revision:b1791fdbc3b9e725724e5964c0e13901078491c3
-	7709BJcirZgWgbmJHtHrzY3pnF7Feq2LECIaAz9KGKoC
+	git_revision:0ff6e38043daec0a3e3bea265820a63eab6bf21d
+	2ud55gxkB_urn8YhhPRJcu-Ce4_O2OPOVJrUA8VFvI0C
 
 infra/tools/luci/luci-auth-ssh-helper/linux-s390x
-	git_revision:b1791fdbc3b9e725724e5964c0e13901078491c3
-	eZOezm4vX0NaHUXFAmBLDfj3sKDs4OWKQ_ARXO_YfMgC
+	git_revision:0ff6e38043daec0a3e3bea265820a63eab6bf21d
+	zFi0Dr0I3cy4nO4EwOe6W1wsSNAHTTt82mGINr_tYGYC
 
 infra/tools/luci/luci-auth-ssh-helper/mac-amd64
-	git_revision:b1791fdbc3b9e725724e5964c0e13901078491c3
-	Dn5W6ydAUjF0JJhts6PZ5_BDaNZ7hzrpsVS3HlBRzYUC
+	git_revision:0ff6e38043daec0a3e3bea265820a63eab6bf21d
+	iw8JwhufAuZkwKZnQsyvwWL4JaN-JUwVf1ACFiSGvYYC
 
 infra/tools/luci/luci-auth-ssh-helper/mac-arm64
-	git_revision:b1791fdbc3b9e725724e5964c0e13901078491c3
-	LBR7P3-iG4Yh2yKQ5oEXKPk6ugBfwXWTVFE3qrjV6G4C
+	git_revision:0ff6e38043daec0a3e3bea265820a63eab6bf21d
+	8ASmOgFl-SA9xo5YWcBjIIMyAq15PijQ8eyAOaBP58kC
 
 infra/tools/luci/luci-auth-ssh-helper/windows-amd64
-	git_revision:b1791fdbc3b9e725724e5964c0e13901078491c3
-	aKHQ-0mjT2qrwzidiO_t-eRog26u2Umlnprut5q2Xo8C
+	git_revision:0ff6e38043daec0a3e3bea265820a63eab6bf21d
+	B2eLz0Yh_6x3sQkaIxfi-bYyq0wRHkRH6SamANooRWwC
 
 infra/tools/luci/luci-auth-ssh-helper/windows-arm64
-	git_revision:b1791fdbc3b9e725724e5964c0e13901078491c3
-	eI8MiS-3DeVlKPVngVo-DhaqDWvuGbQy27M4_1YCjzYC
+	git_revision:0ff6e38043daec0a3e3bea265820a63eab6bf21d
+	am-et6H2zY4NJoc0xfXLh0l-osRBq3rUFP-LouqxICYC
 
 infra/tools/luci/luci-auth-ssh-plugin/linux-386
 	git_revision:c39ff861346b9dcbaef40bf6a3f0a6143ba4433a
