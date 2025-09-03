@@ -106,6 +106,24 @@
       "parentUuid": "f07c162c_bba77726",
       "revId": "e9bd9f37b442068dbc1c5698ca856b4a2fb71a8c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "482d71c6_b588b87e",
+        "filename": "tests/siso_test.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1450817
+      },
+      "writtenOn": "2025-09-03T03:08:15Z",
+      "side": 1,
+      "message": "On the other hand, I think many siso users probably think of siso as a drop-in replacement for ninja, and so would likely expect `-k\u003d0` to be valid to put in unprefixed. They probably don\u0027t think of ninja as a subcommand of siso, but rather as siso itself.\n\nSeperating `startup` and specific subcommands would make that mistake a lot harder to make.",
+      "parentUuid": "946fa84d_806a082d",
+      "revId": "e9bd9f37b442068dbc1c5698ca856b4a2fb71a8c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
