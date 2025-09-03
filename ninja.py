@@ -72,11 +72,11 @@ def check_out_dir(tool, out_dir):
             sys.exit(1)
 
 
-def fallback(ninja_args):
+def fallback(tool, out_dir, ninja_args):
     # Try to find ninja in PATH.
     ninja_path = find_ninja_in_path()
     if ninja_path:
-        check_out_dir(ninja_args)
+        check_out_dir(tool, out_dir)
         return caffeinate.run([ninja_path] + ninja_args)
 
     print(
@@ -132,7 +132,7 @@ def main(args):
             check_out_dir(tool, out_dir)
             return caffeinate.run([ninja_path] + args[1:])
 
-    return fallback(args[1:])
+    return fallback(tool, out_dir, args[1:])
 
 
 if __name__ == "__main__":
