@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4194cf06_544a19f5",
+        "filename": "metadata/dependency_metadata.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 520,
+      "author": {
+        "id": 1544922
+      },
+      "writtenOn": "2025-09-03T00:04:06Z",
+      "side": 1,
+      "message": "There should be a check there is actually a package name after the substring.\n\ne.g. A URL of `\"crates.io/crates/\"` will currently return true, but that would not lead to sufficient vuln scanning.",
+      "revId": "eaeb90c5f0dfe53fe33804e0f5c5b07d7f4fc6d5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
