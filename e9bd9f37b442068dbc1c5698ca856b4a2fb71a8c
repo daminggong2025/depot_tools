@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0bee3666_0f69ebb5",
+        "filename": "tests/siso_test.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1450817
+      },
+      "writtenOn": "2025-09-03T02:50:46Z",
+      "side": 1,
+      "message": "Optional: this seems very similar to bazelrcs (I assume by design). Perhaps this should instead be `always --credential_helper\u003dgcloud` for consistency\u0027s sake?\n\nThat would allow us to later split into `always` (always provide) and `common` (only provide if the subcommand supports it) down the line if we so wished",
+      "revId": "e9bd9f37b442068dbc1c5698ca856b4a2fb71a8c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
