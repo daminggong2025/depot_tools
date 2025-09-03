@@ -52,6 +52,24 @@
       "parentUuid": "b0c869bf_0aab93b0",
       "revId": "e9bd9f37b442068dbc1c5698ca856b4a2fb71a8c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bfce3ee9_c1f1e506",
+        "filename": "tests/siso_test.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2025-09-03T03:00:09Z",
+      "side": 1,
+      "message": "no. always applies command, but `-credential_helper` is global flags,\nso much closer to startup, which go before the command ?",
+      "parentUuid": "0231614f_e610f80b",
+      "revId": "e9bd9f37b442068dbc1c5698ca856b4a2fb71a8c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
