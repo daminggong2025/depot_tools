@@ -241,7 +241,7 @@ class GerritAuthenticator(object):
         logging.debug('Failed to create access token')
         raise GitLoginRequiredError()
 
-    def _get_luci_auth_token(self, use_id_token=False) -> Optional[str]:
+    def _get_luci_auth_token(self) -> Optional[str]:
         logging.debug('Running git-credential-luci')
         # TODO(crbug.com/442666611): depot_tools doesn't support
         # ReAuth creds from the helper yet.
