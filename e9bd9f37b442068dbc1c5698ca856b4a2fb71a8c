@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "6377d170_5a23f869",
+        "filename": "tests/siso_test.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2025-09-03T04:09:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b720796e_ec2d657f",
+      "range": {
+        "startLine": 20,
+        "startChar": 14,
+        "endLine": 20,
+        "endChar": 28
+      },
+      "revId": "e9bd9f37b442068dbc1c5698ca856b4a2fb71a8c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "774166a2_cb346088",
@@ -37,6 +61,30 @@
       "writtenOn": "2025-09-03T04:03:34Z",
       "side": 1,
       "message": "ditto.",
+      "range": {
+        "startLine": 26,
+        "startChar": 14,
+        "endLine": 26,
+        "endChar": 28
+      },
+      "revId": "e9bd9f37b442068dbc1c5698ca856b4a2fb71a8c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2c6100b4_08c6150b",
+        "filename": "tests/siso_test.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2025-09-03T04:09:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "774166a2_cb346088",
       "range": {
         "startLine": 26,
         "startChar": 14,
