@@ -231,15 +231,16 @@ class GerritAuthenticator(object):
         """
         try:
             access_token = self._get_luci_auth_token()
+            if not access_token:
+                logging.debug('Failed to create access token')
+                raise GitLoginRequiredError()
+            return access_token
         except subprocess2.CalledProcessError as e:
             # subprocess2.CalledProcessError.__str__ nicely formats
             # stdout/stderr.
             logging.error('git-credential-luci failed: %s', e)
-            access_token = None
-        if access_token:
-            return access_token
-        logging.debug('Failed to create access token')
-        raise GitLoginRequiredError()
+            logging.debug('Failed to create access token')
+            raise GitLoginRequiredError()
 
     def _get_luci_auth_token(self) -> Optional[str]:
         logging.debug('Running git-credential-luci')
