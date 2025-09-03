@@ -16,6 +16,24 @@
       "message": "Hi Fumitoshi, this line might need to be updated too:\n```\nTypeError: check_out_dir() missing 1 required positional argument: \u0027out_dir\n```",
       "revId": "f80f5bc99e8c21d044dbb5ded2b1ab30846b7aff",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ce9dcd4d_c2d5b060",
+        "filename": "ninja.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2025-09-03T16:06:49Z",
+      "side": 1,
+      "message": "Someone filed a tracking bug: https://crbug.com/442612621",
+      "parentUuid": "e9a273e8_bbeb63a9",
+      "revId": "f80f5bc99e8c21d044dbb5ded2b1ab30846b7aff",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
