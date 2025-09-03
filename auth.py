@@ -238,11 +238,16 @@ class GerritAuthenticator(object):
     def _get_luci_auth_token(self, use_id_token=False) -> Optional[str]:
         logging.debug('Running git-credential-luci')
         try:
+            # TODO(crbug.com/442666611): depot_tools doesn't support
+            # ReAuth creds from the helper yet.
+            env = os.environ.copy()
+            env['LUCI_ENABLE_REAUTH'] = '0'
             out, err = subprocess2.check_call_out(
                 ['git-credential-luci', 'get'],
                 stdin=subprocess2.DEVNULL,
                 stdout=subprocess2.PIPE,
-                stderr=subprocess2.PIPE)
+                stderr=subprocess2.PIPE,
+                env=env)
             logging.debug('git-credential-luci stderr:\n%s', err)
             for line in out.decode().splitlines():
                 if line.startswith('password='):
