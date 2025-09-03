@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "553ffda9_6cede37f",
+        "filename": "siso.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2025-09-03T02:04:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1af2eadd_e9a235c1",
+      "revId": "783973aa46ce1b99a8c42151038023704f38818c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d0517346_3bbad673",
@@ -31,6 +49,24 @@
       "writtenOn": "2025-09-03T01:45:03Z",
       "side": 1,
       "message": "ditto",
+      "revId": "783973aa46ce1b99a8c42151038023704f38818c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "91c5792d_a23d9e48",
+        "filename": "siso.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2025-09-03T02:04:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d0517346_3bbad673",
       "revId": "783973aa46ce1b99a8c42151038023704f38818c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
