@@ -34,6 +34,24 @@
       "parentUuid": "0bee3666_0f69ebb5",
       "revId": "e9bd9f37b442068dbc1c5698ca856b4a2fb71a8c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0231614f_e610f80b",
+        "filename": "tests/siso_test.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1450817
+      },
+      "writtenOn": "2025-09-03T02:58:32Z",
+      "side": 1,
+      "message": "startup isn\u0027t relevant for siso since it\u0027s not a daemon, so it would still be always.\n\n\u003e not sure it\u0027s good to combine ...\n\nLike I said, this is optional, we don\u0027t need to do it if you don\u0027t ever plan on introducing them",
+      "parentUuid": "b0c869bf_0aab93b0",
+      "revId": "e9bd9f37b442068dbc1c5698ca856b4a2fb71a8c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
