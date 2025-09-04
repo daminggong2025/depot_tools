@@ -9,6 +9,7 @@ binary when run inside a gclient source tree, so users can just type
 
 import os
 import signal
+import shlex
 import shutil
 import sys
 
@@ -39,6 +40,39 @@ def check_outdir(subcmd, out_dir):
               (out_dir, out_dir),
               file=sys.stderr)
         sys.exit(1)
+
+
+def load_sisorc(rcfile):
+    if not os.path.exists(rcfile):
+        return [], {}
+    global_flags = []
+    subcmd_flags = {}
+    with open(rcfile) as file:
+        for line in file:
+            line = line.strip()
+            if line.startswith("#"):
+                continue
+            args = shlex.split(line)
+            if len(args) == 0:
+                continue
+            if line.startswith("-"):
+                global_flags.extend(args)
+                continue
+            subcmd_flags[args[0]] = args[1:]
+    return global_flags, subcmd_flags
+
+
+def apply_sisorc(global_flags, subcmd_flags, args, subcmd):
+    new_args = []
+    for arg in args:
+        if not new_args:
+            new_args.extend(global_flags)
+        if arg == subcmd:
+            new_args.append(arg)
+            new_args.extend(subcmd_flags.get(arg, []))
+            continue
+        new_args.append(arg)
+    return new_args
 
 
 def _is_google_corp_machine():
@@ -145,6 +179,8 @@ def main(args):
                     'See build/config/siso/backend_config/README.md',
                     file=sys.stderr)
             return 1
+        global_flags, subcmd_flags = load_sisorc(
+            os.path.join(base_path, 'build', 'config', 'siso', '.sisorc'))
         siso_paths = [
             siso_override_path,
             os.path.join(base_path, 'third_party', 'siso', 'cipd',
@@ -155,7 +191,12 @@ def main(args):
         for siso_path in siso_paths:
             if siso_path and os.path.isfile(siso_path):
                 check_outdir(subcmd, out_dir)
-                return caffeinate.run([siso_path] + args[1:], env=env)
+                new_args = apply_sisorc(global_flags, subcmd_flags, args[1:],
+                                        subcmd)
+                if args[1:] != new_args:
+                    print('depot_tools/siso.py: %s' % shlex.join(new_args),
+                          file=sys.stderr)
+                return caffeinate.run([siso_path] + new_args, env=env)
         print(
             'depot_tools/siso.py: Could not find siso in third_party/siso '
             'of the current project. Did you run gclient sync?',
