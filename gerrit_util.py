@@ -232,6 +232,10 @@ class _Authenticator(object):
         """Adds authentication information to the HttpConn."""
         raise NotImplementedError()
 
+    def authenticate_with_reauth(self, conn: HttpConn, reauth_context: auth.ReAuthContext):
+        """Adds ReAuth authentication information to the HttpConn."""
+        raise NotImplementedError()
+
     def debug_summary_state(self) -> str:
         """If this _Authenticator has any debugging information about its state,
         _WriteGitPushTraces will call this to include in the git push traces.
@@ -857,6 +861,10 @@ class GitCredsAuthenticator(_Authenticator):
         conn.req_headers[
             'Authorization'] = f'Bearer {self._authenticator.get_access_token()}'
 
+    def authenticate_with_reauth(self, conn: HttpConn, reauth_context: auth.ReAuthContext):
+        # TODO: Add ReAuth headers.
+        pass
+
     def debug_summary_state(self) -> str:
         # TODO(b/343230702) - report ambient account name.
         return ''
@@ -953,6 +961,17 @@ class ChainedAuthenticator(_Authenticator):
         else:
             raise ValueError(
                 f'{self!r} has no applicable authenticator for {conn!r}')
+
+    def authenticate_with_reauth(self, conn: HttpConn, reauth_context: auth.ReAuthContext):
+        for a in self.authenticators:
+            if a.is_applicable(conn=conn) and (a.authenticate_with_reauth is not _Authenticator.authenticate_with_reauth):
+                # Authenticator applies, and the concrete authenticator supports ReAuth.
+                a.authenticate_with_reauth(conn, reauth_context)
+                break
+        else:
+            raise ValueError(
+                f'{self!r} has no applicable authenticator that supports ReAuth for {conn!r}'
+            )
 
     def debug_summary_state(self) -> str:
         return ''
@@ -1718,6 +1737,8 @@ def SetReview(host,
         body[
             'ignore_automatic_attention_set_rules'] = not automatic_attention_set_update
     conn = CreateHttpConn(host, path, reqtype='POST', body=body)
+    # (TODO): IDEA: Add ReAuth here
+    # like: conn.AddReAuthToken()
     response = ReadHttpJsonResponse(conn)
     if labels:
         for key, val in labels.items():
