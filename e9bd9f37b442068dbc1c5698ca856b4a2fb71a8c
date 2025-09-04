@@ -236,6 +236,24 @@
       "parentUuid": "482d71c6_b588b87e",
       "revId": "e9bd9f37b442068dbc1c5698ca856b4a2fb71a8c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "26175799_692d6341",
+        "filename": "tests/siso_test.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2025-09-04T01:35:31Z",
+      "side": 1,
+      "message": "Acknowledged",
+      "parentUuid": "72849188_b3377a80",
+      "revId": "e9bd9f37b442068dbc1c5698ca856b4a2fb71a8c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
