@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ebf882e6_cc7ebb39",
+        "filename": "gerrit_util.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 1741,
+      "author": {
+        "id": 4303528
+      },
+      "writtenOn": "2025-09-04T06:12:45Z",
+      "side": 1,
+      "message": "Essentially make ReAuth a per-operation opt-in :/\n\nNo need to change _Authenticator base class (and all subclasses) to provide a authenticate_with_reauth method.",
+      "revId": "c6cf2c251d09cfce1ed84da2ecc8919ff07e757d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
