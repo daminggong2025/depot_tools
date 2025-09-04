@@ -4102,6 +4102,34 @@ class ChangelistTest(unittest.TestCase):
         mockRunPostHook.assert_called_once_with(True, 'parent-commit',
                                                 change_desc.description)
 
+    def testGerritURLsEqual(self):
+        cases = [
+            ('https://chromium.googlesource.com/chromium/tools/depot_tools',
+             'sso://chromium/chromium/tools/depot_tools'),
+        ]
+        for a, b in cases:
+            with self.subTest(c=(a, b)):
+                self.assertTrue(git_cl.Changelist._GerritURLsEqual(a, b))
+        cases = [
+            ('https://chrome-internal.googlesource.com/chromium/tools/depot_tools',
+             'sso://chromium/chromium/tools/depot_tools'),
+        ]
+        for a, b in cases:
+            with self.subTest(c=(a, b)):
+                self.assertFalse(git_cl.Changelist._GerritURLsEqual(a, b))
+
+    def testGerritURLRepoIdentity(self):
+        cases = [
+            ('https://chromium.googlesource.com/chromium/tools/depot_tools',
+             ('chromium', '/chromium/tools/depot_tools')),
+            ('sso://chromium/chromium/tools/depot_tools',
+             ('chromium', '/chromium/tools/depot_tools')),
+        ]
+        for x, want in cases:
+            with self.subTest(c=x):
+                self.assertEqual(git_cl.Changelist._GerritURLRepoIdentity(x),
+                                 want)
+
 
 class CMDTestCaseBase(unittest.TestCase):
     _STATUSES = [
