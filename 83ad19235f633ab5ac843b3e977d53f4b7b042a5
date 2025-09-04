@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "00f41ca1_c3dfb9f1",
+        "filename": "metadata/tests/dependency_metadata_test.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 620,
+      "author": {
+        "id": 1544922
+      },
+      "writtenOn": "2025-09-04T03:27:33Z",
+      "side": 0,
+      "message": "nit: probably would have deleted this in a separate CL, as it\u0027s not related to this change.",
+      "revId": "83ad19235f633ab5ac843b3e977d53f4b7b042a5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
