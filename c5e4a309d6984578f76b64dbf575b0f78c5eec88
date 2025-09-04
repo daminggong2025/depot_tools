@@ -35,6 +35,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "f979b51c_bd87ffa6",
+        "filename": "metadata/dependency_metadata.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 525,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2025-09-04T02:05:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c109414e_1f94ac37",
+      "revId": "c5e4a309d6984578f76b64dbf575b0f78c5eec88",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "4add9b0a_19e0d279",
@@ -48,6 +66,24 @@
       "writtenOn": "2025-09-04T01:59:49Z",
       "side": 1,
       "message": "Would be good to have a test for a package manager URL with no package name.",
+      "revId": "c5e4a309d6984578f76b64dbf575b0f78c5eec88",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1eb2436e_0e62e9f2",
+        "filename": "metadata/tests/dependency_metadata_test.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 602,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2025-09-04T02:05:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4add9b0a_19e0d279",
       "revId": "c5e4a309d6984578f76b64dbf575b0f78c5eec88",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
