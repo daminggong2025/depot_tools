@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3791d364_7f3fb479",
+        "filename": "git_cl.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 2908,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2025-09-04T21:55:20Z",
+      "side": 1,
+      "message": "nit: might be worth listing the formats for the URL / host / repo, eg is host `chromium-review.googlesource.com` or `chromium` or something else?",
+      "range": {
+        "startLine": 2908,
+        "startChar": 18,
+        "endLine": 2908,
+        "endChar": 47
+      },
+      "revId": "5c9d78deb3ab4a943c8d503ff6a6e0eb3d8e7c39",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bf9f1be5_5cc72c30",
+        "filename": "git_cl.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 2923,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2025-09-04T21:55:20Z",
+      "side": 1,
+      "message": "should this also lstrip? if not, we should explicitly state `repo` will start with `/`",
+      "range": {
+        "startLine": 2923,
+        "startChar": 20,
+        "endLine": 2923,
+        "endChar": 26
+      },
+      "revId": "5c9d78deb3ab4a943c8d503ff6a6e0eb3d8e7c39",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
