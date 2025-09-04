@@ -48,6 +48,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "193a75c1_5599b975",
+        "filename": "git_cl.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 2908,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2025-09-04T22:18:45Z",
+      "side": 1,
+      "message": "sg",
+      "parentUuid": "44cd09f5_5dca3581",
+      "range": {
+        "startLine": 2908,
+        "startChar": 18,
+        "endLine": 2908,
+        "endChar": 47
+      },
+      "revId": "5c9d78deb3ab4a943c8d503ff6a6e0eb3d8e7c39",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "bf9f1be5_5cc72c30",
@@ -85,6 +109,30 @@
       "side": 1,
       "message": "This func is solely dedicated for identity comparison, so the left / doesn\u0027t matter if it\u0027s consistent for all URLs (which it is).",
       "parentUuid": "bf9f1be5_5cc72c30",
+      "range": {
+        "startLine": 2923,
+        "startChar": 20,
+        "endLine": 2923,
+        "endChar": 26
+      },
+      "revId": "5c9d78deb3ab4a943c8d503ff6a6e0eb3d8e7c39",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "da567ced_8b976933",
+        "filename": "git_cl.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 2923,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2025-09-04T22:18:45Z",
+      "side": 1,
+      "message": "Acknowledged",
+      "parentUuid": "7836c4e0_db5e3241",
       "range": {
         "startLine": 2923,
         "startChar": 20,
