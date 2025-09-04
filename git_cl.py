@@ -2842,14 +2842,11 @@ class Changelist(object):
                              (parsed_issue_arg.patchset, self.GetIssue()))
 
         remote_url = self.GetRemoteUrl()
-        if remote_url.endswith('.git'):
-            remote_url = remote_url[:-len('.git')]
-        remote_url = remote_url.rstrip('/')
 
         fetch_info = revision_info['fetch']['http']
         fetch_info['url'] = fetch_info['url'].rstrip('/')
 
-        if remote_url != fetch_info['url']:
+        if not self._GerritURLsEqual(remote_url, fetch_info['url']):
             DieWithError(
                 'Trying to patch a change from %s but this repo appears '
                 'to be %s.' % (fetch_info['url'], remote_url))
@@ -2897,6 +2894,36 @@ class Changelist(object):
                 'branch and/or upload a new patch set.')
 
         return 0
+
+    @classmethod
+    def _GerritURLsEqual(cls, a: str, b: str) -> bool:
+        """Return True if both Gerrit URLs point to the same repo.
+
+        This handles some normalization of URL variations.
+        """
+        return cls._GerritURLRepoIdentity(a) == cls._GerritURLRepoIdentity(b)
+
+    @staticmethod
+    def _GerritURLRepoIdentity(x: str) -> tuple[str, str]:
+        """Return (host, repo) for a Gerrit URL.
+
+        This is used solely for comparing different Gerrit URL formats,
+        so don't use this for anything else (e.g., extracting info from
+        the URL).
+        """
+        parts = urllib.parse.urlparse(x)
+        if parts.scheme == 'sso':
+            host = parts.netloc
+        else:
+            # This should be http(s)
+            host = parts.netloc.split('.')[0]
+            if host.endswith('-review'):
+                host = host[:-len('-review')]
+        repo = parts.path
+        if repo.endswith('.git'):
+            repo = repo[:-len('.git')]
+        repo = repo.rstrip('/')
+        return (host, repo)
 
     @staticmethod
     def _GerritCommitMsgHookCheck(offer_removal):
