@@ -17,6 +17,14 @@ _ROOT_DIR = os.path.abspath(os.path.join(_THIS_DIR, ".."))
 # Used to identify git clonable domains.
 GIT_DOMAIN_INDICATORS = ["git", "googlesource", "bitbucket", "github", "gitlab"]
 
+# Substrings for supported package manager URLs.
+PACKAGE_MANAGER_PATHS = (
+    "crates.io/crates/",
+    "npmjs.com/package/",
+    "developer.android.com/jetpack/androidx/releases/",
+)
+
+
 # Add the repo's root directory for clearer imports.
 sys.path.insert(0, _ROOT_DIR)
 
@@ -504,6 +512,20 @@ class DependencyMetadata:
         return False
 
     @property
+    def url_is_package_manager(self) -> bool:
+        """
+        Checks if any URL contains a known package manager path substring. See PACKAGE_MANAGER_PATHS for the supported list.
+        """
+        for u in self.url:
+            if not u:
+                continue
+            for p in PACKAGE_MANAGER_PATHS:
+                if p in u and u.split(p)[-1]:
+                    return True
+        return False
+
+
+    @property
     def vuln_scan_sufficiency(self) -> str:
         """Determines if the dependency metadata is sufficient for vulnerability scanning.
 
@@ -527,7 +549,10 @@ class DependencyMetadata:
             if self.revision_in_deps:
                 return "sufficient:URL and Revision[DEPS]"
             if self.version:
-                return "sufficient:URL and Version"
+                if self.url_is_git_clonable:
+                    return "sufficient:Git URL and Version"
+                if self.url_is_package_manager:
+                    return "sufficient:Package Manager URL and Version"
 
         raw_url = self._metadata.get(known_fields.URL, None)
         if raw_url is not None and known_fields.URL.repo_is_canonical(raw_url):

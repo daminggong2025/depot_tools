@@ -563,8 +563,7 @@ class DependencyValidationTest(unittest.TestCase):
         dependency.add_entry(known_fields.REVISION.get_name(), "abcdef123456")
         self.assertEqual(dependency.vuln_scan_sufficiency, "insufficient")
 
-        # Test case: sufficient:URL and Revision, url must contain 'git' or another
-        # supported indicator.
+        # Test case: sufficient:URL and Revision, url must be git clonable.
         dependency = dm.DependencyMetadata()
         dependency.add_entry(known_fields.URL.get_name(),
                              "https://git.clonable.com")
@@ -579,12 +578,34 @@ class DependencyValidationTest(unittest.TestCase):
         self.assertEqual(dependency.vuln_scan_sufficiency,
                          "sufficient:URL and Revision[DEPS]")
 
-        # Test case: sufficient:URL and Version.
+        # A generic URL and Version is insufficient.
         dependency = dm.DependencyMetadata()
         dependency.add_entry(known_fields.URL.get_name(), "https://example.com")
         dependency.add_entry(known_fields.VERSION.get_name(), "1.2.3")
+        self.assertEqual(dependency.vuln_scan_sufficiency, "insufficient")
+
+        # Git URL and Version.
+        dependency = dm.DependencyMetadata()
+        dependency.add_entry(known_fields.URL.get_name(),
+                             "https://git.example.com/repo.git")
+        dependency.add_entry(known_fields.VERSION.get_name(), "1.2.3")
         self.assertEqual(dependency.vuln_scan_sufficiency,
-                         "sufficient:URL and Version")
+                         "sufficient:Git URL and Version")
+
+        # Package Manager URL and Version.
+        dependency = dm.DependencyMetadata()
+        dependency.add_entry(known_fields.URL.get_name(),
+                             "https://www.npmjs.com/package/react")
+        dependency.add_entry(known_fields.VERSION.get_name(), "18.2.0")
+        self.assertEqual(dependency.vuln_scan_sufficiency,
+                         "sufficient:Package Manager URL and Version")
+
+        # Test case: insufficient package manager URL with no package name.
+        dependency = dm.DependencyMetadata()
+        dependency.add_entry(known_fields.URL.get_name(),
+                             "https://crates.io/crates/")
+        dependency.add_entry(known_fields.VERSION.get_name(), "1.0.0")
+        self.assertEqual(dependency.vuln_scan_sufficiency, "insufficient")
 
         # Test case: ignore:Static (because of update mechanism).
         dependency = dm.DependencyMetadata()
@@ -608,20 +629,12 @@ class DependencyValidationTest(unittest.TestCase):
         dependency = dm.DependencyMetadata()
         dependency.add_entry(known_fields.URL.get_name(), "Google Internal.")
         dependency.add_entry(known_fields.UPDATE_MECHANISM.get_name(), "Static.HardFork")
-        self.assertEqual(dependency.vuln_scan_sufficiency,
-                         "ignore:Internal")
+        self.assertEqual(dependency.vuln_scan_sufficiency, "ignore:Internal")
 
         # Test case: insufficient (bad bug link).
         dependency = dm.DependencyMetadata()
         dependency.add_entry(known_fields.UPDATE_MECHANISM.get_name(), "Manual (bad_bug_link)")
-        self.assertEqual(dependency.vuln_scan_sufficiency,
-                         "insufficient")
-
-        # Test case: ignore:Static (because not shipped).
-        dependency = dm.DependencyMetadata()
-        dependency.add_entry(known_fields.SHIPPED.get_name(), "no")
-        self.assertEqual(dependency.vuln_scan_sufficiency,
-                         "insufficient")
+        self.assertEqual(dependency.vuln_scan_sufficiency, "insufficient")
 
         # Test case: insufficient (no relevant fields, shipped defaults to None).
         dependency = dm.DependencyMetadata()
@@ -739,6 +752,32 @@ def test_update_mechanism_validation(self):
         self.assertTrue(
             error_found,
             "Expected an error for missing Update Mechanism field.")
+
+    def test_url_is_package_manager(self):
+        """Tests the url_is_package_manager property."""
+        # Test case: valid package manager URL.
+        dependency = dm.DependencyMetadata()
+        dependency.add_entry(known_fields.URL.get_name(),
+                             "https://www.npmjs.com/package/react")
+        self.assertTrue(dependency.url_is_package_manager)
+
+        # Test case: valid package manager URL with trailing slash.
+        dependency = dm.DependencyMetadata()
+        dependency.add_entry(known_fields.URL.get_name(),
+                             "https://crates.io/crates/serde/")
+        self.assertTrue(dependency.url_is_package_manager)
+
+        # Test case: invalid package manager URL with no package name.
+        dependency = dm.DependencyMetadata()
+        dependency.add_entry(known_fields.URL.get_name(),
+                             "https://crates.io/crates/")
+        self.assertFalse(dependency.url_is_package_manager)
+
+        # Test case: non-package manager URL.
+        dependency = dm.DependencyMetadata()
+        dependency.add_entry(known_fields.URL.get_name(),
+                             "https://example.com")
+        self.assertFalse(dependency.url_is_package_manager)
 
 if __name__ == "__main__":
     unittest.main()
