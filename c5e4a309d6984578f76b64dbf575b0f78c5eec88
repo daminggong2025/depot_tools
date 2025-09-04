@@ -16,6 +16,40 @@
       "message": "Apologies for the Gemini spam, was testing a live demo",
       "revId": "c5e4a309d6984578f76b64dbf575b0f78c5eec88",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c109414e_1f94ac37",
+        "filename": "metadata/dependency_metadata.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 525,
+      "author": {
+        "id": 1544922
+      },
+      "writtenOn": "2025-09-04T01:59:49Z",
+      "side": 1,
+      "message": "This could just be `and`\u0027d above to reduce nesting.",
+      "revId": "c5e4a309d6984578f76b64dbf575b0f78c5eec88",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4add9b0a_19e0d279",
+        "filename": "metadata/tests/dependency_metadata_test.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 602,
+      "author": {
+        "id": 1544922
+      },
+      "writtenOn": "2025-09-04T01:59:49Z",
+      "side": 1,
+      "message": "Would be good to have a test for a package manager URL with no package name.",
+      "revId": "c5e4a309d6984578f76b64dbf575b0f78c5eec88",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
