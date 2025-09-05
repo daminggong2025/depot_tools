@@ -6704,7 +6704,7 @@ def RunGitDiffCmd(diff_type,
     return output
 
 
-def _RunClangFormatDiff(opts, clang_diff_files, top_dir, upstream_commit):
+def _RunClangFormatDiff(opts, paths, top_dir, upstream_commit):
     """Runs clang-format-diff and sets a return value if necessary."""
     # Set to 2 to signal to CheckPatchFormatted() that this patch isn't
     # formatted. This is used to block during the presubmit.
@@ -6716,53 +6716,56 @@ def _RunClangFormatDiff(opts, clang_diff_files, top_dir, upstream_commit):
     except clang_format.NotFoundError as e:
         DieWithError(e)
 
+    # Full formatting
     if opts.full:
         cmd = [clang_format_tool]
         if not opts.dry_run and not opts.diff:
             cmd.append('-i')
         if opts.dry_run:
-            for diff_file in clang_diff_files:
-                with open(diff_file, 'r') as myfile:
+            for p in paths:
+                with open(p, 'r') as myfile:
                     code = myfile.read().replace('\r\n', '\n')
-                    stdout = RunCommand(cmd + [diff_file], cwd=top_dir)
+                    stdout = RunCommand(cmd + [p], cwd=top_dir)
                     stdout = stdout.replace('\r\n', '\n')
                     if opts.diff:
                         sys.stdout.write(stdout)
                     if code != stdout:
                         return_value = 2
         else:
-            stdout = RunCommand(cmd + clang_diff_files, cwd=top_dir)
+            stdout = RunCommand(cmd + paths, cwd=top_dir)
             if opts.diff:
                 sys.stdout.write(stdout)
-    else:
-        try:
-            script = clang_format.FindClangFormatScriptInChromiumTree(
-                'clang-format-diff.py')
-        except clang_format.NotFoundError as e:
-            DieWithError(e)
 
-        cmd = ['vpython3', script, '-p0']
-        if not opts.dry_run and not opts.diff:
-            cmd.append('-i')
+        return return_value
 
-        diff_output = RunGitDiffCmd(['-U0'], upstream_commit, clang_diff_files)
+    # Partial formatting
+    try:
+        script = clang_format.FindClangFormatScriptInChromiumTree(
+            'clang-format-diff.py')
+    except clang_format.NotFoundError as e:
+        DieWithError(e)
 
-        env = os.environ.copy()
-        env['PATH'] = (str(os.path.dirname(clang_format_tool)) + os.pathsep +
-                       env['PATH'])
-        # If `clang-format-diff.py` is run without `-i` and the diff is
-        # non-empty, it returns an error code of 1. This will cause `RunCommand`
-        # to die with an error if `error_ok` is not set.
-        stdout = RunCommand(cmd,
-                            error_ok=True,
-                            stdin=diff_output.encode(),
-                            cwd=top_dir,
-                            env=env,
-                            shell=sys.platform.startswith('win32'))
-        if opts.diff:
-            sys.stdout.write(stdout)
-        if opts.dry_run and len(stdout) > 0:
-            return_value = 2
+    cmd = ['vpython3', script, '-p0']
+    if not opts.dry_run and not opts.diff:
+        cmd.append('-i')
+
+    diff_output = RunGitDiffCmd(['-U0'], upstream_commit, paths)
+    env = os.environ.copy()
+    env['PATH'] = (str(os.path.dirname(clang_format_tool)) + os.pathsep +
+                   env['PATH'])
+    # If `clang-format-diff.py` is run without `-i` and the diff is
+    # non-empty, it returns an error code of 1. This will cause `RunCommand`
+    # to die with an error if `error_ok` is not set.
+    stdout = RunCommand(cmd,
+                        error_ok=True,
+                        stdin=diff_output.encode(),
+                        cwd=top_dir,
+                        env=env,
+                        shell=sys.platform.startswith('win32'))
+    if opts.diff:
+        sys.stdout.write(stdout)
+    if opts.dry_run and len(stdout) > 0:
+        return_value = 2
 
     return return_value
 
@@ -6844,7 +6847,7 @@ def _RunGoogleJavaFormat(opts, paths, top_dir, upstream_commit):
         return return_value
 
 
-def _RunRustFmt(opts, rust_diff_files, top_dir, upstream_commit):
+def _RunRustFmt(opts, paths, top_dir, upstream_commit):
     """Runs rustfmt.  Just like _RunClangFormatDiff returns 2 to indicate that
     presubmit checks have failed (and returns 0 otherwise)."""
     # Locate the rustfmt binary.
@@ -6861,7 +6864,7 @@ def _RunRustFmt(opts, rust_diff_files, top_dir, upstream_commit):
     cmd = [rustfmt_tool, f'--config-path={rustfmt_toml_path}']
     if opts.dry_run:
         cmd.append('--check')
-    cmd += rust_diff_files
+    cmd += paths
     rustfmt_exitcode = subprocess2.call(cmd)
 
     if opts.dry_run and rustfmt_exitcode != 0:
@@ -6870,7 +6873,7 @@ def _RunRustFmt(opts, rust_diff_files, top_dir, upstream_commit):
     return 0
 
 
-def _RunSwiftFormat(opts, swift_diff_files, top_dir, upstream_commit):
+def _RunSwiftFormat(opts, paths, top_dir, upstream_commit):
     """Runs swift-format.  Just like _RunClangFormatDiff returns 2 to indicate
     that presubmit checks have failed (and returns 0 otherwise)."""
     if sys.platform != 'darwin':
@@ -6886,7 +6889,7 @@ def _RunSwiftFormat(opts, swift_diff_files, top_dir, upstream_commit):
         cmd += ['lint', '-s']
     else:
         cmd += ['format', '-i']
-    cmd += swift_diff_files
+    cmd += paths
     swift_format_exitcode = subprocess2.call(cmd)
 
     if opts.dry_run and swift_format_exitcode != 0:
