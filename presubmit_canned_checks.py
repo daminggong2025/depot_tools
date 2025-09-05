@@ -568,6 +568,27 @@ def CheckChangeTodoHasOwner(input_api, output_api, source_file_filter=None):
     return []
 
 
+def CheckChangeTodoHasIssue(input_api, output_api, source_file_filter=None):
+    """Checks that the user didn't add TODO(...issue123): without an issue number
+    The required format is `TODO(...number123):` or `TODO: ...number123 -`.
+    Examples:
+        // TODO(crbug.com/123456789): fix this
+        // TODO(123456789): fix this
+        // TODO:123456789 - fix this
+        // TODO:crbug.com/123456789 - fix this
+    """
+    legacyTODO = '\\s*\\([^\\s]*?\\d+\\)\\s*:'
+    modernTODO = ':\\s*[^\\s]+\\d+\\s*\\-'
+    unowned_todo = input_api.re.compile('\\bTODO(?!(%s|%s))' %
+                                        (legacyTODO, modernTODO))
+    errors = _FindNewViolationsOfRule(lambda _, x: not unowned_todo.search(x),
+                                      input_api, source_file_filter)
+    errors = ['Found TODO with no issue in ' + x for x in errors]
+    if errors:
+        return [output_api.PresubmitPromptWarning('\n'.join(errors))]
+    return []
+
+
 def CheckChangeHasNoStrayWhitespace(input_api,
                                     output_api,
                                     source_file_filter=None):

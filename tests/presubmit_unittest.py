@@ -2243,6 +2243,14 @@ class CannedChecksUnittest(PresubmitTestsBase):
                          "TODO(foo): bar", None, "TODO: bar", None,
                          presubmit.OutputApi.PresubmitPromptWarning)
 
+    def testCheckChangeTodoHasIssue(self):
+        self.ContentTest(presubmit_canned_checks.CheckChangeTodoHasIssue,
+                         "TODO: 123 - bar", None, "TODO: 123", None,
+                         presubmit.OutputApi.PresubmitPromptWarning)
+        self.ContentTest(presubmit_canned_checks.CheckChangeTodoHasIssue,
+                         "TODO: abc/123 - bar", None, "TODO: abc/123", None,
+                         presubmit.OutputApi.PresubmitPromptWarning)
+
     @mock.patch('git_cl.Changelist')
     @mock.patch('auth.Authenticator')
     def testCannedCheckChangedLUCIConfigsRoot(self, mockGetAuth, mockCl):
