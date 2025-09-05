@@ -16,6 +16,52 @@
       "message": "Hey Scott, you were recommended as a reviewer. For context see\n\nhttps://groups.google.com/a/chromium.org/g/chromium-discuss/c/bjEJ91tzipI",
       "revId": "a7e8b0845f982aab1e00b5282f4d19fceed6bc06",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c00189bf_d6822201",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 555,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2025-09-05T22:49:40Z",
+      "side": 1,
+      "message": "I\u0027d want this check to be renamed, like `CheckTODOComment` or something else eventually, but not in this CL, for sure. Maybe, one day 😊",
+      "range": {
+        "startLine": 555,
+        "startChar": 15,
+        "endLine": 555,
+        "endChar": 27
+      },
+      "revId": "a7e8b0845f982aab1e00b5282f4d19fceed6bc06",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f7ef3b03_4ba6ca61",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 557,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2025-09-05T22:49:40Z",
+      "side": 1,
+      "message": "I don\u0027t think it\u0027s necessary to list the possible formats in the one-line function header comment.\n\nI\u0027d simplify this as `Checks that TODO comments have the issue number.`",
+      "range": {
+        "startLine": 556,
+        "startChar": 19,
+        "endLine": 557,
+        "endChar": 12
+      },
+      "revId": "a7e8b0845f982aab1e00b5282f4d19fceed6bc06",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
