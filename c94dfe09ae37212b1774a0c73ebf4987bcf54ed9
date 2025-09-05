@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ce9f93b2_18670551",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115588
+      },
+      "writtenOn": "2025-09-05T20:29:15Z",
+      "side": 1,
+      "message": "ptal. I just picked the reviewer gerrit suggested.\n\nContext: The dawn project requires TODO(issue) not TODO(owner). Owners leave where as by requiring an issue, notes, context, and discussion and be effectively attached to the todo and stick around even after the owner as left the team.\n\nUnfortunately the dawn project is using currently using CheckChangeTodoHasOwner and this has the unfortunate side effect that if you forget to make a correct TODO, you get the wrong error message. You get told effectively \"TODO missing OWNER\" so you add an owner and then a human reviewer tells you you did it wrong even though you were following instructions.\n\nThe fix is one of:\n\n* fix the message so it says \"TODO needs owner or issue spending on project\"\n* make the message configurable\n* add a new rule to check for issue instead of owner\n\nI was told to add our own check in dawn\u0027s PRESUBMIT.py and I started there but I had to copy all the functions that this is dependent on so I was hoping maybe I could put it here.",
+      "revId": "c94dfe09ae37212b1774a0c73ebf4987bcf54ed9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
