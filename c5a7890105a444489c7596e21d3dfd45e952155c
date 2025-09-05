@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7f6f0592_35cb29cb",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2025-09-05T23:47:06Z",
+      "side": 1,
+      "message": "Gregg\u0027s account is not recognized as Googler\u0027s; adding Gavin for an additional Googler stamp.",
+      "revId": "c5a7890105a444489c7596e21d3dfd45e952155c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
