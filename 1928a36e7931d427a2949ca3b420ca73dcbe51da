@@ -33,6 +33,24 @@
       "message": "I don\u0027t think we should set both (smells like cargo cult programming)? we only need one of them.\n\nhttps://github.com/git/git/blob/master/prompt.c#L53\n\nAn empty value for askpass doesn\u0027t do anything.\n\nI think we should set the askpass one as the prompt one may apply to other things, like git trying to suggest a correction to a missing command (\"did you mean to run blah?\")\n\nHowever, it needs to be set to some suitable nonempty no-op command, and Git will fallback to the terminal prompt anyway, which is annoying and probably why I didn\u0027t fix this initially.\n\nI guess we should just disable the terminal prompt one and hope that it doesn\u0027t disable some new prompt in the future (currently it\u0027s only being used to confirm bisect, autocorrected commands, and auth creds it looks like).",
       "revId": "1928a36e7931d427a2949ca3b420ca73dcbe51da",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5fd37cc6_49272224",
+        "filename": "git_cl.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 3029,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-09-08T23:39:31Z",
+      "side": 1,
+      "message": "eh. the source code you linked does honor empty askpass. \n\ngetenv returns a non-nil charptr to an empty string, \n\nthen the below `if (askpass \u0026\u0026 *askpass)` check only passes when askpass ptr is non-nil and askpass\u0027s first char is not NUL char (i.e. not an empty string).\n\nFYI, VSCode injects GIT_ASKPASS to its terminal, that\u0027s why I added it (it\u0027s a tiny prompt at the top of screen, which is easily overlooked).",
+      "parentUuid": "9e4cbc84_9147123c",
+      "revId": "1928a36e7931d427a2949ca3b420ca73dcbe51da",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
