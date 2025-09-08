@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e351c510_6d2a46fa",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-09-08T10:05:15Z",
+      "side": 1,
+      "message": "ptal at: auth.py, gerrit_util.py (these two are the required plumbings).\n\nif it looks sensible, i\u0027ll have a look at testing and split them into CLs (I plan to do authenticate_with_reauth + testing, then other CLs to change SetReivew (and others) to call the new path.\n\n// other code are test utilities, please ignore.\n// plumbing tested on off-corp Windows, and was able to set review label.",
+      "revId": "c6fc8521f30f3c0e6e021e304e5c9cc2caa6d35e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
