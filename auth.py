@@ -13,6 +13,7 @@ import json
 import logging
 import os
 from typing import Optional
+from dataclasses import dataclass
 
 import subprocess2
 
@@ -25,6 +26,25 @@ OAUTH_SCOPE_EMAIL = 'https://www.googleapis.com/auth/userinfo.email'
 OAUTH_SCOPE_GERRIT = 'https://www.googleapis.com/auth/gerritcodereview'
 # Deprecated. Use OAUTH_SCOPE_EMAIL instead.
 OAUTH_SCOPES = OAUTH_SCOPE_EMAIL
+
+
+@dataclass
+class ReAuthContext:
+    """Provides contextual information for ReAuth."""
+    host: str  # Hostname (e.g. chromium-review.googlesource.com)
+    project: str  # Project on host (e.g. chromium/src)
+
+    def to_git_cred_attrs(self) -> bytes:
+        """Returns bytes to be used as the input of `git-credentials-luci` in
+           exchange for a ReAuth token.
+        """
+        assert self.project
+        return f""""
+capability[]=authtype
+protocol=https
+host={self.host}
+path={self.project}
+""".lstrip().encode('utf-8')
 
 
 # Mockable datetime.datetime.utcnow for testing.
@@ -273,10 +293,60 @@ class GerritAuthenticator(object):
                 raise GitReAuthRequiredError()
             raise GitUnknownError()
 
+    def get_reauth_header(self, context: ReAuthContext) -> str:
+        """Returns HTTP Authorization header for ReAuth.
+
+        Raises:
+            GitReAuthRequiredError if ReAuth is required.
+        """
+        try:
+            header = self._get_reauth_header(context)
+            if not header:
+                raise GitReAuthRequiredError()
+            return header
+        except subprocess2.CalledProcessError as e:
+            # subprocess2.CalledProcessError.__str__ nicely formats
+            # stdout/stderr.
+            logging.error('git-credential-luci failed: %s', e)
+            raise GitReAuthRequiredError()
+
+    def _get_reauth_header(self, context: ReAuthContext) -> Optional[str]:
+        logging.debug('Running git-credential-luci (with reauth)')
+        creds_attrs = context.to_git_cred_attrs()
+        out, err = subprocess2.check_call_out(['git-credential-luci', 'get'],
+                                              input=creds_attrs,
+                                              stdout=subprocess2.PIPE,
+                                              stderr=subprocess2.PIPE)
+        logging.debug('git-credential-luci stderr:\n%s', err)
+        return self._extract_reauth_token(out)
+
+    def _extract_reauth_token(self, out_bytes: bytes) -> str:
+        out = self._parse_creds_helper_out(out_bytes)
+        authtype = out["authtype"]
+        credential = out["credential"]
+        if authtype and credential:
+            return f"${authtype} ${credential}"
+        logging.error('git-credential-luci did not return a ReAuth token')
+        return None
+
+    def _extract_luci_token(self, out_bytes: bytes) -> str:
+        out = self._parse_creds_helper_out(out_bytes)
+        if password := out["password"]:
+            return password
+        logging.error('git-credential-luci did not return a token')
+        return None
+
+    def _parse_creds_helper_out(self, out_bytes: str) -> Dict[str, str]:
+        """Parse credential helper's output to a dictionary."""
+        result = {}
+        for line in out_bytes.decode().splitlines():
+            if '=' in line:
+                key, value = line.split('=', 1)
+                result[key] = value.strip()
+        return result
+
     def _get_luci_auth_token(self) -> Optional[str]:
         logging.debug('Running git-credential-luci')
-        # TODO(crbug.com/442666611): depot_tools doesn't support
-        # ReAuth creds from the helper yet.
         env = os.environ.copy()
         env['LUCI_ENABLE_REAUTH'] = '0'
         out, err = subprocess2.check_call_out(['git-credential-luci', 'get'],
@@ -285,8 +355,4 @@ class GerritAuthenticator(object):
                                               stderr=subprocess2.PIPE,
                                               env=env)
         logging.debug('git-credential-luci stderr:\n%s', err)
-        for line in out.decode().splitlines():
-            if line.startswith('password='):
-                return line[len('password='):].rstrip()
-        logging.error('git-credential-luci did not return a token')
-        return None
+        return self._extract_luci_token(out)
