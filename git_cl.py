@@ -3024,6 +3024,8 @@ class Changelist(object):
         env['GIT_TRACE_CURL'] = os.path.join(traces_dir, 'trace-curl')
         env['GIT_TRACE_CURL_NO_DATA'] = '1'
         env['GIT_TRACE_PACKET'] = os.path.join(traces_dir, 'trace-packet')
+        env['GIT_TERMINAL_PROMPT'] = '0'
+        env['GIT_ASKPASS'] = ''
 
         push_returncode = 0
         before_push = time_time()
