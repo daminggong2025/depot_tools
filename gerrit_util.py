@@ -232,6 +232,14 @@ class _Authenticator(object):
         """Adds authentication information to the HttpConn."""
         raise NotImplementedError()
 
+    def authenticate_with_reauth(self, conn: HttpConn,
+                                 context: auth.ReAuthContext):
+        """Obtain ReAuth token with `context`, then add the authentication header to `conn`.
+
+           Subclasses that don't support ReAuth MUST NOT override this method.
+        """
+        raise RuntimeError(f"{self:r} doesn't support ReAuth.")
+
     def debug_summary_state(self) -> str:
         """If this _Authenticator has any debugging information about its state,
         _WriteGitPushTraces will call this to include in the git push traces.
@@ -857,6 +865,11 @@ class GitCredsAuthenticator(_Authenticator):
         conn.req_headers[
             'Authorization'] = f'Bearer {self._authenticator.get_access_token()}'
 
+    def authenticate_with_reauth(self, conn: HttpConn,
+                                 context: auth.ReAuthContext):
+        conn.req_headers[
+            'Authorization'] = self._authenticator.get_reauth_header(context)
+
     def debug_summary_state(self) -> str:
         # TODO(b/343230702) - report ambient account name.
         return ''
@@ -954,6 +967,20 @@ class ChainedAuthenticator(_Authenticator):
             raise ValueError(
                 f'{self!r} has no applicable authenticator for {conn!r}')
 
+    def authenticate_with_reauth(self, conn: HttpConn,
+                                 context: auth.ReAuthContext):
+        for a in self.authenticators:
+            if a.is_applicable(conn=conn) and (
+                    a.authenticate_with_reauth
+                    is not _Authenticator.authenticate_with_reauth):
+                # Authenticator applies, and the concrete authenticator supports ReAuth.
+                a.authenticate_with_reauth(conn, context)
+                break
+        else:
+            raise ValueError(
+                f'{self!r} has no applicable authenticator that supports ReAuth for {conn!r}'
+            )
+
     def debug_summary_state(self) -> str:
         return ''
 
@@ -1032,8 +1059,13 @@ def CreateHttpConn(host: str,
                    body: Optional[Dict] = None,
                    timeout=300,
                    *,
+                   reauth_context: Optional[auth.ReAuthContext] = None,
                    authenticator: Optional[_Authenticator] = None) -> HttpConn:
-    """Opens an HTTPS connection to a Gerrit service, and sends a request."""
+    """Opens an HTTPS connection to a Gerrit service, and sends a request.
+
+       If `reauth_context` is provided, creates a HttpConn with a ReAuth token
+       for `reauth_context`.
+    """
     headers = headers or {}
     bare_host = host.partition(':')[0]
 
@@ -1063,7 +1095,10 @@ def CreateHttpConn(host: str,
         print('If you\'re on a cloudtop instance, export '
               'SKIP_GCE_AUTH_FOR_GIT=1 in your env.')
 
-    authenticator.authenticate(conn)
+    if reauth_context:
+        authenticator.authenticate_with_reauth(conn, reauth_context)
+    else:
+        authenticator.authenticate(conn)
 
     if 'Authorization' not in conn.req_headers:
         LOGGER.debug('No authorization found for %s.' % bare_host)
@@ -1717,7 +1752,17 @@ def SetReview(host,
     if automatic_attention_set_update is not None:
         body[
             'ignore_automatic_attention_set_rules'] = not automatic_attention_set_update
-    conn = CreateHttpConn(host, path, reqtype='POST', body=body)
+
+    # Get Change detail to populate ReAuth information.
+    detailJson = GetChangeDetail(host, change)
+    reauth_context = auth.ReAuthContext(host=host,
+                                        project=detailJson["project"])
+
+    conn = CreateHttpConn(host,
+                          path,
+                          reqtype='POST',
+                          body=body,
+                          reauth_context=reauth_context)
     response = ReadHttpJsonResponse(conn)
     if labels:
         for key, val in labels.items():
