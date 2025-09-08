@@ -3025,6 +3025,10 @@ class Changelist(object):
         env['GIT_TRACE_CURL_NO_DATA'] = '1'
         env['GIT_TRACE_PACKET'] = os.path.join(traces_dir, 'trace-packet')
 
+        # Stop git from prompting for password on expired / invalid credential.
+        env['GIT_TERMINAL_PROMPT'] = '0'
+        env['GIT_ASKPASS'] = ''
+
         push_returncode = 0
         before_push = time_time()
         try:
