@@ -4944,6 +4944,10 @@ class CMDFormatTestCase(unittest.TestCase):
         super(CMDFormatTestCase, self).tearDown()
 
     def _make_temp_file(self, fname, contents):
+        dir_path = os.path.dirname(fname)
+        if dir_path:
+            os.makedirs(os.path.join(self._top_dir, dir_path), exist_ok=True)
+
         gclient_utils.FileWrite(os.path.join(self._top_dir, fname),
                                 ('\n'.join(contents)))
 
@@ -4964,41 +4968,47 @@ class CMDFormatTestCase(unittest.TestCase):
 
         return f
 
-    def testClangFormatDiffFull(self):
-        self._make_temp_file('test.cc', ['// test'])
-        git_cl.settings.GetFormatFullByDefault.return_value = False
-        diff_file = [os.path.join(self._top_dir, 'test.cc')]
+    def testClangFormatDryRun(self):
+        os.chdir(self._top_dir)
+        diffs = git_cl._SplitDiffsByFile(test_format_input_diff)
+        files = [f for f in diffs if f.endswith('.h')]
         mock_opts = mock.Mock(full=True, dry_run=True, diff=False)
+        for f in files:
+            self._make_temp_file(f, ['// test'])
 
-        # Diff
-        git_cl.RunCommand.side_effect = self._run_command_mock('  // test')
-        return_value = git_cl._RunClangFormatDiff(mock_opts, diff_file,
-                                                  self._top_dir, 'HEAD')
-        self.assertEqual(2, return_value)
-
-        # No diff
+        # If the clang-format-diff returns 0, if the input and output codes
+        # are the same.
         git_cl.RunCommand.side_effect = self._run_command_mock('// test')
-        return_value = git_cl._RunClangFormatDiff(mock_opts, diff_file,
-                                                  self._top_dir, 'HEAD')
+        return_value = git_cl._RunClangFormatDiff(mock_opts, files,
+                                                  self._top_dir, None)
         self.assertEqual(0, return_value)
+
+        # Returns 2, otherwise.
+        git_cl.RunCommand.side_effect = self._run_command_mock('  // test')
+        return_value = git_cl._RunClangFormatDiff(mock_opts, files,
+                                                  self._top_dir, None)
+        self.assertEqual(2, return_value)
 
     def testClangFormatDiff(self):
-        git_cl.settings.GetFormatFullByDefault.return_value = False
-        # A valid file is required, so use this test.
-        clang_format.FindClangFormatToolInChromiumTree.return_value = __file__
-        mock_opts = mock.Mock(full=False, dry_run=True, diff=False)
+        os.chdir(self._top_dir)
+        diffs = git_cl._SplitDiffsByFile(test_format_input_diff)
+        files = [f for f in diffs if f.endswith('.h')]
+        mock_opts = mock.Mock(full=False, dry_run=False, diff=False)
 
         # Diff
-        git_cl.RunCommand.side_effect = self._run_command_mock('error')
-        return_value = git_cl._RunClangFormatDiff(mock_opts, ['.'],
-                                                  self._top_dir, 'HEAD')
-        self.assertEqual(2, return_value)
-
-        # No diff
-        git_cl.RunCommand.side_effect = self._run_command_mock('')
-        return_value = git_cl._RunClangFormatDiff(mock_opts, ['.'],
-                                                  self._top_dir, 'HEAD')
+        git_cl.RunCommand.retrun_value = 0
+        return_value = git_cl._RunClangFormatDiff(mock_opts, files,
+                                                  self._top_dir, diffs)
         self.assertEqual(0, return_value)
+        git_cl.RunCommand.assert_called_with(
+            mock.ANY, # command
+            error_ok=True,
+            # it should stream the patches for the selected files only.
+            stdin="\n".join(diffs.get(f, "") for f in files).encode(),
+            cwd=self._top_dir,
+            env=mock.ANY,
+            shell=mock.ANY,
+        )
 
     def testYapfignoreExplicit(self):
         self._make_yapfignore(['foo/bar.py', 'foo/bar/baz.py'])
