@@ -16,6 +16,80 @@
       "message": "ptal at: auth.py, gerrit_util.py (these two are the required plumbings).\n\nif it looks sensible, i\u0027ll have a look at testing and split them into CLs (I plan to do authenticate_with_reauth + testing, then other CLs to change SetReivew (and others) to call the new path.\n\n// other code are test utilities, please ignore.\n// plumbing tested on off-corp Windows, and was able to set review label.",
       "revId": "c6fc8521f30f3c0e6e021e304e5c9cc2caa6d35e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d328a06f_fd044412",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3355336
+      },
+      "writtenOn": "2025-09-09T01:18:31Z",
+      "side": 1,
+      "message": "General approach lgtm",
+      "revId": "c6fc8521f30f3c0e6e021e304e5c9cc2caa6d35e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cf8a0529_85f2465f",
+        "filename": "gerrit_util.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 975,
+      "author": {
+        "id": 3355336
+      },
+      "writtenOn": "2025-09-09T01:18:31Z",
+      "side": 1,
+      "message": "this kind of identity check is sketchy.  Probably better to do duck typing (if method exists then it\u0027s supported else not)",
+      "range": {
+        "startLine": 975,
+        "startChar": 27,
+        "endLine": 975,
+        "endChar": 66
+      },
+      "revId": "c6fc8521f30f3c0e6e021e304e5c9cc2caa6d35e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "86f9f6d5_3d1abc1d",
+        "filename": "gerrit_util.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 1062,
+      "author": {
+        "id": 3355336
+      },
+      "writtenOn": "2025-09-09T01:18:31Z",
+      "side": 1,
+      "message": "nit: context should come after authenticator (alphabetical, also \"conceptually\" (for readability even though kwarg order doesn\u0027t matter))",
+      "revId": "c6fc8521f30f3c0e6e021e304e5c9cc2caa6d35e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "309072f6_b1f5ca97",
+        "filename": "gerrit_util.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 1734,
+      "author": {
+        "id": 3355336
+      },
+      "writtenOn": "2025-09-09T01:18:31Z",
+      "side": 1,
+      "message": "can we add a new optional arg for the project, and only query if it\u0027s missing?\n\nAlso update docstring appropriately",
+      "revId": "c6fc8521f30f3c0e6e021e304e5c9cc2caa6d35e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
