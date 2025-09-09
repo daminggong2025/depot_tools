@@ -51,6 +51,24 @@
       "parentUuid": "9e4cbc84_9147123c",
       "revId": "1928a36e7931d427a2949ca3b420ca73dcbe51da",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "40a3fad5_124746d8",
+        "filename": "git_cl.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 3029,
+      "author": {
+        "id": 3355336
+      },
+      "writtenOn": "2025-09-09T00:57:08Z",
+      "side": 1,
+      "message": "oh VSCode is stupid, in that case add a comment.\n\n\u003e eh. the source code you linked does honor empty askpass.\n\nI mean that an unset var (the default) is the same as an empty value, making this seem like a no-op (if not for VSCode being stupid).",
+      "parentUuid": "5fd37cc6_49272224",
+      "revId": "1928a36e7931d427a2949ca3b420ca73dcbe51da",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
