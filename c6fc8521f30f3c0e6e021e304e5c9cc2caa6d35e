@@ -90,6 +90,24 @@
       "message": "can we add a new optional arg for the project, and only query if it\u0027s missing?\n\nAlso update docstring appropriately",
       "revId": "c6fc8521f30f3c0e6e021e304e5c9cc2caa6d35e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4335f955_9a2dd7fb",
+        "filename": "gerrit_util.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 1734,
+      "author": {
+        "id": 3355336
+      },
+      "writtenOn": "2025-09-09T01:19:51Z",
+      "side": 1,
+      "message": "have you checked whether callers already have access to project?  We might be able to pass in for some of them to save an RPC call",
+      "parentUuid": "309072f6_b1f5ca97",
+      "revId": "c6fc8521f30f3c0e6e021e304e5c9cc2caa6d35e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
