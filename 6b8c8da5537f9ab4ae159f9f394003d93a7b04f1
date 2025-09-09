@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b5b1a15e_71d518c7",
+        "filename": "git_cl.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 3031,
+      "author": {
+        "id": 3355336
+      },
+      "writtenOn": "2025-09-09T01:45:17Z",
+      "side": 1,
+      "message": "s/sets/set/\n\nIDEs \u003d plural, set \u003d plural (sets \u003d singular)  English weird",
+      "range": {
+        "startLine": 3031,
+        "startChar": 55,
+        "endLine": 3031,
+        "endChar": 59
+      },
+      "revId": "6b8c8da5537f9ab4ae159f9f394003d93a7b04f1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
