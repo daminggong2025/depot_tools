@@ -3025,6 +3025,20 @@ class Changelist(object):
         env['GIT_TRACE_CURL_NO_DATA'] = '1'
         env['GIT_TRACE_PACKET'] = os.path.join(traces_dir, 'trace-packet')
 
+        # When ReAuth credential is expired, git interactively asks for
+        # username and password. This isn't how ReAuth works, so we ask git to
+        # not prompt in the terminal.
+        #
+        # Our git credential helper will print instructions to perform ReAuth
+        # when the ReAuth credential expired.
+        env['GIT_TERMINAL_PROMPT'] = '0'
+
+        # Certain IDEs (e.g. VSCode built-in terminal) set GIT_ASKPASS. Git
+        # will use this command to ask for credential instead (e.g. without
+        # using the terminal). In this case, the above GIT_TERMINAL_PROMPT
+        # isn't sufficient, so we suppress GIT_ASKPASS as well.
+        env['GIT_ASKPASS'] = ''
+
         push_returncode = 0
         before_push = time_time()
         try:
