@@ -43,6 +43,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "ee25cb53_b4fc96a2",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2025-09-09T23:20:58Z",
+      "side": 1,
+      "message": "I tested this only for CiderG, which doesn\u0027t support windows. Let me do something. When I asked AI, it said that the git command diff utilities use the unix path convention in the unified diff output even in Windows. It\u0027s mainly for comparability reasons as many diff/patch utilities are biased towards the unix paths. That said, I didn\u0027t verify that it\u0027s true.\n\nI will see if I can run a test on Windows.",
+      "parentUuid": "b998b364_ed43e2bf",
+      "revId": "2899eeede491ca30d7382b65319822bae4879320",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "99a23c87_8aa56b0a",
         "filename": "git_cl.py",
         "patchSetId": 6
@@ -87,6 +105,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "74d55644_26780889",
+        "filename": "git_cl.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 7105,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2025-09-09T23:20:58Z",
+      "side": 1,
+      "message": "The returned diffs will be passed to the formatters in the next CL.\n\n------------\n\nCurrently, each of formatter executors, such as _RunClangFormatDiff(), is given the upstream_commit.\n- https://source.chromium.org/chromium/chromium/tools/depot_tools/+/main:git_cl.py;l\u003d7219\n\nThey take the upstream_commit param so that they can **internally** perform `git diff` to find the modified lines to format. (i.e., formatting changed parts only).\n- https://source.chromium.org/chromium/chromium/tools/depot_tools/+/main:git_cl.py;l\u003d6752\n\nThe next CL will update the executors, so that they will be given the diffs, returned by this function, instead of `upstream_commit` and they won\u0027t need to run `git diffs` anymore.\n\nI split the changes into this CL and the next CL for easier code reviews.",
+      "parentUuid": "739ae5ee_c20d1530",
+      "range": {
+        "startLine": 7105,
+        "startChar": 4,
+        "endLine": 7105,
+        "endChar": 22
+      },
+      "revId": "2899eeede491ca30d7382b65319822bae4879320",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d1949d91_dac6f7f0",
@@ -100,6 +142,30 @@
       "writtenOn": "2025-09-09T22:42:24Z",
       "side": 1,
       "message": "nit: does git cl format output a diff file? if not, WDYT naming this `--diff_file` to match presubmit_support.py?",
+      "range": {
+        "startLine": 7193,
+        "startChar": 25,
+        "endLine": 7193,
+        "endChar": 40
+      },
+      "revId": "2899eeede491ca30d7382b65319822bae4879320",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a16da53d_bf0ab543",
+        "filename": "git_cl.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 7193,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2025-09-09T23:20:58Z",
+      "side": 1,
+      "message": "yes, it does. It has an option for `--diff`, which outputs the diffs. It\u0027s a mess actually for historical reasons.\n\nIt offers all of the following, some of which don\u0027t make sense to be used alone.\n- `--presubmit`\n- `--dry_run`\n- `--diff`\n\nPlease feel free to propose different names.",
+      "parentUuid": "d1949d91_dac6f7f0",
       "range": {
         "startLine": 7193,
         "startChar": 25,
