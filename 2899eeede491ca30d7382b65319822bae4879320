@@ -1,0 +1,136 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "23ca31ab_94ead0c8",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 6
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2025-09-09T22:42:24Z",
+      "side": 1,
+      "message": "nit: switch these so `Change-Id` is last",
+      "range": {
+        "startLine": 16,
+        "startChar": 0,
+        "endLine": 17,
+        "endChar": 14
+      },
+      "revId": "2899eeede491ca30d7382b65319822bae4879320",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b998b364_ed43e2bf",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2025-09-09T22:42:24Z",
+      "side": 1,
+      "message": "have you tested this with diffs produced on win? I ran into some annoying issues w/ path seperators when I was writing presubmit_diff: https://source.chromium.org/chromium/chromium/tools/depot_tools/+/main:tests/presubmit_diff_test.py;l\u003d225;drc\u003d80d1969422e75e8e9eecafa46074074b289e2568",
+      "revId": "2899eeede491ca30d7382b65319822bae4879320",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "99a23c87_8aa56b0a",
+        "filename": "git_cl.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 7075,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2025-09-09T22:42:24Z",
+      "side": 1,
+      "message": "words",
+      "range": {
+        "startLine": 7075,
+        "startChar": 13,
+        "endLine": 7075,
+        "endChar": 18
+      },
+      "revId": "2899eeede491ca30d7382b65319822bae4879320",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "739ae5ee_c20d1530",
+        "filename": "git_cl.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 7105,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2025-09-09T22:42:24Z",
+      "side": 1,
+      "message": "I noticed we only use the file list from _FindFilesToFormat, should we just return that instead?",
+      "range": {
+        "startLine": 7105,
+        "startChar": 4,
+        "endLine": 7105,
+        "endChar": 22
+      },
+      "revId": "2899eeede491ca30d7382b65319822bae4879320",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d1949d91_dac6f7f0",
+        "filename": "git_cl.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 7193,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2025-09-09T22:42:24Z",
+      "side": 1,
+      "message": "nit: does git cl format output a diff file? if not, WDYT naming this `--diff_file` to match presubmit_support.py?",
+      "range": {
+        "startLine": 7193,
+        "startChar": 25,
+        "endLine": 7193,
+        "endChar": 40
+      },
+      "revId": "2899eeede491ca30d7382b65319822bae4879320",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1e6176fd_84c9fc2a",
+        "filename": "git_cl.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 7225,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2025-09-09T22:42:24Z",
+      "side": 1,
+      "message": "should we make a note about --input_diff_file?",
+      "range": {
+        "startLine": 7225,
+        "startChar": 13,
+        "endLine": 7225,
+        "endChar": 67
+      },
+      "revId": "2899eeede491ca30d7382b65319822bae4879320",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
