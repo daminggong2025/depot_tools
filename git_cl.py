@@ -642,16 +642,18 @@ def _print_tryjobs(options, builds):
     print('Total: %d tryjobs' % total)
 
 
-def _ComputeFormatDiffLineRanges(files, upstream_commit, expand=0):
-    """Gets the changed line ranges for each file since upstream_commit.
+def _ComputeFormatDiffLineRanges(files, diffs, expand=0):
+    """Gets the changed line ranges for each file.
 
     Parses a git diff on provided files and returns a dict that maps a file name
     to an ordered list of range tuples in the form (start_line, count).
     Ranges are in the same format as a git diff.
 
     Args:
-        files: List of paths to diff.
-        upstream_commit: Commit to diff against to find changed lines.
+        files: List of files to parse the diff of and return the ranges for.
+        diffs: a dict of diffs, where key is the file without the prefix,
+          and the value is the diff generated for the corresponding file.
+          Note that the hunks in the diffs contain prefxies, such as a/.., b/..
         expand: Expand diff ranges by this many lines before & after.
 
     Returns:
@@ -661,13 +663,7 @@ def _ComputeFormatDiffLineRanges(files, upstream_commit, expand=0):
     if len(files) == 0:
         return {}
 
-    # Take the git diff and find the line ranges where there are changes.
-    diff_output = RunGitDiffCmd(['-U0'],
-                                upstream_commit,
-                                files,
-                                allow_prefix=True)
-
-    pattern = r'(?:^diff --git a/(?:.*) b/(.*))|(?:^@@.*\+(.*) @@)'
+    pattern = r'^@@.*\+(.*) @@'
     # 2 capture groups
     # 0 == fname of diff file
     # 1 == 'diff_start,diff_count' or 'diff_start'
@@ -678,38 +674,39 @@ def _ComputeFormatDiffLineRanges(files, upstream_commit, expand=0):
     # running re.findall on the above string with pattern will give
     # [('foo.py', ''), ('', '14,3'), ('', '17')]
 
-    curr_file = None
-    line_diffs = {}
-    for match in re.findall(pattern, diff_output, flags=re.MULTILINE):
-        if match[0] != '':
-            # Will match the second filename in diff --git a/a.py b/b.py.
-            curr_file = match[0]
-            line_diffs[curr_file] = []
-            prev_end = 1
-        else:
+    line_diffs = collections.defaultdict(list)
+    for file in files:
+        diff = diffs.get(file, "")
+        if not diff:
+            continue
+
+        prev_end = 1
+        for match in re.findall(pattern, diff, flags=re.MULTILINE):
+            if not match:
+                continue
+
             # Matches +14,3
-            if ',' in match[1]:
-                diff_start, diff_count = match[1].split(',')
+            if ',' in match:
+                diff_start, diff_count = match.split(',')
             else:
-                # Single line changes are of the form +12 instead of +12,1.
-                diff_start = match[1]
-                diff_count = 1
+                # Matches +12
+                diff_start, diff_count = match, 1
 
             # if the original lines were removed without replacements,
             # the diff count is 0. Then, no formatting is necessary.
             if diff_count == 0:
                 continue
 
-            diff_start = int(diff_start)
-            diff_count = int(diff_count)
             # diff_count contains the diff_start line, and the line numbers
             # given to formatter args are inclusive. For example, in
             # google-java-format "--lines 5:10" includes 5th-10th lines.
+            diff_start = int(diff_start)
+            diff_count = int(diff_count)
             diff_end = diff_start + diff_count - 1 + expand
             diff_start = max(prev_end + 1, diff_start - expand)
             if diff_start <= diff_end:
                 prev_end = diff_end
-                line_diffs[curr_file].append((diff_start, diff_end))
+                line_diffs[file].append((diff_start, diff_end))
 
     return line_diffs
 
@@ -6718,7 +6715,7 @@ def RunGitDiffCmd(diff_type,
     return output
 
 
-def _RunClangFormatDiff(opts, paths, top_dir, upstream_commit):
+def _RunClangFormatDiff(opts, paths, top_dir, diffs):
     """Runs clang-format-diff and sets a return value if necessary."""
     # Set to 2 to signal to CheckPatchFormatted() that this patch isn't
     # formatted. This is used to block during the presubmit.
@@ -6731,7 +6728,7 @@ def _RunClangFormatDiff(opts, paths, top_dir, upstream_commit):
         DieWithError(e)
 
     # Full formatting
-    if opts.full:
+    if not diffs:
         cmd = [clang_format_tool]
         if not opts.dry_run and not opts.diff:
             cmd.append('-i')
@@ -6759,20 +6756,20 @@ def _RunClangFormatDiff(opts, paths, top_dir, upstream_commit):
     except clang_format.NotFoundError as e:
         DieWithError(e)
 
-    cmd = ['vpython3', script, '-p0']
+    cmd = ['vpython3', script, '-p1']
     if not opts.dry_run and not opts.diff:
         cmd.append('-i')
 
-    diff_output = RunGitDiffCmd(['-U0'], upstream_commit, paths)
     env = os.environ.copy()
     env['PATH'] = (str(os.path.dirname(clang_format_tool)) + os.pathsep +
                    env['PATH'])
     # If `clang-format-diff.py` is run without `-i` and the diff is
     # non-empty, it returns an error code of 1. This will cause `RunCommand`
     # to die with an error if `error_ok` is not set.
+    input_diff = "\n".join(diffs.get(p, "") for p in paths)
     stdout = RunCommand(cmd,
                         error_ok=True,
-                        stdin=diff_output.encode(),
+                        stdin=input_diff.encode(),
                         cwd=top_dir,
                         env=env,
                         shell=sys.platform.startswith('win32'))
@@ -6784,7 +6781,7 @@ def _RunClangFormatDiff(opts, paths, top_dir, upstream_commit):
     return return_value
 
 
-def _RunGoogleJavaFormat(opts, paths, top_dir, upstream_commit):
+def _RunGoogleJavaFormat(opts, paths, top_dir, diffs):
     """Runs google-java-format and sets a return value if necessary."""
     tool = google_java_format.FindGoogleJavaFormat()
     if tool is None:
@@ -6800,13 +6797,11 @@ def _RunGoogleJavaFormat(opts, paths, top_dir, upstream_commit):
         else:
             base_cmd += ['--replace']
 
-    changed_lines_only = not opts.full
+    changed_lines_only = bool(diffs)
     if changed_lines_only:
         # Format two lines around each changed line so that the correct amount
         # of blank lines will be added between symbols.
-        line_diffs = _ComputeFormatDiffLineRanges(paths,
-                                                  upstream_commit,
-                                                  expand=2)
+        line_diffs = _ComputeFormatDiffLineRanges(paths, diffs, expand=2)
 
     def RunFormat(cmd, path, range_args, **kwds):
         stdout = RunCommand(cmd + range_args + [path], **kwds)
@@ -6861,7 +6856,7 @@ def _RunGoogleJavaFormat(opts, paths, top_dir, upstream_commit):
         return return_value
 
 
-def _RunRustFmt(opts, paths, top_dir, upstream_commit):
+def _RunRustFmt(opts, paths, top_dir, diffs):
     """Runs rustfmt.  Just like _RunClangFormatDiff returns 2 to indicate that
     presubmit checks have failed (and returns 0 otherwise)."""
     # Locate the rustfmt binary.
@@ -6887,7 +6882,7 @@ def _RunRustFmt(opts, paths, top_dir, upstream_commit):
     return 0
 
 
-def _RunSwiftFormat(opts, paths, top_dir, upstream_commit):
+def _RunSwiftFormat(opts, paths, top_dir, diffs):
     """Runs swift-format.  Just like _RunClangFormatDiff returns 2 to indicate
     that presubmit checks have failed (and returns 0 otherwise)."""
     if sys.platform != 'darwin':
@@ -6912,7 +6907,7 @@ def _RunSwiftFormat(opts, paths, top_dir, upstream_commit):
     return 0
 
 
-def _RunYapf(opts, paths, top_dir, upstream_commit):
+def _RunYapf(opts, paths, top_dir, diffs):
     depot_tools_path = os.path.dirname(os.path.abspath(__file__))
     yapf_tool = os.path.join(depot_tools_path, 'yapf')
 
@@ -6935,8 +6930,8 @@ def _RunYapf(opts, paths, top_dir, upstream_commit):
     # Note: yapf still seems to fix indentation of the entire file
     # even if line ranges are specified.
     # See https://github.com/google/yapf/issues/499
-    if not opts.full and paths:
-        line_diffs = _ComputeFormatDiffLineRanges(paths, upstream_commit)
+    if paths and diffs:
+        line_diffs = _ComputeFormatDiffLineRanges(paths, diffs)
 
     yapfignore_patterns = _GetYapfIgnorePatterns(top_dir)
     paths = _FilterYapfIgnoredFiles(paths, yapfignore_patterns)
@@ -6976,7 +6971,7 @@ def _RunYapf(opts, paths, top_dir, upstream_commit):
     return return_value
 
 
-def _RunGnFormat(opts, paths, top_dir, upstream_commit):
+def _RunGnFormat(opts, paths, top_dir, diffs):
     cmd = [sys.executable, os.path.join(DEPOT_TOOLS, 'gn.py'), 'format']
     if opts.dry_run or opts.diff:
         cmd.append('--dry-run')
@@ -6999,7 +6994,7 @@ def _RunGnFormat(opts, paths, top_dir, upstream_commit):
     return return_value
 
 
-def _RunMojomFormat(opts, paths, top_dir, upstream_commit):
+def _RunMojomFormat(opts, paths, top_dir, diffs):
     primary_solution_path = gclient_paths.GetPrimarySolutionPath()
     if not primary_solution_path:
         DieWithError('Could not find the primary solution path (e.g. '
@@ -7022,7 +7017,7 @@ def _RunMojomFormat(opts, paths, top_dir, upstream_commit):
     return ret
 
 
-def _RunMetricsXMLFormat(opts, paths, top_dir, upstream_commit):
+def _RunMetricsXMLFormat(opts, paths, top_dir, diffs):
     # Skip the metrics formatting from the global presubmit hook. These files
     # have a separate presubmit hook that issues an error if the files need
     # formatting, whereas the top-level presubmit script merely issues a
@@ -7061,7 +7056,7 @@ def _RunMetricsXMLFormat(opts, paths, top_dir, upstream_commit):
     return return_value
 
 
-def _RunLUCICfgFormat(opts, paths, top_dir, upstream_commit):
+def _RunLUCICfgFormat(opts, paths, top_dir, diffs):
     depot_tools_path = os.path.dirname(os.path.abspath(__file__))
     lucicfg = os.path.join(depot_tools_path, 'lucicfg')
     if sys.platform == 'win32':
@@ -7266,8 +7261,9 @@ def CMDformat(parser: optparse.OptionParser, args: list[str]):
 
     # Normalize files against the current path, so paths relative to the
     # current directory are still resolved as expected.
+    top_dir = os.getcwd() if opts.presubmit else settings.GetRoot()
     files = [os.path.join(os.getcwd(), file) for file in files]
-    diff_files, _ = _FindFilesToFormat(opts, files, upstream_commit)
+    diff_files, diffs = _FindFilesToFormat(opts, files, upstream_commit)
 
     if opts.js:
         clang_exts.extend(['.js', '.ts'])
@@ -7291,13 +7287,12 @@ def CMDformat(parser: optparse.OptionParser, args: list[str]):
     if opts.lucicfg:
         formatters.append((['.star'], _RunLUCICfgFormat))
 
-    top_dir = os.getcwd() if opts.presubmit else settings.GetRoot()
     return_value = 0
     for file_types, format_func in formatters:
         paths = [p for p in diff_files if p.lower().endswith(tuple(file_types))]
         if not paths:
             continue
-        ret = format_func(opts, paths, top_dir, upstream_commit)
+        ret = format_func(opts, paths, top_dir, diffs)
         return_value = return_value or ret
 
     return return_value
