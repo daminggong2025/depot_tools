@@ -1838,6 +1838,10 @@ def CheckPatchFormatted(input_api,
                         result_factory=None):
     result_factory = result_factory or output_api.PresubmitPromptWarning
     import git_cl
+    affected_files = input_api.AffectedFiles(include_deletes=False)
+    with input_api.CreateTemporaryFile() as diff_file:
+        for f in affected_files:
+            diff_file.write(f.GenerateScmDiff().encode('utf-8'))
 
     display_args = []
     if not check_clang_format:
@@ -1858,7 +1862,7 @@ def CheckPatchFormatted(input_api,
     cmd = [
         '-C',
         input_api.change.RepositoryRoot(), 'cl', 'format', '--dry-run',
-        '--presubmit'
+        '--presubmit', '--input_diff_file', diff_file.name,
     ] + display_args
 
     # Make sure the passed --upstream branch is applied to a dry run.
