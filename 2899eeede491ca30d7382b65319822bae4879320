@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "9942ce33_81c74e11",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 6
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2025-09-10T20:49:00Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "23ca31ab_94ead0c8",
+      "range": {
+        "startLine": 16,
+        "startChar": 0,
+        "endLine": 17,
+        "endChar": 14
+      },
+      "revId": "2899eeede491ca30d7382b65319822bae4879320",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "b998b364_ed43e2bf",
@@ -77,6 +101,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "4e727b5b_5d8c15ad",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2025-09-10T20:49:00Z",
+      "side": 1,
+      "message": "Added a test to verify that SplitDiffsByFile correctly extracts the windows path",
+      "parentUuid": "d13e7a10_538ccd26",
+      "revId": "2899eeede491ca30d7382b65319822bae4879320",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "99a23c87_8aa56b0a",
@@ -90,6 +132,30 @@
       "writtenOn": "2025-09-09T22:42:24Z",
       "side": 1,
       "message": "words",
+      "range": {
+        "startLine": 7075,
+        "startChar": 13,
+        "endLine": 7075,
+        "endChar": 18
+      },
+      "revId": "2899eeede491ca30d7382b65319822bae4879320",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "37faace3_7d97d3db",
+        "filename": "git_cl.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 7075,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2025-09-10T20:49:00Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "99a23c87_8aa56b0a",
       "range": {
         "startLine": 7075,
         "startChar": 13,
@@ -231,6 +297,30 @@
       "writtenOn": "2025-09-09T22:42:24Z",
       "side": 1,
       "message": "should we make a note about --input_diff_file?",
+      "range": {
+        "startLine": 7225,
+        "startChar": 13,
+        "endLine": 7225,
+        "endChar": 67
+      },
+      "revId": "2899eeede491ca30d7382b65319822bae4879320",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e388db35_442148ed",
+        "filename": "git_cl.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 7225,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2025-09-10T20:49:00Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1e6176fd_84c9fc2a",
       "range": {
         "startLine": 7225,
         "startChar": 13,
