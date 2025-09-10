@@ -61,6 +61,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "d13e7a10_538ccd26",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2025-09-10T16:59:27Z",
+      "side": 1,
+      "message": "Acknowledged",
+      "parentUuid": "ee25cb53_b4fc96a2",
+      "revId": "2899eeede491ca30d7382b65319822bae4879320",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "99a23c87_8aa56b0a",
         "filename": "git_cl.py",
         "patchSetId": 6
@@ -166,6 +184,30 @@
       "side": 1,
       "message": "yes, it does. It has an option for `--diff`, which outputs the diffs. It\u0027s a mess actually for historical reasons.\n\nIt offers all of the following, some of which don\u0027t make sense to be used alone.\n- `--presubmit`\n- `--dry_run`\n- `--diff`\n\nPlease feel free to propose different names.",
       "parentUuid": "d1949d91_dac6f7f0",
+      "range": {
+        "startLine": 7193,
+        "startChar": 25,
+        "endLine": 7193,
+        "endChar": 40
+      },
+      "revId": "2899eeede491ca30d7382b65319822bae4879320",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9adae6aa_e85d9dfd",
+        "filename": "git_cl.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 7193,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2025-09-10T16:59:27Z",
+      "side": 1,
+      "message": "ah yep. this naming SGTM then",
+      "parentUuid": "a16da53d_bf0ab543",
       "range": {
         "startLine": 7193,
         "startChar": 25,
