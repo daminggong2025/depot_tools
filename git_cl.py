@@ -2273,7 +2273,8 @@ class Changelist(object):
             gerrit_util.SetReview(self.GetGerritHost(),
                                   self._GerritChangeIdentifier(),
                                   labels=labels,
-                                  notify=notify)
+                                  notify=notify,
+                                  project=self.GetGerritProject())
             return 0
         except KeyboardInterrupt:
             raise
@@ -2591,7 +2592,8 @@ class Changelist(object):
         gerrit_util.SetReview(self.GetGerritHost(),
                               self._GerritChangeIdentifier(),
                               msg=message,
-                              ready=publish)
+                              ready=publish,
+                              project=self.GetGerritProject())
 
     def GetCommentsSummary(self, readable=True):
         # DETAILED_ACCOUNTS is to get emails in accounts.
@@ -3024,6 +3026,8 @@ class Changelist(object):
         env['GIT_TRACE_CURL'] = os.path.join(traces_dir, 'trace-curl')
         env['GIT_TRACE_CURL_NO_DATA'] = '1'
         env['GIT_TRACE_PACKET'] = os.path.join(traces_dir, 'trace-packet')
+        env['GIT_TERMINAL_PROMPT'] = '0'
+        env['GIT_ASKPASS'] = ''
 
         # When ReAuth credential is expired, git interactively asks for
         # username and password. This isn't how ReAuth works, so we ask git to
