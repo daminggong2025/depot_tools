@@ -35,6 +35,8 @@ def find_ninja_in_path():
 def parse_args(ninja_args):
     out_dir = "."
     tool = ""
+    if "--version" in ninja_args:
+        tool = "version"
     for i, arg in enumerate(ninja_args):
         if arg == "-t":
             tool = ninja_args[i + 1]
@@ -48,7 +50,7 @@ def parse_args(ninja_args):
 
 
 def check_out_dir(tool, out_dir):
-    if tool in ["list", "commands", "inputs", "targets"]:
+    if tool in ["list", "commands", "inputs", "targets", "version"]:
         # These tools are just inspect ninja rules and not modify out dir.
         # TODO: b/339320220 - implement these in siso
         return
