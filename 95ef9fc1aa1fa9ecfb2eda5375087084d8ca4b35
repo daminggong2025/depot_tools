@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4ad44c75_1dc29428",
+        "filename": "auth.py",
+        "patchSetId": 10
+      },
+      "lineNbr": 340,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-09-10T06:19:45Z",
+      "side": 1,
+      "message": "TLDR is I give failing early when GCL succeeds, but failed to produce a ReAuth token.\n\nWe need this \"fallback\" logic when ReAuth isn\u0027t needed (in which case, access token is sufficient).",
+      "range": {
+        "startLine": 336,
+        "startChar": 0,
+        "endLine": 340,
+        "endChar": 39
+      },
+      "revId": "95ef9fc1aa1fa9ecfb2eda5375087084d8ca4b35",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5d3f20d0_ba60e48a",
+        "filename": "gerrit_util.py",
+        "patchSetId": 10
+      },
+      "lineNbr": 236,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-09-10T06:19:45Z",
+      "side": 1,
+      "message": "Method signature wise:\n\nI think the caller should decide if the lack of ReAuth token should be a hard-fail or fallback-okay.",
+      "range": {
+        "startLine": 236,
+        "startChar": 55,
+        "endLine": 236,
+        "endChar": 59
+      },
+      "revId": "95ef9fc1aa1fa9ecfb2eda5375087084d8ca4b35",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

@@ -58,6 +58,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "6474ebc4_4d75a547",
+        "filename": "gerrit_util.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 975,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-09-10T06:19:45Z",
+      "side": 1,
+      "message": "Done.",
+      "parentUuid": "cf8a0529_85f2465f",
+      "range": {
+        "startLine": 975,
+        "startChar": 27,
+        "endLine": 975,
+        "endChar": 66
+      },
+      "revId": "c6fc8521f30f3c0e6e021e304e5c9cc2caa6d35e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "86f9f6d5_3d1abc1d",
@@ -71,6 +95,24 @@
       "writtenOn": "2025-09-09T01:18:31Z",
       "side": 1,
       "message": "nit: context should come after authenticator (alphabetical, also \"conceptually\" (for readability even though kwarg order doesn\u0027t matter))",
+      "revId": "c6fc8521f30f3c0e6e021e304e5c9cc2caa6d35e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "82f5149b_958382db",
+        "filename": "gerrit_util.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 1062,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-09-10T06:19:45Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "86f9f6d5_3d1abc1d",
       "revId": "c6fc8521f30f3c0e6e021e304e5c9cc2caa6d35e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -106,6 +148,24 @@
       "side": 1,
       "message": "have you checked whether callers already have access to project?  We might be able to pass in for some of them to save an RPC call",
       "parentUuid": "309072f6_b1f5ca97",
+      "revId": "c6fc8521f30f3c0e6e021e304e5c9cc2caa6d35e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "44126799_53b26e43",
+        "filename": "gerrit_util.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 1734,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-09-10T06:19:45Z",
+      "side": 1,
+      "message": "Done.",
+      "parentUuid": "4335f955_9a2dd7fb",
       "revId": "c6fc8521f30f3c0e6e021e304e5c9cc2caa6d35e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
