@@ -1,0 +1,146 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "99b328a2_e6c56e77",
+        "filename": "auth.py",
+        "patchSetId": 12
+      },
+      "lineNbr": 278,
+      "author": {
+        "id": 3355336
+      },
+      "writtenOn": "2025-09-11T00:54:36Z",
+      "side": 1,
+      "message": "suggest:\n\n```\nThis token cannot satisfy ReAuth requirements; use the `get_authorization_header` method instead.\n```",
+      "revId": "91c6a2b4764352604e79cccea084ef754354d8b7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9929af4d_78a2a4ad",
+        "filename": "auth.py",
+        "patchSetId": 12
+      },
+      "lineNbr": 300,
+      "author": {
+        "id": 3355336
+      },
+      "writtenOn": "2025-09-11T00:54:36Z",
+      "side": 1,
+      "message": "suggest:\n\n```\nReturns an HTTP Authorization header to authenticate requests.\n\nThis header can satisfy ReAuth requirements, but may be missing ReAuth credentials if ReAuth is not required based on the context or if ReAuth support is disabled.\n\n...\n```",
+      "revId": "91c6a2b4764352604e79cccea084ef754354d8b7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bfb87563_2da078a5",
+        "filename": "auth.py",
+        "patchSetId": 12
+      },
+      "lineNbr": 346,
+      "author": {
+        "id": 3355336
+      },
+      "writtenOn": "2025-09-11T00:54:36Z",
+      "side": 1,
+      "message": "optional?\n\nI think you can and should run pyright on this file, I think I made it green?",
+      "range": {
+        "startLine": 346,
+        "startChar": 55,
+        "endLine": 346,
+        "endChar": 58
+      },
+      "revId": "91c6a2b4764352604e79cccea084ef754354d8b7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "070c0168_8659616b",
+        "filename": "auth.py",
+        "patchSetId": 12
+      },
+      "lineNbr": 355,
+      "author": {
+        "id": 3355336
+      },
+      "writtenOn": "2025-09-11T00:54:36Z",
+      "side": 1,
+      "message": "Add a note that this doesn\u0027t handle array/multi values (e.g. `capability[]\u003dauthtype`)\n\nWe don\u0027t need it now but someone might expect it to work in the future",
+      "revId": "91c6a2b4764352604e79cccea084ef754354d8b7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "245615be_ae25d19d",
+        "filename": "auth.py",
+        "patchSetId": 12
+      },
+      "lineNbr": 372,
+      "author": {
+        "id": 3355336
+      },
+      "writtenOn": "2025-09-11T00:54:36Z",
+      "side": 1,
+      "message": "nit: since this func is only used once, and the core logic is already abstracted in _parse_creds_helper_out (which is great), having a separate _extract_luci_token is a bit redundant IMO",
+      "revId": "91c6a2b4764352604e79cccea084ef754354d8b7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "23f545a2_ee644392",
+        "filename": "gerrit_util.py",
+        "patchSetId": 12
+      },
+      "lineNbr": 1105,
+      "author": {
+        "id": 3355336
+      },
+      "writtenOn": "2025-09-11T00:54:36Z",
+      "side": 1,
+      "message": "This will run GCL twice IIUC?\n\nI think it\u0027d be better if we attempt reauth(+auth) first, and then do regular authenticate if that fails?\n\nmaybe need to rename attempt_reauth -\u003e attempt_auth_with_reauth and double check the semantics.",
+      "revId": "91c6a2b4764352604e79cccea084ef754354d8b7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4644333d_0501d484",
+        "filename": "gerrit_util.py",
+        "patchSetId": 12
+      },
+      "lineNbr": 1107,
+      "author": {
+        "id": 3355336
+      },
+      "writtenOn": "2025-09-11T00:54:36Z",
+      "side": 1,
+      "message": "nit: this kind of hides the side effect of doing reauth\n\nsuggest for readability:\n\n```\nreauth_done \u003d attempt_reauth(...)\nif not reauth_done:\n    ...\n```",
+      "revId": "91c6a2b4764352604e79cccea084ef754354d8b7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f3b01f5e_8f4b9c5e",
+        "filename": "gerrit_util.py",
+        "patchSetId": 12
+      },
+      "lineNbr": 1751,
+      "author": {
+        "id": 3355336
+      },
+      "writtenOn": "2025-09-11T00:54:36Z",
+      "side": 1,
+      "message": "add context about this being needed for ReAuth",
+      "revId": "91c6a2b4764352604e79cccea084ef754354d8b7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
