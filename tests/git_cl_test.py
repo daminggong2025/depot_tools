@@ -4926,6 +4926,18 @@ diff --git a/net/base/net_error_list.h b/net/base/net_error_list.h
  // A blob that we referenced during construction is broken, or a browser-side
  // builder tries to build a blob with a blob reference that isn't finished
  // constructing.
+diff --git a/testing/xvfb_unittest.py b/testing/xvfb_unittest.py
+--- a/testing/xvfb_unittest.py
++++ b/testing/xvfb_unittest.py
+@@ -18,7 +18,7 @@
+ # pylint: disable=super-with-arguments
+
+ TEST_FILE = __file__.replace('.pyc', '.py')
+-XVFB = TEST_FILE.replace('_unittest', '')
++XVFB =      TEST_FILE.replace('_unittest', '')
+ XVFB_TEST_SCRIPT = TEST_FILE.replace('_unittest', '_test_script')
+
+
 """)
 
 test_format_input_diff_windows = "\r\n".join([
@@ -4954,6 +4966,10 @@ class CMDFormatTestCase(unittest.TestCase):
         super(CMDFormatTestCase, self).tearDown()
 
     def _make_temp_file(self, fname, contents):
+        dir_path = os.path.dirname(fname)
+        if dir_path:
+            os.makedirs(os.path.join(self._top_dir, dir_path), exist_ok=True)
+
         gclient_utils.FileWrite(os.path.join(self._top_dir, fname),
                                 ('\n'.join(contents)))
 
@@ -4974,41 +4990,51 @@ class CMDFormatTestCase(unittest.TestCase):
 
         return f
 
-    def testClangFormatDiffFull(self):
-        self._make_temp_file('test.cc', ['// test'])
-        git_cl.settings.GetFormatFullByDefault.return_value = False
-        diff_file = [os.path.join(self._top_dir, 'test.cc')]
+    @mock.patch('git_cl.Settings.GetRoot')
+    def testClangFormatDryRun(self, GetRoot):
+        diffs = git_cl._SplitDiffsByFile(test_format_input_diff)
+        files = [f for f in diffs if f.endswith('.h')]
         mock_opts = mock.Mock(full=True, dry_run=True, diff=False)
+        for f in files:
+            self._make_temp_file(f, ['// test'])
 
-        # Diff
-        git_cl.RunCommand.side_effect = self._run_command_mock('  // test')
-        return_value = git_cl._RunClangFormatDiff(mock_opts, diff_file,
-                                                  self._top_dir, 'HEAD')
-        self.assertEqual(2, return_value)
+        try:
+            previous_cwd = os.getcwd()
+            os.chdir(self._top_dir)
+            # If the clang-format-diff returns 0, if the input and output codes
+            # are the same.
+            git_cl.RunCommand.side_effect = self._run_command_mock('// test')
+            return_value = git_cl._RunClangFormatDiff(mock_opts, files,
+                                                      self._top_dir, None)
+            self.assertEqual(0, return_value)
 
-        # No diff
-        git_cl.RunCommand.side_effect = self._run_command_mock('// test')
-        return_value = git_cl._RunClangFormatDiff(mock_opts, diff_file,
-                                                  self._top_dir, 'HEAD')
-        self.assertEqual(0, return_value)
+            # Returns 2, otherwise.
+            git_cl.RunCommand.side_effect = self._run_command_mock('  // test')
+            return_value = git_cl._RunClangFormatDiff(mock_opts, files,
+                                                      self._top_dir, None)
+            self.assertEqual(2, return_value)
+        finally:
+            os.chdir(previous_cwd)
 
     def testClangFormatDiff(self):
-        git_cl.settings.GetFormatFullByDefault.return_value = False
-        # A valid file is required, so use this test.
-        clang_format.FindClangFormatToolInChromiumTree.return_value = __file__
-        mock_opts = mock.Mock(full=False, dry_run=True, diff=False)
+        diffs = git_cl._SplitDiffsByFile(test_format_input_diff)
+        files = [f for f in diffs if f.endswith('.h')]
+        mock_opts = mock.Mock(full=False, dry_run=False, diff=False)
 
         # Diff
-        git_cl.RunCommand.side_effect = self._run_command_mock('error')
-        return_value = git_cl._RunClangFormatDiff(mock_opts, ['.'],
-                                                  self._top_dir, 'HEAD')
-        self.assertEqual(2, return_value)
-
-        # No diff
-        git_cl.RunCommand.side_effect = self._run_command_mock('')
-        return_value = git_cl._RunClangFormatDiff(mock_opts, ['.'],
-                                                  self._top_dir, 'HEAD')
+        git_cl.RunCommand.retrun_value = 0
+        return_value = git_cl._RunClangFormatDiff(mock_opts, files,
+                                                  self._top_dir, diffs)
         self.assertEqual(0, return_value)
+        git_cl.RunCommand.assert_called_with(
+            mock.ANY,  # command
+            error_ok=True,
+            # it should stream the patches for the selected files only.
+            stdin="\n".join(diffs.get(f, "") for f in files).encode(),
+            cwd=self._top_dir,
+            env=mock.ANY,
+            shell=mock.ANY,
+        )
 
     def testYapfignoreExplicit(self):
         self._make_yapfignore(['foo/bar.py', 'foo/bar/baz.py'])
@@ -5268,14 +5294,35 @@ class CMDFormatTestCase(unittest.TestCase):
             input_diff.write(test_format_input_diff)
 
         try:
-            ret = git_cl.main(['format', "--input_diff_file", input_diff.name])
+            previous_cwd = os.getcwd()
+            os.chdir(self._top_dir)
+            ret = git_cl.main([
+                'format',
+                "--input_diff_file",
+                input_diff.name,
+                "--presubmit",
+                "--dry-run",
+                "--python",
+            ])
             self.assertEqual(0, ret)
+
             clang_formatter.assert_called_with(
                 mock.ANY,
                 ['net/base/net_error_details.h', 'net/base/net_error_list.h'],
                 mock.ANY, mock.ANY)
+            git_cl.RunCommand.assert_called_with(
+                [
+                    'vpython3', mock.ANY, '--style', mock.ANY,
+                    'testing/xvfb_unittest.py', '-l', '18-24', '--diff'
+                ],
+                cwd=self._top_dir,
+                error_ok=True,
+                shell=mock.ANY,
+                stderr=-1,
+            )
         finally:
             os.remove(input_diff.name)
+            os.chdir(previous_cwd)
 
     @mock.patch('git_cl._RunClangFormatDiff', return_value=0)
     def testInputDiffFileWithWindowsPatch(self, clang_formatter):
@@ -5285,7 +5332,12 @@ class CMDFormatTestCase(unittest.TestCase):
             input_diff.write(test_format_input_diff_windows)
 
         try:
-            ret = git_cl.main(['format', "--input_diff_file", input_diff.name])
+            ret = git_cl.main([
+                'format',
+                "--input_diff_file",
+                input_diff.name,
+                "--presubmit",
+            ])
             self.assertEqual(0, ret)
             clang_formatter.assert_called_with(
                 mock.ANY, ['C:\\\\path\\\\to\\\\dst\\\\file.cc'], mock.ANY,
