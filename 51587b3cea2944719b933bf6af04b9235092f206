@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7455ecaa_87afa576",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 1899,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2025-09-11T17:01:41Z",
+      "side": 1,
+      "message": "now that this is visible in cider, should we change this to say something about using \"Format Modified Lines in All Files\" instead (when on cog)?",
+      "range": {
+        "startLine": 1899,
+        "startChar": 28,
+        "endLine": 1899,
+        "endChar": 53
+      },
+      "revId": "51587b3cea2944719b933bf6af04b9235092f206",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
