@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "0201838a_9a4d844b",
+        "filename": "auth.py",
+        "patchSetId": 12
+      },
+      "lineNbr": 278,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-09-11T07:42:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "99b328a2_e6c56e77",
+      "revId": "91c6a2b4764352604e79cccea084ef754354d8b7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "9929af4d_78a2a4ad",
@@ -31,6 +49,24 @@
       "writtenOn": "2025-09-11T00:54:36Z",
       "side": 1,
       "message": "suggest:\n\n```\nReturns an HTTP Authorization header to authenticate requests.\n\nThis header can satisfy ReAuth requirements, but may be missing ReAuth credentials if ReAuth is not required based on the context or if ReAuth support is disabled.\n\n...\n```",
+      "revId": "91c6a2b4764352604e79cccea084ef754354d8b7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "759e20cb_382d09b3",
+        "filename": "auth.py",
+        "patchSetId": 12
+      },
+      "lineNbr": 300,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-09-11T07:42:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9929af4d_78a2a4ad",
       "revId": "91c6a2b4764352604e79cccea084ef754354d8b7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -58,6 +94,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "90b0b42d_fc585998",
+        "filename": "auth.py",
+        "patchSetId": 12
+      },
+      "lineNbr": 346,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-09-11T07:42:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "bfb87563_2da078a5",
+      "range": {
+        "startLine": 346,
+        "startChar": 55,
+        "endLine": 346,
+        "endChar": 58
+      },
+      "revId": "91c6a2b4764352604e79cccea084ef754354d8b7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "070c0168_8659616b",
@@ -71,6 +131,24 @@
       "writtenOn": "2025-09-11T00:54:36Z",
       "side": 1,
       "message": "Add a note that this doesn\u0027t handle array/multi values (e.g. `capability[]\u003dauthtype`)\n\nWe don\u0027t need it now but someone might expect it to work in the future",
+      "revId": "91c6a2b4764352604e79cccea084ef754354d8b7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8f8adfae_72a2bcf1",
+        "filename": "auth.py",
+        "patchSetId": 12
+      },
+      "lineNbr": 355,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-09-11T07:42:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "070c0168_8659616b",
       "revId": "91c6a2b4764352604e79cccea084ef754354d8b7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -92,6 +170,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "13c60a89_f874ae97",
+        "filename": "auth.py",
+        "patchSetId": 12
+      },
+      "lineNbr": 372,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-09-11T07:42:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "245615be_ae25d19d",
+      "revId": "91c6a2b4764352604e79cccea084ef754354d8b7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "23f545a2_ee644392",
@@ -105,6 +201,24 @@
       "writtenOn": "2025-09-11T00:54:36Z",
       "side": 1,
       "message": "This will run GCL twice IIUC?\n\nI think it\u0027d be better if we attempt reauth(+auth) first, and then do regular authenticate if that fails?\n\nmaybe need to rename attempt_reauth -\u003e attempt_auth_with_reauth and double check the semantics.",
+      "revId": "91c6a2b4764352604e79cccea084ef754354d8b7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "122e91bd_0ff93e1e",
+        "filename": "gerrit_util.py",
+        "patchSetId": 12
+      },
+      "lineNbr": 1105,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-09-11T07:42:15Z",
+      "side": 1,
+      "message": "Done..\n\nTweaked the flow a bit.\n\nattempt_auth_with_reauth returns True if (either):\n- ReAuth token is returned\n- ReAuth not required, and the old access token is valid",
+      "parentUuid": "23f545a2_ee644392",
       "revId": "91c6a2b4764352604e79cccea084ef754354d8b7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -126,6 +240,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ae47594f_23efa5b0",
+        "filename": "gerrit_util.py",
+        "patchSetId": 12
+      },
+      "lineNbr": 1107,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-09-11T07:42:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4644333d_0501d484",
+      "revId": "91c6a2b4764352604e79cccea084ef754354d8b7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "f3b01f5e_8f4b9c5e",
@@ -139,6 +271,24 @@
       "writtenOn": "2025-09-11T00:54:36Z",
       "side": 1,
       "message": "add context about this being needed for ReAuth",
+      "revId": "91c6a2b4764352604e79cccea084ef754354d8b7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "89bf3c4b_97503a2f",
+        "filename": "gerrit_util.py",
+        "patchSetId": 12
+      },
+      "lineNbr": 1751,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-09-11T07:42:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f3b01f5e_8f4b9c5e",
       "revId": "91c6a2b4764352604e79cccea084ef754354d8b7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
