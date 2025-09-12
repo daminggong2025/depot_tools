@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "08ef260f_9db86e6d",
+        "filename": "tests/gerrit_util_test.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-09-12T12:21:22Z",
+      "side": 1,
+      "message": "need to do this rename, otherwise the linter yells at me for redefining `auth` in an inner scope.",
+      "range": {
+        "startLine": 127,
+        "startChar": 8,
+        "endLine": 127,
+        "endChar": 18
+      },
+      "revId": "48a5647e8eb3754ae4423d5f8921346358ab3a29",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
