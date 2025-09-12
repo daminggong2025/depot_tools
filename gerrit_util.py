@@ -1767,10 +1767,15 @@ def SetReview(host,
               labels=None,
               notify=None,
               ready=None,
-              automatic_attention_set_update: Optional[bool] = None):
+              automatic_attention_set_update: Optional[bool] = None,
+              project: Optional[str] = None):
     """Sets labels and/or adds a message to a code review.
 
     https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#set-review
+
+    We need to check if this change's `project` needs to satisfy ReAuth
+    requirements, and attach an ReAuth credential to the request. `project`
+    can be optionally be provided to save one Gerrit server round-trip.
     """
     if not msg and not labels:
         return
@@ -1787,7 +1792,20 @@ def SetReview(host,
     if automatic_attention_set_update is not None:
         body[
             'ignore_automatic_attention_set_rules'] = not automatic_attention_set_update
-    conn = CreateHttpConn(host, path, reqtype='POST', body=body)
+
+    if not project:
+        # Get Change detail to populate ReAuth information.
+        detailJson = GetChangeDetail(host, change)
+        project = detailJson["project"]
+    reauth_context = auth.ReAuthContext(host=host, project=project)
+    reauth_required = bool(labels)
+
+    conn = CreateHttpConn(host,
+                          path,
+                          reqtype='POST',
+                          body=body,
+                          reauth_context=reauth_context,
+                          reauth_required=reauth_required)
     response = ReadHttpJsonResponse(conn)
     if labels:
         for key, val in labels.items():

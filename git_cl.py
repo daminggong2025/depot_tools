@@ -2270,7 +2270,8 @@ class Changelist(object):
             gerrit_util.SetReview(self.GetGerritHost(),
                                   self._GerritChangeIdentifier(),
                                   labels=labels,
-                                  notify=notify)
+                                  notify=notify,
+                                  project=self.GetGerritProject())
             return 0
         except KeyboardInterrupt:
             raise
@@ -2588,7 +2589,8 @@ class Changelist(object):
         gerrit_util.SetReview(self.GetGerritHost(),
                               self._GerritChangeIdentifier(),
                               msg=message,
-                              ready=publish)
+                              ready=publish,
+                              project=self.GetGerritProject())
 
     def GetCommentsSummary(self, readable=True):
         # DETAILED_ACCOUNTS is to get emails in accounts.
