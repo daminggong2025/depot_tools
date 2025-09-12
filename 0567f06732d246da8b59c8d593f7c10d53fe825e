@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3214347f_3d531dab",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2025-09-12T17:29:25Z",
+      "side": 1,
+      "message": "@gavinmak@google.com, I will land this early next Monday, if I don\u0027t hear any bug reports for crrev.com/c/6939737 today. Please stamp.",
+      "revId": "0567f06732d246da8b59c8d593f7c10d53fe825e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
