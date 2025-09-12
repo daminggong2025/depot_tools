@@ -1059,7 +1059,8 @@ class _GitDiffCache(_DiffCache):
                                                 files=[],
                                                 full_move=True,
                                                 branch=self._upstream,
-                                                branch_head=self._end_commit)
+                                                branch_head=self._end_commit,
+                                                allow_prefix=True)
             # Compute a single diff for all files and parse the output; with git
             # this is much faster than computing one diff for each file.
             self._diffs_by_file = _parse_unified_diff(unified_diff)

@@ -419,7 +419,8 @@ class PresubmitUnittest(PresubmitTestsBase):
                                                      files=[],
                                                      full_move=True,
                                                      branch='upstream',
-                                                     branch_head='end_commit')
+                                                     branch_head='end_commit',
+                                                     allow_prefix=True)
 
 
         f_blat = os.path.normpath('boo/blat.cc')
