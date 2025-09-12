@@ -1055,11 +1055,13 @@ class _GitDiffCache(_DiffCache):
         if self._diffs_by_file == None:
             # Don't specify any filenames below, because there are command line
             # length limits on some platforms and GenerateDiff would fail.
+
             unified_diff = scm.GIT.GenerateDiff(local_root,
                                                 files=[],
                                                 full_move=True,
                                                 branch=self._upstream,
-                                                branch_head=self._end_commit)
+                                                branch_head=self._end_commit,
+                                                allow_prefix=True)
             # Compute a single diff for all files and parse the output; with git
             # this is much faster than computing one diff for each file.
             self._diffs_by_file = _parse_unified_diff(unified_diff)
