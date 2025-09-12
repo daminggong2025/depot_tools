@@ -7127,7 +7127,7 @@ def _FindFilesToFormat(
     if opts.full:
         files = RunGitDiffCmd(['--name-only', '--diff-filter=d'],
                               upstream_commit, files).splitlines()
-        return files.keys(), None
+        return files, None
 
     diffs = _SplitDiffsByFile(
         RunGitDiffCmd(['-U0'], upstream_commit, files, allow_prefix=True))
