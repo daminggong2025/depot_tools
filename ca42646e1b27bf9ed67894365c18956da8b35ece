@@ -1,0 +1,84 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b58373c3_319315f1",
+        "filename": "auth.py",
+        "patchSetId": 21
+      },
+      "lineNbr": 274,
+      "author": {
+        "id": 3355336
+      },
+      "writtenOn": "2025-09-13T00:41:43Z",
+      "side": 1,
+      "message": "nit: make these private, clients should rely in exceptions and only this class should use the codes internally.",
+      "revId": "ca42646e1b27bf9ed67894365c18956da8b35ece",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3110e393_1472cf3e",
+        "filename": "auth.py",
+        "patchSetId": 21
+      },
+      "lineNbr": 289,
+      "author": {
+        "id": 3355336
+      },
+      "writtenOn": "2025-09-13T00:41:43Z",
+      "side": 1,
+      "message": "nit: I believe the standard format for these requires a colon after the error name (could be wrong)",
+      "range": {
+        "startLine": 289,
+        "startChar": 32,
+        "endLine": 289,
+        "endChar": 33
+      },
+      "revId": "ca42646e1b27bf9ed67894365c18956da8b35ece",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9eda9239_b605d3e4",
+        "filename": "auth.py",
+        "patchSetId": 21
+      },
+      "lineNbr": 309,
+      "author": {
+        "id": 3355336
+      },
+      "writtenOn": "2025-09-13T00:41:43Z",
+      "side": 1,
+      "message": "nit: add \"This method supports ReAuth, but it may be missing...\"\n\n(since the reauth support is implied but not stated explicitly)",
+      "revId": "ca42646e1b27bf9ed67894365c18956da8b35ece",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ab530fe4_fa7c199b",
+        "filename": "auth.py",
+        "patchSetId": 21
+      },
+      "lineNbr": 330,
+      "author": {
+        "id": 3355336
+      },
+      "writtenOn": "2025-09-13T00:41:43Z",
+      "side": 1,
+      "message": "s/token/header/",
+      "range": {
+        "startLine": 330,
+        "startChar": 30,
+        "endLine": 330,
+        "endChar": 36
+      },
+      "revId": "ca42646e1b27bf9ed67894365c18956da8b35ece",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

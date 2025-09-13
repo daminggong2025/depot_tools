@@ -16,6 +16,23 @@
       "message": "ptal. I\u0027m splitting CLs aggressively\n\nalso I added tests for GerritAuthenticator.\n😭",
       "revId": "15c3a5d6e1f2dea4cab87a0d474a6d4f6355c78f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "12878dd1_90b7e40f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 22
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3355336
+      },
+      "writtenOn": "2025-09-13T00:41:43Z",
+      "side": 1,
+      "message": "ty for the splitting into clean CLs",
+      "revId": "15c3a5d6e1f2dea4cab87a0d474a6d4f6355c78f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
