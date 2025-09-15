@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8df6f7b8_5c608e40",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3355336
+      },
+      "writtenOn": "2025-09-15T21:37:59Z",
+      "side": 1,
+      "message": "This is inherently a little risky, so just keep an eye out",
+      "revId": "c60ef3c7d9589c0df396bc6a89107a68b2d20ee1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a5b12a00_163eaae2",
+        "filename": "gerrit_util.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 1795,
+      "author": {
+        "id": 3355336
+      },
+      "writtenOn": "2025-09-15T21:37:59Z",
+      "side": 1,
+      "message": "small optimization: we only need to do this if labels are set",
+      "revId": "c60ef3c7d9589c0df396bc6a89107a68b2d20ee1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
