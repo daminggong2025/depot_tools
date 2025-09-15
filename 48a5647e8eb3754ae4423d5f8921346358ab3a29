@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "92d3f9c2_ac662155",
+        "filename": "gerrit_util.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 237,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-09-15T05:15:01Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fe1b0751_f0d51495",
+      "range": {
+        "startLine": 237,
+        "startChar": 15,
+        "endLine": 237,
+        "endChar": 39
+      },
+      "revId": "48a5647e8eb3754ae4423d5f8921346358ab3a29",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "1173d317_2349581a",
@@ -37,6 +61,24 @@
       "writtenOn": "2025-09-13T00:54:38Z",
       "side": 1,
       "message": "suggest inverting this to `reauth_optional`?  the reason being that I expect if a caller is passing `reauth_context` then by default it probably needs reauth?\n\nAlso it conveniently removes having to check \"if required context must exist\".",
+      "revId": "48a5647e8eb3754ae4423d5f8921346358ab3a29",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "44c4d691_4279f36b",
+        "filename": "gerrit_util.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 1082,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-09-15T05:15:01Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1173d317_2349581a",
       "revId": "48a5647e8eb3754ae4423d5f8921346358ab3a29",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
