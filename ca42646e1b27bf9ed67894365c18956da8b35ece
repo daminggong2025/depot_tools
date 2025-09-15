@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "68c6c002_e778da37",
+        "filename": "auth.py",
+        "patchSetId": 21
+      },
+      "lineNbr": 274,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-09-15T05:14:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b58373c3_319315f1",
+      "revId": "ca42646e1b27bf9ed67894365c18956da8b35ece",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "3110e393_1472cf3e",
@@ -31,6 +49,30 @@
       "writtenOn": "2025-09-13T00:41:43Z",
       "side": 1,
       "message": "nit: I believe the standard format for these requires a colon after the error name (could be wrong)",
+      "range": {
+        "startLine": 289,
+        "startChar": 32,
+        "endLine": 289,
+        "endChar": 33
+      },
+      "revId": "ca42646e1b27bf9ed67894365c18956da8b35ece",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e0d98582_ecf72282",
+        "filename": "auth.py",
+        "patchSetId": 21
+      },
+      "lineNbr": 289,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-09-15T05:14:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3110e393_1472cf3e",
       "range": {
         "startLine": 289,
         "startChar": 32,
@@ -58,6 +100,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "8580a564_27cdec5a",
+        "filename": "auth.py",
+        "patchSetId": 21
+      },
+      "lineNbr": 309,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-09-15T05:14:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9eda9239_b605d3e4",
+      "revId": "ca42646e1b27bf9ed67894365c18956da8b35ece",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "ab530fe4_fa7c199b",
@@ -71,6 +131,30 @@
       "writtenOn": "2025-09-13T00:41:43Z",
       "side": 1,
       "message": "s/token/header/",
+      "range": {
+        "startLine": 330,
+        "startChar": 30,
+        "endLine": 330,
+        "endChar": 36
+      },
+      "revId": "ca42646e1b27bf9ed67894365c18956da8b35ece",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7d71bd76_c0ee6f3f",
+        "filename": "auth.py",
+        "patchSetId": 21
+      },
+      "lineNbr": 330,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-09-15T05:14:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ab530fe4_fa7c199b",
       "range": {
         "startLine": 330,
         "startChar": 30,
