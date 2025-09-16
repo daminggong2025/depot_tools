@@ -16,6 +16,24 @@
       "message": "This appears to cause cases where presubmit complains that the code isn\u0027t formatted, and that then running `git cl format` (as prescribed)  doesn\u0027t fix.\n\nIt looks like it may be caused by inconsistency between the diffs used in the two cases. It appears to happen in a case like the following:\n\n```\n+  AddedLine();\n   if (HasBrokenFormatting())\n     ButIsIgnoredByOldFormatter();\n```",
       "revId": "35982166cc6ed8b6e9e3ff37ac419bae28e4951f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "cbf87e33_6bf6faa4",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1499972
+      },
+      "writtenOn": "2025-09-16T20:38:08Z",
+      "side": 1,
+      "message": "+1 I\u0027m seeing this behavior.",
+      "parentUuid": "97d3e52e_5223e205",
+      "revId": "35982166cc6ed8b6e9e3ff37ac419bae28e4951f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
