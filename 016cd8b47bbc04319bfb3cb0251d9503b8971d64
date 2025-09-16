@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a302fd1a_0b805650",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-09-16T03:56:40Z",
+      "side": 1,
+      "message": "+fancl for owners\n/cc ayatane: I think we need to wait for gerrit change (cl/807455700) before landing this.",
+      "revId": "016cd8b47bbc04319bfb3cb0251d9503b8971d64",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
