@@ -1021,7 +1021,8 @@ class GIT(object):
                      branch_head: str = 'HEAD',
                      full_move: bool = False,
                      files: Optional[Iterable[str]] = None,
-                     allow_prefix: bool = False) -> str:
+                     allow_prefix: bool = False,
+                     context: int = 3) -> str:
         """Diffs against the upstream branch or optionally another branch.
 
         full_move means that move or copy operations should completely recreate the
@@ -1036,6 +1037,7 @@ class GIT(object):
             '-p',
             '--no-color',
             '--no-ext-diff',
+            f'-U{context}',
         ]
 
         if allow_prefix:
