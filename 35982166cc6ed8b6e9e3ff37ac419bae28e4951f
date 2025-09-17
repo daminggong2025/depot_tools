@@ -52,6 +52,24 @@
       "parentUuid": "cbf87e33_6bf6faa4",
       "revId": "35982166cc6ed8b6e9e3ff37ac419bae28e4951f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1546fac8_dae8a24b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115594
+      },
+      "writtenOn": "2025-09-17T10:02:43Z",
+      "side": 1,
+      "message": "The issue not longer appear where it previously did, so symptom is gone. Thanks!",
+      "parentUuid": "f44a10ec_b941b672",
+      "revId": "35982166cc6ed8b6e9e3ff37ac419bae28e4951f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
