@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "30cdbeba_f516d8c4",
+        "filename": "git_cl.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 3090,
+      "author": {
+        "id": 3355336
+      },
+      "writtenOn": "2025-09-17T21:11:41Z",
+      "side": 1,
+      "message": "ergh, I wanted to forget about this output matching ugliness",
+      "revId": "804e5d21a891cd9608063adee3ab97ac4f85467c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4d42fe28_28e563b1",
+        "filename": "git_cl.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 3107,
+      "author": {
+        "id": 3355336
+      },
+      "writtenOn": "2025-09-17T21:11:41Z",
+      "side": 1,
+      "message": "I understand the reasoning, but I think this should be consistent with all of the other cases (either all of them or none of them should be silencing these), because whatever line of reasoning we use to justify either choice would likely apply to all of the cases (whether that be \"keep the output shorter\" or \"include more info to help debugging\")",
+      "range": {
+        "startLine": 3107,
+        "startChar": 66,
+        "endLine": 3107,
+        "endChar": 75
+      },
+      "revId": "804e5d21a891cd9608063adee3ab97ac4f85467c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
