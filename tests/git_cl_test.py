@@ -638,11 +638,9 @@ class TestGitCl(unittest.TestCase):
         mock.patch('git_cl.gerrit_util.AddReviewers',
                    lambda *a: self._mocked_call('AddReviewers', *a)).start()
         mock.patch('git_cl.gerrit_util.SetReview',
-                   lambda h, i, msg=None, labels=None, notify=None, ready=None,
-                   automatic_attention_set_update=None, project=None:
+                   lambda h, i, msg=None, labels=None, notify=None, ready=None:
                    (self._mocked_call('SetReview', h, i, msg, labels, notify,
-                                      ready, automatic_attention_set_update,
-                                      project))).start()
+                                      ready))).start()
         mock.patch('git_cl.gerrit_util.LuciContextAuthenticator.is_applicable',
                    return_value=False).start()
         mock.patch('git_cl.gerrit_util.GceAuthenticator.is_applicable',
@@ -2553,7 +2551,7 @@ class TestGitCl(unittest.TestCase):
             (('SetReview', 'chromium-review.googlesource.com',
               'infra%2Finfra~123', None, {
                   'Commit-Queue': vote
-              }, notify, None, None, 'infra/infra'), ''),
+              }, notify, None), ''),
         ]
 
     @unittest.skipIf(gclient_utils.IsEnvCog(),
@@ -3207,8 +3205,7 @@ class TestGitCl(unittest.TestCase):
                           'https://chromium.googlesource.com/infra/infra')
         self.calls = [
             (('SetReview', 'chromium-review.googlesource.com',
-              'infra%2Finfra~10', 'msg', None, None, None, None, 'infra/infra'),
-             None),
+              'infra%2Finfra~10', 'msg', None, None, None), None),
         ]
         self.assertEqual(0, git_cl.main(['comment', '-i', '10', '-a', 'msg']))
 
