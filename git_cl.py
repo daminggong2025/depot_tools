@@ -3087,7 +3087,24 @@ class Changelist(object):
                     'git cl upload -o nokeycheck\n\n'
                     'If git-cl is not working correctly, file a bug under the '
                     'Infra>SDK component.')
-
+            if 'git credential-luci reauth' in str(e.stdout):
+                # `raise ... from None` to suppress CalledProcessError in the
+                # stacktrace, so we don't double print "ReAuth is required"
+                # (once in the piped stdout during CheckCallAndFilter, then
+                # again in the formatted CalledProcessError message).
+                raise GitPushError(
+                    'Failed to upload a change: ReAuth is required.\n'
+                    '\n'
+                    'Please ReAuth by running:\n'
+                    '  git credential-luci reauth\n'
+                    '\n'
+                    'If you are having trouble with ReAuth, see:\n'
+                    'https://chromium.googlesource.com/chromium/src/+/main/docs/gerrit_reauth.md\n'
+                    '\n'
+                    'To bypass ReAuth for now, set LUCI_BYPASS_REAUTH '
+                    'environment variable, then try again:\n'
+                    '  On Linux/Mac: export LUCI_BYPASS_REAUTH=1\n'
+                    '  On Windows:   set LUCI_BYPASS_REAUTH=1\n') from None
             raise GitPushError(
                 'Failed to create a change. Please examine output above for the '
                 'reason of the failure.\n'
