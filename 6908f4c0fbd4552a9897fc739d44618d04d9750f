@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "344fa5be_43123eec",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1303432
+      },
+      "writtenOn": "2025-09-19T18:20:44Z",
+      "side": 1,
+      "message": "Hmm. I\u0027d like to understand a bit more what your plan is here, and we may need to align on longer term vision.\n\nIn the short term, jj isn\u0027t really officially supported. To truly work for Chrome as a replacement for git (as you note) it would need submodule support. And my team isn\u0027t on the hook for making sure presubmit hooks, etc. work. So I\u0027d like to make sure how well supported / official this is very clear.\n\nLonger term, I expect jj _will_ add submodule support and it could be come a supported (and even preferred by some) way to interact with the source code. At that point yeah, should have things in depot_tools but ownership would probably transition to Source team. And if that happens we should ideally be OK with whatever approach has happened in the interim (which maybe is a plus to it being in depot_tools, where we can review).\n\nMight be better to discuss a bit more not in a back and forth comment chain?",
+      "revId": "6908f4c0fbd4552a9897fc739d44618d04d9750f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
