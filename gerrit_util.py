@@ -837,6 +837,13 @@ class GceAuthenticator(_Authenticator):
         conn.req_headers[
             'Authorization'] = '%(token_type)s %(access_token)s' % token_dict
 
+    def attempt_authenticate_with_reauth(self, conn: HttpConn,
+                                         context: auth.ReAuthContext) -> bool:
+        # GCE bots do not need ReAuth. They implicitly satisfy the requirement if otherwise
+        # trusted.
+        self.authenticate(conn)
+        return True
+
     def debug_summary_state(self) -> str:
         # TODO(b/343230702) - report ambient account name.
         return ''
