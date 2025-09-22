@@ -302,6 +302,16 @@ class GceAuthenticatorTest(unittest.TestCase):
         self.assertAuthenticatedToken('TYPE TOKEN')
         self.assertEqual(2, len(httplib2.Http().request.mock_calls))
 
+    def testAttemptAuthenticateWithReAuth(self):
+        authn = self.GceAuthenticator()
+        with mock.patch.object(authn, 'authenticate') as mock_authenticate:
+            conn = makeConn('some.example.com')
+            context = auth.ReAuthContext(host='some.example.com',
+                                         project='some/project')
+            self.assertTrue(
+                authn.attempt_authenticate_with_reauth(conn, context))
+            mock_authenticate.assert_called_once_with(conn)
+
 
 class GerritUtilTest(unittest.TestCase):
     def setUp(self):
