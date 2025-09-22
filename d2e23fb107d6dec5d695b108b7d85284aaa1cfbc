@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6bd3ea8b_cf4406e3",
+        "filename": "gerrit_util.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 842,
+      "author": {
+        "id": 3355336
+      },
+      "writtenOn": "2025-09-22T20:56:20Z",
+      "side": 1,
+      "message": "nit: reword \"GCE bots do not need ReAuth (i.e., they implicitly satisfy the requirement if otherwise trusted)\"",
+      "revId": "d2e23fb107d6dec5d695b108b7d85284aaa1cfbc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
