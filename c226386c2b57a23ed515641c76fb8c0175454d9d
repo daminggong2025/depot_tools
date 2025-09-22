@@ -3,6 +3,23 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "51ab2487_0e152742",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-09-22T23:56:25Z",
+      "side": 1,
+      "message": "+ddoman for owners",
+      "revId": "c226386c2b57a23ed515641c76fb8c0175454d9d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "a5dd8aad_83530b64",
         "filename": "gerrit_util.py",
         "patchSetId": 3
@@ -14,6 +31,24 @@
       "writtenOn": "2025-09-22T20:54:59Z",
       "side": 1,
       "message": "This CL is fine, but we may run into problems later because I\u0027ve seen some devs have developed a \"hack\" of using the context as a workaround for some auth issues (not Gerrit auth, but various other build related auth, e.g. GCS, siso, ninja, etc)",
+      "revId": "c226386c2b57a23ed515641c76fb8c0175454d9d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "855b6172_3af47a0d",
+        "filename": "gerrit_util.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 872,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-09-22T23:56:25Z",
+      "side": 1,
+      "message": "ack. I think it should be fine. Deve needs to do actions that calls this fn (right now it\u0027s just SetReview) to trigger this.\n\nI wonder what that \"hack\" entails? Obtain a luci context token and just use it?",
+      "parentUuid": "a5dd8aad_83530b64",
       "revId": "c226386c2b57a23ed515641c76fb8c0175454d9d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
