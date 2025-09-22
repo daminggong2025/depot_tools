@@ -868,6 +868,12 @@ class LuciContextAuthenticator(_Authenticator):
         conn.req_headers[
             'Authorization'] = f'Bearer {self._authenticator.get_access_token().token}'
 
+    def attempt_authenticate_with_reauth(self, conn: HttpConn,
+                                         context: auth.ReAuthContext) -> bool:
+        # LUCI context credential satisfies ReAuth requirement.
+        self.authenticate(conn)
+        return True
+
     def debug_summary_state(self) -> str:
         # TODO(b/343230702) - report ambient account name.
         return ''
