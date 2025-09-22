@@ -22,6 +22,30 @@
       },
       "revId": "9e656e6c1fc7357fd11cfa011cadfc8fb7dda01b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a1c18ac0_2d7919e3",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2025-09-22T05:47:04Z",
+      "side": 1,
+      "message": "\u003e Is it because some flags are supported only by env vars? \nyeah.\n\n\u003e What\u0027s wrong with propagating env vars to siso commands as is?\nalready propagating env var, so ok to set in the shell session.\nbut it could ensure the env var is used in the checkout?",
+      "parentUuid": "583388f8_0a20b492",
+      "range": {
+        "startLine": 10,
+        "startChar": 0,
+        "endLine": 12,
+        "endChar": 0
+      },
+      "revId": "9e656e6c1fc7357fd11cfa011cadfc8fb7dda01b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
