@@ -26,10 +26,11 @@ class SisoTest(trial_dir.TestCase):
         super().tearDown()
 
     def test_load_sisorc_no_file(self):
-        global_flags, subcmd_flags = siso.load_sisorc(
-            os.path.join('build', 'config', 'siso', '.sisorc'))
+        global_flags, subcmd_flags, env = siso.load_sisorc(
+            os.path.join('build', 'config', 'siso', '.sisorc'), {})
         self.assertEqual(global_flags, [])
         self.assertEqual(subcmd_flags, {})
+        self.assertEqual(env, {})
 
     def test_load_sisorc(self):
         sisorc = os.path.join('build', 'config', 'siso', '.sisorc')
@@ -37,13 +38,21 @@ class SisoTest(trial_dir.TestCase):
         with open(sisorc, 'w') as f:
             f.write("""
 # comment
+SISO_LIMITS=cache=100
 -credential_helper=gcloud
 ninja --failure_verbose=false -k=0
             """)
-        global_flags, subcmd_flags = siso.load_sisorc(sisorc)
+        global_flags, subcmd_flags, env = siso.load_sisorc(
+            sisorc,
+            {'SISO_PROJECT': 'siso-test'},
+        )
         self.assertEqual(global_flags, ['-credential_helper=gcloud'])
         self.assertEqual(subcmd_flags,
                          {'ninja': ['--failure_verbose=false', '-k=0']})
+        self.assertEqual(env, {
+            'SISO_LIMITS': 'cache=100',
+            'SISO_PROJECT': 'siso-test',
+        })
 
     def test_apply_sisorc_none(self):
         new_args = siso.apply_sisorc([], {}, ['ninja', '-C', 'out/Default'],

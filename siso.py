@@ -42,15 +42,20 @@ def check_outdir(subcmd, out_dir):
         sys.exit(1)
 
 
-def load_sisorc(rcfile):
+def load_sisorc(rcfile, env):
     if not os.path.exists(rcfile):
-        return [], {}
+        return [], {}, env
     global_flags = []
     subcmd_flags = {}
     with open(rcfile) as file:
         for line in file:
             line = line.strip()
             if line.startswith("#"):
+                continue
+            if (line.startswith("SISO_") or line.startswith("RBE_")) and \
+               "=" in line:
+                k, v = line.rstrip().split('=', 1)
+                env[k] = v
                 continue
             args = shlex.split(line)
             if len(args) == 0:
@@ -59,7 +64,7 @@ def load_sisorc(rcfile):
                 global_flags.extend(args)
                 continue
             subcmd_flags[args[0]] = args[1:]
-    return global_flags, subcmd_flags
+    return global_flags, subcmd_flags, env
 
 
 def apply_sisorc(global_flags, subcmd_flags, args, subcmd):
@@ -179,8 +184,9 @@ def main(args):
                     'See build/config/siso/backend_config/README.md',
                     file=sys.stderr)
             return 1
-        global_flags, subcmd_flags = load_sisorc(
-            os.path.join(base_path, 'build', 'config', 'siso', '.sisorc'))
+        global_flags, subcmd_flags, env = load_sisorc(
+            os.path.join(base_path, 'build', 'config', 'siso', '.sisorc'),
+            env.copy())
         siso_paths = [
             siso_override_path,
             os.path.join(base_path, 'third_party', 'siso', 'cipd',
