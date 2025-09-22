@@ -313,6 +313,19 @@ class GceAuthenticatorTest(unittest.TestCase):
             mock_authenticate.assert_called_once_with(conn)
 
 
+class LuciContextAuthenticatorTest(unittest.TestCase):
+
+    @mock.patch('gerrit_util.LuciContextAuthenticator.authenticate')
+    def testAttemptAuthenticateWithReAuth(self, mock_authenticate):
+        luci_context_auth = gerrit_util.LuciContextAuthenticator()
+        conn = makeConn('some.example.com')
+        context = auth.ReAuthContext(host='some.example.com',
+                                     project='some/project')
+        self.assertTrue(
+            luci_context_auth.attempt_authenticate_with_reauth(conn, context))
+        mock_authenticate.assert_called_once_with(conn)
+
+
 class GerritUtilTest(unittest.TestCase):
     def setUp(self):
         super(GerritUtilTest, self).setUp()
