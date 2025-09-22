@@ -46,6 +46,30 @@
       },
       "revId": "9e656e6c1fc7357fd11cfa011cadfc8fb7dda01b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5ee53896_0a9fb252",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-09-22T06:15:27Z",
+      "side": 1,
+      "message": "I see.\n\n@philwo@google.com how does Bazel allow configuring env vars?",
+      "parentUuid": "a1c18ac0_2d7919e3",
+      "range": {
+        "startLine": 10,
+        "startChar": 0,
+        "endLine": 12,
+        "endChar": 0
+      },
+      "revId": "9e656e6c1fc7357fd11cfa011cadfc8fb7dda01b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
