@@ -679,6 +679,59 @@ class GerritUtilTest(unittest.TestCase):
         mockJsonResponse.return_value = {'status': {}}
         self.assertTrue(gerrit_util.IsCodeOwnersEnabledOnRepo('host', 'repo'))
 
+    @mock.patch('gerrit_util.CreateHttpConn')
+    @mock.patch('gerrit_util.ReadHttpJsonResponse')
+    @mock.patch('gerrit_util.GetChangeDetail')
+    def testSetReview_ReAuth(self, mockGetChangeDetail, mockJsonResponse,
+                             mockCreateHttpConn):
+        mockJsonResponse.return_value = {"labels": {"Code-Review": 1}}
+        mockGetChangeDetail.return_value = {
+            "project": "infra/infra",
+        }
+
+        gerrit_util.SetReview('chromium', 123456, labels={'Code-Review': 1})
+
+        # Check `project` in reauth_context is backfilled.
+        mockGetChangeDetail.assert_called_with('chromium', 123456)
+        httpConnKwargs = mockCreateHttpConn.call_args[1]
+        self.assertIn('reauth_context', httpConnKwargs)
+        self.assertEqual(
+            auth.ReAuthContext(host='chromium', project='infra/infra'),
+            httpConnKwargs['reauth_context'])
+
+    @mock.patch('gerrit_util.CreateHttpConn')
+    @mock.patch('gerrit_util.ReadHttpJsonResponse')
+    @mock.patch('gerrit_util.GetChangeDetail')
+    def testSetReview_ReAuth_WithProject(self, mockGetChangeDetail,
+                                         mockJsonResponse, mockCreateHttpConn):
+        mockJsonResponse.return_value = {"labels": {"Code-Review": 1}}
+
+        gerrit_util.SetReview('chromium',
+                              123456,
+                              labels={'Code-Review': 1},
+                              project="infra/experimental")
+
+        # Check reauth_context uses the given project.
+        mockGetChangeDetail.assert_not_called()
+        httpConnKwargs = mockCreateHttpConn.call_args[1]
+        self.assertIn('reauth_context', httpConnKwargs)
+        self.assertEqual(
+            auth.ReAuthContext(host='chromium', project='infra/experimental'),
+            httpConnKwargs['reauth_context'])
+
+    @mock.patch('gerrit_util.CreateHttpConn')
+    @mock.patch('gerrit_util.ReadHttpJsonResponse')
+    @mock.patch('gerrit_util.GetChangeDetail')
+    def testSetReview_ReAuthNotNeeded(self, mockGetChangeDetail,
+                                      mockJsonResponse, mockCreateHttpConn):
+        mockJsonResponse.return_value = {"ready": True}
+
+        gerrit_util.SetReview('chromium', 123456, msg="test")
+
+        # ReAuth not needed.
+        mockGetChangeDetail.assert_not_called()
+        httpConnKwargs = mockCreateHttpConn.call_args[1]
+        self.assertIsNone(httpConnKwargs.get('reauth_context', None))
 
 class SSOAuthenticatorTest(unittest.TestCase):
 
