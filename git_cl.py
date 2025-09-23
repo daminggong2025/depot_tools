@@ -7038,6 +7038,15 @@ def _RunGnFormat(opts, paths, top_dir, diffs):
     return return_value
 
 
+def _IsMojomFormatSupported():
+    primary_solution_path = gclient_paths.GetPrimarySolutionPath()
+    if not primary_solution_path:
+        return False
+    mojom_format_path = os.path.join(primary_solution_path, 'mojo', 'public',
+                                     'tools', 'mojom', 'mojom_format.py')
+    return os.path.exists(mojom_format_path)
+
+
 def _RunMojomFormat(opts, paths, top_dir, diffs):
     primary_solution_path = gclient_paths.GetPrimarySolutionPath()
     if not primary_solution_path:
@@ -7249,7 +7258,13 @@ def CMDformat(parser: optparse.OptionParser, args: list[str]):
                       'will be formatted.')
     parser.add_option('--mojom',
                       action='store_true',
+                      dest='mojom',
+                      default=_IsMojomFormatSupported(),
                       help='Enables formatting of .mojom files.')
+    parser.add_option('--no-mojom',
+                      dest='mojom',
+                      action='store_false',
+                      help='Disables formatting of .mojom files.')
     parser.add_option('--no-java',
                       action='store_true',
                       help='Disable auto-formatting of .java')
