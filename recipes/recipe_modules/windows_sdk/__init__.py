@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 
+from . import api as _api
 DEPS = [
     'recipe_engine/cipd',
     'recipe_engine/context',
@@ -24,3 +25,5 @@ PROPERTIES = {
     ), default={'version': 'uploaded:2018-06-13'},
   )
 }
+
+API = _api.WindowsSDKApi

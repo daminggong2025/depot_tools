@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 
 
+from . import api as _api
+from . import test_api as _test_api
 DEPS = [
     'recipe_engine/cipd',
     'recipe_engine/context',
@@ -37,3 +39,6 @@ PROPERTIES = {
     ), default={},
   )
 }
+
+API = _api.OSXSDKApi
+TEST_API = _test_api.OSXSDKTestApi
