@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1c543d93_030e2d4a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1410814
+      },
+      "writtenOn": "2025-09-23T19:29:01Z",
+      "side": 1,
+      "message": "Hi @ddoman@chromium.org In crrev.com/c/6965238 a reviewer left a comment that my change to a mojom file is not formatted as expected which made me realize these files are not formatted by default when running `git cl format` although a formatter is available. Also the current versions of the mojom files in Chromium do not follow the expected format so running the formatter on-demand produces large diffs which makes it difficult to address the review comments. What do you think about enabling mojom formatting by default if the formatter is available? I believe it would help catch formatting issues that are otherwise not caught by reviewers.",
+      "revId": "c05a9113e044246f9e90751d220d9eede9b3653c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
