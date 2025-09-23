@@ -3,6 +3,29 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "32d1fddc_06f4d7d2",
+        "filename": "gerrit_util.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 841,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2025-09-23T23:53:25Z",
+      "side": 1,
+      "message": "I don\u0027t know how this context param is used. If just passing the param into this function does some magic, can you add an inline comment for it? It looks to be an unused param, if I just look at this code.",
+      "range": {
+        "startLine": 841,
+        "startChar": 41,
+        "endLine": 841,
+        "endChar": 68
+      },
+      "revId": "d2e23fb107d6dec5d695b108b7d85284aaa1cfbc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "6bd3ea8b_cf4406e3",
         "filename": "gerrit_util.py",
         "patchSetId": 1
@@ -32,6 +55,29 @@
       "side": 1,
       "message": "Done",
       "parentUuid": "6bd3ea8b_cf4406e3",
+      "revId": "d2e23fb107d6dec5d695b108b7d85284aaa1cfbc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2b7fd720_287c201a",
+        "filename": "gerrit_util.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 843,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2025-09-23T23:53:25Z",
+      "side": 1,
+      "message": "what\u0027s the value of this function, `attempt_authenticate_with_reauth()`, if all it does is calling `self.authenticate(conn)`?\n\ni.e., can the callsite just call `self.authenticate(conn)` directly?",
+      "range": {
+        "startLine": 843,
+        "startChar": 8,
+        "endLine": 843,
+        "endChar": 31
+      },
       "revId": "d2e23fb107d6dec5d695b108b7d85284aaa1cfbc",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
