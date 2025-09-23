@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 
 
+from . import api as _api
+from . import test_api as _test_api
 DEPS = [
     'recipe_engine/json',
     'recipe_engine/path',
@@ -10,3 +12,6 @@ DEPS = [
     'recipe_engine/step',
     'recipe_engine/url',
 ]
+
+API = _api.Gitiles
+TEST_API = _test_api.GitilesTestApi

@@ -3,9 +3,12 @@
 # found in the LICENSE file.
 
 
+from . import api as _api
 DEPS = [
   'recipe_engine/cipd',
   'recipe_engine/context',
   'recipe_engine/platform',
   'recipe_engine/runtime',
 ]
+
+API = _api.DepotToolsApi
