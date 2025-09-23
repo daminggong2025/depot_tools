@@ -1,3 +1,4 @@
+from . import api as _api
 from PB.recipe_modules.depot_tools.gsutil import properties
 
 
@@ -10,3 +11,5 @@ DEPS = [
 ]
 
 ENV_PROPERTIES = properties.EnvProperties
+
+API = _api.GSUtilApi
