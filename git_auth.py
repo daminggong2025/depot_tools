@@ -292,10 +292,8 @@ def ConfigureGlobal(cwd: str, remote_url: str) -> None:
 
 def ClearRepoConfig(cwd: str, cl: git_cl.Changelist) -> None:
     """Clear the current Git repo authentication."""
-    logging.debug('Clearing current Git repo authentication...')
-    c = ConfigChanger.new_from_env(cwd, cl)
-    c.mode = ConfigMode.NO_AUTH
-    c.apply(cwd)
+    # TODO(ayatane): Disable prior to removal
+    return
 
 
 class _ConfigError(Exception):

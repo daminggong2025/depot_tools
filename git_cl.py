@@ -4017,7 +4017,16 @@ def CMDcreds_check(parser, args):
         wizard.run(force_global=options.force_global)
         return 0
     if newauth.ExplicitlyDisabled():
-        git_auth.ClearRepoConfig(os.getcwd(), Changelist())
+        print(
+            'You have `depot-tools.usenewauthstack` turned off in your Git config.'
+        )
+        print('This is unsupported, so we recommand you remove it.')
+        print(
+            'If you encounter any issues when removing this, please report them using:'
+        )
+        print(
+            'https://issues.chromium.org/issues/new?component=1456702&template=2076315\n'
+        )
 
     # Code below checks .gitcookies. Abort if using something else.
     auth_name, _ = gerrit_util.debug_auth()
