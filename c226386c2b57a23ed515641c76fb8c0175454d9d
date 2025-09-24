@@ -20,6 +20,23 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "67b014ba_adb514bf",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2025-09-24T21:55:24Z",
+      "side": 1,
+      "message": "I don\u0027t have enough context about the bug and this CL. LGTM, assuming that @ayatane@chromium.org did all the necessary reviews.",
+      "revId": "c226386c2b57a23ed515641c76fb8c0175454d9d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "a5dd8aad_83530b64",
         "filename": "gerrit_util.py",
         "patchSetId": 3
