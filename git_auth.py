@@ -261,22 +261,6 @@ class ConfigChanger(object):
         self._set_config_func(*args, **kwargs)
 
 
-def Configure(cwd: str, cl: git_cl.Changelist) -> None:
-    """Configure Git authentication.
-
-    This may modify the global Git config and the local repo config as
-    needed.
-    """
-    # TODO(ayatane): Disable prior to removal
-    return
-
-
-def ConfigureGlobal(cwd: str, remote_url: str) -> None:
-    """Configure global/user Git authentication."""
-    # TODO(ayatane): Disable prior to removal
-    return
-
-
 def ClearRepoConfig(cwd: str, cl: git_cl.Changelist) -> None:
     """Clear the current Git repo authentication."""
     # TODO(ayatane): Disable prior to removal
