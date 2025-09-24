@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from . import api as _api
-from . import test_api as _test_api
 from recipe_engine.config import ConfigGroup, Single
 from recipe_engine.recipe_api import Property
 
@@ -32,5 +30,5 @@ DEPS = [
 
 PROPERTIES = properties.InputProperties
 
-API = _api.PresubmitApi
-TEST_API = _test_api.PresubmitTestApi
+from .api import PresubmitApi as API
+from .test_api import PresubmitTestApi as TEST_API

@@ -2,9 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-
-from . import api as _api
-from . import test_api as _test_api
 DEPS = [
     'recipe_engine/json',
     'recipe_engine/path',
@@ -13,5 +10,5 @@ DEPS = [
     'recipe_engine/url',
 ]
 
-API = _api.Gitiles
-TEST_API = _test_api.GitilesTestApi
+from .api import Gitiles as API
+from .test_api import GitilesTestApi as TEST_API

@@ -2,9 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-
-from . import api as _api
-from . import test_api as _test_api
 DEPS = [
     'recipe_engine/cipd',
     'recipe_engine/context',
@@ -40,5 +37,5 @@ PROPERTIES = {
   )
 }
 
-API = _api.OSXSDKApi
-TEST_API = _test_api.OSXSDKTestApi
+from .api import OSXSDKApi as API
+from .test_api import OSXSDKTestApi as TEST_API

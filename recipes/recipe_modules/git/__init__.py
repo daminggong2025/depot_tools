@@ -1,6 +1,4 @@
 
-from . import api as _api
-from . import test_api as _test_api
 DEPS = [
   'depot_tools',
   'recipe_engine/buildbucket',
@@ -13,5 +11,5 @@ DEPS = [
   'recipe_engine/step',
 ]
 
-API = _api.GitApi
-TEST_API = _test_api.GitTestApi
+from .api import GitApi as API
+from .test_api import GitTestApi as TEST_API

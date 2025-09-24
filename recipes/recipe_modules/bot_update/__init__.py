@@ -1,6 +1,4 @@
 
-from . import api as _api
-from . import test_api as _test_api
 DEPS = [
     'depot_tools',
     'gclient',
@@ -44,5 +42,5 @@ PROPERTIES = {
 # Forward these types so that they can be used without importing api
 from .api import RelativeRoot, Result
 
-API = _api.BotUpdateApi
-TEST_API = _test_api.BotUpdateTestApi
+from .api import BotUpdateApi as API
+from .test_api import BotUpdateTestApi as TEST_API

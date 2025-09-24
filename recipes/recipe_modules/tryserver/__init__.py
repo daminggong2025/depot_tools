@@ -3,8 +3,6 @@
 # found in the LICENSE file.
 
 
-from . import api as _api
-from . import test_api as _test_api
 DEPS = [
   'gerrit',
   'git',
@@ -20,5 +18,5 @@ DEPS = [
   'recipe_engine/step',
 ]
 
-API = _api.TryserverApi
-TEST_API = _test_api.TryserverTestApi
+from .api import TryserverApi as API
+from .test_api import TryserverTestApi as TEST_API

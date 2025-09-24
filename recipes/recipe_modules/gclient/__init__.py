@@ -1,5 +1,3 @@
-from . import api as _api
-from . import test_api as _test_api
 DEPS = [
     'git',
     'gitiles',
@@ -17,7 +15,8 @@ DEPS = [
 
 from .config import config_ctx as CONFIG_CTX
 
-__all__ = ['CONFIG_CTX']
+from .api import GclientApi as API
+from .test_api import GclientTestApi as TEST_API
 
-API = _api.GclientApi
-TEST_API = _test_api.GclientTestApi
+__all__ = ['CONFIG_CTX', 'API', 'TEST_API']
+
