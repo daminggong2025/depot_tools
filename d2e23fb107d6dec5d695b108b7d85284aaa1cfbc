@@ -48,6 +48,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "4c46a98d_ece7ea04",
+        "filename": "gerrit_util.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 841,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2025-09-24T21:49:20Z",
+      "side": 1,
+      "message": "resolving; it seems that it\u0027s the function signature defined in the base class. Note that I don\u0027t really have much context about the logic implemented in this CL, and I wasn\u0027t involved in any of the discussions that might have been done in the bug and elsewhere. Also, the CL description doesn\u0027t provide much context either. So, I\u0027m doing reviews with common python practices, and this comment was also from the point. It\u0027d be appreciated if your CL includes a bit of context. (and same for all the other CLs)",
+      "parentUuid": "1b065a74_f4ee5f9f",
+      "range": {
+        "startLine": 841,
+        "startChar": 41,
+        "endLine": 841,
+        "endChar": 68
+      },
+      "revId": "d2e23fb107d6dec5d695b108b7d85284aaa1cfbc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "6bd3ea8b_cf4406e3",
