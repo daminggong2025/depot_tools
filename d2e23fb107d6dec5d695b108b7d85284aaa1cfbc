@@ -26,6 +26,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "1b065a74_f4ee5f9f",
+        "filename": "gerrit_util.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 841,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-09-24T00:35:13Z",
+      "side": 1,
+      "message": "It\u0027s unused (do you mean change this this to `_` so it\u0027s clearly unused?",
+      "parentUuid": "32d1fddc_06f4d7d2",
+      "range": {
+        "startLine": 841,
+        "startChar": 41,
+        "endLine": 841,
+        "endChar": 68
+      },
+      "revId": "d2e23fb107d6dec5d695b108b7d85284aaa1cfbc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "6bd3ea8b_cf4406e3",
         "filename": "gerrit_util.py",
         "patchSetId": 1
@@ -72,6 +96,30 @@
       "writtenOn": "2025-09-23T23:53:25Z",
       "side": 1,
       "message": "what\u0027s the value of this function, `attempt_authenticate_with_reauth()`, if all it does is calling `self.authenticate(conn)`?\n\ni.e., can the callsite just call `self.authenticate(conn)` directly?",
+      "range": {
+        "startLine": 843,
+        "startChar": 8,
+        "endLine": 843,
+        "endChar": 31
+      },
+      "revId": "d2e23fb107d6dec5d695b108b7d85284aaa1cfbc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3fdda0d5_981d7c17",
+        "filename": "gerrit_util.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 843,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-09-24T00:35:13Z",
+      "side": 1,
+      "message": "`authenticate` function adds authorization header to the http `conn`.\n\n---\n\n\u003e can the callsite just call self.authenticate(conn) directly.\n\nThis involves duplicating the logic in ChainedAuthenticator and know whether a certain Authenticator\u0027s token could already satisfy ReAuth requirement, or if the Authenticator will provide a different token.\n\nWe think it\u0027s simpler delegate this task to each concrete Authenticator with attempt_authenticate_with_reauth",
+      "parentUuid": "2b7fd720_287c201a",
       "range": {
         "startLine": 843,
         "startChar": 8,
