@@ -68,6 +68,24 @@
       "parentUuid": "a5dd8aad_83530b64",
       "revId": "c226386c2b57a23ed515641c76fb8c0175454d9d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "24172523_91c5fc78",
+        "filename": "gerrit_util.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 872,
+      "author": {
+        "id": 3355336
+      },
+      "writtenOn": "2025-09-24T22:10:16Z",
+      "side": 1,
+      "message": "I\u0027m not deeply familiar, but IIRC people running `luci-auth context` as a home grown solution to some auth issues.",
+      "parentUuid": "855b6172_3af47a0d",
+      "revId": "c226386c2b57a23ed515641c76fb8c0175454d9d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
