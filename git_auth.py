@@ -261,19 +261,6 @@ class ConfigChanger(object):
         self._set_config_func(*args, **kwargs)
 
 
-def AutoConfigure(cwd: str, cl: git_cl.Changelist) -> None:
-    """Configure Git authentication automatically.
-
-    This tracks when the config that has already been applied and skips
-    doing anything if so.
-
-    This may modify the global Git config and the local repo config as
-    needed.
-    """
-    # TODO(ayatane): Disable prior to removal
-    return
-
-
 def Configure(cwd: str, cl: git_cl.Changelist) -> None:
     """Configure Git authentication.
 

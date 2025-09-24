@@ -2397,7 +2397,6 @@ class Changelist(object):
             return
 
         if newauth.Enabled():
-            git_auth.AutoConfigure(os.getcwd(), Changelist())
             return
 
         # Lazy-loader to identify Gerrit and Git hosts.
