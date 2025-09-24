@@ -33,6 +33,24 @@
       "message": "The mojom formatter is disabled by default intentionally.\n- crrev.com/c/5259981\n- b/434006733\n- b/434034331.\n\n@alexrudenko@chromium.org, can you confirm that you are aware of the context, and this enable is agreed by the mojom owner team? (not sure if you are actually from the team or not)\n\n+ @jbroman@chromium.org fyi",
       "revId": "c05a9113e044246f9e90751d220d9eede9b3653c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4bd1d737_49fea90a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1410814
+      },
+      "writtenOn": "2025-09-24T06:08:23Z",
+      "side": 1,
+      "message": "Thanks for sharing the context, no, I was not aware of this. It looks like b/434006733 tracks this already, in that case this CL can be abandoned.",
+      "parentUuid": "700aedfe_02690d74",
+      "revId": "c05a9113e044246f9e90751d220d9eede9b3653c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
