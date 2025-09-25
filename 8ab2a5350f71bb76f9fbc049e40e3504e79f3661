@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "bfa34198_ba6eaad9",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 4367086
+      },
+      "writtenOn": "2025-09-25T06:02:48Z",
+      "side": 1,
+      "message": "[fork]: https://github.com/bufbuild/protobuf-es/fork\n[open-issue]: https://github.com/bufbuild/protobuf-es/issues/new\n[cla]: https://cla-assistant.io/bufbuild/protobuf-es\n[commit-message]: http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html",
+      "revId": "8ab2a5350f71bb76f9fbc049e40e3504e79f3661",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
