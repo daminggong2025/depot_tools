@@ -22,6 +22,8 @@ PACKAGE_MANAGER_PATHS = (
     "crates.io/crates/",
     "npmjs.com/package/",
     "developer.android.com/jetpack/androidx/releases/",
+    "/maven2/",
+    "/artifacts/repository/",
 )
 
 
