@@ -34,6 +34,24 @@
       "parentUuid": "af05c548_331f63d0",
       "revId": "05ca8c646ac6f807eb0143faebea0ee13192854f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "af554dd5_72bbab6f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2025-09-30T22:42:30Z",
+      "side": 1,
+      "message": "Or, the issue could be that new processes keep coming up and down but there is no guarantee that which process will be waken up first. Therefore, it\u0027s possible that some unlucky processes hit the timeout.\n\nThen, a correct patch would more be like, providing ordered wake up. by lock+queue. If you were suffering from such a problem, then doubling the timeout would just reduce the chance, and you may end up 5x or 10x the timeout.",
+      "parentUuid": "bbb882fd_671f2d85",
+      "revId": "05ca8c646ac6f807eb0143faebea0ee13192854f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
