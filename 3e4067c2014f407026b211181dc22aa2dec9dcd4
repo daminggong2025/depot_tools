@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4c44e5e7_a186fa49",
+        "filename": "git_cache.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 331,
+      "author": {
+        "id": 1336288
+      },
+      "writtenOn": "2025-09-30T22:10:38Z",
+      "side": 1,
+      "message": "Hi Scott, \n\nIf this is preventing the multiple process access, should it respect the lock_timeout configured by the users? Or are there other concerns?\n\nMany thanks!",
+      "range": {
+        "startLine": 331,
+        "startChar": 45,
+        "endLine": 331,
+        "endChar": 55
+      },
+      "revId": "3e4067c2014f407026b211181dc22aa2dec9dcd4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
