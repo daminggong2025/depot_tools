@@ -52,6 +52,24 @@
       "parentUuid": "bbb882fd_671f2d85",
       "revId": "05ca8c646ac6f807eb0143faebea0ee13192854f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "391de126_c99ce6bd",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1336288
+      },
+      "writtenOn": "2025-09-30T22:48:01Z",
+      "side": 1,
+      "message": "Yes. I guess so. Note the default lock_timeout is 5000 sec, so 5x or 10x 20s is not too bad actually. Overall, I think it makes sense to leave the lock_timeout by users, if users are ok to wait longer. WDYT?",
+      "parentUuid": "af554dd5_72bbab6f",
+      "revId": "05ca8c646ac6f807eb0143faebea0ee13192854f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
