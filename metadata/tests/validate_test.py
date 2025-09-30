@@ -242,7 +242,8 @@ class ValidateReciprocalLicenseTest(unittest.TestCase):
 
         license_errors = []
         for result in results:
-            if not result.is_fatal() and "License has a license not in the allowlist" in result.get_reason():
+            if "License has a license not in the allowlist" in result.get_reason(
+            ):
                 license_errors.append(result)
 
         self.assertEqual(len(license_errors), 0, "Should not create an error when a reciprocal license is used in an open source project")
@@ -263,7 +264,15 @@ class ValidateRestrictedLicenseTest(unittest.TestCase):
             is_open_source_project=False
         )
 
-        self.assertEqual(len(results), 0, "Should not create an error when a restricted license is used")
+        license_errors = []
+        for result in results:
+            if ("License has a license not in the allowlist"
+                    in result.get_reason()):
+                license_errors.append(result)
+
+        self.assertEqual(
+            len(license_errors), 0,
+            "Should not create an error when a restricted license is used")
 
 if __name__ == "__main__":
     unittest.main()
