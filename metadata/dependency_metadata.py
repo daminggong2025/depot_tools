@@ -341,6 +341,20 @@ class DependencyMetadata:
                         f"List these IDs in the 'Mitigated:' field: {util.quoted(extra_descriptions)}"
                     ]))
 
+        if self.security_critical and self.vuln_scan_sufficiency == "insufficient":
+            # TODO(b/448003595): Provide a pre-populated bug link for when people
+            # think this is incorrect.
+            results.append(
+                vr.ValidationWarning(
+                    reason=
+                    "Dependency metadata is insufficient for vulnerability scanning.",
+                    additional=[
+                        "Please provide one of the following combinations:",
+                        "- 'CPEPrefix' with a version.",
+                        "- A git clonable 'URL' and a 'Revision'.",
+                        "- A git clonable 'URL' and a 'Version' matching the git tag.",
+                        "- A package manager 'URL' and a 'Version'.",
+                    ]))
         return results
 
     def _cpe_prefix_lacks_version(self) -> List[vr.ValidationResult]:
