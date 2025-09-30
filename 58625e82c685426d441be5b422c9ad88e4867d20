@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6593296f_f7129d90",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1499972
+      },
+      "writtenOn": "2025-09-30T17:10:21Z",
+      "side": 1,
+      "message": "jarhar@ can you please review this patch? (Note that it already landed, but I still need another review.) Also note that this patch was reverted anyway:\n\nhttps://chromium-review.git.corp.google.com/c/chromium/tools/depot_tools/+/6254237",
+      "revId": "58625e82c685426d441be5b422c9ad88e4867d20",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
