@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "af05c548_331f63d0",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1336288
+      },
+      "writtenOn": "2025-09-30T22:28:09Z",
+      "side": 1,
+      "message": "Hi Scott, \n\ngclient.py allow users to specify the lock_timeout via command line, but it seems no matter what the users have set, `gclient sync` will hit this timeout first, if there are multiple git processes. So I am thinking if we could allow the contains_revision to respect the lock_timeout? Thoughts?",
+      "revId": "05ca8c646ac6f807eb0143faebea0ee13192854f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
