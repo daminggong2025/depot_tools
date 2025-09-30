@@ -510,7 +510,7 @@ class DependencyValidationTest(unittest.TestCase):
         )
         # Check that a warning is returned when only CVE descriptions are
         # present.
-        self.assertEqual(len(results), 1)
+        self.assertGreater(len(results), 0)
         self.assertTrue(isinstance(results[0], vr.ValidationWarning))
         self.assertEqual(results[0].get_reason(),
                          "Found descriptions for unlisted vulnerability IDs")
@@ -529,15 +529,23 @@ class DependencyValidationTest(unittest.TestCase):
         # Should get two warnings:
         # 1. Missing description for CVE-2024-5678
         # 2. Extra description for CVE-2024-9999
-        self.assertEqual(len(results), 2)
-        self.assertTrue(isinstance(results[0], vr.ValidationWarning))
-        self.assertEqual(results[0].get_reason(),
-                         "Missing descriptions for vulnerability IDs")
-        self.assertIn("CVE-2024-5678",results[0].get_additional()[0])
-        self.assertTrue(isinstance(results[1], vr.ValidationWarning))
-        self.assertEqual(results[1].get_reason(),
-                         "Found descriptions for unlisted vulnerability IDs")
-        self.assertIn("CVE-2024-9999",results[1].get_additional()[0])
+        # Separate warnings to test independently of order.
+        missing_desc_warnings = [
+            r for r in results
+            if r.get_reason() == "Missing descriptions for vulnerability IDs"
+        ]
+        extra_desc_warnings = [
+            r for r in results if r.get_reason() ==
+            "Found descriptions for unlisted vulnerability IDs"
+        ]
+
+        self.assertEqual(len(missing_desc_warnings), 1)
+        self.assertIn("CVE-2024-5678",
+                      missing_desc_warnings[0].get_additional()[0])
+
+        self.assertEqual(len(extra_desc_warnings), 1)
+        self.assertIn("CVE-2024-9999",
+                      extra_desc_warnings[0].get_additional()[0])
 
 
     def test_vuln_scan_sufficiency(self):
@@ -665,6 +673,115 @@ class DependencyValidationTest(unittest.TestCase):
         dependency.add_entry(known_fields.REVISION.get_name(), "abcdef123456")
         self.assertEqual(dependency.vuln_scan_sufficiency,
                          "sufficient:URL and Revision")
+
+    def test_vuln_scan_sufficiency_validation(self):
+        """Tests that a warning is returned for insufficient metadata."""
+        with self.subTest(msg="Insufficient metadata, should warn"):
+            dependency = dm.DependencyMetadata()
+            dependency.add_entry(known_fields.NAME.get_name(),
+                                 "Test insufficency")
+            dependency.add_entry(known_fields.URL.get_name(),
+                                 "https://www.example.com")
+            dependency.add_entry(known_fields.VERSION.get_name(), "1.0.0")
+            dependency.add_entry(known_fields.LICENSE.get_name(), "MIT")
+            dependency.add_entry(known_fields.LICENSE_FILE.get_name(),
+                                 "LICENSE")
+            dependency.add_entry(known_fields.SECURITY_CRITICAL.get_name(),
+                                 "yes")
+            dependency.add_entry(known_fields.SHIPPED.get_name(), "yes")
+
+            results = dependency.validate(
+                source_file_dir=os.path.join(_THIS_DIR, "data"),
+                repo_root_dir=_THIS_DIR,
+            )
+            self.assertEqual(len(results), 1)
+            self.assertTrue(isinstance(results[0], vr.ValidationWarning))
+            self.assertEqual(
+                results[0].get_reason(),
+                "Dependency metadata is insufficient for vulnerability scanning."
+            )
+
+        with self.subTest(msg="Sufficient metadata, should not warn"):
+            dependency = dm.DependencyMetadata()
+            dependency.add_entry(known_fields.NAME.get_name(),
+                                 "Test sufficency")
+            dependency.add_entry(known_fields.URL.get_name(),
+                                 "https://github.com/example/repo.git")
+            dependency.add_entry(known_fields.VERSION.get_name(), "1.0.0")
+            dependency.add_entry(known_fields.LICENSE.get_name(), "MIT")
+            dependency.add_entry(known_fields.LICENSE_FILE.get_name(),
+                                 "LICENSE")
+            dependency.add_entry(known_fields.SECURITY_CRITICAL.get_name(),
+                                 "yes")
+            dependency.add_entry(known_fields.SHIPPED.get_name(), "yes")
+
+            results = dependency.validate(
+                source_file_dir=os.path.join(_THIS_DIR, "data"),
+                repo_root_dir=_THIS_DIR,
+            )
+            self.assertEqual(len(results), 0)
+
+        with self.subTest(msg="Insufficient metadata, not security critical"):
+            dependency = dm.DependencyMetadata()
+            dependency.add_entry(known_fields.NAME.get_name(),
+                                 "Test insufficency")
+            dependency.add_entry(known_fields.URL.get_name(),
+                                 "https://www.example.com")
+            dependency.add_entry(known_fields.VERSION.get_name(), "1.0.0")
+            dependency.add_entry(known_fields.LICENSE.get_name(), "MIT")
+            dependency.add_entry(known_fields.LICENSE_FILE.get_name(),
+                                 "LICENSE")
+            dependency.add_entry(known_fields.SECURITY_CRITICAL.get_name(),
+                                 "no")
+            dependency.add_entry(known_fields.SHIPPED.get_name(), "yes")
+
+            results = dependency.validate(
+                source_file_dir=os.path.join(_THIS_DIR, "data"),
+                repo_root_dir=_THIS_DIR,
+            )
+            self.assertEqual(len(results), 0)
+
+        with self.subTest(msg="Insufficient metadata, not shipped"):
+            dependency = dm.DependencyMetadata()
+            dependency.add_entry(known_fields.NAME.get_name(),
+                                 "Test insufficency")
+            dependency.add_entry(known_fields.URL.get_name(),
+                                 "https://www.example.com")
+            dependency.add_entry(known_fields.VERSION.get_name(), "1.0.0")
+            dependency.add_entry(known_fields.LICENSE.get_name(), "MIT")
+            dependency.add_entry(known_fields.LICENSE_FILE.get_name(),
+                                 "LICENSE")
+            dependency.add_entry(known_fields.SECURITY_CRITICAL.get_name(),
+                                 "yes")
+            dependency.add_entry(known_fields.SHIPPED.get_name(), "no")
+
+            results = dependency.validate(
+                source_file_dir=os.path.join(_THIS_DIR, "data"),
+                repo_root_dir=_THIS_DIR,
+            )
+            self.assertEqual(len(results), 0)
+
+        with self.subTest(msg="Insufficient metadata, has update mechanism"):
+            dependency = dm.DependencyMetadata()
+            dependency.add_entry(known_fields.NAME.get_name(),
+                                 "Test insufficency")
+            dependency.add_entry(known_fields.URL.get_name(),
+                                 "https://www.example.com")
+            dependency.add_entry(known_fields.VERSION.get_name(), "1.0.0")
+            dependency.add_entry(known_fields.LICENSE.get_name(), "MIT")
+            dependency.add_entry(known_fields.LICENSE_FILE.get_name(),
+                                 "LICENSE")
+            dependency.add_entry(known_fields.SECURITY_CRITICAL.get_name(),
+                                 "yes")
+            dependency.add_entry(known_fields.SHIPPED.get_name(), "yes")
+            dependency.add_entry(known_fields.UPDATE_MECHANISM.get_name(),
+                                 "Autoroll")
+
+            results = dependency.validate(
+                source_file_dir=os.path.join(_THIS_DIR, "data"),
+                repo_root_dir=_THIS_DIR,
+            )
+            self.assertEqual(len(results), 0)
 
 
 def test_update_mechanism_validation(self):
