@@ -313,7 +313,7 @@ class Mirror(object):
         self.Rename(tempdir, directory)
         return True
 
-    def contains_revision(self, revision):
+    def contains_revision(self, revision, timeout=20):
         if not self.exists():
             return False
 
@@ -328,7 +328,7 @@ class Mirror(object):
         # Ideally, read-write locks should be used, Then, the below would
         # - acquire the read lock immediately or
         # - raise LockError() if there is an ongoing sync()-ing.
-        with lockfile.lock(self.mirror_path, timeout=20):
+        with lockfile.lock(self.mirror_path, timeout=timeout):
             # If the sentinent file exists at this point, it indicates that
             # the bootstrapping process was interrupted, leaving the cache
             # entries in a bad state.
