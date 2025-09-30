@@ -341,6 +341,25 @@ class DependencyMetadata:
                         f"List these IDs in the 'Mitigated:' field: {util.quoted(extra_descriptions)}"
                     ]))
 
+        # Begin by only warning for a small subset of cases.
+        # TODO(b/438384123): Expand this to all cases.
+        if (self.security_critical
+            and self.shipped
+            and not self.update_mechanism
+            and self.vuln_scan_sufficiency == "insufficient"):
+            # TODO(b/448003595): Provide a pre-populated bug link for when people
+            # think this is incorrect.
+            results.append(
+                vr.ValidationWarning(
+                    reason=
+                    "Dependency metadata is insufficient for vulnerability scanning.",
+                    additional=[
+                        "Please provide one of the following combinations:",
+                        "- 'CPEPrefix' with a version.",
+                        "- A git clonable 'URL' and a 'Revision'.",
+                        "- A git clonable 'URL' and a 'Version' matching the git tag.",
+                        "- A package manager 'URL' and a 'Version'. ",
+                    ]))
         return results
 
     def _cpe_prefix_lacks_version(self) -> List[vr.ValidationResult]:
@@ -536,7 +555,8 @@ class DependencyMetadata:
             - 'sufficient:CPE' if a CPE prefix is provided and a version is included in the README.
             - 'sufficient:URL and Revision' if URL is a git url and a Revision is provided.
             - 'sufficient:URL and Revision[DEPS]' as above, but 'Revision:DEPS'.
-            - 'sufficient:URL and Version' if URL and version are provided.
+            - 'sufficient:Git URL and Version' if a git clonable URL and a Version are provided.
+            - 'sufficient:Package Manager URL and Version' if a package manager URL and a Version are provided.
             - 'ignore:Canonical' if the dependency is the canonical repository.
             - 'ignore:Internal' if the dependency is internal.
             - 'ignore:Static' if the dependency's update mechanism is static.
