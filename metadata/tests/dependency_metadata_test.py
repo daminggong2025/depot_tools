@@ -666,6 +666,53 @@ class DependencyValidationTest(unittest.TestCase):
         self.assertEqual(dependency.vuln_scan_sufficiency,
                          "sufficient:URL and Revision")
 
+    def test_vuln_scan_sufficiency_validation(self):
+        """Tests that a warning is returned for insufficient metadata."""
+        with self.subTest(msg="Insufficient metadata"):
+            dependency = dm.DependencyMetadata()
+            dependency.add_entry(known_fields.NAME.get_name(),
+                                 "Test insufficency")
+            dependency.add_entry(known_fields.URL.get_name(),
+                                 "https://www.example.com")
+            dependency.add_entry(known_fields.VERSION.get_name(), "1.0.0")
+            dependency.add_entry(known_fields.LICENSE.get_name(), "MIT")
+            dependency.add_entry(known_fields.LICENSE_FILE.get_name(),
+                                 "LICENSE")
+            dependency.add_entry(known_fields.SECURITY_CRITICAL.get_name(),
+                                 "no")
+            dependency.add_entry(known_fields.SHIPPED.get_name(), "no")
+
+            results = dependency.validate(
+                source_file_dir=os.path.join(_THIS_DIR, "data"),
+                repo_root_dir=_THIS_DIR,
+            )
+            self.assertEqual(len(results), 1)
+            self.assertTrue(isinstance(results[0], vr.ValidationWarning))
+            self.assertEqual(
+                results[0].get_reason(),
+                "Dependency metadata is insufficient for vulnerability scanning."
+            )
+
+        with self.subTest(msg="Sufficient metadata"):
+            dependency = dm.DependencyMetadata()
+            dependency.add_entry(known_fields.NAME.get_name(),
+                                 "Test sufficency")
+            dependency.add_entry(known_fields.URL.get_name(),
+                                 "https://github.com/example/repo.git")
+            dependency.add_entry(known_fields.VERSION.get_name(), "1.0.0")
+            dependency.add_entry(known_fields.LICENSE.get_name(), "MIT")
+            dependency.add_entry(known_fields.LICENSE_FILE.get_name(),
+                                 "LICENSE")
+            dependency.add_entry(known_fields.SECURITY_CRITICAL.get_name(),
+                                 "no")
+            dependency.add_entry(known_fields.SHIPPED.get_name(), "no")
+
+            results = dependency.validate(
+                source_file_dir=os.path.join(_THIS_DIR, "data"),
+                repo_root_dir=_THIS_DIR,
+            )
+            self.assertEqual(len(results), 0)
+
 
 def test_update_mechanism_validation(self):
     """Tests the validation logic for the Update Mechanism field."""
