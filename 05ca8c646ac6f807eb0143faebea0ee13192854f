@@ -88,6 +88,24 @@
       "parentUuid": "391de126_c99ce6bd",
       "revId": "05ca8c646ac6f807eb0143faebea0ee13192854f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "40935fca_5cc21ff9",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1336288
+      },
+      "writtenOn": "2025-09-30T23:53:18Z",
+      "side": 1,
+      "message": "Do you mean this line? https://source.chromium.org/chromium/chromium/tools/depot_tools/+/main:gclient.py;drc\u003d45ca62ae3aab01c35e7c2f868f449f213d30d68a;l\u003d3964\n\nPer doc string, I don\u0027t think it is for the entire gclient sync.\n\n\u003e single git-command for checking the existing of git-cache for a given repo should be set like 5000s\n\nI don\u0027t think 5000s are necessary neither. Is the lock only for `git cat-file`? Any cases that the git command could take longer? So far I got below error.\n\nIt always happens at the beginning of the build, when we load the cache(possible that multiple processes try to write).\n\n```\nTraceback (most recent call last):\n  File \"/__w/cobalt_sandbox/cobalt_sandbox/depot_tools/metrics.py\", line 302, in print_notice_and_exit\n    yield\n  File \"/__w/cobalt_sandbox/cobalt_sandbox/depot_tools/gclient.py\", line 4680, in \u003cmodule\u003e\n    sys.exit(main(sys.argv[1:]))\n             ^^^^^^^^^^^^^^^^^^\n  File \"/__w/cobalt_sandbox/cobalt_sandbox/depot_tools/gclient.py\", line 4666, in main\n    return dispatcher.execute(OptionParser(), argv)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/__w/cobalt_sandbox/cobalt_sandbox/depot_tools/subcommand.py\", line 262, in execute\n    return command(parser, args[1:])\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/__w/cobalt_sandbox/cobalt_sandbox/depot_tools/gclient.py\", line 4019, in CMDsync\n    ret \u003d client.RunOnDeps(\u0027update\u0027, args)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/__w/cobalt_sandbox/cobalt_sandbox/depot_tools/gclient.py\", line 2450, in RunOnDeps\n    work_queue.flush(revision_overrides,\n  File \"/__w/cobalt_sandbox/cobalt_sandbox/depot_tools/gclient_utils.py\", line 1045, in flush\n    reraise(e[0], e[1], e[2])\n  File \"/__w/cobalt_sandbox/cobalt_sandbox/depot_tools/gclient_utils.py\", line 54, in reraise\n    raise value\n  File \"/__w/cobalt_sandbox/cobalt_sandbox/depot_tools/gclient_utils.py\", line 1124, in run\n    self.item.run(*self.args, **self.kwargs)\n  File \"/__w/cobalt_sandbox/cobalt_sandbox/depot_tools/gclient.py\", line 1250, in run\n    self._got_revision \u003d self._used_scm.RunCommand(\n                         ^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/__w/cobalt_sandbox/cobalt_sandbox/depot_tools/gclient_scm.py\", line 136, in RunCommand\n    return getattr(self, command)(options, args, file_list)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/__w/cobalt_sandbox/cobalt_sandbox/depot_tools/gclient_scm.py\", line 672, in wrapper\n    return_val \u003d f(*args)\n                 ^^^^^^^^\n  File \"/__w/cobalt_sandbox/cobalt_sandbox/depot_tools/gclient_scm.py\", line 837, in update\n    self._UpdateMirrorIfNotContains(mirror, options, rev_type,\n  File \"/__w/cobalt_sandbox/cobalt_sandbox/depot_tools/gclient_scm.py\", line 1341, in _UpdateMirrorIfNotContains\n    if rev_type \u003d\u003d \u0027hash\u0027 and is_sha and mirror.contains_revision(revision):\n                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/__w/cobalt_sandbox/cobalt_sandbox/depot_tools/git_cache.py\", line 331, in contains_revision\n    with lockfile.lock(self.mirror_path, timeout\u003d20):\n  File \"/github/home/.cache/vpython-root.0/store/cpython+l5fnajrvijf7cvdkjqmbicg3i8/contents/lib/python3.11/contextlib.py\", line 137, in __enter__\n    return next(self.gen)\n           ^^^^^^^^^^^^^^\n  File \"/__w/cobalt_sandbox/cobalt_sandbox/depot_tools/lockfile.py\", line 127, in lock\n    release_fn \u003d _lock(path, timeout)\n                 ^^^^^^^^^^^^^^^^^^^^\n  File \"/__w/cobalt_sandbox/cobalt_sandbox/depot_tools/lockfile.py\", line 113, in _lock\n    raise LockError(\"Error locking %s (err: %s)\" % (path, str(e)))\nlockfile.LockError: Error locking /gclient-sync-cache/git/chromium.googlesource.com-external-github.com-gpuweb-cts (err: [Errno 11] Resource temporarily unavailable)\n```",
+      "parentUuid": "73e3e287_f3f6f26c",
+      "revId": "05ca8c646ac6f807eb0143faebea0ee13192854f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
