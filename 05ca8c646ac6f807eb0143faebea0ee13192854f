@@ -16,6 +16,24 @@
       "message": "Hi Scott, \n\ngclient.py allow users to specify the lock_timeout via command line, but it seems no matter what the users have set, `gclient sync` will hit this timeout first, if there are multiple git processes. So I am thinking if we could allow the contains_revision to respect the lock_timeout? Thoughts?",
       "revId": "05ca8c646ac6f807eb0143faebea0ee13192854f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bbb882fd_671f2d85",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2025-09-30T22:35:51Z",
+      "side": 1,
+      "message": "The timeout is to protect access to run the git command at L347.\nI\u0027d be quite surprised if there are so many processes waiting for the execution of `git cat-file` and 20 secs were not enough.\n\nWould you be able to confirm that they all timed out in this stage?\ni.e., they were waiting to run `git cat-file ..` but there were too many processes wanting to execute the git command such that 20 secs were not long enough to have a chance to execute the git command.\n\nwas it like more than 20 processes waiting for it?",
+      "parentUuid": "af05c548_331f63d0",
+      "revId": "05ca8c646ac6f807eb0143faebea0ee13192854f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
