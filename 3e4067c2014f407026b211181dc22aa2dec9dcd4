@@ -22,6 +22,30 @@
       },
       "revId": "3e4067c2014f407026b211181dc22aa2dec9dcd4",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3d5e0748_67318f6d",
+        "filename": "git_cache.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 331,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2025-09-30T22:13:37Z",
+      "side": 1,
+      "message": "There is no user provided lock_timeout. do you mean that you have a use case where your recipe want to pass a custom timeout value to this function? If you share more context, I may be able to provide more inputs.",
+      "parentUuid": "4c44e5e7_a186fa49",
+      "range": {
+        "startLine": 331,
+        "startChar": 45,
+        "endLine": 331,
+        "endChar": 55
+      },
+      "revId": "3e4067c2014f407026b211181dc22aa2dec9dcd4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
