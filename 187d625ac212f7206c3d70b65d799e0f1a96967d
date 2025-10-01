@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ff75d731_b6f2bed4",
+        "filename": "ninjalog_uploader.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 182,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2025-10-01T03:18:30Z",
+      "side": 1,
+      "message": "Better to have a tracking issue for this?\nOr we can just use release bug?",
+      "range": {
+        "startLine": 182,
+        "startChar": 6,
+        "endLine": 182,
+        "endChar": 10
+      },
+      "revId": "187d625ac212f7206c3d70b65d799e0f1a96967d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
