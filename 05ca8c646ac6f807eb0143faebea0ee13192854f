@@ -124,6 +124,29 @@
       "parentUuid": "40935fca_5cc21ff9",
       "revId": "05ca8c646ac6f807eb0143faebea0ee13192854f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0adb0b08_19e450d6",
+        "filename": "git_cache.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 321,
+      "author": {
+        "id": 1336288
+      },
+      "writtenOn": "2025-10-01T19:40:03Z",
+      "side": 1,
+      "message": "@ddoman@chromium.org, create new thread here.\n\nSince this may raise lock error if another process is running sync(), I think the timeout should respect the lock_timeout like populate().\nBecause if process A runs populate(), and process B calls contains_revision(), it is easy to hit 20s timeout and the user configured lock_timeout does not take effect. \n\nOr as you said, we could have different lock types for populate and contains_revision. WDYT?",
+      "range": {
+        "startLine": 321,
+        "startChar": 10,
+        "endLine": 321,
+        "endChar": 26
+      },
+      "revId": "05ca8c646ac6f807eb0143faebea0ee13192854f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
