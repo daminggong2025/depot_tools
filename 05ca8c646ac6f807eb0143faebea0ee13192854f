@@ -128,6 +128,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "c003acd3_97de2e7e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1336288
+      },
+      "writtenOn": "2025-10-01T23:17:12Z",
+      "side": 1,
+      "message": "I think I got what you mean. I will try to implement a read/write lock and let you to review. If this is possible, it will be a win-win, as for contains_revision(), they don\u0027t need to wait for others unless the repo is sync-ing.",
+      "parentUuid": "4da46f46_fe97c784",
+      "revId": "05ca8c646ac6f807eb0143faebea0ee13192854f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "0adb0b08_19e450d6",
         "filename": "git_cache.py",
         "patchSetId": 3
