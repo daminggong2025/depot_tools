@@ -179,9 +179,12 @@ def GetMetadata(cmdline, ninjalog, exit_code, build_duration, user):
     if jflag is not None:
         metadata["jobs"] = jflag
 
-    with contextlib.suppress(FileNotFoundError):
-        with open(os.path.join(build_dir, ".siso_metadata.json"), "r") as f:
-            metadata["siso_metadata"] = json.load(f)
+    # TODO: crbug.com/447974622 - Remove .siso_metadata.json after switching
+    # the filename for a while by https://crrev.com/c/6998852.
+    for metadata_file in ['siso_metadata.json', '.siso_metadata.json']:
+        with contextlib.suppress(FileNotFoundError):
+            with open(os.path.join(build_dir, metadata_file), "r") as f:
+                metadata["siso_metadata"] = json.load(f)
 
     return metadata
 
