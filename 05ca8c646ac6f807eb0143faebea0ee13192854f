@@ -106,6 +106,24 @@
       "parentUuid": "73e3e287_f3f6f26c",
       "revId": "05ca8c646ac6f807eb0143faebea0ee13192854f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4da46f46_fe97c784",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1336288
+      },
+      "writtenOn": "2025-10-01T18:22:24Z",
+      "side": 1,
+      "message": "Hi Scott, \n\n```\nif platform.machine().startswith(\u0027arm\u0027):\n            jobs \u003d 1\n        else:\n            jobs \u003d max(8, gclient_utils.NumLocalCpus())\n```\n\nThe default jobs is CPU count for usual x86 linux bots. This could easily go to 30+ for beefy build bot. If 3 gclient sync run on the same cache, it could easily have 60 processes polling the file lock at the same time. So it is not surprised that some of them may have to wait longer than 20 sec.\n\n\u003e Then, a correct patch would more be like, providing ordered wake up. by lock+queue\n\nThis sounds even better. Would you provide more details?",
+      "parentUuid": "40935fca_5cc21ff9",
+      "revId": "05ca8c646ac6f807eb0143faebea0ee13192854f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
