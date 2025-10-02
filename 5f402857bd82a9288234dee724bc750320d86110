@@ -16,6 +16,23 @@
       "message": "ptal 😊\n\ni\u0027m endorsing the uploader as my alt account",
       "revId": "5f402857bd82a9288234dee724bc750320d86110",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "628f5965_95fd5c29",
+        "filename": "luci_auth_fido2_plugin.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 316,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-10-02T07:32:54Z",
+      "side": 1,
+      "message": "FYI, I need to check on gMac when I go in office tomorrow.\n\nI was told by Robbie that installing pinentry via homebrew on gMac is blocked.\n\nThough I don\u0027t expect gMac users to run into this. Our keys are U2F (you can\u0027t set PIN on it), so the lack of pinentry is fine as long as we don\u0027t print confusing error messages.",
+      "revId": "5f402857bd82a9288234dee724bc750320d86110",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
