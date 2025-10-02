@@ -39,6 +39,24 @@
       "message": "what\u0027s the difference between this and internal?",
       "revId": "3f26b926a69baf556872b78ca74130afcc34a46d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "05f428fe_fed7bea5",
+        "filename": "metadata/dependency_metadata.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 563,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2025-10-02T04:41:42Z",
+      "side": 1,
+      "message": "Google Internal is for things that are developed in google3. These are things that should ideally have sufficient metadata, but they don\u0027t and it\u0027s a problem that needs fixing, but due to the transitive nature of them we can\u0027t block here. The owners are aware that they are an issue.\n\nWe also can\u0027t use \u0027URL: Google Internal\u0027 because the maintainers have expressed that they need the URL to remain the same for their automation to continue working.",
+      "parentUuid": "4553862f_7642445e",
+      "revId": "3f26b926a69baf556872b78ca74130afcc34a46d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
