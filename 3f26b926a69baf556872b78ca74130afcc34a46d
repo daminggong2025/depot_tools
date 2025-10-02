@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4553862f_7642445e",
+        "filename": "metadata/dependency_metadata.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 563,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-10-02T04:25:50Z",
+      "side": 1,
+      "message": "what\u0027s the difference between this and internal?",
+      "revId": "3f26b926a69baf556872b78ca74130afcc34a46d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
