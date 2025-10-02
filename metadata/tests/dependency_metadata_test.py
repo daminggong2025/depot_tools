@@ -621,6 +621,13 @@ class DependencyValidationTest(unittest.TestCase):
         self.assertEqual(dependency.vuln_scan_sufficiency,
                          "ignore:Static")
 
+        # Test case: ignore:GoogleManaged (because of update mechanism).
+        dependency = dm.DependencyMetadata()
+        dependency.add_entry(known_fields.UPDATE_MECHANISM.get_name(),
+                             "Autoroll.GoogleManaged")
+        self.assertEqual(dependency.vuln_scan_sufficiency,
+                         "ignore:GoogleManaged")
+
         # Test case: ignore:Canonical (only URL).
         dependency = dm.DependencyMetadata()
         dependency.add_entry(known_fields.URL.get_name(), "This is the canonical public repository")

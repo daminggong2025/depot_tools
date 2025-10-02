@@ -42,6 +42,7 @@ BUG_LINK_REGEX = re.compile(r"^https://crbug\.com/(\d+)$")
 
 # A set of the fully-qualified, allowed mechanism values.
 ALLOWED_MECHANISMS = {
+    "Autoroll.GoogleManaged",
     "Autoroll",
     "Manual",
     "Static",
