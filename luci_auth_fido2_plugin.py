@@ -29,10 +29,13 @@ from contextlib import contextmanager
 import dataclasses
 import json
 import logging
+import os
 import signal
+import shutil
+import subprocess
 import sys
 from threading import Event
-from typing import BinaryIO
+from typing import BinaryIO, List, Optional
 
 from fido2.client import DefaultClientDataCollector
 from fido2.client import Fido2Client, UserInteraction, WebAuthnClient
@@ -52,7 +55,7 @@ _PLUGIN_HEADER_SIZE = 4
 _EXIT_NO_FIDO2_DEVICES = 11
 _EXIT_ALL_ASSERTIONS_FAILED = 12
 _EXIT_NO_MATCHING_CRED = 13
-
+_EXIT_MISSING_DEPENDENCY = 14
 
 def read_full(r: BinaryIO, size: int) -> bytes:
     """Read an exact amount of data.
@@ -152,7 +155,20 @@ def encode_plugin_response(a: AuthenticationResponse) -> bytes:
     }).encode('utf-8')
 
 
-class DiscardInteraction(UserInteraction):
+def get_pinentry_exec() -> Optional[str]:
+    """Returns pinentry executable.
+
+    Reads LUCI_AUTH_PINENTRY env variable, and fallback to the default
+    pinentry command if the var isn't set.
+    """
+    pinentry_cmd = os.environ.get('LUCI_AUTH_PINENTRY') or 'pinentry'
+    pinentry_exec = shutil.which(pinentry_cmd)
+    if not pinentry_exec:
+        return None
+    return os.path.realpath(pinentry_exec)
+
+
+class PinEntryInteraction(UserInteraction):
     """Handler when user interaction is required.
 
     This plugin's stdin/stdout talks with git-credential-luci, so we fail
@@ -164,14 +180,37 @@ class DiscardInteraction(UserInteraction):
         sys.stderr.write("\nTouch your blinking security key to continue.\n\n")
 
     def request_pin(self, permissions, rp_id):
-        # This plugin shouldn't set assertion flags that will require
-        # PIN entry.
+        """Ask for PIN entry with a GUI dialog by using a system tool.
+
+           We only handle Linux and MacOS here. We use Windows WebAuthn API
+           directly, which handles PIN entry if necessary.
+        """
+        # Using pinentry to ask for PIN.
+        # https://www.gnupg.org/documentation/manuals/assuan/Client-requests.html
+        proc = subprocess.Popen([get_pinentry_exec()],
+                                stdin=subprocess.PIPE,
+                                stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE,
+                                text=True)
+        pinentry_cmds = """
+SETDESC Enter the FIDO2 PIN for your security key
+SETPROMPT Chromium Infra ReAuth
+GETPIN
+"""
+        stdout, stderr = proc.communicate(pinentry_cmds)
+        if proc.returncode != 0:
+            logging.error('pinentry failed: %s', stderr)
+            return None
+        for line in stdout.splitlines():
+            if line.startswith('D '):
+                return line[2:].strip()
+        logging.warning(
+            'An empty PIN was entered. Security key assertion may fail.')
         return None
 
     def request_uv(self, permissions, rp_id):
-        # Don't allow user verification (UV), because we don't allow PIN
-        # entry, UV will fail.
-        return False
+        # Allows PIN entry.
+        return True
 
 
 def get_clients(origin: str) -> list[tuple[WebAuthnClient, str]]:
@@ -190,7 +229,7 @@ def get_clients(origin: str) -> list[tuple[WebAuthnClient, str]]:
         logging.debug("Using WindowsClient")
         return [(WindowsClient(client_data_collector), "WindowsWebAuthn")]
 
-    user_interaction = DiscardInteraction()
+    user_interaction = PinEntryInteraction()
     clients = []
     for dev in CtapHidDevice.list_devices():
         desc = dev.descriptor
@@ -269,6 +308,27 @@ def main():
         else:
             logging.info("No available FIDO device.")
         sys.exit(0)
+
+    # Check if the user has pinentry executable that might work.
+    if sys.platform not in ('win32', 'cygwin'):
+        pinentry = get_pinentry_exec()
+        if not pinentry:
+            logging.warning('pinentry command not found!')
+            logging.warning(
+                "You won't be able to enter security key PIN if your key requires one."
+            )
+            logging.warning(
+                "Please install a GUI-based pinentry program for your operating system."
+            )
+
+        if pinentry.endswith('-tty') or pinentry.endswith('-curses'):
+            # The plugin's stdin/stdout are occupied by `git credential-luci`, so
+            # we can't use terminal-based pinentry.
+            logging.error('pinentry command is a terminal-based program!')
+            logging.error(
+                "Please install a GUI-based pinentry program for your operating system."
+            )
+            sys.exit(_EXIT_MISSING_DEPENDENCY)
 
     plugin_req = parse_plugin_request(plugin_read(sys.stdin.buffer))
 
