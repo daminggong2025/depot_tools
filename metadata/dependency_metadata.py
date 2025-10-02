@@ -560,6 +560,7 @@ class DependencyMetadata:
             - 'ignore:Canonical' if the dependency is the canonical repository.
             - 'ignore:Internal' if the dependency is internal.
             - 'ignore:Static' if the dependency's update mechanism is static.
+            - 'ignore:GoogleManaged' if the dependency's update mechanism ends in .GoogleManaged.
             - 'insufficient' otherwise.
         """
 
@@ -581,8 +582,11 @@ class DependencyMetadata:
             return "ignore:Canonical"
         if raw_url is not None and known_fields.URL.repo_is_internal(raw_url):
             return "ignore:Internal"
-        if (self.update_mechanism and self.update_mechanism[0]
-                and self.update_mechanism[0].lower() == "static"):
-            return "ignore:Static"
+        if self.update_mechanism and self.update_mechanism[0]:
+            if self.update_mechanism[0].lower() == "static":
+                return "ignore:Static"
+            if (self.update_mechanism[1]
+                    and self.update_mechanism[1].lower() == "googlemanaged"):
+                return "ignore:GoogleManaged"
 
         return "insufficient"
