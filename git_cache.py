@@ -313,43 +313,37 @@ class Mirror(object):
         self.Rename(tempdir, directory)
         return True
 
-    def contains_revision(self, revision):
+    def contains_revision(self, revision, timeout=20):
         if not self.exists():
             return False
 
         # This will raise LockError(), if another process is
-        # 1) sync()-ing or
-        # 2) calling contains_revision().
+        # sync()-ing (a writer) and hit timeout.
         #
-        # In case (1), the caller is responsible for handling the LockError().
-        # As per (2), the below gives 20 secs timeout just to cover most
-        # practical cases.
-        #
-        # Ideally, read-write locks should be used, Then, the below would
-        # - acquire the read lock immediately or
-        # - raise LockError() if there is an ongoing sync()-ing.
-        with lockfile.lock(self.mirror_path, timeout=20):
+        # A read lock will block if a writer holds the lock. It will not block
+        # if other readers hold the lock.
+        with lockfile.lock(self.mirror_path, timeout=timeout, mode='r'):
             # If the sentinent file exists at this point, it indicates that
             # the bootstrapping process was interrupted, leaving the cache
             # entries in a bad state.
             if os.path.isfile(self._init_sentient_file):
                 return False
 
-        if sys.platform.startswith('win'):
-            # Windows .bat scripts use ^ as escape sequence, which means we have
-            # to escape it with itself for every .bat invocation.
-            needle = '%s^^^^{commit}' % revision
-        else:
-            needle = '%s^{commit}' % revision
-        try:
-            # cat-file exits with 0 on success, that is git object of given hash
-            # was found.
-            self.RunGit(['cat-file', '-e', needle])
-            return True
-        except subprocess.CalledProcessError:
-            self.print('Commit with hash "%s" not found' % revision,
-                       file=sys.stderr)
-            return False
+            if sys.platform.startswith('win'):
+                # Windows .bat scripts use ^ as escape sequence, which means we have
+                # to escape it with itself for every .bat invocation.
+                needle = '%s^^^^{commit}' % revision
+            else:
+                needle = '%s^{commit}' % revision
+            try:
+                # cat-file exits with 0 on success, that is git object of given hash
+                # was found.
+                self.RunGit(['cat-file', '-e', needle])
+                return True
+            except subprocess.CalledProcessError:
+                self.print('Commit with hash "%s" not found' % revision,
+                           file=sys.stderr)
+                return False
 
     def exists(self):
         return os.path.isfile(os.path.join(self.mirror_path, 'config'))
@@ -555,7 +549,8 @@ class Mirror(object):
             self.print(GIT_CACHE_CORRUPT_MESSAGE)
             gclient_utils.rmtree(self.mirror_path)
 
-        with lockfile.lock(self.mirror_path, lock_timeout):
+        # Acquire an exclusive write lock, as populate modifies the cache.
+        with lockfile.lock(self.mirror_path, lock_timeout, mode='w'):
             if os.path.isfile(self._init_sentient_file):
                 # Previous bootstrap didn't finish
                 wipe_cache()
