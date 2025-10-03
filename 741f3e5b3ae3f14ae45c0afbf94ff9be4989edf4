@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "01f323be_23353a3f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1544922
+      },
+      "writtenOn": "2025-10-03T04:35:05Z",
+      "side": 1,
+      "message": "+1\u0027ing as `dtoa` is a notice license, which is allowed based on the comments in this file.",
+      "revId": "741f3e5b3ae3f14ae45c0afbf94ff9be4989edf4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
