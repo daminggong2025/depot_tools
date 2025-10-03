@@ -1,0 +1,85 @@
+#!/usr/bin/env python3
+
+import logging
+import os
+import sys
+
+
+def die(message):
+    """Prints an error message to stderr and exits."""
+    sys.stderr.write(f"{message}\n")
+    sys.exit(1)
+
+
+def find_and_execute(filenames, execute_fn, max_depth=25):
+    """
+    Searches for files in parent directories and executes a function if found.
+
+    Args:
+        filenames: A list of filenames to search for.
+        execute_fn: The function to execute if a file is found.
+        max_depth: The maximum number of parent directories to search.
+    """
+    original_dir = os.getcwd()
+    current_dir = original_dir
+    depth = max_depth
+
+    while depth > 0:
+        for filename in filenames:
+            candidate_path = os.path.join(current_dir, filename)
+            if os.path.isfile(candidate_path):
+                os.chdir(original_dir)  # Return to original directory before executing
+                execute_fn(candidate_path)
+                return  # Exit after successful execution
+
+        current_dir = os.path.dirname(current_dir)
+        if current_dir == "/":  # Avoid infinite loop if we reach root directory
+            break
+        os.chdir(current_dir)  # Change directory before decrementing depth
+        depth -= 1
+
+    os.chdir(original_dir)
+    return False  # File not found
+
+
+def execute_project(path, args):
+    """Executes a project file with the given arguments."""
+    try:
+        os.execv(path, [path] + args)
+    except FileNotFoundError:
+        die(f"Error: Project file '{path}' not found.")
+    except PermissionError:
+        die(f"Error: Permission denied to execute '{path}'.")
+    except Exception as e:
+        die(f"Error executing '{path}': {e}")
+
+
+def execute_make(args):
+    """Executes make with the given arguments."""
+    try:
+        os.execvp("make", ["make"] + args)
+    except FileNotFoundError:
+        die("Error: make not found or not in PATH.")
+    except Exception as e:
+        die(f"Error executing 'make': {e}")
+
+
+def main():
+    """Main function to run the task runner."""
+    args = sys.argv[1:]
+
+    # Try _project2 and _project
+    if find_and_execute(
+        ["_project2", "_project"], lambda path: execute_project(path, args)
+    ):
+        return
+
+    # Fallback to Makefile or makefile
+    if find_and_execute(["Makefile", "makefile"], lambda _: execute_make(args)):
+        return
+
+    sys.stderr.write("Nothing to do\n")
+
+
+if __name__ == "__main__":
+    main()

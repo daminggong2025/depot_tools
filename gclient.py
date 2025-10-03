@@ -4657,6 +4657,22 @@ def can_run_gclient_and_helpers():
 def main(argv):
     """Doesn't parse the arguments here, just find the right subcommand to
     execute."""
+
+    # gclient will sometimes hang when trying to `gclient sync` an infra checkout.
+    # Running pstree reveals what's happening:
+    #
+    #        |         |-tmux: server-+-bash-+-python3---git---less
+    #        |         |              |      `-vim---{vim}
+    #        |         |              |-bash
+    #        |         |              `-bash-+-pstree
+    #        |         |                     `-vim
+    #
+    # `less` in this case is the git pager. So, let's set the pager to something harmless.
+    # For good measure, let's also set the editor to false so that we don't even try to
+    # get the user to edit something.
+    os.environ["GIT_PAGER"] = "cat"
+    os.environ["GIT_EDITOR"] = "false"
+
     if not can_run_gclient_and_helpers():
         return 2
     disable_buffering()
