@@ -33,6 +33,24 @@
       "message": "This is difficult to read. The comment above should also be updated to explain this change.\n\nI\u0027m not sure what the values for `self.vuln_scan_sufficiency` are. What is its type and value range? If it can be `None`, then this will error out.",
       "revId": "16f53605e13b4f01ed2fe02d1f3278c17c90dcee",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2cf783c3_57044b15",
+        "filename": "metadata/dependency_metadata.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 270,
+      "author": {
+        "id": 1544922
+      },
+      "writtenOn": "2025-10-03T06:23:08Z",
+      "side": 1,
+      "message": "I would split this to:\n```\nif not self.vuln_scan_sufficiency.startswith(\u0027ignore:\u0027)\n    and not (self.is_canonical or self.version or ...):\n```",
+      "parentUuid": "a31449f2_f81c92e5",
+      "revId": "16f53605e13b4f01ed2fe02d1f3278c17c90dcee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
