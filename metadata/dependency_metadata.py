@@ -267,8 +267,8 @@ class DependencyMetadata:
         # If the repository is hosted somewhere (i.e. Chromium isn't the
         # canonical repositroy of the dependency), at least one of the fields
         # Version, Date or Revision must be provided.
-        if (not (self.is_canonical or self.version or self.date or self.revision
-                 or self.revision_in_deps)):
+        if (not ('ignore' in self.vuln_scan_sufficiency or self.version
+                 or self.date or self.revision or self.revision_in_deps)):
             versioning_fields = [
                 known_fields.VERSION, known_fields.DATE, known_fields.REVISION
             ]
