@@ -79,6 +79,7 @@ ALLOWED_SPDX_LICENSES = frozenset([
     "BSL-1.0",
     "CC-BY-3.0",
     "CC-BY-4.0",
+    "dtoa",
     "FTL",
     "HPND",
     "HPND-sell-variant",
