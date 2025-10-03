@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2b077ceb_96927fd1",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-10-03T07:36:38Z",
+      "side": 1,
+      "message": "ayatane: can you do another pass?\n\n(replaced pinentry with macos built-in AppleScript (osascript)",
+      "revId": "8a348499a764f6d638038e715bc29955e9d5a710",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

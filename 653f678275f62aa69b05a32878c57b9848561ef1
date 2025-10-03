@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "62da888b_f83f634e",
+        "filename": "luci_auth_fido2_plugin.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-10-03T07:36:38Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d5c95245_d37b20a6",
+      "range": {
+        "startLine": 34,
+        "startChar": 1,
+        "endLine": 34,
+        "endChar": 13
+      },
+      "revId": "653f678275f62aa69b05a32878c57b9848561ef1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "a3944729_be25d07a",
@@ -47,6 +71,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "8f992e1c_a8d41586",
+        "filename": "luci_auth_fido2_plugin.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 158,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-10-03T07:36:38Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a3944729_be25d07a",
+      "range": {
+        "startLine": 158,
+        "startChar": 4,
+        "endLine": 158,
+        "endChar": 21
+      },
+      "revId": "653f678275f62aa69b05a32878c57b9848561ef1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "480a9f77_d53179da",
@@ -60,6 +108,30 @@
       "writtenOn": "2025-10-02T21:33:10Z",
       "side": 1,
       "message": "Do we need the lookup? exec should already do the path lookup.",
+      "range": {
+        "startLine": 165,
+        "startChar": 18,
+        "endLine": 165,
+        "endChar": 23
+      },
+      "revId": "653f678275f62aa69b05a32878c57b9848561ef1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "afbb4d3c_8f15dea9",
+        "filename": "luci_auth_fido2_plugin.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 165,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-10-03T07:36:38Z",
+      "side": 1,
+      "message": "Yea. I want different messages for \"pinentry is not found\" and \"pinentry failed\"",
+      "parentUuid": "480a9f77_d53179da",
       "range": {
         "startLine": 165,
         "startChar": 18,
@@ -116,6 +188,54 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "13764d28_84c844ae",
+        "filename": "luci_auth_fido2_plugin.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 192,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-10-03T07:36:38Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8a168537_2695b713",
+      "range": {
+        "startLine": 192,
+        "startChar": 17,
+        "endLine": 192,
+        "endChar": 22
+      },
+      "revId": "653f678275f62aa69b05a32878c57b9848561ef1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5a3b3e8a_02c84e62",
+        "filename": "luci_auth_fido2_plugin.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 192,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-10-03T07:36:38Z",
+      "side": 1,
+      "message": "\"\\n\".join() did the trick",
+      "parentUuid": "06208b58_08b08bcc",
+      "range": {
+        "startLine": 192,
+        "startChar": 24,
+        "endLine": 192,
+        "endChar": 27
+      },
+      "revId": "653f678275f62aa69b05a32878c57b9848561ef1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "808c022e_fa309b2b",
@@ -129,6 +249,24 @@
       "writtenOn": "2025-10-02T21:33:10Z",
       "side": 1,
       "message": "I feel like you can handle this in the request_pin method?  So users who don\u0027t need it don\u0027t get a warning.  I don\u0027t think there\u0027s an advantage to checking this early anyway?",
+      "revId": "653f678275f62aa69b05a32878c57b9848561ef1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f0d574f6_ecb1e921",
+        "filename": "luci_auth_fido2_plugin.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 312,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-10-03T07:36:38Z",
+      "side": 1,
+      "message": "Moved to request_pin().\n\nI think at that point we can fail straight away (e.g. \"PIN requested, but you don\u0027t have a pinentry program installed, ...\")",
+      "parentUuid": "808c022e_fa309b2b",
       "revId": "653f678275f62aa69b05a32878c57b9848561ef1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
