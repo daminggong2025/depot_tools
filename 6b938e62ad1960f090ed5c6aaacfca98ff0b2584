@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "367a7f13_1457624a",
+        "filename": "luci_auth_fido2_plugin.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 185,
+      "author": {
+        "id": 3355336
+      },
+      "writtenOn": "2025-10-04T01:10:54Z",
+      "side": 1,
+      "message": "I don\u0027t want to bikeshed this too much but I prefer the previous version simply due to not having to build strings which is \"expensive\" vs a constant string.  I\u0027ve offered enough nit opinions, you can pick one to stick with",
+      "revId": "6b938e62ad1960f090ed5c6aaacfca98ff0b2584",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
