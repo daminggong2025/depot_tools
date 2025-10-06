@@ -26,6 +26,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "2b03843e_721781e2",
+        "filename": "gclient.py",
+        "patchSetId": 21
+      },
+      "lineNbr": 3971,
+      "author": {
+        "id": 1336288
+      },
+      "writtenOn": "2025-10-06T23:51:40Z",
+      "side": 1,
+      "message": "Do you really think we need a new timeout, or simply reuse lock_timeout? The corner case is that if uses did not specify lock_timeout, which the default is 5000, and they will get a delayed lock timeout error.\n\nDigging into it, there are only two cases:\n\n- other contains_revision(): as you mentioned this is a read step and should finish instantly, so 20s or 5000s does not make a lot of differences. Only for cases that one process is hanging, the error will be raised late. Does it happen a lot? For such case, I think we should figure out the hanging, as a shorter timeout does not help resolve the hanging issue, right?\n- other gclient sync: lock_timeout is WAI.",
+      "parentUuid": "0204929f_3bca6cd7",
+      "range": {
+        "startLine": 3971,
+        "startChar": 30,
+        "endLine": 3971,
+        "endChar": 31
+      },
+      "revId": "85f34e988880b475ac5fd87f04d2c87152d37773",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "e6ba5212_e147c15a",
         "filename": "git_cache.py",
         "patchSetId": 21
@@ -37,6 +61,30 @@
       "writtenOn": "2025-10-06T22:56:26Z",
       "side": 1,
       "message": "L1348 and L1368 are the only places calling contains_revision(), and they always pass param `timeout`. could you remove the default value from this param?",
+      "range": {
+        "startLine": 316,
+        "startChar": 42,
+        "endLine": 316,
+        "endChar": 53
+      },
+      "revId": "85f34e988880b475ac5fd87f04d2c87152d37773",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "332c9a81_e9c4a72a",
+        "filename": "git_cache.py",
+        "patchSetId": 21
+      },
+      "lineNbr": 316,
+      "author": {
+        "id": 1336288
+      },
+      "writtenOn": "2025-10-06T23:51:40Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e6ba5212_e147c15a",
       "range": {
         "startLine": 316,
         "startChar": 42,
