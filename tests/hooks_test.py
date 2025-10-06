@@ -19,6 +19,8 @@ import gclient_utils
 from gclient_eval import SYNC, SUBMODULES
 import git_common as git
 
+GIT_CONFIG_VAR = 'precommit.commit-gitlinks'
+
 
 class HooksTest(unittest.TestCase):
     def setUp(self):
@@ -30,6 +32,7 @@ class HooksTest(unittest.TestCase):
         self.populate()
 
     def tearDown(self):
+        git.run("config", "unset", GIT_CONFIG_VAR)
         gclient_utils.rmtree(self.repo)
 
     def write(self, repo, path, content):
