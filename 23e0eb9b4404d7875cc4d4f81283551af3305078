@@ -16,6 +16,24 @@
       "message": "I talked to the team a bit about this today.\n\nWe have extensive documentation on how people can ignore submodules changes already today using various git commands and aliases as well as a different pre-commit hook to automatically remove unintentional submodule commits: https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/git_submodules.md#submodules-during-git-status_git-commit_and-git-add\n\nI\u0027m wary of adding yet another way of doing this that we must support, and one that I think could be easy forget and then require help debugging should you ever need to make submodule changes in the future.\n\nIf you\u0027re still not convinced, you\u0027re welcome to file a feature request on depot_tools for this change and explain why the existing mitigations aren\u0027t sufficient. If there\u0027s enough broad interest (+1s, similar/duplicate requests, etc.) we can reconsider.",
       "revId": "23e0eb9b4404d7875cc4d4f81283551af3305078",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2c1ebe5e_f1801f4d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1303432
+      },
+      "writtenOn": "2025-10-06T19:22:07Z",
+      "side": 1,
+      "message": "I see you did file: crbug.com/449660678 | P2 | Allows to always unstage gitlinks\n\nSo that can be used for tracking if need be",
+      "parentUuid": "cbd45894_e2222070",
+      "revId": "23e0eb9b4404d7875cc4d4f81283551af3305078",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
