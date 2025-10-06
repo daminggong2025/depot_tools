@@ -18,11 +18,25 @@ from gclient_eval import SYNC
 
 SKIP_VAR = 'SKIP_GITLINK_PRECOMMIT'
 TESTING_ANSWER = 'TESTING_ANSWER'
-
+GIT_CONFIG_VAR = 'precommit.commit-gitlinks'
 
 def main():
+    commit_gitlinks = git_common.run("config", GIT_CONFIG_VAR)
+    if commit_gitlinks is not None:
+        if commit_gitlinks.lower() == "true":
+            commit_gitlinks = True
+        elif commit_gitlinks.lower() == "false":
+            commit_gitlinks = False
+        else:
+            print(
+                f"{GIT_CONFIG_VAR} is set to {commit_gitlinks}, which is not a correct parameter."
+            )
+            commit_gitlinks = None
     if os.getenv(SKIP_VAR) == '1':
         print(f'{SKIP_VAR} is set. Committing gitlinks, if any.')
+        exit(0)
+    if commit_gitlinks is True:
+        print(f'{GIT_CONFIG_VAR} config is True. Committing gitlinks, if any.')
         exit(0)
 
     has_deps_diff = False
@@ -57,15 +71,22 @@ def main():
         # DEPS only has to be in sync with gitlinks when state is SYNC.
         exit(0)
 
-    prompt = (
+    found_message = (
         f'Found no change to DEPS, but found staged gitlink(s) in diff:\n{diff}\n'
-        'Press Enter/Return if you intended to include them or "n" to unstage '
-        '(exclude from commit) the gitlink(s): ')
-    print(prompt)
+    )
+    print(found_message)
 
+    disable_msg = None
     if os.getenv(TESTING_ANSWER) is not None:
-        answer = os.getenv(TESTING_ANSWER)
+        unstage = os.getenv(TESTING_ANSWER) == "n"
+    elif commit_gitlinks is False:
+        unstage = commit_gitlinks is False
+        print(f'{commit_gitlinks} config is False. Unstaging gitlinks.')
     else:
+        prompt_message = (
+            'Press Enter/Return if you intended to include them or "n" to unstage '
+            '(exclude from commit) the gitlink(s): ')
+        print(prompt_message)
         try:
             sys.stdin = open("/dev/tty", "r")
         except (FileNotFoundError, OSError):
@@ -76,10 +97,13 @@ def main():
                     'Unable to acquire input handle, proceeding without modifications'
                 )
                 exit(0)
-        answer = input()
+        unstage = input()
 
-    disable_msg = f'To disable this hook, set {SKIP_VAR}=1'
-    if answer.lower() == 'n':
+        disable_msg = (
+            f'To disable this hook, execute `git config set {GIT_CONFIG_VAR} True`. '
+            f'To always unstage gitlinks, execute `git config set {GIT_CONFIG_VAR} False`. '
+        )
+    if unstage:
         print(
             f'\nUnstaging {len(staged_gitlinks)} staged gitlink(s) found in diff'
         )
@@ -90,7 +114,8 @@ def main():
             print(disable_msg)
             exit(1)
 
-    print(disable_msg)
+    if disable_msg:
+        print(disable_msg)
 
 
 if __name__ == "__main__":
