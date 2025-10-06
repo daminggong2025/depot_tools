@@ -3966,6 +3966,10 @@ def CMDsync(parser, args):
                       default=5000,
                       help='GIT ONLY - Deadline (in seconds) to wait for git '
                       'cache lock to become available. Default is %default.')
+    parser.add_option('--timeout',
+                      type='int',
+                      default=20,
+                      help='Timeout for acquiring cache lock, in seconds')
     parser.add_option('--no-rebase-patch-ref',
                       action='store_false',
                       dest='rebase_patch_ref',

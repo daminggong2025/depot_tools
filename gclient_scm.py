@@ -1337,8 +1337,16 @@ class GitWrapper(SCMWrapper):
         """
         # 'hash' is overloaded and can refer to a SHA-1 hash or refs/changes/*.
         is_sha = gclient_utils.IsFullGitSha(revision)
-
-        if rev_type == 'hash' and is_sha and mirror.contains_revision(revision):
+        # If gic_cache has read-write lock, only lock_timeout suffices. But
+        # before that, need another timeout for contains_revision() for the
+        # cases that another process is,
+        # -  sync()-ing. If this is WAI, users should attach
+        #    --timeout=LOCK_TIMEOUT to avoid LockError().
+        # - calling contains_revision(). The default 20s should cover most
+        #   practical cases.
+        acquire_timeout = getattr(options, 'timeout', 20)
+        if rev_type == 'hash' and is_sha and mirror.contains_revision(
+                revision, acquire_timeout):
             if options.verbose:
                 self.Print('skipping mirror update, it has rev=%s already' %
                            revision,
@@ -1357,7 +1365,7 @@ class GitWrapper(SCMWrapper):
         # Make sure we've actually fetched the revision we want, but only if it
         # was specified as an explicit commit hash.
         if rev_type == 'hash' and is_sha and not mirror.contains_revision(
-                revision):
+                revision, acquire_timeout):
             raise gclient_utils.Error(f'Failed to fetch {revision}.')
 
     def _Clone(self, revision, url, options):
