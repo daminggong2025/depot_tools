@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0204929f_3bca6cd7",
+        "filename": "gclient.py",
+        "patchSetId": 21
+      },
+      "lineNbr": 3971,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2025-10-06T22:56:26Z",
+      "side": 1,
+      "message": "the existing timeout value is 20, and gclient_scm.py:L1347 sets the default value with 20, if the function was called out of `gclient.py`.\n\nWouldn\u0027t it be better to set this default value to be 20?",
+      "range": {
+        "startLine": 3971,
+        "startChar": 30,
+        "endLine": 3971,
+        "endChar": 31
+      },
+      "revId": "85f34e988880b475ac5fd87f04d2c87152d37773",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e6ba5212_e147c15a",
+        "filename": "git_cache.py",
+        "patchSetId": 21
+      },
+      "lineNbr": 316,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2025-10-06T22:56:26Z",
+      "side": 1,
+      "message": "L1348 and L1368 are the only places calling contains_revision(), and they always pass param `timeout`. could you remove the default value from this param?",
+      "range": {
+        "startLine": 316,
+        "startChar": 42,
+        "endLine": 316,
+        "endChar": 53
+      },
+      "revId": "85f34e988880b475ac5fd87f04d2c87152d37773",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
