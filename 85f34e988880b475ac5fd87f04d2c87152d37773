@@ -74,6 +74,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "30c8b33c_4f9aa646",
+        "filename": "gclient.py",
+        "patchSetId": 21
+      },
+      "lineNbr": 3971,
+      "author": {
+        "id": 1336288
+      },
+      "writtenOn": "2025-10-07T18:27:51Z",
+      "side": 1,
+      "message": "Thanks Scott. Done.\n\n`20s should cover most practical cases.` I copied it from your previous doc string. If you could provide more details e.g. what practical cases, I can amend it here for future readers, as for now contains_revision has default 20 while populate has default 0. Maybe they can use same default?\n\nMany thanks.",
+      "parentUuid": "93c27f11_6e2fd526",
+      "range": {
+        "startLine": 3971,
+        "startChar": 30,
+        "endLine": 3971,
+        "endChar": 31
+      },
+      "revId": "85f34e988880b475ac5fd87f04d2c87152d37773",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "e6ba5212_e147c15a",
         "filename": "git_cache.py",
         "patchSetId": 21

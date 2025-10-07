@@ -183,6 +183,30 @@
       },
       "revId": "05ca8c646ac6f807eb0143faebea0ee13192854f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fe7d37d9_bd7f5654",
+        "filename": "git_cache.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 321,
+      "author": {
+        "id": 1336288
+      },
+      "writtenOn": "2025-10-07T18:27:51Z",
+      "side": 1,
+      "message": "Done in other thread.",
+      "parentUuid": "0adb0b08_19e450d6",
+      "range": {
+        "startLine": 321,
+        "startChar": 10,
+        "endLine": 321,
+        "endChar": 26
+      },
+      "revId": "05ca8c646ac6f807eb0143faebea0ee13192854f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
