@@ -152,7 +152,9 @@ class FieldValidationTest(unittest.TestCase):
                 "MIT",
                 "APSL-2.0, MIT",
                 "APSL-2.0 ,MIT",
-                "Refer to additional_readme_paths.json"
+                "Refer to additional_readme_paths.json",
+                "LicenseRef-MIT",
+                "LicenseRef-MIT, Apache-2.0",
             ],
             error_values=[
                 "",
