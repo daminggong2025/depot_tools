@@ -114,6 +114,7 @@ EXTENDED_LICENSE_CLASSIFIERS = frozenset([
     # unencumbered.
     # go/keep-sorted start case=no
     "AhemFont",
+    "LicenseRef-Android-SDK",
     "LZMA",
     "Public Domain",
     "public-domain-md5",
@@ -149,6 +150,7 @@ EXTENDED_LICENSE_CLASSIFIERS = frozenset([
     "Libpng-2.0",
     "LicenseRef-base64",
     "LicenseRef-base64-cpp",
+    "LicenseRef-GIF-Encoder",
     "LicenseRef-OpenGLUT",
     "LicenseRef-takuya-ooura",
     "pffft",

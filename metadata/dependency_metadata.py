@@ -266,9 +266,10 @@ class DependencyMetadata:
 
         # If the repository is hosted somewhere (i.e. Chromium isn't the
         # canonical repositroy of the dependency), at least one of the fields
-        # Version, Date or Revision must be provided.
-        if (not (self.is_canonical or self.version or self.date or self.revision
-                 or self.revision_in_deps)):
+        # Version, Date or Revision must be provided, unless it is canonical or internal.
+        if not (self.is_canonical or self.is_internal) and not (
+                self.version or self.date or self.revision
+                or self.revision_in_deps):
             versioning_fields = [
                 known_fields.VERSION, known_fields.DATE, known_fields.REVISION
             ]
@@ -436,6 +437,16 @@ class DependencyMetadata:
         return known_fields.URL.repo_is_canonical(value)
 
     @property
+    def is_internal(self) -> bool:
+        """
+        Returns whether this repository is internal to google/chromium.
+
+        This is derived from a special value in the URL field.
+        """
+        value = self._metadata.get(known_fields.URL, "")
+        return known_fields.URL.repo_is_internal(value)
+
+    @property
     def version(self) -> Optional[str]:
         return self._return_as_property(known_fields.VERSION)
 
@@ -577,10 +588,9 @@ class DependencyMetadata:
                 if self.url_is_package_manager:
                     return "sufficient:Package Manager URL and Version"
 
-        raw_url = self._metadata.get(known_fields.URL, None)
-        if raw_url is not None and known_fields.URL.repo_is_canonical(raw_url):
+        if self.is_canonical:
             return "ignore:Canonical"
-        if raw_url is not None and known_fields.URL.repo_is_internal(raw_url):
+        if self.is_internal:
             return "ignore:Internal"
         if self.update_mechanism and self.update_mechanism[0]:
             if self.update_mechanism[0].lower() == "static":
