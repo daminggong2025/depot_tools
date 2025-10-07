@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d0fd3516_e344ae24",
+        "filename": "metadata/dependency_metadata.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 269,
+      "author": {
+        "id": 1544922
+      },
+      "writtenOn": "2025-10-07T04:00:23Z",
+      "side": 1,
+      "message": "This comment should be updated to reflect this change.",
+      "revId": "9e703cd2752b36bb98fab60c329ae78a45a23b35",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "91115efd_d1dfb839",
+        "filename": "metadata/dependency_metadata.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 588,
+      "author": {
+        "id": 1544922
+      },
+      "writtenOn": "2025-10-07T04:00:23Z",
+      "side": 1,
+      "message": "Why would deps that are static not need any versioning, not even a date?",
+      "revId": "9e703cd2752b36bb98fab60c329ae78a45a23b35",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
