@@ -1143,13 +1143,20 @@ class GclientTest(trial_dir.TestCase):
             '}\n'
             'deps = {\n'
             '  "bar": {\n'
-            '    "packages": [{\n'
-            '      "package": "lemur",\n'
-            '      "version": Var("lemur_version"),\n'
-            '    }],\n'
+            '    "packages": [\n'
+            '      {\n'
+            '        "package": "lemur",\n'
+            '        "version": Var("lemur_version"),\n'
+            '      },\n'
+            '      {\n'
+            '        "package": "lemur2",\n'
+            '        "version_file": "some/version/file",\n'
+            '      },\n'
+            '    ],\n'
             '    "dep_type": "cipd",\n'
             '  }\n'
             '}')
+        write(os.path.join('some', 'version', 'file'), 'deadbeef')
         options, _ = gclient.OptionParser().parse_args([])
         obj = gclient.GClient.LoadCurrentConfig(options)
         obj._cipd_root = CIPDRootMock('src', 'https://example.com')
@@ -1159,11 +1166,15 @@ class GclientTest(trial_dir.TestCase):
         sol._condition = 'some_condition'
 
         sol.ParseDepsFile()
-        self.assertEqual(1, len(sol.dependencies))
-        dep = sol.dependencies[0]
+        self.assertEqual(2, len(sol.dependencies))
 
+        dep = sol.dependencies[0]
         self.assertIsInstance(dep, gclient.CipdDependency)
         self.assertEqual('https://example.com/lemur@version:1234', dep.url)
+
+        dep = sol.dependencies[1]
+        self.assertIsInstance(dep, gclient.CipdDependency)
+        self.assertEqual('https://example.com/lemur2@deadbeef', dep.url)
 
     def testIgnoresCipdDependenciesWhenFlagIsSet(self):
         """Verifies that CIPD deps are ignored if --ignore-dep-type cipd is set."""
