@@ -106,6 +106,7 @@ import git_common
 import gclient_eval
 import gclient_paths
 import gclient_scm
+import jj_scm
 import gclient_utils
 import git_cache
 import metrics
@@ -1750,6 +1751,14 @@ class GitDependency(Dependency):
         """Create a Wrapper instance suitable for handling this git dependency."""
         if self._IsCog():
             return gclient_scm.CogWrapper()
+
+        if os.path.exists(os.path.join(self.root.root_dir, self.name, '.jj')):
+            return jj_scm.JjWrapper(self.url,
+                                      self.root.root_dir,
+                                      self.name,
+                                      self.outbuf,
+                                      out_cb,
+                                      print_outbuf=self.print_outbuf)
 
         return gclient_scm.GitWrapper(self.url,
                                       self.root.root_dir,
