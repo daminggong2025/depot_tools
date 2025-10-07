@@ -33,6 +33,24 @@
       "message": "get(\u0027LUCI_AUTH_PINENTRY\u0027, \u0027pinentry\u0027)",
       "revId": "c4578124353a25cce7c1de8d17e5872ee7c0de8a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2f20e1e6_264a18df",
+        "filename": "luci_auth_fido2_plugin.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 163,
+      "author": {
+        "id": 1378662
+      },
+      "writtenOn": "2025-10-07T03:52:00Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "21d8beae_6a5ff849",
+      "revId": "c4578124353a25cce7c1de8d17e5872ee7c0de8a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
