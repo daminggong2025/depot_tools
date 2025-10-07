@@ -114,29 +114,50 @@ class DependencyValidationTest(unittest.TestCase):
 
     def test_versioning_field(self):
         """Check that a validation error is returned for insufficient
-        versioning info. No Date/Revision and Version is N/A."""
-        dependency = dm.DependencyMetadata()
-        dependency.add_entry(known_fields.NAME.get_name(),
-                             "Test metadata missing versioning info")
-        dependency.add_entry(known_fields.URL.get_name(),
-                             "https://www.example.com")
-        dependency.add_entry(known_fields.VERSION.get_name(), "N/A")
-        dependency.add_entry(known_fields.LICENSE.get_name(), "MIT")
-        dependency.add_entry(known_fields.LICENSE_FILE.get_name(), "LICENSE")
-        dependency.add_entry(known_fields.SECURITY_CRITICAL.get_name(), "no")
-        dependency.add_entry(known_fields.SHIPPED.get_name(), "no")
+        versioning info."""
+        with self.subTest(msg="Insufficient versioning info"):
+            dependency = dm.DependencyMetadata()
+            dependency.add_entry(known_fields.NAME.get_name(),
+                                 "Test metadata missing versioning info")
+            dependency.add_entry(known_fields.URL.get_name(),
+                                 "https://www.example.com")
+            dependency.add_entry(known_fields.VERSION.get_name(), "N/A")
+            dependency.add_entry(known_fields.LICENSE.get_name(), "MIT")
+            dependency.add_entry(known_fields.LICENSE_FILE.get_name(),
+                                 "LICENSE")
+            dependency.add_entry(known_fields.SECURITY_CRITICAL.get_name(),
+                                 "no")
+            dependency.add_entry(known_fields.SHIPPED.get_name(), "no")
 
-        results = dependency.validate(
-            source_file_dir=os.path.join(_THIS_DIR, "data"),
-            repo_root_dir=_THIS_DIR,
-        )
-        self.assertEqual(len(results), 1)
-        self.assertTrue(isinstance(results[0], vr.ValidationError))
-        self.assertEqual(results[0].get_reason(),
-                         "Versioning fields are insufficient.")
+            results = dependency.validate(
+                source_file_dir=os.path.join(_THIS_DIR, "data"),
+                repo_root_dir=_THIS_DIR,
+            )
+            self.assertEqual(len(results), 1)
+            self.assertTrue(isinstance(results[0], vr.ValidationError))
+            self.assertEqual(results[0].get_reason(),
+                             "Versioning fields are insufficient.")
 
-    def test_cpe_prefix_and_version_validation(self):
-        """Check validation for CPEPrefix and Version fields."""
+        with self.subTest(
+                msg="Google Internal URL skips versioning requirement"):
+            dependency = dm.DependencyMetadata()
+            dependency.add_entry(known_fields.NAME.get_name(),
+                                 "Test Google Internal URL")
+            dependency.add_entry(known_fields.URL.get_name(), "Google Internal")
+            dependency.add_entry(known_fields.VERSION.get_name(), "N/A")
+            dependency.add_entry(known_fields.LICENSE.get_name(), "MIT")
+            dependency.add_entry(known_fields.LICENSE_FILE.get_name(),
+                                 "LICENSE")
+            dependency.add_entry(known_fields.SECURITY_CRITICAL.get_name(),
+                                 "yes")
+            dependency.add_entry(known_fields.SHIPPED.get_name(), "yes")
+
+            results = dependency.validate(
+                source_file_dir=os.path.join(_THIS_DIR, "data"),
+                repo_root_dir=_THIS_DIR,
+            )
+            self.assertEqual(len(results), 0)
+
         with self.subTest(msg="CPEPrefix without version, N/A Version"):
             dependency = dm.DependencyMetadata()
             dependency.add_entry(known_fields.NAME.get_name(), "Test")
@@ -199,7 +220,6 @@ class DependencyValidationTest(unittest.TestCase):
                 source_file_dir=os.path.join(_THIS_DIR, "data"),
                 repo_root_dir=_THIS_DIR)
             self.assertEqual(len(results), 0)
-            reasons = {r.get_reason() for r in results}
 
         with self.subTest(msg="CPEPrefix unknown, N/A Version"):
             dependency = dm.DependencyMetadata()
@@ -220,109 +240,130 @@ class DependencyValidationTest(unittest.TestCase):
                 repo_root_dir=_THIS_DIR)
             self.assertEqual(len(results), 0)
 
-    def test_versioning_with_invalid_revision(self):
-        """Check that a validation error is returned for insufficient
-        versioning info."""
-        dependency = dm.DependencyMetadata()
-        dependency.add_entry(known_fields.NAME.get_name(),
-                             "Test metadata missing versioning info")
-        dependency.add_entry(known_fields.URL.get_name(),
-                             "https://www.example.com")
-        dependency.add_entry(known_fields.VERSION.get_name(), "N/A")
-        dependency.add_entry(known_fields.REVISION.get_name(), "N/A")
-        dependency.add_entry(known_fields.LICENSE.get_name(), "MIT")
-        dependency.add_entry(known_fields.LICENSE_FILE.get_name(), "LICENSE")
-        dependency.add_entry(known_fields.SECURITY_CRITICAL.get_name(), "no")
-        dependency.add_entry(known_fields.SHIPPED.get_name(), "no")
+        with self.subTest(msg="Insufficient versioning with invalid revision"):
+            dependency = dm.DependencyMetadata()
+            dependency.add_entry(known_fields.NAME.get_name(),
+                                 "Test metadata missing versioning info")
+            dependency.add_entry(known_fields.URL.get_name(),
+                                 "https://www.example.com")
+            dependency.add_entry(known_fields.VERSION.get_name(), "N/A")
+            dependency.add_entry(known_fields.REVISION.get_name(), "N/A")
+            dependency.add_entry(known_fields.LICENSE.get_name(), "MIT")
+            dependency.add_entry(known_fields.LICENSE_FILE.get_name(),
+                                 "LICENSE")
+            dependency.add_entry(known_fields.SECURITY_CRITICAL.get_name(),
+                                 "no")
+            dependency.add_entry(known_fields.SHIPPED.get_name(), "no")
 
-        results = dependency.validate(
-            source_file_dir=os.path.join(_THIS_DIR, "data"),
-            repo_root_dir=_THIS_DIR,
-        )
-        self.assertEqual(len(results), 2)
-        self.assertTrue(isinstance(results[0], vr.ValidationError))
-        self.assertTrue(isinstance(results[1], vr.ValidationError))
-        self.assertEqual(results[0].get_reason(),
-                         "Revision is not a valid hexadecimal revision.")
-        self.assertEqual(results[1].get_reason(),
-                         "Versioning fields are insufficient.")
+            results = dependency.validate(
+                source_file_dir=os.path.join(_THIS_DIR, "data"),
+                repo_root_dir=_THIS_DIR,
+            )
+            self.assertEqual(len(results), 2)
+            self.assertTrue(isinstance(results[0], vr.ValidationError))
+            self.assertTrue(isinstance(results[1], vr.ValidationError))
+            self.assertEqual(results[0].get_reason(),
+                             "Revision is not a valid hexadecimal revision.")
+            self.assertEqual(results[1].get_reason(),
+                             "Versioning fields are insufficient.")
 
-    def test_invalid_revision(self):
-        """Check invalid revision formats return validation errors."""
+        with self.subTest(msg="Invalid revision format"):
+            dependency = dm.DependencyMetadata()
+            dependency.add_entry(known_fields.NAME.get_name(),
+                                 "Invalid Revision")
+            dependency.add_entry(known_fields.URL.get_name(),
+                                 "https://www.example.com")
+            dependency.add_entry(known_fields.VERSION.get_name(), "1.0.0")
+            dependency.add_entry(known_fields.REVISION.get_name(),
+                                 "invalid_revision")
+            dependency.add_entry(known_fields.LICENSE.get_name(), "MIT")
+            dependency.add_entry(known_fields.LICENSE_FILE.get_name(),
+                                 "LICENSE")
+            dependency.add_entry(known_fields.SECURITY_CRITICAL.get_name(),
+                                 "no")
+            dependency.add_entry(known_fields.SHIPPED.get_name(), "no")
 
-        # Test invalid revision format (non-hexadecimal).
-        dependency = dm.DependencyMetadata()
-        dependency.add_entry(known_fields.NAME.get_name(), "Invalid Revision")
-        dependency.add_entry(known_fields.URL.get_name(),
-                             "https://www.example.com")
-        dependency.add_entry(known_fields.VERSION.get_name(), "1.0.0")
-        dependency.add_entry(known_fields.REVISION.get_name(),
-                             "invalid_revision")
-        dependency.add_entry(known_fields.LICENSE.get_name(), "MIT")
-        dependency.add_entry(known_fields.LICENSE_FILE.get_name(), "LICENSE")
-        dependency.add_entry(known_fields.SECURITY_CRITICAL.get_name(), "no")
-        dependency.add_entry(known_fields.SHIPPED.get_name(), "no")
+            results = dependency.validate(
+                source_file_dir=os.path.join(_THIS_DIR, "data"),
+                repo_root_dir=_THIS_DIR,
+            )
+            self.assertEqual(len(results), 1)
+            self.assertTrue(isinstance(results[0], vr.ValidationError))
+            self.assertEqual(
+                results[0].get_reason(),
+                "Revision is not a valid hexadecimal revision.",
+            )
 
-        results = dependency.validate(
-            source_file_dir=os.path.join(_THIS_DIR, "data"),
-            repo_root_dir=_THIS_DIR,
-        )
-        self.assertEqual(len(results), 1)
-        self.assertTrue(isinstance(results[0], vr.ValidationError))
-        self.assertEqual(
-            results[0].get_reason(),
-            "Revision is not a valid hexadecimal revision.",
-        )
+        with self.subTest(msg="Valid revision format"):
+            dependency = dm.DependencyMetadata()
+            dependency.add_entry(known_fields.NAME.get_name(), "Valid Revision")
+            dependency.add_entry(known_fields.URL.get_name(),
+                                 "https://www.example.com")
+            dependency.add_entry(known_fields.VERSION.get_name(), "N/A")
+            dependency.add_entry(known_fields.LICENSE.get_name(), "MIT")
+            dependency.add_entry(known_fields.LICENSE_FILE.get_name(),
+                                 "LICENSE")
+            dependency.add_entry(known_fields.SECURITY_CRITICAL.get_name(),
+                                 "no")
+            dependency.add_entry(known_fields.SHIPPED.get_name(), "no")
 
-    def test_valid_revision(self):
-        """Check valid revision formats return no validation issues."""
+            # Expect an insufficient versioning error since version is N/A.
+            results = dependency.validate(
+                source_file_dir=os.path.join(_THIS_DIR, "data"),
+                repo_root_dir=_THIS_DIR,
+            )
+            self.assertGreater(len(results), 0)
 
-        dependency = dm.DependencyMetadata()
-        dependency.add_entry(known_fields.NAME.get_name(), "Valid Revision")
-        dependency.add_entry(known_fields.URL.get_name(),
-                             "https://www.example.com")
-        dependency.add_entry(known_fields.VERSION.get_name(), "1.0.0")
-        dependency.add_entry(known_fields.LICENSE.get_name(), "MIT")
-        dependency.add_entry(known_fields.LICENSE_FILE.get_name(), "LICENSE")
-        dependency.add_entry(known_fields.SECURITY_CRITICAL.get_name(), "no")
-        dependency.add_entry(known_fields.SHIPPED.get_name(), "no")
+            # Fix the error by adding a valid revision.
+            dependency.add_entry(known_fields.REVISION.get_name(), "abcdef1")
+            results = dependency.validate(
+                source_file_dir=os.path.join(_THIS_DIR, "data"),
+                repo_root_dir=_THIS_DIR,
+            )
+            self.assertEqual(len(results), 0)
 
-        results = dependency.validate(
-            source_file_dir=os.path.join(_THIS_DIR, "data"),
-            repo_root_dir=_THIS_DIR,
-        )
-        # No errors for no revision.
-        self.assertEqual(len(results), 0)
+        with self.subTest(msg="Revision: DEPS is acceptable"):
+            dependency = dm.DependencyMetadata()
+            dependency.add_entry(known_fields.NAME.get_name(), "Dependency")
+            dependency.add_entry(known_fields.URL.get_name(),
+                                 "https://www.example.com")
+            dependency.add_entry(known_fields.VERSION.get_name(), "N/A")
+            dependency.add_entry(known_fields.REVISION.get_name(), "DEPS")
+            dependency.add_entry(known_fields.LICENSE.get_name(), "MIT")
+            dependency.add_entry(known_fields.LICENSE_FILE.get_name(),
+                                 "LICENSE")
+            dependency.add_entry(known_fields.SECURITY_CRITICAL.get_name(),
+                                 "no")
+            dependency.add_entry(known_fields.SHIPPED.get_name(), "no")
 
-        dependency.add_entry(known_fields.REVISION.get_name(),
-                             "abcdef1")  # Valid.
-        results = dependency.validate(
-            source_file_dir=os.path.join(_THIS_DIR, "data"),
-            repo_root_dir=_THIS_DIR,
-        )
-        # No errors for valid revision.
-        self.assertEqual(len(results), 0)
+            results = dependency.validate(
+                source_file_dir=os.path.join(_THIS_DIR, "data"),
+                repo_root_dir=_THIS_DIR,
+            )
+            self.assertEqual(len(results), 0)
 
-    def test_valid_revision_in_deps(self):
-        """Check "Revision: DEPS" is acceptable."""
+        with self.subTest(
+                msg=
+                "Check versioning information isn't required for dependencies where"
+                "Chromium is the canonical repository."):
+            dependency = dm.DependencyMetadata()
+            dependency.add_entry(known_fields.NAME.get_name(),
+                                 "Test valid metadata")
+            dependency.add_entry(known_fields.URL.get_name(),
+                                 "This is the canonical repository")
+            dependency.add_entry(known_fields.VERSION.get_name(), "N/A")
+            dependency.add_entry(known_fields.LICENSE.get_name(), "MIT")
+            dependency.add_entry(known_fields.LICENSE_FILE.get_name(),
+                                 "LICENSE")
+            dependency.add_entry(known_fields.SECURITY_CRITICAL.get_name(),
+                                 "yes")
+            dependency.add_entry(known_fields.SHIPPED.get_name(), "yes")
 
-        dependency = dm.DependencyMetadata()
-        dependency.add_entry(known_fields.NAME.get_name(), "Dependency")
-        dependency.add_entry(known_fields.URL.get_name(),
-                             "https://www.example.com")
-        dependency.add_entry(known_fields.VERSION.get_name(), "N/A")
-        dependency.add_entry(known_fields.REVISION.get_name(), "DEPS")
-        dependency.add_entry(known_fields.LICENSE.get_name(), "MIT")
-        dependency.add_entry(known_fields.LICENSE_FILE.get_name(), "LICENSE")
-        dependency.add_entry(known_fields.SECURITY_CRITICAL.get_name(), "no")
-        dependency.add_entry(known_fields.SHIPPED.get_name(), "no")
-
-        results = dependency.validate(
-            source_file_dir=os.path.join(_THIS_DIR, "data"),
-            repo_root_dir=_THIS_DIR,
-        )
-        # No errors for no revision.
-        self.assertEqual(len(results), 0)
+            results = dependency.validate(
+                source_file_dir=os.path.join(_THIS_DIR, "data"),
+                repo_root_dir=_THIS_DIR,
+            )
+            self.assertEqual(len(results), 0)
 
     def test_required_field(self):
         """Check that a validation error is returned for a missing field."""
@@ -424,28 +465,6 @@ class DependencyValidationTest(unittest.TestCase):
         dependency.add_entry(known_fields.LICENSE_FILE.get_name(), "LICENSE")
         dependency.add_entry(known_fields.SECURITY_CRITICAL.get_name(), "no")
         dependency.add_entry(known_fields.SHIPPED.get_name(), "no")
-
-        results = dependency.validate(
-            source_file_dir=os.path.join(_THIS_DIR, "data"),
-            repo_root_dir=_THIS_DIR,
-        )
-        self.assertEqual(len(results), 0)
-
-    def test_dep_is_canonical_skips_versioning_requirement(self):
-        """
-        Check versioning information isn't required for dependencies where
-        Chromium is the canonical repository.
-        """
-        dependency = dm.DependencyMetadata()
-        dependency.add_entry(known_fields.NAME.get_name(),
-                             "Test valid metadata")
-        dependency.add_entry(known_fields.URL.get_name(),
-                             "This is the canonical repository")
-        dependency.add_entry(known_fields.VERSION.get_name(), "N/A")
-        dependency.add_entry(known_fields.LICENSE.get_name(), "MIT")
-        dependency.add_entry(known_fields.LICENSE_FILE.get_name(), "LICENSE")
-        dependency.add_entry(known_fields.SECURITY_CRITICAL.get_name(), "yes")
-        dependency.add_entry(known_fields.SHIPPED.get_name(), "yes")
 
         results = dependency.validate(
             source_file_dir=os.path.join(_THIS_DIR, "data"),
