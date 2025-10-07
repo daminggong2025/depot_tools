@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b40b6dd5_cd46f9b2",
+        "filename": "metadata/tests/dependency_metadata_test.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 323,
+      "author": {
+        "id": 1544922
+      },
+      "writtenOn": "2025-10-07T05:12:52Z",
+      "side": 1,
+      "message": "Errant debugging `print` which should be removed?",
+      "revId": "a284ff141b281e1b706ac20bc3375a9497746812",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
