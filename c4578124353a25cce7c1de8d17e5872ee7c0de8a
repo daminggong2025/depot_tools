@@ -51,6 +51,24 @@
       "parentUuid": "21d8beae_6a5ff849",
       "revId": "c4578124353a25cce7c1de8d17e5872ee7c0de8a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c4ac2ee5_ba50348f",
+        "filename": "luci_auth_fido2_plugin.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 163,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-10-07T03:53:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "21d8beae_6a5ff849",
+      "revId": "c4578124353a25cce7c1de8d17e5872ee7c0de8a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
