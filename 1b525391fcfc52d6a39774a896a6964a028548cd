@@ -69,6 +69,24 @@
       "parentUuid": "165f059e_98aa8925",
       "revId": "1b525391fcfc52d6a39774a896a6964a028548cd",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b1e31f30_9ec3ad5e",
+        "filename": "metadata/dependency_metadata.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 591,
+      "author": {
+        "id": 1544922
+      },
+      "writtenOn": "2025-10-07T06:35:52Z",
+      "side": 1,
+      "message": "This comment was for the `self.is_canonical` change, which is not strictly related to the `self.is_internal` changes.",
+      "parentUuid": "a5bdac9f_a2eb1a3c",
+      "revId": "1b525391fcfc52d6a39774a896a6964a028548cd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
