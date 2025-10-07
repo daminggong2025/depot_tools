@@ -66,6 +66,7 @@ ALLOWED_SPDX_LICENSES = frozenset([
     # go/keep-sorted start case=no
     "AML",
     "Apache-2.0",
+    "Artistic-1.0-Perl",
     "Artistic-2.0",
     "Beerware",
     "BSD-2-Clause",
@@ -114,9 +115,11 @@ EXTENDED_LICENSE_CLASSIFIERS = frozenset([
     # unencumbered.
     # go/keep-sorted start case=no
     "AhemFont",
+    "Android-SDK",
     "LZMA",
     "Public Domain",
     "public-domain-md5",
+    "Public-Domain-MD5",
     "SPL-SQRT-FLOOR",
     # go/keep-sorted end
     # permissive.
@@ -199,6 +202,7 @@ WITH_PERMISSION_ONLY = frozenset([
     # by_exception_only.
     # go/keep-sorted start case=no
     "Commercial",
+    "GUST-Font-License",
     "MicrosoftEnterpriseWindowsDriverKit",
     "Opus-Patent-BSD-3-Clause",
     "Play-Core-SDK-TOS",
