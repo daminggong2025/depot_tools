@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c25c8c4f_478f4374",
+        "filename": "metadata/dependency_metadata.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 269,
+      "author": {
+        "id": 1544922
+      },
+      "writtenOn": "2025-10-07T06:22:57Z",
+      "side": 1,
+      "message": "`,` -\u003e `.`",
+      "revId": "1b525391fcfc52d6a39774a896a6964a028548cd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "165f059e_98aa8925",
+        "filename": "metadata/dependency_metadata.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 591,
+      "author": {
+        "id": 1544922
+      },
+      "writtenOn": "2025-10-07T06:22:57Z",
+      "side": 1,
+      "message": "Note that in future, unrelated changes should be in a different CL.",
+      "revId": "1b525391fcfc52d6a39774a896a6964a028548cd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
