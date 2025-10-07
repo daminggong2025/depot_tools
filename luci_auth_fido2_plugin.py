@@ -29,10 +29,13 @@ from contextlib import contextmanager
 import dataclasses
 import json
 import logging
+import os
 import signal
+import subprocess
 import sys
 from threading import Event
-from typing import BinaryIO
+import traceback
+from typing import BinaryIO, Optional
 
 from fido2.client import DefaultClientDataCollector
 from fido2.client import Fido2Client, UserInteraction, WebAuthnClient
@@ -52,7 +55,7 @@ _PLUGIN_HEADER_SIZE = 4
 _EXIT_NO_FIDO2_DEVICES = 11
 _EXIT_ALL_ASSERTIONS_FAILED = 12
 _EXIT_NO_MATCHING_CRED = 13
-
+_EXIT_PINENTRY_FAILED = 14
 
 def read_full(r: BinaryIO, size: int) -> bytes:
     """Read an exact amount of data.
@@ -152,7 +155,72 @@ def encode_plugin_response(a: AuthenticationResponse) -> bytes:
     }).encode('utf-8')
 
 
-class DiscardInteraction(UserInteraction):
+def request_pin_pinentry() -> Optional[str]:
+    """Requests a PIN entry with pinentry program."""
+    try:
+        # Using pinentry to ask for PIN.
+        # https://www.gnupg.org/documentation/manuals/assuan/Client-requests.html
+        pinentry_path = os.environ.get('LUCI_AUTH_PINENTRY', 'pinentry')
+        proc = subprocess.Popen([pinentry_path],
+                                stdin=subprocess.PIPE,
+                                stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE,
+                                text=True)
+    except FileNotFoundError as e:
+        traceback.print_exception(e, file=sys.stderr)
+        logging.error("PIN requested, but can't find a pinentry program.")
+        logging.error(
+            "Please install a suitable pinentry program for your operating system."
+        )
+        sys.exit(_EXIT_PINENTRY_FAILED)
+
+    pinentry_input = """
+OPTION ttyname=/dev/tty
+SETTITLE Chromium Infra Auth
+SETDESC Enter the FIDO2 PIN for your security key, then touch your security key to continue.
+SETPROMPT PIN:
+GETPIN
+"""
+    stdout, stderr = proc.communicate(pinentry_input)
+
+    if proc.returncode != 0:
+        logging.error('pinentry failed: %s', stderr)
+        sys.exit(_EXIT_PINENTRY_FAILED)
+
+    for line in stdout.splitlines():
+        if line.startswith('D '):
+            return line[2:].strip()
+
+    logging.warning(
+        'An empty PIN was entered. Security key assertion may fail.')
+    return None
+
+
+def request_pin_mac() -> Optional[str]:
+    """Request a PIN entry with macOS's built-in `osascript` utility."""
+    osascript_command = (
+        'text returned of ('
+        'display'
+        '  dialog "Enter security key PIN.\\n\\nThen touch your security key to continue."'
+        '  default answer ""'
+        '  with hidden answer'
+        '  with title "Chromium Infra Auth"'
+        ')')
+
+    result = subprocess.run(
+        ['osascript', '-e', osascript_command],
+        capture_output=True,
+        text=True,
+    )
+
+    if result.returncode != 0:
+        logging.error("PIN entry failed: %s", result.stderr)
+        return None
+
+    return result.stdout.strip()
+
+
+class PinEntryInteraction(UserInteraction):
     """Handler when user interaction is required.
 
     This plugin's stdin/stdout talks with git-credential-luci, so we fail
@@ -164,14 +232,18 @@ class DiscardInteraction(UserInteraction):
         sys.stderr.write("\nTouch your blinking security key to continue.\n\n")
 
     def request_pin(self, permissions, rp_id):
-        # This plugin shouldn't set assertion flags that will require
-        # PIN entry.
-        return None
+        """Ask for PIN entry with a GUI dialog by using a system tool.
+
+           We only handle Linux and MacOS here. We use Windows WebAuthn API
+           directly, which handles PIN entry if necessary.
+        """
+        if sys.platform == 'darwin':
+            return request_pin_mac()
+        return request_pin_pinentry()
 
     def request_uv(self, permissions, rp_id):
-        # Don't allow user verification (UV), because we don't allow PIN
-        # entry, UV will fail.
-        return False
+        # Allows PIN entry.
+        return True
 
 
 def get_clients(origin: str) -> list[tuple[WebAuthnClient, str]]:
@@ -190,7 +262,7 @@ def get_clients(origin: str) -> list[tuple[WebAuthnClient, str]]:
         logging.debug("Using WindowsClient")
         return [(WindowsClient(client_data_collector), "WindowsWebAuthn")]
 
-    user_interaction = DiscardInteraction()
+    user_interaction = PinEntryInteraction()
     clients = []
     for dev in CtapHidDevice.list_devices():
         desc = dev.descriptor
