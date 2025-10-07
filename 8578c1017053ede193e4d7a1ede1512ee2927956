@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "19dbbdc0_c3bf74e6",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 1885,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2025-10-07T21:33:33Z",
+      "side": 1,
+      "message": "@gavinmak@google.com, jfyi.\n\n1. git cl format fails if a positional argument, which specifies files to format, is given along with `--input_diff`.\n2. b/449775904 was reporting that the presubmit was not catching format validation failures.\n\nIndeed, the git cl format command was failing due to (1), but this highlighted code ate the failure and returned empty results.\n\nThe return code for (1) is 1. However, there is no universal rule for the return code. `git cl format` runs a number of commands, like git and formatter binaries, and it tries to return the exit code of the processes often (but not all. it\u0027s kinda case-by-case + some randomness) As you can see in L1884, somehow this check was made to ignore even git command failures and clang-format failures.\n\nThis CL simply focuses on fixing the particular failure reported in the bug. However, to make errors visible, we would need to change the default value of param `bypass_warnings` from True to False, and then see if it\u0027d generate unnecessary noises. If there is, then we may add adhoc bypass logic for the particular cases instead. However, I\u0027m not sure which would be better (opt-in vs opt-out for the warning ignore)",
+      "range": {
+        "startLine": 1885,
+        "startChar": 21,
+        "endLine": 1885,
+        "endChar": 50
+      },
+      "revId": "8578c1017053ede193e4d7a1ede1512ee2927956",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
