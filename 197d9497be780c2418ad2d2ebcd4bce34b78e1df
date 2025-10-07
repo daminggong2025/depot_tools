@@ -16,6 +16,24 @@
       "message": "Is there a bug for this? What is the context of this change? It\u0027s going to affect a heap of recipe rollers, so this really needs heaps more info.",
       "revId": "197d9497be780c2418ad2d2ebcd4bce34b78e1df",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "eef8f1c3_a7b507fb",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 10
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1553262
+      },
+      "writtenOn": "2025-10-07T23:27:13Z",
+      "side": 1,
+      "message": "I looked at the roller stuff and it seems unrelated, maybe just a merge conflict or needs a rebase because of the relation chain—but can you still add a bug and more context to the commit.\n\nI don\u0027t understand just by looking at this why we would allow something like `LicenseRef-MIT` and also `MIT` as allowed values. Are they the same license? Why is the `LicenseRef` prepended in these cases? Does that indicate it\u0027s not a pure MIT license?",
+      "parentUuid": "03dffb8c_c3a39fff",
+      "revId": "197d9497be780c2418ad2d2ebcd4bce34b78e1df",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
