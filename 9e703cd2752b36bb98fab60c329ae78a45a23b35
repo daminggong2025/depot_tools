@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "f79d3b03_d6e99457",
+        "filename": "metadata/dependency_metadata.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 269,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2025-10-07T04:29:54Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d0fd3516_e344ae24",
+      "revId": "9e703cd2752b36bb98fab60c329ae78a45a23b35",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "91115efd_d1dfb839",
@@ -31,6 +49,24 @@
       "writtenOn": "2025-10-07T04:00:23Z",
       "side": 1,
       "message": "Why would deps that are static not need any versioning, not even a date?",
+      "revId": "9e703cd2752b36bb98fab60c329ae78a45a23b35",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c1a31535_d98859e5",
+        "filename": "metadata/dependency_metadata.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 588,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2025-10-07T04:29:54Z",
+      "side": 1,
+      "message": "Ideally yes, however there are a few where this is challenging and remediating them has minimal impact. Once we have enabled bug filing for all dependencies, and reduced the bulk of the issues, I\u0027ll come back and revisit these. I\u0027ve put a bug as a TODO above.",
+      "parentUuid": "91115efd_d1dfb839",
       "revId": "9e703cd2752b36bb98fab60c329ae78a45a23b35",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
