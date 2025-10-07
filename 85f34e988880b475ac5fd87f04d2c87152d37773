@@ -50,6 +50,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "93c27f11_6e2fd526",
+        "filename": "gclient.py",
+        "patchSetId": 21
+      },
+      "lineNbr": 3971,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2025-10-07T17:08:03Z",
+      "side": 1,
+      "message": "\u003e I think we should figure out the hanging, as a shorter timeout does not help resolve the hanging issue, right?\n\nSure, that was actually my point as well. You could increase the timeout for contains_revision() to 5000 by using `--lock_timeout` but I was questioning that you would probably want to find why something is hanging instead. I understand that 20 secs may not be long enough for heavy repos if contains_revisions() is called while a mirroring is in progress.\n\n\u003e I think we should figure out the hanging, as a shorter timeout does not help resolve the hanging issue, right?\n\nYes. I\u0027m with you, and that\u0027s why I was a bit reluctant to use --lock_timeout in contains_revision() in the first place because it would likely loose the chance of figuring out the hanging, as 5000s would likely cover most cases (and the outcome is that gclient sync takes longer under certain conditions, which would be hard to debug)\n\n\u003e Do you really think we need a new timeout, or simply reuse lock_timeout?\n\nThinking more and more, I think use of `--lock_timeout` for contains_revision() sounds ok. Let\u0027s do it.",
+      "parentUuid": "2b03843e_721781e2",
+      "range": {
+        "startLine": 3971,
+        "startChar": 30,
+        "endLine": 3971,
+        "endChar": 31
+      },
+      "revId": "85f34e988880b475ac5fd87f04d2c87152d37773",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "e6ba5212_e147c15a",
         "filename": "git_cache.py",
         "patchSetId": 21
