@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "1a7f57a6_4e61f755",
+        "filename": "metadata/dependency_metadata.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 269,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2025-10-07T06:25:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c25c8c4f_478f4374",
+      "revId": "1b525391fcfc52d6a39774a896a6964a028548cd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "165f059e_98aa8925",
@@ -31,6 +49,24 @@
       "writtenOn": "2025-10-07T06:22:57Z",
       "side": 1,
       "message": "Note that in future, unrelated changes should be in a different CL.",
+      "revId": "1b525391fcfc52d6a39774a896a6964a028548cd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a5bdac9f_a2eb1a3c",
+        "filename": "metadata/dependency_metadata.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 591,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2025-10-07T06:25:43Z",
+      "side": 1,
+      "message": "These are related because I\u0027m using self.is_internal in 2 places now, so it made sense to make it into a function that can be reused.",
+      "parentUuid": "165f059e_98aa8925",
       "revId": "1b525391fcfc52d6a39774a896a6964a028548cd",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
