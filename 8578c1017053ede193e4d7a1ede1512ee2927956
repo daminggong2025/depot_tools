@@ -46,6 +46,30 @@
       },
       "revId": "8578c1017053ede193e4d7a1ede1512ee2927956",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5f626586_a91574ca",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 1885,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2025-10-07T22:24:17Z",
+      "side": 1,
+      "message": "yeah. agreed. Let me land this CL but will see if I can change the default value in a separate CL.",
+      "parentUuid": "cc92398e_56d7b509",
+      "range": {
+        "startLine": 1885,
+        "startChar": 21,
+        "endLine": 1885,
+        "endChar": 50
+      },
+      "revId": "8578c1017053ede193e4d7a1ede1512ee2927956",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
