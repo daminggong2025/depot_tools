@@ -1878,12 +1878,6 @@ def CheckPatchFormatted(input_api,
         input_api.PresubmitLocalPath(), input_api.change.RepositoryRoot())
     if presubmit_subdir.startswith('..') or presubmit_subdir == '.':
         presubmit_subdir = ''
-    # If the PRESUBMIT.py is in a parent repository, then format the entire
-    # subrepository. Otherwise, format only the code in the directory that
-    # contains the PRESUBMIT.py.
-    if presubmit_subdir:
-        cmd.append(input_api.PresubmitLocalPath())
-
     code, _ = git_cl.RunGitWithCode(cmd, suppress_stderr=bypass_warnings)
     # bypass_warnings? Only fail with code 2.
     # As this is just a warning, ignore all other errors if the user
