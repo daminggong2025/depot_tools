@@ -62,7 +62,13 @@ def process_license_value(value: str,
 def is_license_valid(value: str) -> bool:
     """Returns whether the value is a valid license type.
     """
-    return value in ALL_LICENSES
+    return process_value(value) in ALL_LICENSES
+
+
+def process_value(value: str) -> bool:
+    """Removes unnecessary prefixes/suffixes.
+    """
+    return value.removeprefix("LicenseRef-").strip()
 
 
 def is_license_allowlisted(value: str, is_open_source_project: bool = False) -> bool:
@@ -70,11 +76,11 @@ def is_license_allowlisted(value: str, is_open_source_project: bool = False) -> 
     types.
     """
     # Restricted licenses are not enforced by presubmits, see b/388620886 😢.
-    if value in WITH_PERMISSION_ONLY:
+    if process_value(value) in WITH_PERMISSION_ONLY:
         return True
     if is_open_source_project:
-        return value in ALLOWED_OPEN_SOURCE_LICENSES
-    return value in ALLOWED_LICENSES
+        return process_value(value) in ALLOWED_OPEN_SOURCE_LICENSES
+    return process_value(value) in ALLOWED_LICENSES
 
 class LicenseField(field_types.SingleLineTextField):
     """Custom field for the package's license type(s).
@@ -128,5 +134,5 @@ class LicenseField(field_types.SingleLineTextField):
             # Empty License field is equivalent to "not declared".
             return None
 
-        parts = value.split(self.VALUE_DELIMITER)
+        parts = process_value(value).split(self.VALUE_DELIMITER)
         return list(filter(bool, map(lambda str: str.strip(), parts)))
