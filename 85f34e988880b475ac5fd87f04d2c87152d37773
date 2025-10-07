@@ -96,6 +96,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "e693a829_b1bdaa0a",
+        "filename": "gclient.py",
+        "patchSetId": 21
+      },
+      "lineNbr": 3971,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2025-10-07T18:59:54Z",
+      "side": 1,
+      "message": "\u003e 20s should cover most practical cases - I copied it from your previous doc string\n\nMaybe, it was said without enough investigation. The patch was made when it was observed that contains_revisions(timeout\u003d0) times out when multiple processes called contains_revisions() at the same time, but maybe the reason cause could be not only concurrent contains_revision calls but also concurrent populate().\n\nThe latest patchset looks good. Let\u0027s try it out.",
+      "parentUuid": "30c8b33c_4f9aa646",
+      "range": {
+        "startLine": 3971,
+        "startChar": 30,
+        "endLine": 3971,
+        "endChar": 31
+      },
+      "revId": "85f34e988880b475ac5fd87f04d2c87152d37773",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e6ba5212_e147c15a",
