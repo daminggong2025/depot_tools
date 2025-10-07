@@ -114,6 +114,8 @@ EXTENDED_LICENSE_CLASSIFIERS = frozenset([
     # unencumbered.
     # go/keep-sorted start case=no
     "AhemFont",
+    "LicenseRef-Android-SDK",
+    "LicenseRef-Public-Domain-MD5",
     "LZMA",
     "Public Domain",
     "public-domain-md5",
@@ -126,9 +128,10 @@ EXTENDED_LICENSE_CLASSIFIERS = frozenset([
     "test_fonts",
     # go/keep-sorted end
     # notice.
-    # go/keep-sorted start case=no
     "Apache-with-LLVM-Exception",
     "Apache-with-Runtime-Exception",
+    "base64-cpp",
+    "base64",
     "Bitstream",
     "BLAS",
     "BSD-2-Clause-Flex",
@@ -147,18 +150,17 @@ EXTENDED_LICENSE_CLASSIFIERS = frozenset([
     "JsonCPP",
     "Khronos",
     "Libpng-2.0",
-    "LicenseRef-base64",
-    "LicenseRef-base64-cpp",
-    "LicenseRef-OpenGLUT",
-    "LicenseRef-takuya-ooura",
+    "OpenGLUT",
     "pffft",
     "PngSuite",
     "Punycode",
     "SSLeay",
+    "takuya-ooura",
     "unicode_org",
     "WebM-Project-Patent",
     "X11-Lucent",
     "zxing",
+    # go/keep-sorted start case=no
     # go/keep-sorted end
 
     # The Android Software Development Kit License is a special case.
@@ -199,10 +201,10 @@ WITH_PERMISSION_ONLY = frozenset([
     # by_exception_only.
     # go/keep-sorted start case=no
     "Commercial",
-    "LicenseRef-MicrosoftEnterpriseWindowsDriverKit",
-    "LicenseRef-Play-Core-SDK-TOS",
-    "LicenseRef-Unity-Companion-License-1.3",
+    "MicrosoftEnterpriseWindowsDriverKit",
     "Opus-Patent-BSD-3-Clause",
+    "Play-Core-SDK-TOS",
+    "Unity-Companion-License-1.3",
     "UnRAR",
     # go/keep-sorted end
     # Patent files are special, and must be handled on a case by case basis.
