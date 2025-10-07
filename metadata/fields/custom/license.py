@@ -64,52 +64,56 @@ def is_license_valid(value: str) -> bool:
     """
     return value in ALL_LICENSES
 
+
 def is_license_allowlisted(value: str, is_open_source_project: bool = False) -> bool:
     """Returns whether the value is in the allowlist for license
     types.
     """
     # Restricted licenses are not enforced by presubmits, see b/388620886 😢.
     if value in WITH_PERMISSION_ONLY:
-      return True
+        return True
     if is_open_source_project:
         return value in ALLOWED_OPEN_SOURCE_LICENSES
     return value in ALLOWED_LICENSES
 
 class LicenseField(field_types.SingleLineTextField):
-  """Custom field for the package's license type(s).
+    """Custom field for the package's license type(s).
 
     e.g. Apache-2.0, MIT, BSD-2.0
     """
-  def __init__(self):
-    super().__init__(name="License")
 
-  def validate(self, value: str) -> Optional[vr.ValidationResult]:
-    """Checks the given value consists of recognized license types.
+    def __init__(self):
+        super().__init__(name="License")
+
+    def validate(self, value: str) -> Optional[vr.ValidationResult]:
+        """Checks the given value consists of recognized license types.
 
         Note: this field supports multiple values.
         """
-    not_allowlisted = []
-    licenses = process_license_value(value,
-          atomic_delimiter=self.VALUE_DELIMITER,
-    )
-    for license, allowed in licenses:
-      if util.is_empty(license):
-        return vr.ValidationError(
-                    reason=f"{self._name} has an empty value.")
-      if BAD_DELIMITERS_REGEX.search(license):
-        return vr.ValidationError(
-                reason=f"{self._name} contains a bad license separator. "
-                "Separate licenses by commas only.",
-                # Try and preemptively address the root cause of this behaviour,
-                # which is having multiple choices for a license.
-                additional=[f"When given a choice of licenses, chose the most "
-                            "permissive one, do not list all options."]
+        not_allowlisted = []
+        licenses = process_license_value(
+            value,
+            atomic_delimiter=self.VALUE_DELIMITER,
         )
-      if not allowed:
-        not_allowlisted.append(license)
+        for license, allowed in licenses:
+            if util.is_empty(license):
+                return vr.ValidationError(
+                    reason=f"{self._name} has an empty value.")
+            if BAD_DELIMITERS_REGEX.search(license):
+                return vr.ValidationError(
+                    reason=f"{self._name} contains a bad license separator. "
+                    "Separate licenses by commas only.",
+                    # Try and preemptively address the root cause of this behaviour,
+                    # which is having multiple choices for a license.
+                    additional=[
+                        f"When given a choice of licenses, chose the most "
+                        "permissive one, do not list all options."
+                    ])
+            if not allowed:
+                not_allowlisted.append(license)
 
-    if not_allowlisted:
-      return vr.ValidationWarning(
+        if not_allowlisted:
+            return vr.ValidationWarning(
                 reason=f"{self._name} has a license not in the allowlist."
                 " (see https://source.chromium.org/chromium/chromium/tools/depot_tools/+/main:metadata/fields/custom/license_allowlist.py).",
                 additional=[
@@ -117,12 +121,12 @@ class LicenseField(field_types.SingleLineTextField):
                     f"{util.quoted(not_allowlisted)}.",
                 ])
 
-    return None
+        return None
 
-  def narrow_type(self, value: str) -> Optional[List[str]]:
-    if not value:
-      # Empty License field is equivalent to "not declared".
-      return None
+    def narrow_type(self, value: str) -> Optional[List[str]]:
+        if not value:
+            # Empty License field is equivalent to "not declared".
+            return None
 
-    parts = value.split(self.VALUE_DELIMITER)
-    return list(filter(bool, map(lambda str: str.strip(), parts)))
+        parts = value.split(self.VALUE_DELIMITER)
+        return list(filter(bool, map(lambda str: str.strip(), parts)))
