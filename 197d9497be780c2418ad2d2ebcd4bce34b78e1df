@@ -34,6 +34,24 @@
       "parentUuid": "03dffb8c_c3a39fff",
       "revId": "197d9497be780c2418ad2d2ebcd4bce34b78e1df",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "60f50687_5d40e9a8",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 10
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2025-10-08T04:14:44Z",
+      "side": 1,
+      "message": "Sorry for the lack of context, I was handling a bunch of these bugs and decided it was best to strip this out and was lazy with the details. The license classifier adds it to some licenses and I can\u0027t find any documentation on why it does this, but stripping this out will save filing about a dozen bugs (or maintaining a dozen duplicate entries in the allow list)",
+      "parentUuid": "eef8f1c3_a7b507fb",
+      "revId": "197d9497be780c2418ad2d2ebcd4bce34b78e1df",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
