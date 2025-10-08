@@ -34,6 +34,24 @@
       "parentUuid": "107d01c9_492c528f",
       "revId": "80c5b9dadbd26a8283d5c6b27baaa58f82ea18ce",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4437b230_464c56d5",
+        "filename": "utils.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-10-08T06:31:18Z",
+      "side": 1,
+      "message": "I will check it out, and this CL is abandoned, let\u0027s move over to https://chromium-review.googlesource.com/c/chromium/tools/depot_tools/+/7019133/2",
+      "parentUuid": "dde70711_3fba7ed3",
+      "revId": "80c5b9dadbd26a8283d5c6b27baaa58f82ea18ce",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ],
   "submitRequirementResults": [
