@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d3b52e83_da41beff",
+        "filename": "git_cl.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 2627,
+      "author": {
+        "id": 1303432
+      },
+      "writtenOn": "2025-10-08T23:22:10Z",
+      "side": 1,
+      "message": "Demo comment.",
+      "revId": "01d88c7fbe647eef5057e281c7e3f5237b92e921",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
