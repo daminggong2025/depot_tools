@@ -54,3 +54,20 @@ def depot_tools_config_path(file):
             shutil.move(legacy_path, expected_path)
 
     return expected_path
+
+
+def get_logs_folder_from_cmdline(cmdline: list[str]):
+    # log folder is in current working directory by default.
+    log_dir = '.'
+    i = 0
+    while i < len(cmdline):
+        cmd = cmdline[i]
+        i += 1
+        if cmd == '-C' and i < len(cmdline):
+            log_dir = cmdline[i]
+            i += 1
+            continue
+
+        if cmd.startswith('-C') and len(cmd) > len('-C'):
+            log_dir = cmd[len('-C'):]
+    return log_dir
