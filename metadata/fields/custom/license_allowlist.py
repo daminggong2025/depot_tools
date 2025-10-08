@@ -49,9 +49,9 @@ ALLOWED_SPDX_LICENSES = frozenset([
     # go/keep-sorted start case=no
     "blessing",
     "CC0-1.0",
-    "LicenseRef-Public-Domain-Gutenberg",
-    "LicenseRef-Public-Domain-SpanDSP",
     "LZMA-SDK-9.22",
+    "Public-Domain-Gutenberg",
+    "Public-Domain-SpanDSP",
     "Unlicense",
     # go/keep-sorted end
     # permissive.
@@ -121,7 +121,7 @@ EXTENDED_LICENSE_CLASSIFIERS = frozenset([
     # go/keep-sorted end
     # permissive.
     # go/keep-sorted start case=no
-    "LicenseRef-AMSFonts-2.2",
+    "AMSFonts-2.2",
     "SolarDesigner",
     "test_fonts",
     # go/keep-sorted end
@@ -129,6 +129,8 @@ EXTENDED_LICENSE_CLASSIFIERS = frozenset([
     # go/keep-sorted start case=no
     "Apache-with-LLVM-Exception",
     "Apache-with-Runtime-Exception",
+    "base64",
+    "base64-cpp",
     "Bitstream",
     "BLAS",
     "BSD-2-Clause-Flex",
@@ -147,14 +149,12 @@ EXTENDED_LICENSE_CLASSIFIERS = frozenset([
     "JsonCPP",
     "Khronos",
     "Libpng-2.0",
-    "LicenseRef-base64",
-    "LicenseRef-base64-cpp",
-    "LicenseRef-OpenGLUT",
-    "LicenseRef-takuya-ooura",
+    "OpenGLUT",
     "pffft",
     "PngSuite",
     "Punycode",
     "SSLeay",
+    "takuya-ooura",
     "unicode_org",
     "WebM-Project-Patent",
     "X11-Lucent",
@@ -199,10 +199,10 @@ WITH_PERMISSION_ONLY = frozenset([
     # by_exception_only.
     # go/keep-sorted start case=no
     "Commercial",
-    "LicenseRef-MicrosoftEnterpriseWindowsDriverKit",
-    "LicenseRef-Play-Core-SDK-TOS",
-    "LicenseRef-Unity-Companion-License-1.3",
+    "MicrosoftEnterpriseWindowsDriverKit",
     "Opus-Patent-BSD-3-Clause",
+    "Play-Core-SDK-TOS",
+    "Unity-Companion-License-1.3",
     "UnRAR",
     # go/keep-sorted end
     # Patent files are special, and must be handled on a case by case basis.
