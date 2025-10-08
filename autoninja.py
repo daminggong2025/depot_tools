@@ -251,6 +251,44 @@ def _convert_ninja_j_to_siso_flags(j_value, use_remoteexec, args):
     return return_args
 
 
+def _check_reclient_cfgs(output_dir):
+    root_dir = gclient_paths.GetPrimarySolutionPath(output_dir)
+    if not root_dir:
+        return
+    cr_build_revision_path = os.path.join(
+        root_dir, "third_party/llvm-build/Release+Asserts/cr_build_revision")
+    cr_build_revision = None
+    if os.path.exists(cr_build_revision_path):
+        with open(cr_build_revision_path) as f:
+            cr_build_revision = f.read().strip()
+    rewrapper_cfg_path = os.path.join(
+        root_dir, "buildtools/reclient_cfgs/chromium-browser-clang/rewrapper_")
+    if sys.platform.startswith("win"):
+        rewrapper_cfg_path += "windows.cfg"
+    elif sys.platform == "darwin":
+        rewrapper_cfg_path += "mac.cfg"
+    else:
+        rewrapper_cfg_path += "linux.cfg"
+    rewrapper_cfg_lines = None
+    if os.path.exists(rewrapper_cfg_path):
+        with open(rewrapper_cfg_path) as f:
+            rewrapper_cfg_lines = f.readlines()
+    if cr_build_revision and rewrapper_cfg_lines:
+        rewrapper_cfg_revision = rewrapper_cfg_lines[0].strip().lstrip("# ")
+        if not "llvmorg" in rewrapper_cfg_revision:
+            # linux.cfg may set revision in 2nd line.
+            rewrapper_cfg_revision = rewrapper_cfg_lines[1].strip().lstrip("# ")
+        if rewrapper_cfg_revision != cr_build_revision:
+            print(
+                "You have wrong version of reclient_cfgs "
+                "not matched with third_party/llvm-build.\n"
+                " cr_build_revision=" + cr_build_revision + "\n"
+                " recleint_cfgs=" + rewrapper_cfg_revision + "\n"
+                "Make sure you have 'download_remoteexec_cfg' in "
+                ".gclient custom_vars and run 'gclient runhooks'\n",
+                file=sys.stderr,
+            )
+
 def _main_inner(input_args, build_id):
     # If running in the Gemini CLI, automatically add --quiet if it's not
     # already present to avoid filling the context window.
@@ -382,6 +420,9 @@ def _main_inner(input_args, build_id):
             # siso runs locally if empty project is given
             # even if use_remoteexec=true is set.
             project = _siso_rbe_project(output_dir)
+
+        if sys.platform.startswith("win") or sys.platform == "darwin":
+            _check_reclient_cfgs(output_dir)
 
         if _has_internal_checkout(output_dir):
             # user may login on non-@google.com account on corp,
