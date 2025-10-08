@@ -18,6 +18,42 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "4e9aa15a_bd33d9f3",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 10
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-10-08T07:32:05Z",
+      "side": 1,
+      "message": "Yep, it works!",
+      "parentUuid": "016c1806_572406c2",
+      "revId": "074d4543fbc0ebc8b4b219dd6f195e5be8ea0b3a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "649bfb5e_b207cd67",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 10
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-10-08T07:32:05Z",
+      "side": 1,
+      "message": "I did, it works!",
+      "parentUuid": "016c1806_572406c2",
+      "revId": "074d4543fbc0ebc8b4b219dd6f195e5be8ea0b3a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "36266269_3f26bef6",
@@ -31,6 +67,30 @@
       "writtenOn": "2025-10-08T07:25:00Z",
       "side": 1,
       "message": "Do you mean `chrome-build-logs`?",
+      "range": {
+        "startLine": 53,
+        "startChar": 24,
+        "endLine": 53,
+        "endChar": 40
+      },
+      "revId": "074d4543fbc0ebc8b4b219dd6f195e5be8ea0b3a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "80599219_c158d478",
+        "filename": "autoninja.py",
+        "patchSetId": 10
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-10-08T07:32:05Z",
+      "side": 1,
+      "message": "I did, fixed",
+      "parentUuid": "36266269_3f26bef6",
       "range": {
         "startLine": 53,
         "startChar": 24,
@@ -64,6 +124,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "e5dc4735_5d281682",
+        "filename": "autoninja.py",
+        "patchSetId": 10
+      },
+      "lineNbr": 657,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-10-08T07:32:05Z",
+      "side": 1,
+      "message": "Yep, I paid special attention here, thankfully default is exactly what we needed.",
+      "parentUuid": "98694202_4214df80",
+      "range": {
+        "startLine": 654,
+        "startChar": 0,
+        "endLine": 657,
+        "endChar": 0
+      },
+      "revId": "074d4543fbc0ebc8b4b219dd6f195e5be8ea0b3a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "de29ff4a_e7ae20c8",
@@ -77,6 +161,30 @@
       "writtenOn": "2025-10-08T07:25:00Z",
       "side": 1,
       "message": "Can you leave a reference to the recipe code that uploads logs to the same bucket, and leave a note that it needs to be in sync?\n\nhttps://source.chromium.org/chromium/infra/infra_superproject/+/main:build/recipes/recipe_modules/siso/api.py",
+      "range": {
+        "startLine": 658,
+        "startChar": 0,
+        "endLine": 658,
+        "endChar": 138
+      },
+      "revId": "074d4543fbc0ebc8b4b219dd6f195e5be8ea0b3a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c466058a_d54cfb05",
+        "filename": "autoninja.py",
+        "patchSetId": 10
+      },
+      "lineNbr": 658,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-10-08T07:32:05Z",
+      "side": 1,
+      "message": "Like so?",
+      "parentUuid": "de29ff4a_e7ae20c8",
       "range": {
         "startLine": 658,
         "startChar": 0,
