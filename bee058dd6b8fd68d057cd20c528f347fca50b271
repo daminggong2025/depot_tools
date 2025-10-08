@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "940d3527_e3b4eec3",
+        "filename": "ninjalog_uploader.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 222,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-10-08T09:14:18Z",
+      "side": 1,
+      "message": "nit: assigning the returned value to a variable might be easier to read.\n\n```\n_, outdir \u003d ninja.parse_args(cmdline)\nreturn os.path.join(outdir, \".ninja_log\")\n```",
+      "range": {
+        "startLine": 222,
+        "startChar": 24,
+        "endLine": 222,
+        "endChar": 52
+      },
+      "revId": "bee058dd6b8fd68d057cd20c528f347fca50b271",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
