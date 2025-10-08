@@ -126,7 +126,7 @@ class NinjalogUploaderTest(unittest.TestCase):
 
         # Invalid -C flag case.
         self.assertEqual(ninjalog_uploader.GetNinjalog(['ninja', '-C']),
-                         './.ninja_log')
+                         '.ninja_log')
 
         # Multiple target directories => use the last directory.
         self.assertEqual(
