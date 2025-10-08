@@ -16,6 +16,24 @@
       "message": "This now triggers a warning for everyone who is not in Google infra, i.e. who has configs generated without some known anchors. Please reconsider this approach or make the check be strict and only validate the config if it\u0027s in the expected format.",
       "revId": "de69ad92faf1cb1951a7f227f8c5310260272de8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "850292b1_ff81868b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1493367
+      },
+      "writtenOn": "2025-10-08T06:14:43Z",
+      "side": 1,
+      "message": "Consider adding this line before the print statement:\n\n`if \"llvmorg\" in rewrapper_cfg_revision:`",
+      "parentUuid": "58b86774_065dbce8",
+      "revId": "de69ad92faf1cb1951a7f227f8c5310260272de8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
