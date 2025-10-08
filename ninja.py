@@ -40,7 +40,7 @@ def parse_args(ninja_args):
             tool = ninja_args[i + 1]
         elif arg.startswith("-t"):
             tool = arg[2:]
-        elif arg == "-C":
+        elif arg == "-C" and i < len(ninja_args) - 1:
             out_dir = ninja_args[i + 1]
         elif arg.startswith("-C"):
             out_dir = arg[2:]
