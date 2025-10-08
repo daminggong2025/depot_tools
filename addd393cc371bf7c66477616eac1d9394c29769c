@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "bd1271a5_24beb042",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-10-08T06:42:48Z",
+      "side": 1,
+      "message": "@jwata you were exactly right about parse_args. Changed the description, it\u0027s still good to use that function instead of written here IMO. But if you disagree we can drop this CL and move straight to the Siso upload.",
+      "revId": "addd393cc371bf7c66477616eac1d9394c29769c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
