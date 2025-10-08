@@ -32,7 +32,7 @@ def find_ninja_in_path():
             return ninja_path
 
 
-def parse_args(ninja_args):
+def parse_args(ninja_args: list[str]):
     out_dir = "."
     tool = ""
     for i, arg in enumerate(ninja_args):
@@ -40,9 +40,9 @@ def parse_args(ninja_args):
             tool = ninja_args[i + 1]
         elif arg.startswith("-t"):
             tool = arg[2:]
-        elif arg == "-C":
+        elif arg == "-C" and i + 1 < len(ninja_args):
             out_dir = ninja_args[i + 1]
-        elif arg.startswith("-C"):
+        elif arg.startswith("-C") and len(arg) > 2:
             out_dir = arg[2:]
     return tool, out_dir
 
