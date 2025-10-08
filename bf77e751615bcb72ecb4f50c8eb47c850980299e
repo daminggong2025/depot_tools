@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8378bc00_18421157",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 16
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-10-08T09:24:17Z",
+      "side": 1,
+      "message": "nit: please add `autoninja` because depot_tools includes other scripts, too.",
+      "revId": "bf77e751615bcb72ecb4f50c8eb47c850980299e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
