@@ -122,7 +122,7 @@ class NinjalogUploaderTest(unittest.TestCase):
             'out/Release/.ninja_log')
         self.assertEqual(
             ninjalog_uploader.GetNinjalog(['ninja', '-Cout/Release']),
-            'out/Release/.ninja_log')
+            './.ninja_log')
 
         # Invalid -C flag case.
         self.assertEqual(ninjalog_uploader.GetNinjalog(['ninja', '-C']),

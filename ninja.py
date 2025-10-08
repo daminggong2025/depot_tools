@@ -35,6 +35,8 @@ def find_ninja_in_path():
 def parse_args(ninja_args):
     out_dir = "."
     tool = ""
+    if (len(ninja_args) < 3): 
+        return tool, out_dir
     for i, arg in enumerate(ninja_args):
         if arg == "-t":
             tool = ninja_args[i + 1]
