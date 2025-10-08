@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "7cda927a_d9cbb1e1",
+        "filename": "autoninja.py",
+        "patchSetId": 15
+      },
+      "lineNbr": 636,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-10-08T09:21:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "62de12a4_f1375404",
+      "range": {
+        "startLine": 636,
+        "startChar": 0,
+        "endLine": 636,
+        "endChar": 52
+      },
+      "revId": "1c46a74072cb01acb061cdf2af99ccc31f33d382",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "fd58a9fd_7118847a",
@@ -47,6 +71,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "dee0a1cf_a27301f3",
+        "filename": "autoninja.py",
+        "patchSetId": 15
+      },
+      "lineNbr": 662,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-10-08T09:21:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fd58a9fd_7118847a",
+      "range": {
+        "startLine": 660,
+        "startChar": 0,
+        "endLine": 662,
+        "endChar": 0
+      },
+      "revId": "1c46a74072cb01acb061cdf2af99ccc31f33d382",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "ba45158e_b7326cc7",
@@ -60,6 +108,30 @@
       "writtenOn": "2025-10-08T09:19:24Z",
       "side": 1,
       "message": "nit: you can parse the input_args only once before the loop.\n\ne.g.\n```\n_, outdir \u003d ninja.parse_args(input_args)[1]\n...\nfor file in _SISO_FILES_TO_UPLOAD:\n  ...\n  siso_logs_file \u003d os.path.join(outdir, file)\n```",
+      "range": {
+        "startLine": 671,
+        "startChar": 38,
+        "endLine": 671,
+        "endChar": 69
+      },
+      "revId": "1c46a74072cb01acb061cdf2af99ccc31f33d382",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "892e06aa_07577113",
+        "filename": "autoninja.py",
+        "patchSetId": 15
+      },
+      "lineNbr": 671,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-10-08T09:21:03Z",
+      "side": 1,
+      "message": "Thanks!",
+      "parentUuid": "ba45158e_b7326cc7",
       "range": {
         "startLine": 671,
         "startChar": 38,
