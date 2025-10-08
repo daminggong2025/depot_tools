@@ -36,6 +36,7 @@ import urllib.request
 
 import build_telemetry
 import gclient_utils
+import ninja
 
 # Configs that should not be uploaded as is.
 SENSITIVE_CONFIGS = (
@@ -218,22 +219,8 @@ def _getGCEInfo():
 
 def GetNinjalog(cmdline):
     """GetNinjalog returns the path to ninjalog from cmdline."""
-    # ninjalog is in current working directory by default.
-    ninjalog_dir = "."
-
-    i = 0
-    while i < len(cmdline):
-        cmd = cmdline[i]
-        i += 1
-        if cmd == "-C" and i < len(cmdline):
-            ninjalog_dir = cmdline[i]
-            i += 1
-            continue
-
-        if cmd.startswith("-C") and len(cmd) > len("-C"):
-            ninjalog_dir = cmd[len("-C"):]
-
-    return os.path.join(ninjalog_dir, ".ninja_log")
+    _, out_dir = ninja.parse_args(cmdline)
+    return os.path.join(out_dir, ".ninja_log")
 
 
 def UploadNinjaLog(server, ninjalog, metadata):
