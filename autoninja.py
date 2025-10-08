@@ -47,7 +47,10 @@ go/siso-bug and switch back temporarily by setting the GN arg
 
 _SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
 _NINJALOG_UPLOADER = os.path.join(_SCRIPT_DIR, "ninjalog_uploader.py")
+_GSUTIL_PY = os.path.join(_SCRIPT_DIR, "gsutil.py")
+_SISO_FILES_TO_UPLOAD = ["siso_metrics.json", "siso_metadata.json"]
 
+_LOGS_STORAGE_BUCKET = "chrome-build-logs"
 # See [1] and [2] for the painful details of this next section, which handles
 # escaping command lines so that they can be copied and pasted into a cmd
 # window.
@@ -630,7 +633,6 @@ def _main_inner(input_args, build_id):
 
 
 def _upload_ninjalog(args, exit_code, build_duration):
-    warnings.simplefilter("ignore", ResourceWarning)
     # Run upload script without wait.
     creationflags = 0
     if platform.system() == "Windows":
@@ -651,6 +653,40 @@ def _upload_ninjalog(args, exit_code, build_duration):
         start_new_session=True,
         creationflags=creationflags,
     )
+
+
+def _upload_sisolog(input_args: list[str], build_id: str):
+    timestamp = time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())
+    datetime = time.strftime("%Y_%m_%d", time.gmtime())
+    top_dir = time.strftime("%Y/%m/%d/siso/", time.gmtime())
+    _, out_dir = ninja.parse_args(input_args)
+    for file in _SISO_FILES_TO_UPLOAD:
+        # This folder structure mimics the recipe used by the RBE workers
+        # https://source.chromium.org/chromium/infra/infra_superproject/+/main:build/recipes/recipe_modules/siso/api.py
+        formatted_gcs_path = os.path.join(
+            _LOGS_STORAGE_BUCKET, top_dir,
+            f"{datetime}_siso_reports.{timestamp}.{build_id}", file)
+        siso_logs_file = os.path.join(out_dir, file)
+
+        # Run upload script without wait.
+        creationflags = 0
+        if platform.system() == "Windows":
+            creationflags = subprocess.CREATE_NEW_PROCESS_GROUP
+        cmd = [
+            sys.executable,
+            _GSUTIL_PY,
+            "cp",
+            "-r",
+            siso_logs_file,
+            f"gs://{formatted_gcs_path}",
+        ]
+        subprocess.Popen(
+            cmd,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            start_new_session=True,
+            creationflags=creationflags,
+        )
 
 
 def main(args):
@@ -681,8 +717,10 @@ def main(args):
         # Check the log collection opt-in/opt-out status, and display notice if necessary.
         should_collect_logs = build_telemetry.enabled()
         if should_collect_logs:
+            warnings.simplefilter("ignore", ResourceWarning)
             elapsed = time.time() - start
             _upload_ninjalog(input_args, exit_code, elapsed)
+            _upload_sisolog(input_args, build_id)
     return exit_code
 
 
