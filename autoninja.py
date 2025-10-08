@@ -255,6 +255,12 @@ def _check_reclient_cfgs(output_dir):
     root_dir = gclient_paths.GetPrimarySolutionPath(output_dir)
     if not root_dir:
         return
+    if not os.path.exists(
+            os.path.join(
+                root_dir,
+                "buildtools/reclient_cfgs/chromium-browser-clang/.cipd")):
+        # reclient cfgs is not deployed by cipd
+        return
     cr_build_revision_path = os.path.join(
         root_dir, "third_party/llvm-build/Release+Asserts/cr_build_revision")
     cr_build_revision = None
