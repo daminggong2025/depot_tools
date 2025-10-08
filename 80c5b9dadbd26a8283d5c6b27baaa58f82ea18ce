@@ -1,5 +1,23 @@
 {
-  "comments": [],
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "107d01c9_492c528f",
+        "filename": "utils.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-10-08T06:27:47Z",
+      "side": 1,
+      "message": "This file seems to have util functions for depot_tools rather than autoninja specific functions. Need to find a better place.",
+      "revId": "80c5b9dadbd26a8283d5c6b27baaa58f82ea18ce",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ],
   "submitRequirementResults": [
     {
       "submitRequirement": {
