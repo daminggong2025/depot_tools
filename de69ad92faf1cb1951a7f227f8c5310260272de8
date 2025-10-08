@@ -34,6 +34,29 @@
       "parentUuid": "58b86774_065dbce8",
       "revId": "de69ad92faf1cb1951a7f227f8c5310260272de8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a7fd8ee2_1ce4bdf1",
+        "filename": "autoninja.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 273,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-10-08T06:20:43Z",
+      "side": 1,
+      "message": "If the rewrapper_cfg_path doesn\u0027t exist, should it return early here?",
+      "range": {
+        "startLine": 273,
+        "startChar": 0,
+        "endLine": 273,
+        "endChar": 42
+      },
+      "revId": "de69ad92faf1cb1951a7f227f8c5310260272de8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
