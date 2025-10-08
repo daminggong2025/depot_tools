@@ -36,6 +36,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "d8879984_4de5b7bd",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2025-10-08T06:21:27Z",
+      "side": 1,
+      "message": "https://chromium-review.googlesource.com/c/chromium/tools/depot_tools/+/7019373 ?",
+      "parentUuid": "850292b1_ff81868b",
+      "revId": "de69ad92faf1cb1951a7f227f8c5310260272de8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "a7fd8ee2_1ce4bdf1",
