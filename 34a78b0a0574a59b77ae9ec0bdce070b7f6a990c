@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "df3fbd23_e5104f98",
+        "filename": "metadata/tests/validate_test.py",
+        "patchSetId": 12
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1544922
+      },
+      "writtenOn": "2025-10-09T06:07:20Z",
+      "side": 1,
+      "message": "nit: `\u0027` -\u003e `\"` for consistency in the file.",
+      "revId": "34a78b0a0574a59b77ae9ec0bdce070b7f6a990c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
