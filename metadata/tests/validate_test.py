@@ -28,7 +28,28 @@ _INVALID_METADATA_FILEPATH = os.path.join(_THIS_DIR, "data",
                                           "README.chromium.test.multi-invalid")
 
 
-class ValidateContentTest(unittest.TestCase):
+class MetadataValidationTestCase(unittest.TestCase):
+
+    def assertResultsContain(self, results, expected_results, result_type):
+        """Helper to check for expected strings in a list of results."""
+        unmatched_results = [r.replace("\n", " ") for r in results]
+
+        for expected in expected_results:
+            match_found = False
+            for i, res in enumerate(unmatched_results):
+                if expected in res:
+                    unmatched_results.pop(i)
+                    match_found = True
+                    break
+            self.assertTrue(match_found,
+                            f"Expected {result_type} '{expected}' not found")
+
+        self.assertEqual(
+            unmatched_results, [],
+            f"Unexpected {result_type}s found: {unmatched_results}")
+
+
+class ValidateContentTest(MetadataValidationTestCase):
     """Tests for the validate_content function."""
     def test_empty(self):
         # Validate empty content (should result in a validation error).
@@ -56,19 +77,26 @@ class ValidateContentTest(unittest.TestCase):
             source_file_dir=_SOURCE_FILE_DIR,
             repo_root_dir=_THIS_DIR,
         )
-        self.assertEqual(len(results), 9)
-        error_count = 0
-        warning_count = 0
-        for result in results:
-            if result.is_fatal():
-                error_count += 1
-            else:
-                warning_count += 1
-        self.assertEqual(error_count, 7)
-        self.assertEqual(warning_count, 2)
+        errors = [r.get_reason() for r in results if r.is_fatal()]
+        warnings = [r.get_reason() for r in results if not r.is_fatal()]
+
+        expected_errors = [
+            "Description is empty.",
+            "Required field 'License Android Compatible' is missing.",
+            "Required field 'License File' is missing.",
+            "Required field 'License File' is missing.",
+            "Required field 'Shipped' is missing.",
+            "There is a repeated field.", "URL is invalid."
+        ]
+        self.assertResultsContain(errors, expected_errors, "error")
+
+        expected_warnings = [
+            "License has a license not in the allowlist.", "Version is '0'."
+        ]
+        self.assertResultsContain(warnings, expected_warnings, "warning")
 
 
-class ValidateFileTest(unittest.TestCase):
+class ValidateFileTest(MetadataValidationTestCase):
     """Tests for the validate_file function."""
     def test_missing(self):
         # Validate a file that does not exist.
@@ -94,19 +122,24 @@ class ValidateFileTest(unittest.TestCase):
             filepath=_INVALID_METADATA_FILEPATH,
             repo_root_dir=_THIS_DIR,
         )
-        self.assertEqual(len(results), 9)
-        error_count = 0
-        warning_count = 0
-        for result in results:
-            if result.is_fatal():
-                error_count += 1
-            else:
-                warning_count += 1
-        self.assertEqual(error_count, 7)
-        self.assertEqual(warning_count, 2)
+        errors = [r.get_reason() for r in results if r.is_fatal()]
+        warnings = [r.get_reason() for r in results if not r.is_fatal()]
+        expected_errors = [
+            "Description is empty.",
+            "Required field 'License Android Compatible' is missing.",
+            "Required field 'License File' is missing.",
+            "Required field 'License File' is missing.",
+            "Required field 'Shipped' is missing.",
+            "There is a repeated field.", "URL is invalid."
+        ]
+        self.assertResultsContain(errors, expected_errors, "error")
+        expected_warnings = [
+            "License has a license not in the allowlist.", "Version is '0'."
+        ]
+        self.assertResultsContain(warnings, expected_warnings, "warning")
 
 
-class CheckFileTest(unittest.TestCase):
+class CheckFileTest(MetadataValidationTestCase):
     """Tests for the check_file function."""
     def test_missing(self):
         # Check a file that does not exist.
@@ -132,8 +165,21 @@ class CheckFileTest(unittest.TestCase):
             filepath=_INVALID_METADATA_FILEPATH,
             repo_root_dir=_THIS_DIR,
         )
-        self.assertEqual(len(errors), 7)
-        self.assertEqual(len(warnings), 2)
+        expected_errors = [
+            "Description is empty.",
+            "Required field 'License Android Compatible' is missing.",
+            "Required field 'License File' is missing.",
+            "Required field 'License File' is missing.",
+            "Required field 'Shipped' is missing.",
+            "There is a repeated field. Repeated fields: URL (2)",
+            "URL is invalid."
+        ]
+        self.assertResultsContain(errors, expected_errors, "error")
+
+        expected_warnings = [
+            "License has a license not in the allowlist.", "Version is '0'."
+        ]
+        self.assertResultsContain(warnings, expected_warnings, "warning")
 
 
 class ValidationResultTest(unittest.TestCase):
