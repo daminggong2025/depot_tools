@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e984c807_db2eef5c",
+        "filename": "metadata/tests/validate_test.py",
+        "patchSetId": 11
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1544922
+      },
+      "writtenOn": "2025-10-09T06:02:39Z",
+      "side": 1,
+      "message": "`sanitized_results` is already a list, and isn\u0027t used elsewhere. You could remove the intermediate variable.",
+      "revId": "49c876a307de51a5a7d89acbe8c545d46519824d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "cd2f0b09_eab72cb3",
+        "filename": "metadata/tests/validate_test.py",
+        "patchSetId": 11
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1544922
+      },
+      "writtenOn": "2025-10-09T06:02:39Z",
+      "side": 1,
+      "message": "FYI This will report on the first missing result, not all missing results. Up to you if that\u0027s annoying.",
+      "revId": "49c876a307de51a5a7d89acbe8c545d46519824d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
