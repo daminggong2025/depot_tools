@@ -320,7 +320,13 @@ def run_gsutil(target, args, clean=False):
 
 
 def parse_args():
-    bin_dir = os.environ.get('DEPOT_TOOLS_GSUTIL_BIN_DIR', DEFAULT_BIN_DIR)
+    if os.environ.get('DEPOT_TOOLS_GSUTIL_BIN_DIR'):
+        bin_dir = os.environ.get('DEPOT_TOOLS_GSUTIL_BIN_DIR')
+    elif gclient_utils.IsEnvCog():
+        # Use a temporary directory outside the workspace.
+        bin_dir = os.path.join(tempfile.gettempdir(), 'depot_tools_gsutil')
+    else:
+        bin_dir = DEFAULT_BIN_DIR
 
     # Help is disabled as it conflicts with gsutil -h, which controls headers.
     parser = argparse.ArgumentParser(add_help=False)
