@@ -28,6 +28,18 @@ _INVALID_METADATA_FILEPATH = os.path.join(_THIS_DIR, "data",
                                           "README.chromium.test.multi-invalid")
 
 
+def _check_results(test_case, results, expected_results, result_type):
+    """Helper to check for expected strings in a list of results."""
+    for expected in expected_results:
+        with test_case.subTest(
+                expected_error=f"Expected {result_type}: {expected}"):
+            # The results from check_file may contain newlines.
+            sanitized_results = [r.replace('\n', ' ') for r in results]
+            test_case.assertTrue(
+                any(expected in r for r in sanitized_results),
+                f"Expected {result_type} '{expected}' not found")
+
+
 class ValidateContentTest(unittest.TestCase):
     """Tests for the validate_content function."""
     def test_empty(self):
@@ -56,16 +68,22 @@ class ValidateContentTest(unittest.TestCase):
             source_file_dir=_SOURCE_FILE_DIR,
             repo_root_dir=_THIS_DIR,
         )
-        self.assertEqual(len(results), 9)
-        error_count = 0
-        warning_count = 0
-        for result in results:
-            if result.is_fatal():
-                error_count += 1
-            else:
-                warning_count += 1
-        self.assertEqual(error_count, 7)
-        self.assertEqual(warning_count, 2)
+        errors = [r.get_reason() for r in results if r.is_fatal()]
+        warnings = [r.get_reason() for r in results if not r.is_fatal()]
+
+        expected_errors = [
+            "Description is empty",
+            "Required field 'License Android Compatible' is missing",
+            "Required field 'License File' is missing",
+            "Required field 'Shipped' is missing", "There is a repeated field",
+            "URL is invalid"
+        ]
+        _check_results(self, errors, expected_errors, "error")
+
+        expected_warnings = [
+            "License has a license not in the allowlist", "Version is '0'"
+        ]
+        _check_results(self, warnings, expected_warnings, "warning")
 
 
 class ValidateFileTest(unittest.TestCase):
@@ -94,16 +112,22 @@ class ValidateFileTest(unittest.TestCase):
             filepath=_INVALID_METADATA_FILEPATH,
             repo_root_dir=_THIS_DIR,
         )
-        self.assertEqual(len(results), 9)
-        error_count = 0
-        warning_count = 0
-        for result in results:
-            if result.is_fatal():
-                error_count += 1
-            else:
-                warning_count += 1
-        self.assertEqual(error_count, 7)
-        self.assertEqual(warning_count, 2)
+        errors = [r.get_reason() for r in results if r.is_fatal()]
+        warnings = [r.get_reason() for r in results if not r.is_fatal()]
+
+        expected_errors = [
+            "Description is empty",
+            "Required field 'License Android Compatible' is missing",
+            "Required field 'License File' is missing",
+            "Required field 'Shipped' is missing", "There is a repeated field",
+            "URL is invalid"
+        ]
+        _check_results(self, errors, expected_errors, "error")
+
+        expected_warnings = [
+            "License has a license not in the allowlist", "Version is '0'"
+        ]
+        _check_results(self, warnings, expected_warnings, "warning")
 
 
 class CheckFileTest(unittest.TestCase):
@@ -132,8 +156,19 @@ class CheckFileTest(unittest.TestCase):
             filepath=_INVALID_METADATA_FILEPATH,
             repo_root_dir=_THIS_DIR,
         )
-        self.assertEqual(len(errors), 7)
-        self.assertEqual(len(warnings), 2)
+        expected_errors = [
+            "Description is empty",
+            "Required field 'License Android Compatible' is missing",
+            "Required field 'License File' is missing",
+            "Required field 'Shipped' is missing", "There is a repeated field",
+            "URL is invalid"
+        ]
+        _check_results(self, errors, expected_errors, "error")
+
+        expected_warnings = [
+            "License has a license not in the allowlist", "Version is '0'"
+        ]
+        _check_results(self, warnings, expected_warnings, "warning")
 
 
 class ValidationResultTest(unittest.TestCase):
