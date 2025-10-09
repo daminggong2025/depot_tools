@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a8c2516b_35755b5a",
+        "filename": "tests/ninjalog_uploader_test.py",
+        "patchSetId": 12
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-10-09T01:26:47Z",
+      "side": 0,
+      "message": "This test case also should work as is.",
+      "range": {
+        "startLine": 124,
+        "startChar": 43,
+        "endLine": 125,
+        "endChar": 36
+      },
+      "revId": "8fc14e1deafc4356319f2534de813899a3e01094",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
