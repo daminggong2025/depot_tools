@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "3fada2b7_1821e32e",
+        "filename": "metadata/tests/validate_test.py",
+        "patchSetId": 10
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2025-10-09T05:44:31Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f83e0dc0_c137a934",
+      "revId": "026031fcdb95e544e3154f387bcbb4fee214fa8f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "22d7b50b_49d28f93",
@@ -35,6 +53,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "31d446ad_26a776ac",
+        "filename": "metadata/tests/validate_test.py",
+        "patchSetId": 10
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2025-10-09T05:44:31Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "22d7b50b_49d28f93",
+      "revId": "026031fcdb95e544e3154f387bcbb4fee214fa8f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "8281de9e_5b65e13f",
@@ -48,6 +84,24 @@
       "writtenOn": "2025-10-09T05:25:06Z",
       "side": 1,
       "message": "How are you checking for repeated expected errors? `assertResultsContain` would currently pass as long as the `\u0027License File\u0027` error is in the result at least once.",
+      "revId": "026031fcdb95e544e3154f387bcbb4fee214fa8f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "47474cbb_be309700",
+        "filename": "metadata/tests/validate_test.py",
+        "patchSetId": 10
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2025-10-09T05:44:31Z",
+      "side": 1,
+      "message": "I updated it so that it pops them off as it matches them and then check that none are left. This catches any extra and any missing.",
+      "parentUuid": "8281de9e_5b65e13f",
       "revId": "026031fcdb95e544e3154f387bcbb4fee214fa8f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
