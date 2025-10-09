@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "89b36098_4f86a44d",
+        "filename": "metadata/tests/validate_test.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-10-09T04:37:47Z",
+      "side": 1,
+      "message": "you should define this as a class method on ValidateContentTest (if you need to share it across different classes in this file, you can subclass unittest.TestCase, then replace the parent classes of ValidateContentTest, etc.\n\nalso, conventionally, we call these: `assert_something(...)`",
+      "revId": "5ce7e906537818fdd3a2efbd0755e472b5aa6657",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
