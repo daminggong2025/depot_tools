@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "8394671f_df3470ae",
+        "filename": "ninja.py",
+        "patchSetId": 11
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-10-09T01:13:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "cc4f0b86_5c23f4f3",
+      "range": {
+        "startLine": 45,
+        "startChar": 0,
+        "endLine": 47,
+        "endChar": 0
+      },
+      "revId": "fb35ac7bff18e451c8c5f01596d910783cbe2109",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "c92d06dc_755dcc8a",
@@ -37,6 +61,30 @@
       "writtenOn": "2025-10-09T01:08:27Z",
       "side": 1,
       "message": "IIUC, this test change should not be necessary. See the comment in ninja.py.",
+      "range": {
+        "startLine": 129,
+        "startChar": 26,
+        "endLine": 129,
+        "endChar": 37
+      },
+      "revId": "fb35ac7bff18e451c8c5f01596d910783cbe2109",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e5e7e339_393fdacb",
+        "filename": "tests/ninjalog_uploader_test.py",
+        "patchSetId": 11
+      },
+      "lineNbr": 129,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-10-09T01:13:12Z",
+      "side": 1,
+      "message": "How about this behavior then?",
+      "parentUuid": "c92d06dc_755dcc8a",
       "range": {
         "startLine": 129,
         "startChar": 26,
