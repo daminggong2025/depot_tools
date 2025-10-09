@@ -1,7 +1,7 @@
 Name: Test-A README for Chromium metadata
 Short Name: metadata-test-valid
 URL: https://www.example.com/metadata,
-     https://www.example.com/parser
+     https://www.github.com/a/valid/project
 Version: 1.0.12
 Date: 2020-12-03
 License: Apache-2.0, MIT
@@ -24,7 +24,7 @@ EXCEPT:
 
 Name: Test-B README for Chromium metadata
 Short Name: metadata-test-valid-again
-URL: https://www.example.com/metadata
+URL: https://www.github.com/a/valid/project
 Version: 1.0.12
 Date: 2020-12-03
 License: MIT
