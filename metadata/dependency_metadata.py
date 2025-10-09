@@ -346,7 +346,6 @@ class DependencyMetadata:
         # TODO(b/438384123): Expand this to all cases.
         if (self.security_critical
             and self.shipped
-            and not self.update_mechanism
             and self.vuln_scan_sufficiency == "insufficient"):
             # TODO(b/448003595): Provide a pre-populated bug link for when people
             # think this is incorrect.

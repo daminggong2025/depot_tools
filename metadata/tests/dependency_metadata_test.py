@@ -807,7 +807,7 @@ class DependencyValidationTest(unittest.TestCase):
                 source_file_dir=os.path.join(_THIS_DIR, "data"),
                 repo_root_dir=_THIS_DIR,
             )
-            self.assertEqual(len(results), 0)
+            self.assertGreater(len(results), 0)
 
 
 def test_update_mechanism_validation(self):
