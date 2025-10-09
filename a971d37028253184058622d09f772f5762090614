@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b2ac45bf_59ac4d84",
+        "filename": "gsutil.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 328,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2025-10-09T19:04:05Z",
+      "side": 1,
+      "message": "Is the intent that people set the environment variable to avoid the warning, or are we supporting relying on the temp directory behavior? If it\u0027s \"supported\" then it probably shouldn\u0027t log this warning/message.",
+      "revId": "a971d37028253184058622d09f772f5762090614",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
