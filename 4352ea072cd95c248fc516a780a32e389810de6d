@@ -45,6 +45,54 @@
       },
       "revId": "4352ea072cd95c248fc516a780a32e389810de6d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "19db17ff_3a2ca813",
+        "filename": "ninja.py",
+        "patchSetId": 12
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-10-09T02:27:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9b73e800_d6432734",
+      "range": {
+        "startLine": 38,
+        "startChar": 29,
+        "endLine": 38,
+        "endChar": 30
+      },
+      "revId": "4352ea072cd95c248fc516a780a32e389810de6d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a41f52f2_7ab2486b",
+        "filename": "ninja.py",
+        "patchSetId": 12
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-10-09T02:27:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9c381bed_a3b8c49b",
+      "range": {
+        "startLine": 38,
+        "startChar": 8,
+        "endLine": 38,
+        "endChar": 27
+      },
+      "revId": "4352ea072cd95c248fc516a780a32e389810de6d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
