@@ -91,7 +91,9 @@ class ValidateContentTest(MetadataValidationTestCase):
         self.assertResultsContain(errors, expected_errors, "error")
 
         expected_warnings = [
-            "License has a license not in the allowlist.", "Version is '0'."
+            "License has a license not in the allowlist.", "Version is '0'.",
+            "Dependency metadata is insufficient for vulnerability scanning.",
+            "Dependency metadata is insufficient for vulnerability scanning."
         ]
         self.assertResultsContain(warnings, expected_warnings, "warning")
 
@@ -134,7 +136,9 @@ class ValidateFileTest(MetadataValidationTestCase):
         ]
         self.assertResultsContain(errors, expected_errors, "error")
         expected_warnings = [
-            "License has a license not in the allowlist.", "Version is '0'."
+            "License has a license not in the allowlist.", "Version is '0'.",
+            "Dependency metadata is insufficient for vulnerability scanning.",
+            "Dependency metadata is insufficient for vulnerability scanning."
         ]
         self.assertResultsContain(warnings, expected_warnings, "warning")
 
@@ -177,7 +181,9 @@ class CheckFileTest(MetadataValidationTestCase):
         self.assertResultsContain(errors, expected_errors, "error")
 
         expected_warnings = [
-            "License has a license not in the allowlist.", "Version is '0'."
+            "License has a license not in the allowlist.", "Version is '0'.",
+            "Dependency metadata is insufficient for vulnerability scanning.",
+            "Dependency metadata is insufficient for vulnerability scanning."
         ]
         self.assertResultsContain(warnings, expected_warnings, "warning")
 
