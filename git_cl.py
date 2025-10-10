@@ -2928,13 +2928,9 @@ class Changelist(object):
         the URL).
         """
         parts = urllib.parse.urlparse(x)
-        if parts.scheme == 'sso':
-            host = parts.netloc
-        else:
-            # This should be http(s)
-            host = parts.netloc.split('.')[0]
-            if host.endswith('-review'):
-                host = host[:-len('-review')]
+        host = parts.netloc.split('.')[0]
+        if host.endswith('-review'):
+            host = host[:-len('-review')]
         repo = parts.path
         if repo.endswith('.git'):
             repo = repo[:-len('.git')]

@@ -4135,6 +4135,8 @@ class ChangelistTest(unittest.TestCase):
         cases = [
             ('https://chromium.googlesource.com/chromium/tools/depot_tools',
              'sso://chromium/chromium/tools/depot_tools'),
+            ('https://chromium.googlesource.com/build',
+             'sso://chromium.googlesource.com/build'),
         ]
         for a, b in cases:
             with self.subTest(c=(a, b)):
