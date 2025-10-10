@@ -792,7 +792,7 @@ class DependencyValidationTest(unittest.TestCase):
             dependency.add_entry(known_fields.NAME.get_name(),
                                  "Test insufficency")
             dependency.add_entry(known_fields.URL.get_name(),
-                                 "https://www.example.com")
+                                 "https://www.github.com")
             dependency.add_entry(known_fields.VERSION.get_name(), "1.0.0")
             dependency.add_entry(known_fields.LICENSE.get_name(), "MIT")
             dependency.add_entry(known_fields.LICENSE_FILE.get_name(),
