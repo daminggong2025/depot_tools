@@ -16,6 +16,29 @@
       "message": "ptal",
       "revId": "1cbe3294c7b1d625a60c7dedccb3ad2d304f7703",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5fc5e4ee_36bfddc0",
+        "filename": "tests/gerrit_util_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 730,
+      "author": {
+        "id": 1272455
+      },
+      "writtenOn": "2025-10-13T04:03:19Z",
+      "side": 1,
+      "message": "Nit: Probably doesn\u0027t matter, but here \"1\" is a string and in the test above, it\u0027s a number.",
+      "range": {
+        "startLine": 730,
+        "startChar": 32,
+        "endLine": 730,
+        "endChar": 35
+      },
+      "revId": "1cbe3294c7b1d625a60c7dedccb3ad2d304f7703",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
