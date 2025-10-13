@@ -724,9 +724,17 @@ class GerritUtilTest(unittest.TestCase):
     @mock.patch('gerrit_util.GetChangeDetail')
     def testSetReview_ReAuthNotNeeded(self, mockGetChangeDetail,
                                       mockJsonResponse, mockCreateHttpConn):
-        mockJsonResponse.return_value = {"ready": True}
+        mockJsonResponse.return_value = {
+            "ready": True,
+            "labels": {
+                "Commit-Queue": 1
+            }
+        }
 
-        gerrit_util.SetReview('chromium', 123456, msg="test")
+        gerrit_util.SetReview('chromium',
+                              123456,
+                              msg="test",
+                              labels={"Commit-Queue": 1})
 
         # ReAuth not needed.
         mockGetChangeDetail.assert_not_called()
