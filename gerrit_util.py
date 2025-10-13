@@ -1771,6 +1771,17 @@ def AddReviewers(host,
                      notify=notify,
                      accept_statuses=[200])
 
+# Gerrit labels that are subject to review enforcement.
+_REVIEW_ENFORCEMENT_LABELS = set(x.lower() for x in ['Code-Review'])
+
+
+def _contains_review_enforcement_label(labels: Dict[str, str]):
+    """Returns if `labels` are subject to review enforcement."""
+    for label in labels:
+        if label.lower() in _REVIEW_ENFORCEMENT_LABELS:
+            return True
+    return False
+
 
 def SetReview(host,
               change,
@@ -1807,7 +1818,7 @@ def SetReview(host,
 
     # ReAuth needed if we set labels (notably Code-Review).
     reauth_context = None
-    if bool(labels):
+    if labels and _contains_review_enforcement_label(labels):
         reauth_context = auth.ReAuthContext(
             host=host,
             project=project or GetChangeDetail(host, change)["project"])
