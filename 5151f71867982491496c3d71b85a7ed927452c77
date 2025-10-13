@@ -22,6 +22,30 @@
       },
       "revId": "5151f71867982491496c3d71b85a7ed927452c77",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4dcc18e7_17272f6c",
+        "filename": "git_cl.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 2931,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2025-10-13T19:49:53Z",
+      "side": 1,
+      "message": "yes, that will work too:\n```\n\u003e\u003e\u003e parts \u003d urllib.parse.urlparse(\"sso://chromium/foo/bar\")\n\u003e\u003e\u003e host \u003d parts.netloc.split(\u0027.\u0027)[0]\n\u003e\u003e\u003e host\n\u0027chromium\u0027\n```",
+      "parentUuid": "50654ef7_946bacf8",
+      "range": {
+        "startLine": 2931,
+        "startChar": 8,
+        "endLine": 2931,
+        "endChar": 41
+      },
+      "revId": "5151f71867982491496c3d71b85a7ed927452c77",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
