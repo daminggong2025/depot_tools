@@ -6743,7 +6743,9 @@ def RunGitDiffCmd(diff_type,
                   **kwargs):
     """Generates and runs diff command."""
     # Generate diff for the current branch's changes.
-    diff_cmd = ['-c', 'core.quotePath=false', 'diff', '--no-ext-diff']
+    diff_cmd = [
+        '-c', 'core.quotePath=false', 'diff', '--no-ext-diff', '--no-renames'
+    ]
 
     if allow_prefix:
         # explicitly setting --src-prefix and --dst-prefix is necessary in the
