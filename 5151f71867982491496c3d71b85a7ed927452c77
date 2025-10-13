@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "50654ef7_946bacf8",
+        "filename": "git_cl.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 2931,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2025-10-13T18:55:20Z",
+      "side": 1,
+      "message": "If `sso`, wouldn\u0027t the URL be like `sso://chromium/...`, `sso://gerrit/...`, etc?",
+      "range": {
+        "startLine": 2931,
+        "startChar": 8,
+        "endLine": 2931,
+        "endChar": 41
+      },
+      "revId": "5151f71867982491496c3d71b85a7ed927452c77",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
