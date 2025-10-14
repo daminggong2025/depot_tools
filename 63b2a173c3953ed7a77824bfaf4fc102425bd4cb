@@ -1,0 +1,61 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b7a26d0f_4ed892f3",
+        "filename": "gerrit_util.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 1775,
+      "author": {
+        "id": 3355336
+      },
+      "writtenOn": "2025-10-14T00:58:09Z",
+      "side": 1,
+      "message": "I\u0027m not entirely sure if this is the only label, because labels AND submit requirements are configurable in Gerrit, and there\u0027s some black magic there that I don\u0027t fully understand.\n\nFWIW, the draft logic I will be adding on the Web side is \"any positive non-zero label vote\"\n\nI think the logic for Review-Enforcement is \"any positive non-zero label vote\" so perhaps we should match that here too.  (Note that the Code-Review and Review-Enforcement submit requirements are entirely independent logically)",
+      "revId": "63b2a173c3953ed7a77824bfaf4fc102425bd4cb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "53b8686d_6813bb2c",
+        "filename": "gerrit_util.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 1778,
+      "author": {
+        "id": 3355336
+      },
+      "writtenOn": "2025-10-14T00:58:09Z",
+      "side": 1,
+      "message": "nit: return type annotation",
+      "range": {
+        "startLine": 1778,
+        "startChar": 61,
+        "endLine": 1778,
+        "endChar": 62
+      },
+      "revId": "63b2a173c3953ed7a77824bfaf4fc102425bd4cb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "46f4713f_bb06cdb1",
+        "filename": "gerrit_util.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 1821,
+      "author": {
+        "id": 3355336
+      },
+      "writtenOn": "2025-10-14T00:58:09Z",
+      "side": 1,
+      "message": "I don\u0027t think you need `labels and` since the \"contains\" acts correctly for empty",
+      "revId": "63b2a173c3953ed7a77824bfaf4fc102425bd4cb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
