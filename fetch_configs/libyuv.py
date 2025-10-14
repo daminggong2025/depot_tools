@@ -16,7 +16,7 @@ class Libyuv(config_util.Config):
     def fetch_spec(props):
         url = 'https://chromium.googlesource.com/libyuv/libyuv.git'
         solution = {
-            'name': 'libyuv',
+            'name': 'src',
             'url': url,
             'deps_file': 'DEPS',
             'managed': False,
@@ -32,7 +32,7 @@ class Libyuv(config_util.Config):
 
     @staticmethod
     def expected_root(_props):
-        return 'libyuv'
+        return 'src'
 
 
 def main(argv=None):
