@@ -77,6 +77,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "2a8fbc57_201bffe4",
+        "filename": "gerrit_util.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 1778,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-10-14T04:24:42Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "53b8686d_6813bb2c",
+      "range": {
+        "startLine": 1778,
+        "startChar": 61,
+        "endLine": 1778,
+        "endChar": 62
+      },
+      "revId": "63b2a173c3953ed7a77824bfaf4fc102425bd4cb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "46f4713f_bb06cdb1",
@@ -90,6 +114,24 @@
       "writtenOn": "2025-10-14T00:58:09Z",
       "side": 1,
       "message": "I don\u0027t think you need `labels and` since the \"contains\" acts correctly for empty",
+      "revId": "63b2a173c3953ed7a77824bfaf4fc102425bd4cb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8aa3eb23_153169dd",
+        "filename": "gerrit_util.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 1821,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-10-14T04:24:42Z",
+      "side": 1,
+      "message": "Done.\n\nI do need to check if `labels` are None though (it\u0027s fine to do it here or in _contains func",
+      "parentUuid": "46f4713f_bb06cdb1",
       "revId": "63b2a173c3953ed7a77824bfaf4fc102425bd4cb",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
