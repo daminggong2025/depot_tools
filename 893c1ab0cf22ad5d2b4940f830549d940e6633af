@@ -67,6 +67,24 @@
       "message": "(no owners though)",
       "revId": "893c1ab0cf22ad5d2b4940f830549d940e6633af",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c54d9a0e_bfdd53e3",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002927
+      },
+      "writtenOn": "2025-10-14T16:30:57Z",
+      "side": 1,
+      "message": "(I based the patch on this doc: https://docs.python.org/3/library/tarfile.html#tarfile.TarInfo:~:text\u003din%20version%203.12%3A-,Can%20be%20set%20to%20None%20for%20extract()%20and%20extractall()%2C%20causing%20extraction%20to%20skip%20applying%20this%20attribute.,-TarInfo.mode)\n\nAlso tested it locally :-p",
+      "parentUuid": "b553e5a6_092d1546",
+      "revId": "893c1ab0cf22ad5d2b4940f830549d940e6633af",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
