@@ -55,6 +55,7 @@ ALLOWED_SPDX_LICENSES = frozenset([
     # permissive.
     # go/keep-sorted start case=no
     "0BSD",
+    "FSFUL",
     "GPL-2.0-with-autoconf-exception",
     "GPL-2.0-with-classpath-exception",
     "GPL-3.0-with-autoconf-exception",
@@ -78,7 +79,10 @@ ALLOWED_SPDX_LICENSES = frozenset([
     "BSL-1.0",
     "CC-BY-3.0",
     "CC-BY-4.0",
+    "CMU-Mach",
     "dtoa",
+    "FSFAP",
+    "FSFULLR",
     "FTL",
     "HPND",
     "HPND-sell-variant",
