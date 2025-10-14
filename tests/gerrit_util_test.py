@@ -722,8 +722,32 @@ class GerritUtilTest(unittest.TestCase):
     @mock.patch('gerrit_util.CreateHttpConn')
     @mock.patch('gerrit_util.ReadHttpJsonResponse')
     @mock.patch('gerrit_util.GetChangeDetail')
-    def testSetReview_ReAuthNotNeeded(self, mockGetChangeDetail,
-                                      mockJsonResponse, mockCreateHttpConn):
+    def testSetReview_ReAuthNotNeededForCQLabel(self, mockGetChangeDetail,
+                                                mockJsonResponse,
+                                                mockCreateHttpConn):
+        mockJsonResponse.return_value = {
+            "ready": True,
+            "labels": {
+                "Commit-Queue": 1
+            },
+        }
+
+        gerrit_util.SetReview('chromium',
+                              123456,
+                              msg="test",
+                              labels={"Commit-Queue": 1})
+
+        # ReAuth not needed.
+        mockGetChangeDetail.assert_not_called()
+        httpConnKwargs = mockCreateHttpConn.call_args[1]
+        self.assertIsNone(httpConnKwargs.get('reauth_context', None))
+
+    @mock.patch('gerrit_util.CreateHttpConn')
+    @mock.patch('gerrit_util.ReadHttpJsonResponse')
+    @mock.patch('gerrit_util.GetChangeDetail')
+    def testSetReview_ReAuthNotNeededWithoutLabels(self, mockGetChangeDetail,
+                                                   mockJsonResponse,
+                                                   mockCreateHttpConn):
         mockJsonResponse.return_value = {"ready": True}
 
         gerrit_util.SetReview('chromium', 123456, msg="test")
