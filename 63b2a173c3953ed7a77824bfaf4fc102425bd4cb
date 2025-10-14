@@ -36,6 +36,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "4c0755f4_89ba4563",
+        "filename": "gerrit_util.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 1775,
+      "author": {
+        "id": 1272455
+      },
+      "writtenOn": "2025-10-14T03:09:57Z",
+      "side": 1,
+      "message": "As discussed offline, we found that Code-Review is indeed the only one that matters for Review-Enforcement (which is what I would expect).",
+      "parentUuid": "936b87c5_fc2373ee",
+      "revId": "63b2a173c3953ed7a77824bfaf4fc102425bd4cb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "53b8686d_6813bb2c",
