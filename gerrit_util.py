@@ -273,12 +273,23 @@ class _Authenticator(object):
         """
         raise NotImplementedError()
 
-    def ensure_authenticated(self, gerrit_host: str, git_host: str) -> Tuple[bool, str]:
+    def ensure_authenticated(
+        self,
+        gerrit_host: str,
+        git_host: str,
+        reauth_context: Optional[auth.ReAuthContext] = None
+    ) -> Tuple[bool, str]:
         """Returns (bypassable, error message).
 
         If the error message is empty, there is no error to report.
         If bypassable is true, the caller will allow the user to continue past the
         error.
+
+        If `reauth_context` is provided, additionally checks whether the
+        authentication information satisfies the ReAuth requirement.
+
+        For the ReAuth check, Gerrit `host` attribute in `reauth_context` takes
+        precedence over `gerrit_host` argument.
         """
         return (True, '')
 
@@ -343,13 +354,18 @@ def debug_auth() -> Tuple[str, str]:
     return authn.__class__.__name__, authn.debug_summary_state()
 
 
-def ensure_authenticated(gerrit_host: str, git_host: str) -> Tuple[bool, str]:
+def ensure_authenticated(
+        gerrit_host: str,
+        git_host: str,
+        reauth_context: Optional[auth.ReAuthContext] = None
+) -> Tuple[bool, str]:
     """Returns (bypassable, error message).
 
     If the error message is empty, there is no error to report. If bypassable is
     true, the caller will allow the user to continue past the error.
     """
-    return _Authenticator.get().ensure_authenticated(gerrit_host, git_host)
+    return _Authenticator.get().ensure_authenticated(gerrit_host, git_host,
+                                                     reauth_context)
 
 
 class SSOAuthenticator(_Authenticator):
@@ -702,13 +718,24 @@ class CookiesAuthenticator(_Authenticator):
             else:
                 conn.req_headers['Authorization'] = f'Bearer {cred}'
 
-    def ensure_authenticated(self, gerrit_host: str, git_host: str) -> Tuple[bool, str]:
+    def ensure_authenticated(
+        self,
+        gerrit_host: str,
+        git_host: str,
+        reauth_context: Optional[auth.ReAuthContext] = None
+    ) -> Tuple[bool, str]:
         """Returns (bypassable, error message).
 
         If the error message is empty, there is no error to report.
         If bypassable is true, the caller will allow the user to continue past the
         error.
+
+        Gitcookies doesn't satisfy ReAuth requirement, so this method always
+        returns an error.
         """
+        if reauth_context:
+            return False, ".gitcookies can't be used when ReAuth is required."
+
         # Lazy-loader to identify Gerrit and Git hosts.
         gerrit_auth = self._get_auth_for_host(gerrit_host)
         git_auth = self._get_auth_for_host(git_host)
@@ -962,6 +989,22 @@ class GitCredsAuthenticator(_Authenticator):
                 "Got error trying to cache 'depot-tools.hostHasAccount': %s", e)
         return True
 
+    def ensure_authenticated(
+        self,
+        gerrit_host: str,
+        git_host: str,
+        reauth_context: Optional[auth.ReAuthContext] = None
+    ) -> Tuple[bool, str]:
+        try:
+            if not reauth_context:
+                self._authenticator.get_access_token()
+            else:
+                self._authenticator.get_authorization_header(reauth_context)
+            return (True, '')
+        except (GitLoginRequiredError, GitReAuthRequiredError,
+                GitUnknownError) as e:
+            return (False, str(e))
+
     def is_applicable(self, *, conn: Optional[HttpConn] = None):
         return self.gerrit_account_exists(conn.host)
 
@@ -1014,6 +1057,18 @@ class ChainedAuthenticator(_Authenticator):
 
     def debug_summary_state(self) -> str:
         return ''
+
+    def ensure_authenticated(
+        self,
+        gerrit_host: str,
+        git_host: str,
+        reauth_context: Optional[auth.ReAuthContext] = None
+    ) -> Tuple[bool, str]:
+        for a in self.authenticators:
+            if a.is_applicable(conn=None):
+                return a.ensure_authenticated(gerrit_host, git_host,
+                                              reauth_context)
+        return False, 'No applicable authenticator found.'
 
 
 class ReqParams(TypedDict):
