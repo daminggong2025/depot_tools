@@ -78,6 +78,7 @@ ALLOWED_SPDX_LICENSES = frozenset([
     "BSL-1.0",
     "CC-BY-3.0",
     "CC-BY-4.0",
+    "CMU-Mach",
     "dtoa",
     "FTL",
     "HPND",
@@ -114,6 +115,7 @@ EXTENDED_LICENSE_CLASSIFIERS = frozenset([
     # go/keep-sorted start case=no
     "AhemFont",
     "Android-SDK",
+    "LicenseRef-Public-Domain-MD5",
     "LZMA",
     "Public Domain",
     "Public-Domain-Gutenberg",
@@ -125,6 +127,7 @@ EXTENDED_LICENSE_CLASSIFIERS = frozenset([
     # permissive.
     # go/keep-sorted start case=no
     "AMSFonts-2.2",
+    "FSFUL",
     "SolarDesigner",
     "test_fonts",
     # go/keep-sorted end
@@ -142,9 +145,12 @@ EXTENDED_LICENSE_CLASSIFIERS = frozenset([
     "Caffe",
     "CERN",
     "cURL",
+    "curl",
     "dso",
     "Entenssa",
     "FFT2D",
+    "FSFAP",
+    "FSFULLR",
     "getopt",
     "GIF-Encoder",
     "GNU-All-permissive-Copying-License",
@@ -152,6 +158,7 @@ EXTENDED_LICENSE_CLASSIFIERS = frozenset([
     "JsonCPP",
     "Khronos",
     "Libpng-2.0",
+    "LicenseRef-WebM-Project-Patent",
     "OpenGLUT",
     "pffft",
     "PngSuite",
@@ -163,7 +170,6 @@ EXTENDED_LICENSE_CLASSIFIERS = frozenset([
     "X11-Lucent",
     "zxing",
     # go/keep-sorted end
-
     # The Android Software Development Kit License is a special case.
     # It can introduce licensing complexities due to the potentially extensive
     # transitive dependency chain. Developers should carefully review the
@@ -219,9 +225,7 @@ ALLOWED_REFERENCES = frozenset([
 ])
 
 ALLOWED_LICENSES = (
-    ALLOWED_SPDX_LICENSES
-    | EXTENDED_LICENSE_CLASSIFIERS
-    | ALLOWED_REFERENCES
+    ALLOWED_SPDX_LICENSES | EXTENDED_LICENSE_CLASSIFIERS | ALLOWED_REFERENCES
 )
 ALLOWED_OPEN_SOURCE_LICENSES = ALLOWED_LICENSES | OPEN_SOURCE_SPDX_LICENSES
 ALL_LICENSES = ALLOWED_OPEN_SOURCE_LICENSES | WITH_PERMISSION_ONLY
