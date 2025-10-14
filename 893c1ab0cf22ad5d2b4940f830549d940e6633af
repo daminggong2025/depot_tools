@@ -85,6 +85,23 @@
       "parentUuid": "b553e5a6_092d1546",
       "revId": "893c1ab0cf22ad5d2b4940f830549d940e6633af",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7d6c810b_040672cb",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1001629
+      },
+      "writtenOn": "2025-10-14T16:33:56Z",
+      "side": 1,
+      "message": "(I\u0027m wondering if we should make it opt-in or opt-out-able for gcs. I went through the .tar files in chromium\u0027s DEPS file and those seem fine. Don\u0027t know if depot_tools has a policy of rolling things out behind flags or what.)",
+      "revId": "893c1ab0cf22ad5d2b4940f830549d940e6633af",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
