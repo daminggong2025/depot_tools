@@ -20,6 +20,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "936b87c5_fc2373ee",
+        "filename": "gerrit_util.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 1775,
+      "author": {
+        "id": 3355336
+      },
+      "writtenOn": "2025-10-14T01:08:37Z",
+      "side": 1,
+      "message": "Correction: I suspect the logic for Review-Enforcement is \"any positive non-zero vote for any label that is included in any submit requirement predicate\".  Which likely contains, e.g., Verified for cros/android repos",
+      "parentUuid": "b7a26d0f_4ed892f3",
+      "revId": "63b2a173c3953ed7a77824bfaf4fc102425bd4cb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "53b8686d_6813bb2c",
         "filename": "gerrit_util.py",
         "patchSetId": 3
