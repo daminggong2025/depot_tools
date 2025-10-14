@@ -33,6 +33,23 @@
       "message": "lg per https://github.com/python/cpython/blob/3.14/Lib/tarfile.py#L2807 , but I don\u0027t have +1 permissions here 😊",
       "revId": "893c1ab0cf22ad5d2b4940f830549d940e6633af",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "522b3e65_85ed152d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1233114
+      },
+      "writtenOn": "2025-10-14T16:29:06Z",
+      "side": 1,
+      "message": "…or do I! apparently I do have +1 permissions with this account.",
+      "revId": "893c1ab0cf22ad5d2b4940f830549d940e6633af",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
