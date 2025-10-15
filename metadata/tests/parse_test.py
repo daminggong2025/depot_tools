@@ -123,7 +123,7 @@ class ParseTest(unittest.TestCase):
                 ("Update Mechanism", "Autoroll"),
                 ("Version", "N/A"),
                 ("Date", "2020-12-03"),
-                ("License", "Custom license"),
+                ("License", "Custom license, LicenseRef-AbC-123"),
                 ("Security Critical", "yes"),
                 ("Description",
                  """Test metadata with multiple entries for one field, and
