@@ -50,6 +50,23 @@
       "message": "(…where my comments were a question to bryner about depot_tools roll-outs. bryner, we neeed your +1 for owners anyways 😊)",
       "revId": "5296dad19532ff0369d7553db7df99fcecc6d9fe",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "89258502_88bd1a4d",
+        "filename": "gclient.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 2909,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2025-10-15T18:43:35Z",
+      "side": 1,
+      "message": "From the tarfile documentation:\n\n\"Note The extract() method does not take care of several extraction issues. In most cases you should consider using the extractall() method.\"\n\nI\u0027d suggest instead continuing to use extractall(), and pass a `filter` that sets the mtime to the current time.",
+      "revId": "5296dad19532ff0369d7553db7df99fcecc6d9fe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
