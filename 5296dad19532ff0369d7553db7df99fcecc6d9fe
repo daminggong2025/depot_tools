@@ -33,6 +33,23 @@
       "message": "lg with the same comments as last time :)",
       "revId": "5296dad19532ff0369d7553db7df99fcecc6d9fe",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3f15130a_16282f24",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1233114
+      },
+      "writtenOn": "2025-10-15T17:24:45Z",
+      "side": 1,
+      "message": "(…where my comments were a question to bryner about depot_tools roll-outs. bryner, we neeed your +1 for owners anyways 😊)",
+      "revId": "5296dad19532ff0369d7553db7df99fcecc6d9fe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
