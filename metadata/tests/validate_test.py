@@ -91,7 +91,7 @@ class ValidateContentTest(MetadataValidationTestCase):
         self.assertResultsContain(errors, expected_errors, "error")
 
         expected_warnings = [
-            "License has a license not in the allowlist.", "Version is '0'.",
+            "License not in the allowlist.", "Version is '0'.",
             "Dependency metadata is insufficient for vulnerability scanning.",
             "Dependency metadata is insufficient for vulnerability scanning."
         ]
@@ -136,7 +136,7 @@ class ValidateFileTest(MetadataValidationTestCase):
         ]
         self.assertResultsContain(errors, expected_errors, "error")
         expected_warnings = [
-            "License has a license not in the allowlist.", "Version is '0'.",
+            "License not in the allowlist.", "Version is '0'.",
             "Dependency metadata is insufficient for vulnerability scanning.",
             "Dependency metadata is insufficient for vulnerability scanning."
         ]
@@ -181,7 +181,7 @@ class CheckFileTest(MetadataValidationTestCase):
         self.assertResultsContain(errors, expected_errors, "error")
 
         expected_warnings = [
-            "License has a license not in the allowlist.", "Version is '0'.",
+            "License not in the allowlist.", "Version is '0'.",
             "Dependency metadata is insufficient for vulnerability scanning.",
             "Dependency metadata is insufficient for vulnerability scanning."
         ]
@@ -255,7 +255,7 @@ class ValidationWithLineNumbers(unittest.TestCase):
                 # We can't add a line number to errors caused by missing fields.
                 self.assertEqual(r.get_lines(), [])
             elif r.get_reason(
-            ) == "License has a license not in the allowlist.":
+            ) == "License not in the allowlist.":
                 self.assertEqual(r.get_lines(), [9])
             elif r.get_reason() == "URL is invalid.":
                 self.assertEqual(r.get_lines(), [2, 3, 4])
