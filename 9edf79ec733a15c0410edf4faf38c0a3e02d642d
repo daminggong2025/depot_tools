@@ -16,6 +16,184 @@
       "message": "Please take a look.",
       "revId": "9edf79ec733a15c0410edf4faf38c0a3e02d642d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7fce83a5_58254157",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2025-10-15T05:38:43Z",
+      "side": 1,
+      "message": "Thank you!",
+      "revId": "9edf79ec733a15c0410edf4faf38c0a3e02d642d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e4f3d833_c4dbb555",
+        "filename": "metadata/fields/custom/license_allowlist.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 118,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2025-10-15T05:38:43Z",
+      "side": 1,
+      "message": "Not needed. \n\nI just landed a change to make this list insensitive and strip \u0027LicenseRef-\u0027 so this will be caught by \"public-domain-md5\".",
+      "range": {
+        "startLine": 118,
+        "startChar": 5,
+        "endLine": 118,
+        "endChar": 33
+      },
+      "revId": "9edf79ec733a15c0410edf4faf38c0a3e02d642d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "61712b3c_7835b4db",
+        "filename": "metadata/fields/custom/license_allowlist.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 130,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2025-10-15T05:38:43Z",
+      "side": 1,
+      "message": "This is an SPDX id (https://spdx.org/licenses/FSFUL), so it goes in the \u0027ALLOWED_SPDX_LICENSES\u0027 list.",
+      "range": {
+        "startLine": 130,
+        "startChar": 5,
+        "endLine": 130,
+        "endChar": 10
+      },
+      "revId": "9edf79ec733a15c0410edf4faf38c0a3e02d642d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d71be0bb_cdf86596",
+        "filename": "metadata/fields/custom/license_allowlist.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 148,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2025-10-15T05:38:43Z",
+      "side": 1,
+      "message": "Not needed anymore. This will be solved by my case insensitive update.",
+      "range": {
+        "startLine": 148,
+        "startChar": 5,
+        "endLine": 148,
+        "endChar": 9
+      },
+      "revId": "9edf79ec733a15c0410edf4faf38c0a3e02d642d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "70080ba7_4672425a",
+        "filename": "metadata/fields/custom/license_allowlist.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 153,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2025-10-15T05:38:43Z",
+      "side": 1,
+      "message": "These are SPDX ids (https://spdx.org/licenses/FSFAP), so it goes in the \u0027ALLOWED_SPDX_LICENSES\u0027 list.",
+      "range": {
+        "startLine": 152,
+        "startChar": 4,
+        "endLine": 153,
+        "endChar": 14
+      },
+      "revId": "9edf79ec733a15c0410edf4faf38c0a3e02d642d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "86da428c_6cc0b7fd",
+        "filename": "metadata/fields/custom/license_allowlist.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 161,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2025-10-15T05:38:43Z",
+      "side": 1,
+      "message": "Not needed anymore, I landed a change to strip \u0027LicenseRef-\u0027, this is now covered by  \"WebM-Project-Patent\".",
+      "range": {
+        "startLine": 161,
+        "startChar": 16,
+        "endLine": 161,
+        "endChar": 35
+      },
+      "revId": "9edf79ec733a15c0410edf4faf38c0a3e02d642d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a9405021_cfed4a98",
+        "filename": "metadata/fields/custom/license_allowlist.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 173,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2025-10-15T05:38:43Z",
+      "side": 1,
+      "message": "I\u0027d prefer to keep the space to distinguish the Android Software comment block as it\u0027s own thing.",
+      "range": {
+        "startLine": 172,
+        "startChar": 1,
+        "endLine": 173,
+        "endChar": 10
+      },
+      "revId": "9edf79ec733a15c0410edf4faf38c0a3e02d642d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bb316bd1_e191a7c9",
+        "filename": "metadata/fields/custom/license_allowlist.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 229,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2025-10-15T05:38:43Z",
+      "side": 1,
+      "message": "This is unrelated, please change back. Did a formatter do this?",
+      "range": {
+        "startLine": 227,
+        "startChar": 0,
+        "endLine": 229,
+        "endChar": 1
+      },
+      "revId": "9edf79ec733a15c0410edf4faf38c0a3e02d642d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
