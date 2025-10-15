@@ -67,6 +67,24 @@
       "message": "From the tarfile documentation:\n\n\"Note The extract() method does not take care of several extraction issues. In most cases you should consider using the extractall() method.\"\n\nI\u0027d suggest instead continuing to use extractall(), and pass a `filter` that sets the mtime to the current time.",
       "revId": "5296dad19532ff0369d7553db7df99fcecc6d9fe",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f38c8867_056dac0f",
+        "filename": "gclient.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 2909,
+      "author": {
+        "id": 1002927
+      },
+      "writtenOn": "2025-10-15T19:21:12Z",
+      "side": 1,
+      "message": "I tried that first (see previous comments), but the filter argument was introduced in python 3.12, and it seems chromium\u0027s infra is still on 3.11.9.\n\nI also suspect that at least part of \"several extraction issues\" relates to the setting of these attributes (setting mtime on a directory needs to be done after all the files have been written to the directory, for example).",
+      "parentUuid": "89258502_88bd1a4d",
+      "revId": "5296dad19532ff0369d7553db7df99fcecc6d9fe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
