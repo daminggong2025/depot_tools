@@ -102,6 +102,24 @@
       "message": "I think it\u0027s better to apply metrics labels here.\n\ne.g.\n```\nnew_args \u003d apply_metrics_labels(args[1:])\n```",
       "revId": "38ba27f7f8a91ddcca524cc53fbaa70cb77acfd9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "01fdc2e1_f3563591",
+        "filename": "siso.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 229,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-10-15T09:35:40Z",
+      "side": 1,
+      "message": "Ah, I meant \n\n```\nnew_args \u003d apply_metrics_labels(new_args)\n```",
+      "parentUuid": "3c2d0be8_a6e0d33c",
+      "revId": "38ba27f7f8a91ddcca524cc53fbaa70cb77acfd9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
