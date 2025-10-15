@@ -8,6 +8,7 @@ binary when run inside a gclient source tree, so users can just type
 "siso" on the command line."""
 
 import os
+import platform
 import signal
 import shlex
 import shutil
@@ -40,6 +41,37 @@ def check_outdir(subcmd, out_dir):
               (out_dir, out_dir),
               file=sys.stderr)
         sys.exit(1)
+
+
+def apply_metrics_labels(args: list[str]) -> list[str]:
+    if len(args) == 0:
+        return args
+    # We expect ninja calls, else this algorithm is meaningless.
+    if args[0] != "ninja":
+        return args
+
+    system_dict = {"Windows": "windows", "Darwin": "mac", "Linux": "linux"}
+    user_system = system_dict.get(platform.system(), platform.system())
+
+    targets = []
+    for i, arg in enumerate(args[1:], 1):
+        if not args[i - 1].startswith("-") and not arg.startswith("-"):
+            # Not prefixed by a flag and not a flag itself - a build target.
+            targets.append(arg)
+        # Respect user provided labels, abort.
+        if arg.startswith("--metrics_labels") or arg.startswith(
+                "-metrics_labels"):
+            return args
+    targets = ["all"] if len(targets) == 0 else targets
+    # Siso doesn't expect array, so join it into a string with another manner.
+    targets_string = "+".join(targets)
+
+    result = []
+    result.append("type=developer")
+    result.append("tool=siso")
+    result.append(f"targets={targets_string}")
+    result.append(f"host_os={user_system}")
+    return args + ["--metrics_labels", ",".join(result)]
 
 
 def load_sisorc(rcfile):
@@ -193,6 +225,7 @@ def main(args):
                 check_outdir(subcmd, out_dir)
                 new_args = apply_sisorc(global_flags, subcmd_flags, args[1:],
                                         subcmd)
+                new_args = apply_metrics_labels(new_args)
                 if args[1:] != new_args:
                     print('depot_tools/siso.py: %s' % shlex.join(new_args),
                           file=sys.stderr)
@@ -203,7 +236,8 @@ def main(args):
             file=sys.stderr)
         return 1
     if siso_override_path:
-        return caffeinate.run([siso_override_path] + args[1:])
+        new_args = apply_metrics_labels(args[1:])
+        return caffeinate.run([siso_override_path] + new_args)
 
     print(
         'depot_tools/siso.py: Could not find .sisoenv under build/config/siso '
