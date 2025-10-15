@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f39e9449_de0f03f9",
+        "filename": "metadata/fields/custom/license_allowlist.py",
+        "patchSetId": 10
+      },
+      "lineNbr": 231,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-10-15T06:34:20Z",
+      "side": 1,
+      "message": "Well. My suggestion was to stop exporting license in a set.\n\nThe allowlist expose a set of \n\n```\ndef is_allowed_spdx_license(val: str): bool\n```\n\nThen the rest of code calls this function predicate.",
+      "range": {
+        "startLine": 227,
+        "startChar": 0,
+        "endLine": 231,
+        "endChar": 67
+      },
+      "revId": "c8c317cff8fc7be76607cbd7fea4b60cc88b58b6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
