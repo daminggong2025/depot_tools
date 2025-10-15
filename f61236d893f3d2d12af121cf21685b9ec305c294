@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bf33afd8_b154b11d",
+        "filename": "gclient.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 2907,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2025-10-15T19:46:01Z",
+      "side": 1,
+      "message": "This does more than just set the mtime, it\u0027ll do everything listed in https://docs.python.org/3/library/tarfile.html#tarfile.data_filter -- which does not currently happen, since the default is `fully_trusted_filter`.\n\nDo we know for sure that all GCS deps work properly with this?",
+      "revId": "f61236d893f3d2d12af121cf21685b9ec305c294",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
