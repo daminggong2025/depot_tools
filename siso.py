@@ -8,6 +8,7 @@ binary when run inside a gclient source tree, so users can just type
 "siso" on the command line."""
 
 import os
+import platform
 import signal
 import shlex
 import shutil
@@ -40,6 +41,33 @@ def check_outdir(subcmd, out_dir):
               (out_dir, out_dir),
               file=sys.stderr)
         sys.exit(1)
+
+
+def provide_siso_metadata_flag(args: list[str]) -> str:
+    if len(args) == 0:
+        return ""
+    # We expect ninja calls, else this algorithm is meaningless.
+    if args[0] != "ninja":
+        return ""
+
+    targets = []
+    for i, arg in enumerate(args[1:], 1):
+        if not args[i - 1].startswith("-") and not arg.startswith("-"):
+            # Not prefixed by a flag and not a flag itself - a build target.
+            targets.append(arg)
+        # Respect user provided labels, abort.
+        if arg == "--metrics_labels":
+            return ""
+    targets = ["all"] if len(targets) == 0 else targets
+    # Siso doesn't expect array, so join it into a string with another manner.
+    targets_string = "+".join(targets)
+
+    result = []
+    result.append("type=developer")
+    result.append("tool=siso")
+    result.append(f"targets={targets_string}")
+    result.append(f"host_os={platform.system()}")
+    return ",".join(result)
 
 
 def load_sisorc(rcfile):
@@ -134,6 +162,9 @@ def main(args):
     if gclient_root_path:
         gclient_src_root_path = os.path.join(gclient_root_path, 'src')
 
+    metadata = provide_siso_metadata_flag(args[1:])
+    metadata_flag = ["--metrics_labels", metadata] if metadata else []
+
     siso_override_path = os.environ.get('SISO_PATH')
     if siso_override_path:
         print('depot_tools/siso.py: Using Siso binary from SISO_PATH: %s.' %
@@ -196,14 +227,15 @@ def main(args):
                 if args[1:] != new_args:
                     print('depot_tools/siso.py: %s' % shlex.join(new_args),
                           file=sys.stderr)
-                return caffeinate.run([siso_path] + new_args, env=env)
+                return caffeinate.run([siso_path] + new_args + metadata_flag,
+                                      env=env)
         print(
             'depot_tools/siso.py: Could not find siso in third_party/siso '
             'of the current project. Did you run gclient sync?',
             file=sys.stderr)
         return 1
     if siso_override_path:
-        return caffeinate.run([siso_override_path] + args[1:])
+        return caffeinate.run([siso_override_path] + args[1:] + metadata_flag)
 
     print(
         'depot_tools/siso.py: Could not find .sisoenv under build/config/siso '
