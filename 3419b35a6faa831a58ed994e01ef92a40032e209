@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "52de23a2_16d42741",
+        "filename": "metadata/dependency_metadata.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 150,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-10-15T04:03:25Z",
+      "side": 1,
+      "message": "Sounds like it\u0027s better to expose \n\nis_opens_source_spdx_license() function than doing a set comparison (like all_licenses_allowlisted)",
+      "revId": "3419b35a6faa831a58ed994e01ef92a40032e209",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
