@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "d5db1bcd_91f23f84",
+        "filename": "metadata/fields/custom/license.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2025-10-15T02:33:10Z",
+      "side": 1,
+      "message": "done.",
+      "parentUuid": "302d4351_b0e945b6",
+      "revId": "bb39610c4df53cd37da0146d91d2735ada30be4b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "a545fea9_0c16130d",
@@ -31,6 +49,24 @@
       "writtenOn": "2025-10-15T01:16:50Z",
       "side": 1,
       "message": "I would remove the brackets as it seems like the main action to take.",
+      "revId": "bb39610c4df53cd37da0146d91d2735ada30be4b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4e7b601b_04974490",
+        "filename": "metadata/fields/custom/license.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2025-10-15T02:33:10Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a545fea9_0c16130d",
       "revId": "bb39610c4df53cd37da0146d91d2735ada30be4b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
