@@ -85,6 +85,24 @@
       "parentUuid": "89258502_88bd1a4d",
       "revId": "5296dad19532ff0369d7553db7df99fcecc6d9fe",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2d6570e3_4e8b05d3",
+        "filename": "gclient.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 2909,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2025-10-15T19:25:52Z",
+      "side": 1,
+      "message": "Hm, https://docs.python.org/3.11/library/tarfile.html#tarfile-extraction-filter claims the functionality was introduced in 3.11.4. Am I missing something?",
+      "parentUuid": "f38c8867_056dac0f",
+      "revId": "5296dad19532ff0369d7553db7df99fcecc6d9fe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
