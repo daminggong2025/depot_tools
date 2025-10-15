@@ -146,7 +146,8 @@ class DependencyMetadata:
             atomic_delimiter=known_fields.LICENSE.VALUE_DELIMITER)
         open_source_only = []
         for lic, valid in licenses:
-            if valid and lic in OPEN_SOURCE_SPDX_LICENSES:
+            # Processing converts to lowercase for comparison.
+            if valid and license_util.process_value(lic) in OPEN_SOURCE_SPDX_LICENSES:
                 open_source_only.append(lic)
         return open_source_only
 
