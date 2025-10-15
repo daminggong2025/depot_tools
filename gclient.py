@@ -2901,7 +2901,12 @@ class GcsDependency(Dependency):
                     self.output_dir, f'.{self.file_prefix}_content_names')
                 self.WriteToFile(json.dumps(tar.getnames()), tar_content_file)
 
-                tar.extractall(path=self.output_dir)
+                for f in tar.getmembers():
+                    # It's important that mtime is set to the current time,
+                    # not based on the metadata in the archive, so the build
+                    # system will notice when dependencies change.
+                    # See crbug.com/450551220
+                    tar.extract(f, path=self.output_dir, set_attrs=False)
 
         if os.getenv('GCLIENT_TEST') != '1':
             code, err = download_from_google_storage.set_executable_bit(
