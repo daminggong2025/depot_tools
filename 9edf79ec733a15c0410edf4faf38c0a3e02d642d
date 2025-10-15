@@ -35,6 +35,23 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "7065bddc_ef96d8ba",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1116027
+      },
+      "writtenOn": "2025-10-15T08:21:11Z",
+      "side": 1,
+      "message": "Please take another look.",
+      "revId": "9edf79ec733a15c0410edf4faf38c0a3e02d642d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e4f3d833_c4dbb555",
@@ -48,6 +65,30 @@
       "writtenOn": "2025-10-15T05:38:43Z",
       "side": 1,
       "message": "Not needed. \n\nI just landed a change to make this list insensitive and strip \u0027LicenseRef-\u0027 so this will be caught by \"public-domain-md5\".",
+      "range": {
+        "startLine": 118,
+        "startChar": 5,
+        "endLine": 118,
+        "endChar": 33
+      },
+      "revId": "9edf79ec733a15c0410edf4faf38c0a3e02d642d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b0fd6c32_9922550a",
+        "filename": "metadata/fields/custom/license_allowlist.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 118,
+      "author": {
+        "id": 1116027
+      },
+      "writtenOn": "2025-10-15T08:21:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e4f3d833_c4dbb555",
       "range": {
         "startLine": 118,
         "startChar": 5,
@@ -81,6 +122,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "b17d1ce7_04526677",
+        "filename": "metadata/fields/custom/license_allowlist.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 130,
+      "author": {
+        "id": 1116027
+      },
+      "writtenOn": "2025-10-15T08:21:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "61712b3c_7835b4db",
+      "range": {
+        "startLine": 130,
+        "startChar": 5,
+        "endLine": 130,
+        "endChar": 10
+      },
+      "revId": "9edf79ec733a15c0410edf4faf38c0a3e02d642d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d71be0bb_cdf86596",
@@ -94,6 +159,30 @@
       "writtenOn": "2025-10-15T05:38:43Z",
       "side": 1,
       "message": "Not needed anymore. This will be solved by my case insensitive update.",
+      "range": {
+        "startLine": 148,
+        "startChar": 5,
+        "endLine": 148,
+        "endChar": 9
+      },
+      "revId": "9edf79ec733a15c0410edf4faf38c0a3e02d642d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b2b51f08_673f953c",
+        "filename": "metadata/fields/custom/license_allowlist.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 148,
+      "author": {
+        "id": 1116027
+      },
+      "writtenOn": "2025-10-15T08:21:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d71be0bb_cdf86596",
       "range": {
         "startLine": 148,
         "startChar": 5,
@@ -127,6 +216,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "e4099651_f4a89114",
+        "filename": "metadata/fields/custom/license_allowlist.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 153,
+      "author": {
+        "id": 1116027
+      },
+      "writtenOn": "2025-10-15T08:21:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "70080ba7_4672425a",
+      "range": {
+        "startLine": 152,
+        "startChar": 4,
+        "endLine": 153,
+        "endChar": 14
+      },
+      "revId": "9edf79ec733a15c0410edf4faf38c0a3e02d642d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "86da428c_6cc0b7fd",
@@ -140,6 +253,30 @@
       "writtenOn": "2025-10-15T05:38:43Z",
       "side": 1,
       "message": "Not needed anymore, I landed a change to strip \u0027LicenseRef-\u0027, this is now covered by  \"WebM-Project-Patent\".",
+      "range": {
+        "startLine": 161,
+        "startChar": 16,
+        "endLine": 161,
+        "endChar": 35
+      },
+      "revId": "9edf79ec733a15c0410edf4faf38c0a3e02d642d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4e768dbf_9a864eaf",
+        "filename": "metadata/fields/custom/license_allowlist.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 161,
+      "author": {
+        "id": 1116027
+      },
+      "writtenOn": "2025-10-15T08:21:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "86da428c_6cc0b7fd",
       "range": {
         "startLine": 161,
         "startChar": 16,
@@ -173,6 +310,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "a7242e5a_98eb3ce1",
+        "filename": "metadata/fields/custom/license_allowlist.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 173,
+      "author": {
+        "id": 1116027
+      },
+      "writtenOn": "2025-10-15T08:21:11Z",
+      "side": 1,
+      "message": "This was removed by the auto-formatter from cider.\n\nManually reverted.",
+      "parentUuid": "a9405021_cfed4a98",
+      "range": {
+        "startLine": 172,
+        "startChar": 1,
+        "endLine": 173,
+        "endChar": 10
+      },
+      "revId": "9edf79ec733a15c0410edf4faf38c0a3e02d642d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "bb316bd1_e191a7c9",
@@ -186,6 +347,30 @@
       "writtenOn": "2025-10-15T05:38:43Z",
       "side": 1,
       "message": "This is unrelated, please change back. Did a formatter do this?",
+      "range": {
+        "startLine": 227,
+        "startChar": 0,
+        "endLine": 229,
+        "endChar": 1
+      },
+      "revId": "9edf79ec733a15c0410edf4faf38c0a3e02d642d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e7c962f3_40328653",
+        "filename": "metadata/fields/custom/license_allowlist.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 229,
+      "author": {
+        "id": 1116027
+      },
+      "writtenOn": "2025-10-15T08:21:11Z",
+      "side": 1,
+      "message": "Yes. I edited the file in cider, and use \"Format this file\".\n\nManually reverted.",
+      "parentUuid": "bb316bd1_e191a7c9",
       "range": {
         "startLine": 227,
         "startChar": 0,
