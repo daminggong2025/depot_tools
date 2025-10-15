@@ -112,16 +112,16 @@ class LicenseField(field_types.SingleLineTextField):
                     # Try and preemptively address the root cause of this behaviour,
                     # which is having multiple choices for a license.
                     additional=[
-                        f"When given a choice of licenses, chose the most "
+                        "When given a choice of licenses, choose the most "
                         "permissive one, do not list all options."
                     ])
             if not allowed:
-                not_allowlisted.append(license)
+                not_allowlisted.append(process_value(license))
 
         if not_allowlisted:
             return vr.ValidationWarning(
-                reason=f"{self._name} has a license not in the allowlist."
-                " (see https://source.chromium.org/chromium/chromium/tools/depot_tools/+/main:metadata/fields/custom/license_allowlist.py).",
+                reason="License not in the allowlist."
+                " Follow the steps at https://source.chromium.org/chromium/chromium/tools/depot_tools/+/main:metadata/fields/custom/license_allowlist.py.",
                 additional=[
                     "Licenses not allowlisted: "
                     f"{util.quoted(not_allowlisted)}.",
