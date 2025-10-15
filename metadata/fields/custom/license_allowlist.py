@@ -48,7 +48,7 @@
 # 5. Note:
 #   * Remove 'LicenseRef-' prefix from license classifier outputs.
 #   * Case does not matter.
-ALLOWED_SPDX_LICENSES = frozenset([
+_ALLOWED_SPDX_LICENSES = frozenset([
     # unencumbered.
     # go/keep-sorted start case=no
     "blessing",
@@ -113,7 +113,7 @@ ALLOWED_SPDX_LICENSES = frozenset([
 
 # These are licenses that are not in the SPDX license list, but are identified
 # by the license classifier.
-EXTENDED_LICENSE_CLASSIFIERS = frozenset([
+_EXTENDED_LICENSE_CLASSIFIERS = frozenset([
     # unencumbered.
     # go/keep-sorted start case=no
     "AhemFont",
@@ -177,7 +177,7 @@ EXTENDED_LICENSE_CLASSIFIERS = frozenset([
 
 # These licenses are only allowed in open source projects due to their
 # reciprocal requirements.
-OPEN_SOURCE_SPDX_LICENSES = frozenset([
+_OPEN_SOURCE_SPDX_LICENSES = frozenset([
     # reciprocal.
     # go/keep-sorted start case=no
     "APSL-2.0",
@@ -192,7 +192,7 @@ OPEN_SOURCE_SPDX_LICENSES = frozenset([
 
 # TODO(b/388620886): Implement warning when changing to or from these licenses
 # (but not every time the README.chromium file is modified).
-WITH_PERMISSION_ONLY = frozenset([
+_WITH_PERMISSION_ONLY = frozenset([
     # restricted.
     # go/keep-sorted start case=no
     "CC-BY-SA-3.0",
@@ -218,9 +218,17 @@ WITH_PERMISSION_ONLY = frozenset([
 
 # These are references to files that are not licenses, but are allowed to be
 # included in the LICENSE field.
-ALLOWED_REFERENCES = frozenset([
+_ALLOWED_REFERENCES = frozenset([
     "Refer to additional_readme_paths.json",
 ])
+
+
+
+ALLOWED_SPDX_LICENSES = frozenset(map(str.lower, _ALLOWED_SPDX_LICENSES))
+EXTENDED_LICENSE_CLASSIFIERS = frozenset(map(str.lower, _EXTENDED_LICENSE_CLASSIFIERS))
+OPEN_SOURCE_SPDX_LICENSES = frozenset(map(str.lower, _OPEN_SOURCE_SPDX_LICENSES))
+WITH_PERMISSION_ONLY = frozenset(map(str.lower, _WITH_PERMISSION_ONLY))
+ALLOWED_REFERENCES = frozenset(map(str.lower, _ALLOWED_REFERENCES))
 
 ALLOWED_LICENSES = (
     ALLOWED_SPDX_LICENSES
