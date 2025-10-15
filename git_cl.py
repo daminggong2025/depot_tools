@@ -7126,6 +7126,295 @@ def _RunLUCICfgFormat(opts, paths, top_dir, diffs):
     return ret
 
 
+def _PrintDiff(abs_path, formatted_content, rel_path):
+    """Prints a unified diff using git diff --no-index."""
+    # Use relative path for cleaner diff headers
+    rel_path = rel_path.replace(os.sep, '/')
+
+    # Determine color setting based on existing setup_color configuration.
+    color_setting = 'always' if setup_color.IS_TTY else 'never'
+
+    cmd = [
+        'git',
+        'diff',
+        '--no-index',
+        f'--color={color_setting}',
+        '--src-prefix=a/' + rel_path,
+        '--dst-prefix=b/' + rel_path,
+        # Compare file on disk (original content) with stdin (formatted content).
+        abs_path,
+        '-'
+    ]
+    try:
+        # git diff --no-index returns exit code 1 if there are differences.
+        subprocess2.check_output(cmd,
+                                 stdin=formatted_content.encode('utf-8'),
+                                 stderr=subprocess2.PIPE)
+    except subprocess2.CalledProcessError as e:
+        if e.returncode == 1:
+            # Output the diff
+            sys.stdout.write(e.stdout.decode('utf-8', 'replace'))
+        else:
+            # Handle other errors (e.g. git not found, file access issues)
+            logging.warning("Error running git diff for %s: %s", rel_path,
+                            e.stderr.decode('utf-8', 'replace'))
+
+
+class _DepsListFormatter:
+    """Helper class to parse, sort, and format a DEPS list assignment.
+
+    Handles parsing logic, comment association, and detection of complex syntax
+    that should prevent automatic formatting.
+    """
+
+    # Regex to find individual DEPS string literals (e.g. '"+foo"' or "-bar")
+    # Use triple-quoted raw string (r"""...""") to safely handle both quote types.
+    _ITEM_REGEX = re.compile(r"""(['"][-+!][^'"]*['"])""")
+
+    def __init__(self, indent, var_name, body, original_match):
+        self.indent = indent
+        self.var_name = var_name
+        self.body = body
+        # Store the original match in case we need to bail out.
+        self.original_match = original_match
+        self.entries = []
+        # Stores preceding comments accumulated across lines
+        self.current_comments = []
+        self.bailout = False
+
+    def format(self):
+        """Parses, sorts, and reconstructs the DEPS list."""
+        self._parse_body()
+        if self.bailout:
+            return self.original_match
+        return self._reconstruct()
+
+    def _parse_body(self):
+        """Parses the list body into structured entries with comments."""
+        for line in self.body.splitlines():
+            stripped = line.strip()
+
+            if not stripped:
+                continue  # Skip empty lines
+
+            # Check if the line is a comment line
+            if stripped.startswith('#'):
+                # Store the normalized comment
+                self.current_comments.append(stripped)
+                continue
+
+            self._process_line(line)
+            if self.bailout:
+                return
+
+    def _process_line(self, line):
+        """Processes a single line that may contain items."""
+        # Find all items on the line using finditer to get match objects
+        matches_on_line = list(self._ITEM_REGEX.finditer(line))
+
+        if not matches_on_line:
+            # The line is not empty, not a comment, and contains no recognized items.
+            # This means it contains complex Python code (e.g. Var()). Bail out.
+            self.bailout = True
+            return
+
+        # Check for complex syntax we don't support.
+        trailing_comment = self._validate_and_extract_trailing(
+            line, matches_on_line)
+        if self.bailout:
+            return
+
+        # Process all items found on the line
+        for i, match_obj in enumerate(matches_on_line):
+            self._extract_entry(i, match_obj, matches_on_line, trailing_comment)
+
+    def _validate_and_extract_trailing(self, line, matches_on_line):
+        """Checks for complex syntax and extracts the trailing comment if valid.
+
+        Sets self.bailout to True if complex syntax is found.
+        Returns the trailing comment string if valid.
+        """
+        # 1. Check content between items (must be comma + whitespace)
+        for i, match_obj in enumerate(matches_on_line):
+            if i > 0:  # Check from the second item onwards
+                # Content between the end of the previous item and the start of this one
+                prev_end = matches_on_line[i - 1].end()
+                intervening_content = line[prev_end:match_obj.start()]
+
+                # The intervening content must be just a comma and whitespace.
+                # This prevents implicit string concatenation ("a" "b") from being split.
+                if not re.fullmatch(r"\s*,\s*", intervening_content):
+                    self.bailout = True
+                    return ""  # Found something complex (like '+' or missing comma).
+
+        # 2. Check content after the last item.
+        remainder = line[matches_on_line[-1].end():]
+
+        # We analyze the remainder to ensure it only contains optional comma, whitespace, and optional comment.
+        # Regex for valid suffix: optional whitespace, optional comma, optional whitespace, optional comment, end of line.
+        suffix_match = re.fullmatch(r"\s*,?\s*(#.*)?\s*", remainder)
+
+        if not suffix_match:
+            self.bailout = True
+            return ""  # The remainder contains something unexpected (e.g. "+ Var('foo')").
+
+        if suffix_match.group(1):
+            return suffix_match.group(1).strip()
+        return ""
+
+    def _extract_entry(self, index, match_obj, matches_on_line,
+                       trailing_comment):
+        """Extracts a structured entry for an item and associates comments."""
+        item = match_obj.group(1)
+        # Sort key is the content inside the quotes
+        sort_key = item[1:-1]
+
+        comments_to_assign = []
+        trailing_comment_to_assign = ""
+
+        # Heuristic 1: Only the first item on the line inherits the preceding comments accumulated so far
+        if index == 0:
+            comments_to_assign = self.current_comments
+            self.current_comments = []  # Clear the accumulator
+
+        # Heuristic 2: Only the last item on the line gets the trailing comment
+        if index == len(matches_on_line) - 1:
+            trailing_comment_to_assign = trailing_comment
+
+        self.entries.append({
+            "comments": comments_to_assign,
+            "item": item,
+            "trailing_comment": trailing_comment_to_assign,
+            "sort_key": sort_key
+        })
+
+    def _reconstruct(self):
+        """Sorts entries and reconstructs the assignment string."""
+        # --- Sorting ---
+        self.entries.sort(key=lambda e: e["sort_key"])
+
+        # --- Reconstruction ---
+        # Use 2 spaces for indentation within the list
+        item_indent = self.indent + "  "
+        new_body_lines = []
+        for entry in self.entries:
+            # Add any comments that appeared before this item
+            for comment in entry["comments"]:
+                # Comments are already normalized (stripped)
+                new_body_lines.append(item_indent + comment)
+
+            # Format the item line (enforce single column)
+            item_line = item_indent + entry["item"]
+
+            # Ensure trailing comma for standardized format.
+            item_line += ","
+
+            # Add trailing comment if present
+            if entry["trailing_comment"]:
+                # Standardize spacing before the trailing comment
+                item_line += "  " + entry["trailing_comment"]
+            new_body_lines.append(item_line)
+
+        # Add any trailing comments (at the end of the list, after the last item)
+        for comment in self.current_comments:
+            new_body_lines.append(item_indent + comment)
+
+        # Handle empty lists
+        if not new_body_lines:
+            # If the original body was just whitespace/empty, format as foo = []
+            if not self.body.strip():
+                return f"{self.indent}{self.var_name} = []"
+            # This case implies content existed but we didn't parse it safely.
+            # Should ideally be caught by bailout logic earlier, but return original as a safeguard.
+            return self.original_match
+
+        # Final reconstruction with newlines
+        return (f"{self.indent}{self.var_name} = [\n" +
+                "\n".join(new_body_lines) + f"\n{self.indent}]")
+
+
+def _FormatDepsContent(content):
+    """Formats DEPS file content by sorting specific lists alphabetically.
+
+    Handles include_rules and skip_child_includes.
+    Ensures consistent indentation (2 spaces) and line breaks (one item per line).
+    If complex syntax (like Vars() or string concatenation) is detected within
+    a list, that list is left unformatted.
+    """
+
+    # Regex to capture the assignment, allowing for single-line or empty lists.
+    # It captures:
+    # 1: Indentation of the variable assignment
+    # 2: Variable name (include_rules or skip_child_includes)
+    # 3: The content inside the brackets [...]
+    assignment_regex = re.compile(
+        r"^(\s*)(include_rules|skip_child_includes)\s*=\s*\[([\s\S]*?)\]",
+        re.MULTILINE)
+
+    def replace_func(match):
+        indent = match.group(1)
+        var_name = match.group(2)
+        body = match.group(3)
+        original_match = match.group(0)
+
+        # Use the helper class to handle the complex formatting logic.
+        formatter = _DepsListFormatter(indent, var_name, body, original_match)
+        return formatter.format()
+
+    return assignment_regex.sub(replace_func, content)
+
+
+def _RunDepsFormat(opts, paths, top_dir, diffs):
+    # Custom formatter for DEPS files.
+    # We format the whole file because sorting affects the overall structure.
+
+    return_value = 0
+    for path in paths:
+        # Path is relative to top_dir (repository root)
+        abs_path = os.path.join(top_dir, path)
+
+        try:
+            # Use utf-8 encoding for reading/writing files.
+            with open(abs_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+        except (IOError, UnicodeDecodeError) as e:
+            print(f"Error reading DEPS file {path}: {e}")
+            if return_value == 0:
+                return_value = 1
+            continue
+
+        try:
+            formatted_content = _FormatDepsContent(content)
+        except Exception as e:
+            # Catch unexpected errors during formatting logic.
+            print(f"Error during formatting logic for DEPS file {path}: {e}")
+            if return_value == 0:
+                return_value = 1
+            continue
+
+        if content != formatted_content:
+            if opts.dry_run:
+                if return_value == 0:
+                    # Indicate that formatting is needed (for presubmit checks).
+                    return_value = 2
+                if opts.diff:
+                    # Use PrintDiff (which calls git diff) to show changes
+                    _PrintDiff(abs_path, formatted_content, path)
+            elif opts.diff:
+                _PrintDiff(abs_path, formatted_content, path)
+            else:
+                # Write the changes back to the file.
+                try:
+                    with open(abs_path, 'w', encoding='utf-8') as f:
+                        f.write(formatted_content)
+                except IOError as e:
+                    print(f"Error writing DEPS file {path}: {e}")
+                    if return_value == 0:
+                        return_value = 1
+
+    return return_value
+
+
 FormatterFunction = Callable[[Any, list[str], str, str], int]
 
 
@@ -7183,7 +7472,7 @@ def _FindFilesToFormat(
 
     diffs = _SplitDiffsByFile(
         RunGitDiffCmd(['-U0'], upstream_commit, files, allow_prefix=True))
-    return diffs.keys(), diffs
+    return list(diffs.keys()), diffs
 
 
 @subcommand.usage('[files or directories to diff]')
@@ -7264,6 +7553,15 @@ def CMDformat(parser: optparse.OptionParser, args: list[str]):
     parser.add_option('--lucicfg',
                       action='store_true',
                       help='Enables formatting of .star files.')
+    parser.add_option('--deps-format',
+                      dest='use_deps_format',
+                      action='store_true',
+                      default=True,
+                      help='Enables formatting of DEPS files.')
+    parser.add_option('--no-deps-format',
+                      dest='use_deps_format',
+                      action='store_false',
+                      help='Disables formatting of DEPS files.')
 
     opts, files = parser.parse_args(args)
     upstream_commit: str | None = None
@@ -7320,34 +7618,62 @@ def CMDformat(parser: optparse.OptionParser, args: list[str]):
     if opts.js:
         clang_exts.extend(['.js', '.ts'])
 
-    formatters: list[tuple[list[str], FormatterFunction]] = [
+    # Formatters organized by file extension.
+    formatters_by_ext: list[tuple[list[str], FormatterFunction]] = [
         (GN_EXTS, _RunGnFormat),
         (['.xml'], _RunMetricsXMLFormat),
     ]
     if not opts.no_java:
-        formatters.append((['.java'], _RunGoogleJavaFormat))
+        formatters_by_ext.append((['.java'], _RunGoogleJavaFormat))
     if opts.clang_format:
-        formatters.append((clang_exts, _RunClangFormatDiff))
+        formatters_by_ext.append((clang_exts, _RunClangFormatDiff))
     if opts.use_rust_fmt:
-        formatters.append((['.rs'], _RunRustFmt))
+        formatters_by_ext.append((['.rs'], _RunRustFmt))
     if opts.use_swift_format:
-        formatters.append((['.swift'], _RunSwiftFormat))
+        formatters_by_ext.append((['.swift'], _RunSwiftFormat))
     if opts.python is not False:
-        formatters.append((['.py'], _RunYapf))
+        formatters_by_ext.append((['.py'], _RunYapf))
     if opts.mojom:
-        formatters.append((['.mojom', '.test-mojom'], _RunMojomFormat))
+        formatters_by_ext.append((['.mojom', '.test-mojom'], _RunMojomFormat))
     if opts.lucicfg:
-        formatters.append((['.star'], _RunLUCICfgFormat))
+        formatters_by_ext.append((['.star'], _RunLUCICfgFormat))
+
+    # Formatters organized by specific file name.
+    formatters_by_name: list[tuple[list[str], FormatterFunction]] = []
+    if opts.use_deps_format:
+        formatters_by_name.append((['DEPS'], _RunDepsFormat))
 
     return_value = 0
-    for file_types, format_func in formatters:
-        paths = [p for p in diff_files if p.lower().endswith(tuple(file_types))]
+    processed_files = set()
+
+    # Run formatters by name first (more specific, e.g., DEPS).
+    for file_names, format_func in formatters_by_name:
+        # Check the basename of the path against the list of specific filenames.
+        paths = [
+            p for p in diff_files
+            if os.path.basename(p) in file_names and p not in processed_files
+        ]
         if not paths:
             continue
         ret = format_func(opts, paths, top_dir, diffs)
         return_value = return_value or ret
+        processed_files.update(paths)
+
+    # Run formatters by extension on the remaining files.
+    for file_types, format_func in formatters_by_ext:
+        # Paths are relative to the repository root (top_dir).
+        paths = [
+            p for p in diff_files if p.lower().endswith(tuple(file_types))
+            and p not in processed_files
+        ]
+        if not paths:
+            continue
+        ret = format_func(opts, paths, top_dir, diffs)
+        return_value = return_value or ret
+        processed_files.update(paths)
 
     return return_value
+
 
 
 @subcommand.usage('<codereview url or issue id>')
