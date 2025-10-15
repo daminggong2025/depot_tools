@@ -22,6 +22,30 @@
       },
       "revId": "c8c317cff8fc7be76607cbd7fea4b60cc88b58b6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "47887afe_df29f0d5",
+        "filename": "metadata/fields/custom/license_allowlist.py",
+        "patchSetId": 10
+      },
+      "lineNbr": 231,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2025-10-15T08:27:53Z",
+      "side": 1,
+      "message": "Ah that makes more sense, I\u0027ll consider that approach if I have to modify this again, I think this is fine for now.",
+      "parentUuid": "f39e9449_de0f03f9",
+      "range": {
+        "startLine": 227,
+        "startChar": 0,
+        "endLine": 231,
+        "endChar": 67
+      },
+      "revId": "c8c317cff8fc7be76607cbd7fea4b60cc88b58b6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

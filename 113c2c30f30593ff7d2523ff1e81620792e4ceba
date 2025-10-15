@@ -22,6 +22,30 @@
       },
       "revId": "113c2c30f30593ff7d2523ff1e81620792e4ceba",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fc11e470_8ce9bad6",
+        "filename": "metadata/dependency_metadata.py",
+        "patchSetId": 10
+      },
+      "lineNbr": 151,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2025-10-15T08:27:53Z",
+      "side": 0,
+      "message": "Ah I misunderstood, however, I think it is more appropriate for this to live with the license code anyway.",
+      "parentUuid": "2675264e_9e54608e",
+      "range": {
+        "startLine": 142,
+        "startChar": 0,
+        "endLine": 151,
+        "endChar": 31
+      },
+      "revId": "113c2c30f30593ff7d2523ff1e81620792e4ceba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
