@@ -23,7 +23,7 @@ python_path="${scriptdir}/python-bin/python3"
 retval=$?
 
 if [ "$retval" == "0" ] && [ "$NINJA_SUMMARIZE_BUILD" == "1" ]; then
-  "${python_path}" "${scriptdir}//post_build_ninja_summary.py" "$@"
+  "${python_path}" "${scriptdir}/post_build_ninja_summary.py" "$@"
 fi
 
 # Pass-through autoninja's error code so that if a developer types:
