@@ -2901,7 +2901,13 @@ class GcsDependency(Dependency):
                     self.output_dir, f'.{self.file_prefix}_content_names')
                 self.WriteToFile(json.dumps(tar.getnames()), tar_content_file)
 
-                tar.extractall(path=self.output_dir)
+                def TarFilter(member, path):
+                    # Don't set mtime based on the archive metadata.
+                    member.mtime = None
+                    # TODO: Change to data_filter when updating to Python 3.14.
+                    return tarfile.fully_trusted_filter(member, path)
+
+                tar.extractall(path=self.output_dir, filter=TarFilter)
 
         if os.getenv('GCLIENT_TEST') != '1':
             code, err = download_from_google_storage.set_executable_bit(
