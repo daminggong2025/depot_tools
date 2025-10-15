@@ -103,6 +103,24 @@
       "parentUuid": "f38c8867_056dac0f",
       "revId": "5296dad19532ff0369d7553db7df99fcecc6d9fe",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1b19534f_2054bb99",
+        "filename": "gclient.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 2909,
+      "author": {
+        "id": 1002927
+      },
+      "writtenOn": "2025-10-15T19:36:35Z",
+      "side": 1,
+      "message": "Huh, https://docs.python.org/3.14/library/tarfile.html#tarfile-extraction-filter says \"Added in version 3.12.\"\n\nand https://docs.python.org/3.14/library/tarfile.html#tarfile.TarInfo.mtime says \"Changed in version 3.12: Can be set to None for extract() and extractall(), causing extraction to skip applying this attribute.\"\n\nSo that\u0027s where I got 3.12 from.\n\nChanging it back to extractall.",
+      "parentUuid": "2d6570e3_4e8b05d3",
+      "revId": "5296dad19532ff0369d7553db7df99fcecc6d9fe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
