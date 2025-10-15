@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5e28a198_3338da16",
+        "filename": "metadata/fields/custom/license.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 1544922
+      },
+      "writtenOn": "2025-10-15T02:44:03Z",
+      "side": 1,
+      "message": "I think there\u0027s a missing space. This will render as `... allowlist.Follow ...`. Otherwise LGTM.",
+      "revId": "14ddf7c9d7977d95ad35dc9a4b2c9415956b87b5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
