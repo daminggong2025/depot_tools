@@ -146,7 +146,8 @@ class DependencyMetadata:
             atomic_delimiter=known_fields.LICENSE.VALUE_DELIMITER)
         open_source_only = []
         for lic, valid in licenses:
-            if valid and lic in OPEN_SOURCE_SPDX_LICENSES:
+            # Processing converts to lowercase for comparison.
+            if valid and license_util.process_value(lic) in OPEN_SOURCE_SPDX_LICENSES:
                 open_source_only.append(lic)
         return open_source_only
 
@@ -303,7 +304,7 @@ class DependencyMetadata:
                 not_allowed_licenses = self.only_open_source_licenses(license_value)
                 if len(not_allowed_licenses) > 0:
                     license_result = vr.ValidationWarning(
-                        reason=f"License has a license not in the allowlist."
+                        reason="License has a license not in the allowlist."
                         " (see https://source.chromium.org/chromium/chromium/tools/depot_tools/+/main:metadata/fields/custom/license_allowlist.py).",
                         additional=[
                             f"The following license{'s  are' if len(not_allowed_licenses) > 1 else ' is'} only allowed in open source projects: "
