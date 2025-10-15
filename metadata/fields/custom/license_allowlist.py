@@ -44,6 +44,10 @@
 #   Chromium, please email opensource-licensing@google.com with the library's
 #   license documentation, and explain where and how the component is going to
 #   be used.
+#
+# 5. Note:
+#   * Remove 'LicenseRef-' prefix from license classifier outputs.
+#   * Case does not matter.
 ALLOWED_SPDX_LICENSES = frozenset([
     # unencumbered.
     # go/keep-sorted start case=no
