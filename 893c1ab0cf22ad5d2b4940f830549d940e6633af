@@ -102,6 +102,23 @@
       "message": "(I\u0027m wondering if we should make it opt-in or opt-out-able for gcs. I went through the .tar files in chromium\u0027s DEPS file and those seem fine. Don\u0027t know if depot_tools has a policy of rolling things out behind flags or what.)",
       "revId": "893c1ab0cf22ad5d2b4940f830549d940e6633af",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f33bc999_0ba2d801",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002927
+      },
+      "writtenOn": "2025-10-15T11:58:38Z",
+      "side": 1,
+      "message": "Hmm, so this requires Python 3.12 or later, which I figured would be fine. But `/work/depot_tools/vpython3 --version` prints 3.11.9. Does the mean Chromium infra\u0027s version is too old for this?",
+      "revId": "893c1ab0cf22ad5d2b4940f830549d940e6633af",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
