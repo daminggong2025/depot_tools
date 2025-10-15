@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b6a7817a_4a6632eb",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002927
+      },
+      "writtenOn": "2025-10-15T17:08:15Z",
+      "side": 1,
+      "message": "Switched to .extract(set_attrs\u003dFalse) since the filter mechanism is only available in newer Pythons.\n\nAlso tested with DEPOT_TOOLS_UPDATE\u003d0 this time 😊\n\nthakis, bryner: Please take a look. This is blocking updating Clang.",
+      "revId": "5296dad19532ff0369d7553db7df99fcecc6d9fe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
