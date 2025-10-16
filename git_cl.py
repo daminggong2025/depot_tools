@@ -85,6 +85,7 @@ __version__ = '2.0'
 # Traces for git push will be stored in a traces directory inside the
 # depot_tools checkout.
 DEPOT_TOOLS = os.path.dirname(os.path.abspath(__file__))
+DEPS_FORMAT = os.path.join(DEPOT_TOOLS, 'deps_format.py')
 TRACES_DIR = os.path.join(DEPOT_TOOLS, 'traces')
 PRESUBMIT_SUPPORT = os.path.join(DEPOT_TOOLS, 'presubmit_support.py')
 
@@ -7126,6 +7127,28 @@ def _RunLUCICfgFormat(opts, paths, top_dir, diffs):
     return ret
 
 
+def _RunDepsFormat(opts, paths, top_dir, diffs):
+    """Custom formatter for DEPS files by calling deps_format.py script."""
+    cmd = ['vpython3', DEPS_FORMAT, '--top-dir', top_dir]
+    if opts.dry_run:
+        cmd.append('--dry-run')
+    if opts.diff:
+        cmd.append('--diff')
+    cmd.extend(paths)
+
+    try:
+        proc = subprocess2.Popen(cmd,
+                                 stdout=subprocess2.PIPE,
+                                 stderr=subprocess2.PIPE)
+        stdout, stderr = proc.communicate()
+        sys.stdout.write(stdout.decode('utf-8'))
+        sys.stderr.write(stderr.decode('utf-8'))
+        return proc.returncode
+    except Exception as e:
+        print(f"Error running deps_format.py: {e}", file=sys.stderr)
+        return 1
+
+
 FormatterFunction = Callable[[Any, list[str], str, str], int]
 
 
@@ -7183,7 +7206,7 @@ def _FindFilesToFormat(
 
     diffs = _SplitDiffsByFile(
         RunGitDiffCmd(['-U0'], upstream_commit, files, allow_prefix=True))
-    return diffs.keys(), diffs
+    return list(diffs.keys()), diffs
 
 
 @subcommand.usage('[files or directories to diff]')
@@ -7264,6 +7287,15 @@ def CMDformat(parser: optparse.OptionParser, args: list[str]):
     parser.add_option('--lucicfg',
                       action='store_true',
                       help='Enables formatting of .star files.')
+    parser.add_option('--deps-format',
+                      dest='use_deps_format',
+                      action='store_true',
+                      default=True,
+                      help='Enables formatting of DEPS files.')
+    parser.add_option('--no-deps-format',
+                      dest='use_deps_format',
+                      action='store_false',
+                      help='Disables formatting of DEPS files.')
 
     opts, files = parser.parse_args(args)
     upstream_commit: str | None = None
@@ -7320,34 +7352,62 @@ def CMDformat(parser: optparse.OptionParser, args: list[str]):
     if opts.js:
         clang_exts.extend(['.js', '.ts'])
 
-    formatters: list[tuple[list[str], FormatterFunction]] = [
+    # Formatters organized by file extension.
+    formatters_by_ext: list[tuple[list[str], FormatterFunction]] = [
         (GN_EXTS, _RunGnFormat),
         (['.xml'], _RunMetricsXMLFormat),
     ]
     if not opts.no_java:
-        formatters.append((['.java'], _RunGoogleJavaFormat))
+        formatters_by_ext.append((['.java'], _RunGoogleJavaFormat))
     if opts.clang_format:
-        formatters.append((clang_exts, _RunClangFormatDiff))
+        formatters_by_ext.append((clang_exts, _RunClangFormatDiff))
     if opts.use_rust_fmt:
-        formatters.append((['.rs'], _RunRustFmt))
+        formatters_by_ext.append((['.rs'], _RunRustFmt))
     if opts.use_swift_format:
-        formatters.append((['.swift'], _RunSwiftFormat))
+        formatters_by_ext.append((['.swift'], _RunSwiftFormat))
     if opts.python is not False:
-        formatters.append((['.py'], _RunYapf))
+        formatters_by_ext.append((['.py'], _RunYapf))
     if opts.mojom:
-        formatters.append((['.mojom', '.test-mojom'], _RunMojomFormat))
+        formatters_by_ext.append((['.mojom', '.test-mojom'], _RunMojomFormat))
     if opts.lucicfg:
-        formatters.append((['.star'], _RunLUCICfgFormat))
+        formatters_by_ext.append((['.star'], _RunLUCICfgFormat))
+
+    # Formatters organized by specific file name.
+    formatters_by_name: list[tuple[list[str], FormatterFunction]] = []
+    if opts.use_deps_format:
+        formatters_by_name.append((['DEPS'], _RunDepsFormat))
 
     return_value = 0
-    for file_types, format_func in formatters:
-        paths = [p for p in diff_files if p.lower().endswith(tuple(file_types))]
+    processed_files = set()
+
+    # Run formatters by name first (more specific, e.g., DEPS).
+    for file_names, format_func in formatters_by_name:
+        # Check the basename of the path against the list of specific filenames.
+        paths = [
+            p for p in diff_files
+            if os.path.basename(p) in file_names and p not in processed_files
+        ]
         if not paths:
             continue
         ret = format_func(opts, paths, top_dir, diffs)
         return_value = return_value or ret
+        processed_files.update(paths)
+
+    # Run formatters by extension on the remaining files.
+    for file_types, format_func in formatters_by_ext:
+        # Paths are relative to the repository root (top_dir).
+        paths = [
+            p for p in diff_files if p.lower().endswith(tuple(file_types))
+            and p not in processed_files
+        ]
+        if not paths:
+            continue
+        ret = format_func(opts, paths, top_dir, diffs)
+        return_value = return_value or ret
+        processed_files.update(paths)
 
     return return_value
+
 
 
 @subcommand.usage('<codereview url or issue id>')
