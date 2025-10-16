@@ -16,6 +16,23 @@
       "message": "Please see email titled \u0027git cl format: automatic formatting of DEPS files?\u0027 for more context. Also, apologies if `git_cl_test.py` feels like AI slop - Gemini was a _significant_ help there haha. Sharing this as a WIP for discussion and feedback.",
       "revId": "2215f731cc9fab01479ef8a97986cc738fefc27a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "26361347_3b3431c5",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 10
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2025-10-16T15:27:41Z",
+      "side": 1,
+      "message": "would you be able to move the logic into a standalone python script so that it can be executed independently and git cl format can simply run it?",
+      "revId": "2215f731cc9fab01479ef8a97986cc738fefc27a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
