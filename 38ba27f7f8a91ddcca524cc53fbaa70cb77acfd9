@@ -114,6 +114,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "a419d88b_5a8e0cb4",
+        "filename": "siso.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-10-16T05:31:38Z",
+      "side": 1,
+      "message": "Yeah, I just meant a comma separator might be more common or repeated params. e.g. `targets\u003dfoo,targets\u003dbar` than `+` separated values.",
+      "parentUuid": "aaedf102_20f7266b",
+      "range": {
+        "startLine": 62,
+        "startChar": 0,
+        "endLine": 63,
+        "endChar": 38
+      },
+      "revId": "38ba27f7f8a91ddcca524cc53fbaa70cb77acfd9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "a8882175_9ca4117c",
         "filename": "siso.py",
         "patchSetId": 1
@@ -149,6 +173,30 @@
       "side": 1,
       "message": "Done - build with the new config: https://ff252cc3c852202fa8f684583ec66521dbbe4a4be29e34247b1f289-apidata.googleusercontent.com/download/storage/v1/b/chrome-build-logs/o/2025%2F10%2F15%2Fsiso%2F2025_10_15_siso_reports.20251015T110702Z.a1a41484-f530-47b0-ad98-b52e5c251550%2Fsiso_metadata.json?jk\u003dAUDkFIlFZrhvD5c0WkxuCUaSRs6E9-F-Ln-bL7TvocC2GKCMFmf24gBE06JtWNsuunpCBdJ8z7DkzeexsG4r4SB2edYJc63Loj0iMxTNiFjC-3VbwdXI81qzfQRsCDCvCtPT0CjjOJ9SM_cRQ1roCIQ80Qe4lA90J_ZhJxJ58u_zjigSNqrBl7Veeb4VMKY5BGpzl11CXKUwLkErWsayhp_ilynUeTtuc_ysyVTHyGMcIIa60HTld_edORfuNsIK1mDwcjiopEpCcXdoBsrADWJT4AdWbUpyX9Fq1Kykk4LQJlYJRor1CV4EV6dZ1D1Ifz87LZyxJ8rt1BXZeKgeWoeNi5LHR3sWEryGmrqtblkm1wCo-dhz7dPZNPEzX0X7CbpYoax7cf0TBKBEQwFdL5As22OHRuBserPFNLaoRegtsMuz6ANokZLx_c229tUN7F9fNNyF7LUowFPnAinaZAPMiG8qVGdGaXN9OemDDNcJWLUy2ebaSQfHKQaWkZgC4Ihd_G0WjQdU2MwiVOvQX57slSFCGXOUC79FlBJ-mZiJIOVHjepqdkjeWBjszAc5NRgTlvJJ3PpvOiQih7U0w-QNMOtB0useSYB1I3je15b1H9nF7x2KQpzSFZwKCS0VFanOLN4OlLlrK15b2o_8nfFOJTWbiToZtel-5sfEjuv9kBQ6FVhR1oJ-raHSSk8sEZ-zuXyh25UQiz8XPmW4ANp5V2TTAAbyOaMn_5H_uKvwYHq8QZtG4Es0Om3WvgRldx1iK23DKJ6ZMncNEidFhXxaAlsYG9HbKrIsIZVmrdfVC91ug8duDc6bS7sJogMSG9_Koe8rFNdVewSdbhMPEv-plXmMkDo86LZZ737WOXLNzTBKzjHLquu3nABcLKLbIYsk8lvxo8kORhCAcZU_AS5kmyXUmOCO8ILqq_KEw7F_rXWAQmIO35Km6WrgGJHe2obktpaXn8IpcyYII1KMhTPWQ5WkuL9v9fsjxEwsOqziHTz1l6yS39UWuWkDdEktMUl5_bPZ06cCLSNhsB99XckHBFpWOR-pcA6rCn754-lvvusBa-24_-Vdfa7km8cIaAWepoKmyL260fmc3aqByX2kQM_nRDwDLuf-vfkSrs74di8ZF9pM70WuT50_hhmnshL2DGrRyvCySvhAR9iKtT5yJ8FopYM3aWcQdNPnzPl5efJKLXIGwbZ27uUsswikKLxBUX7eJJQtatRuJISR_cTa8mjmPPCIyuqDMBj-WfSnFPA6xP_989XzQHnX1b9Gh5owLCLWXOrnB0A9KNrJ-TIbyMBaiFBDfiVXC4a4nejn1VlVtE5CjHu3R_cL4Mhr6FUI04ETI5PaAIgQ9yB8Wx9h5_OWCS9pGixv-LUfHchg6aWpKw\u0026isca\u003d1",
       "parentUuid": "a8882175_9ca4117c",
+      "range": {
+        "startLine": 69,
+        "startChar": 29,
+        "endLine": 69,
+        "endChar": 47
+      },
+      "revId": "38ba27f7f8a91ddcca524cc53fbaa70cb77acfd9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "440d4884_5af83b25",
+        "filename": "siso.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-10-16T05:31:38Z",
+      "side": 1,
+      "message": "Can\u0027t open the link. But, the dict in the patch LGTM.",
+      "parentUuid": "ccf66365_02daf1dc",
       "range": {
         "startLine": 69,
         "startChar": 29,
