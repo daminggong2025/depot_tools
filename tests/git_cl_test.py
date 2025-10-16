@@ -5204,43 +5204,74 @@ class CMDFormatTestCase(unittest.TestCase):
                               diff=False,
                               presubmit=False)
         files = [
-            os.path.join(self._top_dir, 'tools', 'metrics', 'ukm', 'ukm.xml'),
+            os.path.join('tools', 'metrics', 'ukm', 'ukm.xml'),
         ]
-        git_cl._RunMetricsXMLFormat(mock_opts, files, self._top_dir, 'HEAD')
-        git_cl.RunCommand.assert_called_with([
-            mock.ANY,
-            os.path.join(self._top_dir, 'tools', 'metrics', 'ukm',
-                         'pretty_print.py'),
+        # Create dummy file
+        self._make_temp_file(files[0], ['<test/>'])
+
+        with mock.patch('git_cl.RunCommand') as mock_run_command:
+            with mock.patch('shutil.which', return_value='vpython3'):
+                with mock.patch(
+                        'metrics_xml_format.FindMetricsXMLFormatterTool',
+                        return_value=os.path.join(self._top_dir, 'tools',
+                                                  'metrics', 'ukm',
+                                                  'pretty_print.py')):
+                    git_cl._RunMetricsXMLFormat(mock_opts, files, self._top_dir,
+                                                None)
+
+        ukm_pretty_print = os.path.join(self._top_dir, 'tools', 'metrics',
+                                        'ukm', 'pretty_print.py')
+        mock_run_command.assert_called_with([
+            'vpython3',
+            ukm_pretty_print,
             '--non-interactive',
         ],
-                                             cwd=self._top_dir)
+                                            cwd=self._top_dir)
+
 
     @mock.patch('gclient_paths.GetPrimarySolutionPath')
-    def testRunMetricsFormatWithHistograms(self, find_top_dir):
+    @mock.patch('metrics_xml_format.GetMetricsDir')
+    @mock.patch('metrics_xml_format.FindMetricsXMLFormatterTool')
+    @mock.patch('shutil.which', return_value='vpython3')
+    @mock.patch('git_cl.RunCommand')
+    def testRunMetricsFormatWithHistograms(self, mock_run_command, mock_which,
+                                           mock_find_tool, mock_get_metrics_dir,
+                                           mock_find_top_dir):
         """Checks if the command line arguments contain the input file paths."""
-        find_top_dir.return_value = self._top_dir
+        mock_find_top_dir.return_value = self._top_dir
+        histograms_dir = os.path.join(self._top_dir, 'tools', 'metrics',
+                                      'histograms')
+        # Mock GetMetricsDir to return the top_dir based path
+        mock_get_metrics_dir.return_value = histograms_dir
+        mock_find_tool.return_value = os.path.join(histograms_dir,
+                                                   'pretty_print.py')
+
         mock_opts = mock.Mock(full=True,
                               dry_run=False,
                               diff=False,
                               presubmit=False)
         files = [
-            os.path.join(self._top_dir, 'tools', 'metrics', 'histograms',
+            os.path.join('tools', 'metrics', 'histograms', 'enums.xml'),
+            os.path.join('tools', 'metrics', 'histograms', 'test_data',
                          'enums.xml'),
-            os.path.join(self._top_dir, 'tools', 'metrics', 'histograms',
-                         'test_data', 'enums.xml'),
         ]
-        git_cl._RunMetricsXMLFormat(mock_opts, files, self._top_dir, 'HEAD')
+        for f in files:
+            self._make_temp_file(f, ['<test/>'])
 
-        pretty_print_path = os.path.join(self._top_dir, 'tools', 'metrics',
-                                         'histograms', 'pretty_print.py')
-        git_cl.RunCommand.assert_has_calls([
+        git_cl._RunMetricsXMLFormat(mock_opts, files, self._top_dir, None)
+
+        pretty_print_path = os.path.join(histograms_dir, 'pretty_print.py')
+
+        # Assert with the paths relative to top_dir as they are passed to RunCommand
+        mock_run_command.assert_has_calls([
             mock.call(
-                [mock.ANY, pretty_print_path, '--non-interactive', files[0]],
+                ['vpython3', pretty_print_path, '--non-interactive', files[0]],
                 cwd=self._top_dir),
             mock.call(
-                [mock.ANY, pretty_print_path, '--non-interactive', files[1]],
+                ['vpython3', pretty_print_path, '--non-interactive', files[1]],
                 cwd=self._top_dir),
-        ])
+        ],
+                                          any_order=True)
 
     @mock.patch('subprocess2.call')
     def testLUCICfgFormatWorks(self, mock_call):
@@ -5316,13 +5347,21 @@ class CMDFormatTestCase(unittest.TestCase):
             'if --input_diff_file is given.',
         )
 
+    @mock.patch('git_cl.RunCommand')
     @mock.patch('git_cl._RunClangFormatDiff', return_value=0)
-    def testInputDiffFile(self, clang_formatter):
+    @mock.patch('git_cl.settings')
+    def testInputDiffFile(self, mock_settings, clang_formatter,
+                          mock_run_command):
         """Tests git cl format with --input_diff_file."""
-        # Windows doesn't allow a file to be reopened while it's open by
-        # another handler.
+        mock_settings.GetRoot.return_value = self._top_dir
+        mock_settings.GetFormatFullByDefault.return_value = False
+        mock_settings.GetRelativeRoot.return_value = ''
+
+        expected_shell = sys.platform.startswith('win')
+
         with tempfile.NamedTemporaryFile(mode="w+", delete=False) as input_diff:
             input_diff.write(test_format_input_diff)
+            input_diff_name = input_diff.name
 
         try:
             previous_cwd = os.getcwd()
@@ -5330,29 +5369,37 @@ class CMDFormatTestCase(unittest.TestCase):
             ret = git_cl.main([
                 'format',
                 "--input_diff_file",
-                input_diff.name,
+                input_diff_name,
                 "--presubmit",
                 "--dry-run",
                 "--python",
             ])
             self.assertEqual(0, ret)
 
+            real_top_dir = os.path.realpath(self._top_dir)
             clang_formatter.assert_called_with(
                 mock.ANY,
                 ['net/base/net_error_details.h', 'net/base/net_error_list.h'],
-                mock.ANY, mock.ANY)
-            git_cl.RunCommand.assert_called_with(
+                real_top_dir,
+                mock.ANY  # diffs dictionary
+            )
+            self.assertIsInstance(clang_formatter.call_args.args[3], dict)
+
+            expected_yapf_call = mock.call(
                 [
-                    'vpython3', mock.ANY, '--style', mock.ANY,
+                    'vpython3', mock.ANY, '--style', 'pep8',
                     'testing/xvfb_unittest.py', '-l', '18-24', '--diff'
                 ],
-                cwd=self._top_dir,
                 error_ok=True,
-                shell=mock.ANY,
                 stderr=-1,
+                cwd=real_top_dir,
+                shell=expected_shell,
             )
+            mock_run_command.assert_has_calls([expected_yapf_call],
+                                              any_order=True)
+
         finally:
-            os.remove(input_diff.name)
+            os.remove(input_diff_name)
             os.chdir(previous_cwd)
 
     @mock.patch('git_cl._RunClangFormatDiff', return_value=0)
@@ -5375,6 +5422,364 @@ class CMDFormatTestCase(unittest.TestCase):
                 mock.ANY)
         finally:
             os.remove(input_diff.name)
+
+    def _run_deps_format_test(self,
+                              mock_opts,
+                              initial_content_list,
+                              expected_on_disk_list,
+                              expected_formatted_list,
+                              expected_return,
+                              file_name="DEPS"):
+        self._make_temp_file(file_name, initial_content_list)
+        abs_path = os.path.join(self._top_dir, file_name)
+        initial_content_str = '\n'.join(initial_content_list)
+        expected_formatted_str = '\n'.join(expected_formatted_list)
+
+        with mock.patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
+            ret = git_cl._RunDepsFormat(mock_opts, [file_name], self._top_dir,
+                                        None)
+
+            self.assertEqual(ret, expected_return)
+
+            with open(abs_path, 'r', encoding='utf-8') as f:
+                actual_content_on_disk = f.read()
+
+            stdout_val = mock_stdout.getvalue()
+            # Determine if changes were expected based on the inputs provided to the test
+            has_changes = initial_content_str != expected_formatted_str
+
+            if mock_opts.diff:
+                # Note: These assertions rely on _PrintDiff successfully executing `git diff`.
+                if has_changes:
+                    self.assertIn(f"--- a/{file_name}",
+                                  stdout_val,
+                                  msg="Should contain diff start")
+                    self.assertIn(f"+++ b/{file_name}",
+                                  stdout_val,
+                                  msg="Should contain diff end")
+                    self.assertNotIn(
+                        f"No formatting changes needed for DEPS file: {file_name}",
+                        stdout_val,
+                        msg="Should NOT say no changes")
+                else:  # No changes
+                    self.assertIn(
+                        f"No formatting changes needed for DEPS file: {file_name}",
+                        stdout_val,
+                        msg="Should say no changes")
+                    self.assertNotIn(f"--- a/{file_name}",
+                                     stdout_val,
+                                     msg="Should NOT contain diff start")
+
+            # Assertions regarding file content on disk.
+            if mock_opts.dry_run:
+                self.assertEqual(
+                    actual_content_on_disk,
+                    initial_content_str,
+                    msg="Disk content should not change in dry run")
+            elif mock_opts.diff:
+                # In diff mode (and not dry_run), the file on disk should remain unchanged
+                # because _RunDepsFormat only prints the diff, it doesn't write the file.
+                self.assertEqual(
+                    actual_content_on_disk,
+                    initial_content_str,
+                    msg="Disk content should not change in diff-only mode")
+            else:
+                # If not dry run and not diff mode (i.e., write-back mode).
+                self.assertEqual(actual_content_on_disk,
+                                 '\n'.join(expected_on_disk_list),
+                                 msg="Disk content mismatch")
+                # In write-back mode, expected_on_disk_list should match expected_formatted_list.
+                self.assertEqual(actual_content_on_disk,
+                                 expected_formatted_str,
+                                 msg="Disk content mismatch (formatter output)")
+
+        return stdout_val
+
+    def testRunDepsFormat_SimpleSorting(self):
+        initial = [
+            "include_rules = [",
+            "  '+b',",
+            "  '+a',",
+            "]",
+            "skip_child_includes = [",
+            "  '-z',",
+            "  '-y',",
+            "]",
+        ]
+        expected = [
+            "include_rules = [",
+            "  '+a',",
+            "  '+b',",
+            "]",
+            "skip_child_includes = [",
+            "  '-y',",
+            "  '-z',",
+            "]",
+        ]
+        mock_opts = mock.Mock(dry_run=False, diff=False)
+        self._run_deps_format_test(mock_opts, initial, expected, expected, 0)
+
+    def testRunDepsFormat_WithComments(self):
+        initial = [
+            "include_rules = [",
+            "  # Comment for b",
+            "  '+b',  # Trailing for b",
+            "  '+a',",
+            "  # Final comment",
+            "]",
+        ]
+        expected = [
+            "include_rules = [",
+            "  '+a',",
+            "  # Comment for b",
+            "  '+b',  # Trailing for b",
+            "  # Final comment",
+            "]",
+        ]
+        mock_opts = mock.Mock(dry_run=False, diff=False)
+        self._run_deps_format_test(mock_opts, initial, expected, expected, 0)
+
+    def testRunDepsFormat_MultiItemsPerLine(self):
+        initial = [
+            "include_rules = ['+c', '+b', '+a']",
+        ]
+        expected = [
+            "include_rules = [",
+            "  '+a',",
+            "  '+b',",
+            "  '+c',",
+            "]",
+        ]
+        mock_opts = mock.Mock(dry_run=False, diff=False)
+        self._run_deps_format_test(mock_opts, initial, expected, expected, 0)
+
+    def testRunDepsFormat_BailOutComplex(self):
+        initial = [
+            "include_rules = [",
+            "  '+a',",
+            "  Var('b'),",
+            "]",
+        ]
+        mock_opts = mock.Mock(dry_run=False, diff=False)
+        self._run_deps_format_test(mock_opts, initial, initial, initial, 0)
+
+    def testRunDepsFormat_BailOutImplicitConcat(self):
+        initial = [
+            "include_rules = [",
+            "  '+a'"
+            "  '+b',",
+            "]",
+        ]
+        mock_opts = mock.Mock(dry_run=False, diff=False)
+        self._run_deps_format_test(mock_opts, initial, initial, initial, 0)
+
+    def testRunDepsFormat_DryRun_ChangesNeeded(self):
+        initial = ["include_rules = ['+b', '+a']"]
+        expected_on_disk = initial
+        expected_formatted = [
+            "include_rules = [",
+            "  '+a',",
+            "  '+b',",
+            "]",
+        ]
+        mock_opts = mock.Mock(dry_run=True, diff=False)
+        # Expect return code 2 because the implementation detects changes are needed.
+        self._run_deps_format_test(mock_opts, initial, expected_on_disk,
+                                   expected_formatted, 2)
+
+    def testRunDepsFormat_DryRun_NoChanges(self):
+        initial = [
+            "include_rules = [",
+            "  '+a',",
+            "  '+b',",
+            "]",
+        ]
+        mock_opts = mock.Mock(dry_run=True, diff=False)
+        self._run_deps_format_test(mock_opts, initial, initial, initial, 0)
+
+    # NOTE: For the following tests, we intentionally mock _FormatDepsContent locally.
+    # This isolates the testing of the _RunDepsFormat orchestration logic
+    # (specifically, how it handles flags and calls _PrintDiff) from the formatting logic.
+
+    @mock.patch('git_cl._PrintDiff')
+    def testRunDepsFormat_DryRunDiff(self, mock_print_diff):
+        initial = ["include_rules = ['+b', '+a']"]
+        expected_formatted = "\n".join([
+            "include_rules = [",
+            "  '+a',",
+            "  '+b',",
+            "]",
+        ])
+        mock_opts = mock.Mock(dry_run=True, diff=True)
+        self._make_temp_file("DEPS", initial)
+        abs_path = os.path.join(self._top_dir, "DEPS")
+
+        # Mocking locally to test runner orchestration
+        with mock.patch('git_cl._FormatDepsContent',
+                        return_value=expected_formatted):
+            ret = git_cl._RunDepsFormat(mock_opts, ["DEPS"], self._top_dir,
+                                        None)
+
+        self.assertEqual(ret, 2)
+        mock_print_diff.assert_called_once_with(abs_path, expected_formatted,
+                                                "DEPS")
+
+    @mock.patch('git_cl._PrintDiff')
+    def testRunDepsFormat_DiffOnly(self, mock_print_diff):
+        initial = ["include_rules = ['+b', '+a']"]
+        expected_formatted = "\n".join([
+            "include_rules = [",
+            "  '+a',",
+            "  '+b',",
+            "]",
+        ])
+        mock_opts = mock.Mock(dry_run=False, diff=True)
+        self._make_temp_file("DEPS", initial)
+        abs_path = os.path.join(self._top_dir, "DEPS")
+
+        # Mocking locally to test runner orchestration
+        with mock.patch('git_cl._FormatDepsContent',
+                        return_value=expected_formatted):
+            ret = git_cl._RunDepsFormat(mock_opts, ["DEPS"], self._top_dir,
+                                        None)
+
+        self.assertEqual(ret, 0)
+        mock_print_diff.assert_called_once_with(abs_path, expected_formatted,
+                                                "DEPS")
+
+    def testRunDepsFormat_NoChangesNeededDiff(self):
+        initial = [
+            "include_rules = [",
+            "  '+a',",
+            "  '+b',",
+            "]",
+        ]
+        mock_opts = mock.Mock(dry_run=False, diff=True)
+        self._run_deps_format_test(mock_opts, initial, initial, initial, 0)
+
+    def testRunDepsFormat_ChangesNeededDiff(self):
+        initial = ["include_rules = ['+b', '+a']"]
+        expected_formatted = [
+            "include_rules = [",
+            "  '+a',",
+            "  '+b',",
+            "]",
+        ]
+        # In diff-only mode, the file on disk remains the initial content.
+        mock_opts = mock.Mock(dry_run=False, diff=True)
+        self._run_deps_format_test(mock_opts, initial, initial,
+                                   expected_formatted, 0)
+
+    def testRunDepsFormat_EmptyList(self):
+        initial = ["include_rules = []"]
+        mock_opts = mock.Mock(dry_run=False, diff=False)
+        self._run_deps_format_test(mock_opts, initial, initial, initial, 0)
+
+    def testRunDepsFormat_EmptyListWithWhitespace(self):
+        initial = ["include_rules = [  \n\n ]"]
+        expected = ["include_rules = []"]
+        mock_opts = mock.Mock(dry_run=False, diff=False)
+        self._run_deps_format_test(mock_opts, initial, expected, expected, 0)
+
+    def testRunDepsFormat_FileNotFound(self):
+        mock_opts = mock.Mock(dry_run=False, diff=False)
+        with mock.patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
+            ret = git_cl._RunDepsFormat(mock_opts, ["NONEXISTENT_DEPS"],
+                                        self._top_dir, None)
+            self.assertEqual(ret, 1)
+            self.assertIn("Error reading DEPS file NONEXISTENT_DEPS",
+                          mock_stdout.getvalue())
+
+    @mock.patch('git_cl._RunDepsFormat', return_value=0)
+    @mock.patch('git_cl._RunClangFormatDiff', return_value=0)
+    @mock.patch('git_cl._FindFilesToFormat')
+    @mock.patch('git_cl.settings')
+    @mock.patch('git_cl.Changelist')
+    def testCMDFormat_DepsIntegration(self, MockChangelist, mock_settings,
+                                      mock_find_files, mock_clang_format,
+                                      mock_deps_format):
+        mock_settings.GetRoot.return_value = self._top_dir
+        mock_settings.GetFormatFullByDefault.return_value = False
+        mock_settings.GetRelativeRoot.return_value = ''
+        mock_find_files.return_value = (["foo.cc", "DEPS"], {
+            "DEPS": "diff",
+            "foo.cc": "diff"
+        })
+
+        # Setup mock instance for Changelist
+        mock_cl_instance = MockChangelist.return_value
+        mock_cl_instance.GetUpstreamBranch.return_value = 'origin/main'
+
+        mock_opts = mock.Mock(dry_run=False,
+                              diff=False,
+                              no_java=True,
+                              clang_format=True,
+                              use_rust_fmt=False,
+                              use_swift_format=False,
+                              python=False,
+                              mojom=False,
+                              lucicfg=False,
+                              use_deps_format=True,
+                              full=False,
+                              input_diff_file=None,
+                              upstream=None,
+                              js=None,
+                              presubmit=None)
+
+        with mock.patch('optparse.OptionParser.parse_args',
+                        return_value=(mock_opts, ["foo.cc", "DEPS"])):
+            git_cl.CMDformat(optparse.OptionParser(), ["foo.cc", "DEPS"])
+
+        mock_deps_format.assert_called_once()
+        args, _ = mock_deps_format.call_args
+        self.assertIn("DEPS", args[1])
+
+        mock_clang_format.assert_called_once()
+        args, _ = mock_clang_format.call_args
+        self.assertIn("foo.cc", args[1])
+
+    @mock.patch('git_cl._RunDepsFormat', return_value=0)
+    @mock.patch('git_cl._RunClangFormatDiff', return_value=0)
+    @mock.patch('git_cl._FindFilesToFormat')
+    @mock.patch('git_cl.settings')
+    @mock.patch('git_cl.Changelist')  # Mock the whole class
+    def testCMDFormat_NoDepsFormatOption(self, MockChangelist, mock_settings,
+                                         mock_find_files, mock_clang_format,
+                                         mock_deps_format):
+        mock_settings.GetRoot.return_value = self._top_dir
+        mock_settings.GetFormatFullByDefault.return_value = False
+        mock_settings.GetRelativeRoot.return_value = ''
+        mock_find_files.return_value = (["foo.cc", "DEPS"], {
+            "DEPS": "diff",
+            "foo.cc": "diff"
+        })
+
+        # Setup mock instance for Changelist
+        mock_cl_instance = MockChangelist.return_value
+        mock_cl_instance.GetUpstreamBranch.return_value = 'origin/main'
+
+        mock_opts = mock.Mock(dry_run=False,
+                              diff=False,
+                              no_java=True,
+                              clang_format=True,
+                              use_rust_fmt=False,
+                              use_swift_format=False,
+                              python=False,
+                              mojom=False,
+                              lucicfg=False,
+                              use_deps_format=False,
+                              full=False,
+                              input_diff_file=None,
+                              upstream=None,
+                              js=None,
+                              presubmit=None)
+
+        with mock.patch('optparse.OptionParser.parse_args',
+                        return_value=(mock_opts, ["foo.cc", "DEPS"])):
+            git_cl.CMDformat(optparse.OptionParser(), ["foo.cc", "DEPS"])
+
+        mock_deps_format.assert_not_called()
+        mock_clang_format.assert_called_once()
 
 
 @unittest.skipIf(gclient_utils.IsEnvCog(),

@@ -7126,6 +7126,248 @@ def _RunLUCICfgFormat(opts, paths, top_dir, diffs):
     return ret
 
 
+def _PrintDiff(abs_path, formatted_content, rel_path):
+    """Prints a unified diff using git diff --no-index."""
+    # Use relative path for cleaner diff headers
+    rel_path = rel_path.replace(os.sep, '/')
+
+    # Determine color setting based on existing setup_color configuration.
+    color_setting = 'always' if setup_color.IS_TTY else 'never'
+
+    # Use a temporary file for the formatted content. This is more robust
+    # cross-platform, especially on Windows where piping stdin to
+    # 'git diff --no-index' combined with prefixes can cause path mangling.
+    temp_fd, temp_path = tempfile.mkstemp()
+    try:
+        with os.fdopen(temp_fd, 'wb') as f:
+            f.write(formatted_content.encode('utf-8'))
+
+        cmd = [
+            'git',
+            'diff',
+            '--no-index',
+            f'--color={color_setting}',
+            '--src-prefix=a/' + rel_path,
+            '--dst-prefix=b/' + rel_path,
+            # Compare file on disk (original content) with the temporary file.
+            abs_path,
+            temp_path  # Use temp_path instead of '-'
+        ]
+        try:
+            # git diff --no-index returns exit code 1 if there are differences.
+            subprocess2.check_output(
+                cmd,
+                # stdin is no longer needed
+                stderr=subprocess2.PIPE)
+        except subprocess2.CalledProcessError as e:
+            if e.returncode == 1:
+                # Output the diff
+                sys.stdout.write(e.stdout.decode('utf-8', 'replace'))
+            else:
+                # Handle other errors (e.g. git not found, file access issues)
+                # Include return code for better diagnosability.
+                logging.warning(
+                    "Error running git diff (exit code %d) for %s: %s",
+                    e.returncode, rel_path, e.stderr.decode('utf-8', 'replace'))
+    finally:
+        # Ensure the temporary file is always removed.
+        if os.path.exists(temp_path):
+            try:
+                os.remove(temp_path)
+            except OSError as e:
+                logging.warning("Failed to remove temporary diff file %s: %s",
+                                temp_path, e)
+
+
+def _ParseDepsLine(line, item_regex):
+    """Parses a single line from a DEPS list, extracting items and comments.
+
+    Returns:
+        A tuple: (list_of_items, trailing_comment, should_bail).
+        Returns (None, None, True) if a complex line is detected that cannot be formatted.
+    """
+    stripped = line.strip()
+    if not stripped or stripped.startswith('#'):
+        return [], "", False  # Skip empty lines or handle as a comment in the caller
+
+    matches_on_line = list(item_regex.finditer(line))
+
+    if not matches_on_line:
+        # Line is not empty, not a comment, and contains no recognized items.
+        # Likely complex Python code (e.g., Var() or list comprehensions).
+        return None, None, True  # Bail out
+
+    # Check for complex syntax between or after items.
+    for i, match_obj in enumerate(matches_on_line):
+        if i > 0:
+            intervening_content = line[matches_on_line[i - 1].end():match_obj.
+                                       start()]
+            if not re.fullmatch(r"\s*,\s*", intervening_content):
+                return None, None, True  # Bail out: Implicit string concat or other operator
+
+    last_match = matches_on_line[-1]
+    remainder = line[last_match.end():]
+    suffix_match = re.fullmatch(r"\s*,?\s*(#.*)?\s*", remainder)
+
+    if not suffix_match:
+        return None, None, True  # Bail out: Unexpected content after last item
+
+    trailing_comment = suffix_match.group(1).strip() if suffix_match.group(
+        1) else ""
+    items = [match.group(1) for match in matches_on_line]
+    return items, trailing_comment, False
+
+
+def _ReconstructDepsList(indent, var_name, entries, trailing_comments):
+    """Reconstructs the formatted DEPS list body."""
+    if not entries and not trailing_comments:
+        return f"{indent}{var_name} = []"
+
+    item_indent = indent + "  "
+    new_body_lines = []
+
+    for entry in entries:
+        for comment in entry["comments"]:
+            new_body_lines.append(item_indent + comment)
+
+        item_line = item_indent + entry["item"] + ","
+        if entry["trailing_comment"]:
+            item_line += "  " + entry["trailing_comment"]
+        new_body_lines.append(item_line)
+
+    for comment in trailing_comments:
+        new_body_lines.append(item_indent + comment)
+
+    return f"{indent}{var_name} = [\n" + "\n".join(
+        new_body_lines) + f"\n{indent}]"
+
+
+def _ProcessDepsListBody(body, item_regex):
+    """Parses the body of a DEPS list, extracts entries, and sorts them.
+
+    Returns:
+        A tuple: (sorted_entries, trailing_comments, should_bail).
+        Returns (None, None, True) if complex syntax is detected.
+    """
+    lines = body.splitlines()
+    entries = []
+    current_comments = []
+    trailing_comments = []
+
+    for line in lines:
+        stripped = line.strip()
+        if not stripped:
+            continue
+
+        if stripped.startswith('#'):
+            current_comments.append(stripped)
+            continue
+
+        items, trailing_comment, should_bail = _ParseDepsLine(line, item_regex)
+        if should_bail:
+            return None, None, True
+
+        for i, item in enumerate(items):
+            comments_to_assign = current_comments if i == 0 else []
+            current_comments = []  # Clear after assigning to the first item
+
+            trailing_comment_to_assign = trailing_comment if i == len(
+                items) - 1 else ""
+
+            entries.append({
+                "comments": comments_to_assign,
+                "item": item,
+                "trailing_comment": trailing_comment_to_assign,
+                "sort_key": item[1:-1]  # Sort by content inside quotes
+            })
+
+    entries.sort(key=lambda e: e["sort_key"])
+    trailing_comments = current_comments  # Any remaining comments are at the end
+
+    return entries, trailing_comments, False
+
+
+def _FormatDepsContent(content):
+    """Formats DEPS file content by sorting specific lists alphabetically.
+
+    Handles 'include_rules' and 'skip_child_includes'.
+    Ensures consistent indentation (2 spaces) and line breaks (one item per line).
+    Bails out of formatting a list if complex syntax is detected.
+    """
+    assignment_regex = re.compile(
+        r"^(\s*)(include_rules|skip_child_includes)\s*=\s*\[([\s\S]*?)\]",
+        re.MULTILINE)
+    item_regex = re.compile(r"""(['"][-+!][^'"]*['"])""")
+
+    def replace_func(match):
+        original_match = match.group(0)
+        indent = match.group(1)
+        var_name = match.group(2)
+        body = match.group(3)
+
+        if not body.strip():
+            return f"{indent}{var_name} = []"
+
+        entries, trailing_comments, should_bail = _ProcessDepsListBody(
+            body, item_regex)
+
+        if should_bail:
+            return original_match  # Return original if complex syntax found
+
+        return _ReconstructDepsList(indent, var_name, entries,
+                                    trailing_comments)
+
+    return assignment_regex.sub(replace_func, content)
+
+
+def _RunDepsFormat(opts, paths, top_dir, diffs):
+    """Custom formatter for DEPS files.
+
+    Formats 'include_rules' and 'skip_child_includes' lists to be sorted
+    alphabetically, with one item per line.
+    """
+    return_value = 0
+    for path in paths:
+        abs_path = os.path.join(top_dir, path)
+
+        try:
+            with open(abs_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+        except (IOError, UnicodeDecodeError) as e:
+            print(f"Error reading DEPS file {path}: {e}")
+            return_value = 1
+            continue
+
+        try:
+            formatted_content = _FormatDepsContent(content)
+        except Exception as e:
+            logging.exception("Error formatting DEPS file %s", path)
+            print(f"Error during formatting logic for DEPS file {path}: {e}")
+            return_value = 1
+            continue
+
+        if content != formatted_content:
+            if opts.dry_run:
+                return_value = 2  # Indicate formatting is needed
+                if opts.diff:
+                    _PrintDiff(abs_path, formatted_content, path)
+            elif opts.diff:
+                _PrintDiff(abs_path, formatted_content, path)
+            else:
+                try:
+                    with open(abs_path, 'w', encoding='utf-8') as f:
+                        f.write(formatted_content)
+                    print(f"Formatted DEPS file: {path}")
+                except IOError as e:
+                    print(f"Error writing DEPS file {path}: {e}")
+                    return_value = 1
+        elif opts.diff:
+            # If content is unchanged, print a message in diff mode
+            print(f"No formatting changes needed for DEPS file: {path}")
+
+    return return_value
+
+
 FormatterFunction = Callable[[Any, list[str], str, str], int]
 
 
@@ -7183,7 +7425,7 @@ def _FindFilesToFormat(
 
     diffs = _SplitDiffsByFile(
         RunGitDiffCmd(['-U0'], upstream_commit, files, allow_prefix=True))
-    return diffs.keys(), diffs
+    return list(diffs.keys()), diffs
 
 
 @subcommand.usage('[files or directories to diff]')
@@ -7264,6 +7506,15 @@ def CMDformat(parser: optparse.OptionParser, args: list[str]):
     parser.add_option('--lucicfg',
                       action='store_true',
                       help='Enables formatting of .star files.')
+    parser.add_option('--deps-format',
+                      dest='use_deps_format',
+                      action='store_true',
+                      default=True,
+                      help='Enables formatting of DEPS files.')
+    parser.add_option('--no-deps-format',
+                      dest='use_deps_format',
+                      action='store_false',
+                      help='Disables formatting of DEPS files.')
 
     opts, files = parser.parse_args(args)
     upstream_commit: str | None = None
@@ -7320,34 +7571,62 @@ def CMDformat(parser: optparse.OptionParser, args: list[str]):
     if opts.js:
         clang_exts.extend(['.js', '.ts'])
 
-    formatters: list[tuple[list[str], FormatterFunction]] = [
+    # Formatters organized by file extension.
+    formatters_by_ext: list[tuple[list[str], FormatterFunction]] = [
         (GN_EXTS, _RunGnFormat),
         (['.xml'], _RunMetricsXMLFormat),
     ]
     if not opts.no_java:
-        formatters.append((['.java'], _RunGoogleJavaFormat))
+        formatters_by_ext.append((['.java'], _RunGoogleJavaFormat))
     if opts.clang_format:
-        formatters.append((clang_exts, _RunClangFormatDiff))
+        formatters_by_ext.append((clang_exts, _RunClangFormatDiff))
     if opts.use_rust_fmt:
-        formatters.append((['.rs'], _RunRustFmt))
+        formatters_by_ext.append((['.rs'], _RunRustFmt))
     if opts.use_swift_format:
-        formatters.append((['.swift'], _RunSwiftFormat))
+        formatters_by_ext.append((['.swift'], _RunSwiftFormat))
     if opts.python is not False:
-        formatters.append((['.py'], _RunYapf))
+        formatters_by_ext.append((['.py'], _RunYapf))
     if opts.mojom:
-        formatters.append((['.mojom', '.test-mojom'], _RunMojomFormat))
+        formatters_by_ext.append((['.mojom', '.test-mojom'], _RunMojomFormat))
     if opts.lucicfg:
-        formatters.append((['.star'], _RunLUCICfgFormat))
+        formatters_by_ext.append((['.star'], _RunLUCICfgFormat))
+
+    # Formatters organized by specific file name.
+    formatters_by_name: list[tuple[list[str], FormatterFunction]] = []
+    if opts.use_deps_format:
+        formatters_by_name.append((['DEPS'], _RunDepsFormat))
 
     return_value = 0
-    for file_types, format_func in formatters:
-        paths = [p for p in diff_files if p.lower().endswith(tuple(file_types))]
+    processed_files = set()
+
+    # Run formatters by name first (more specific, e.g., DEPS).
+    for file_names, format_func in formatters_by_name:
+        # Check the basename of the path against the list of specific filenames.
+        paths = [
+            p for p in diff_files
+            if os.path.basename(p) in file_names and p not in processed_files
+        ]
         if not paths:
             continue
         ret = format_func(opts, paths, top_dir, diffs)
         return_value = return_value or ret
+        processed_files.update(paths)
+
+    # Run formatters by extension on the remaining files.
+    for file_types, format_func in formatters_by_ext:
+        # Paths are relative to the repository root (top_dir).
+        paths = [
+            p for p in diff_files if p.lower().endswith(tuple(file_types))
+            and p not in processed_files
+        ]
+        if not paths:
+            continue
+        ret = format_func(opts, paths, top_dir, diffs)
+        return_value = return_value or ret
+        processed_files.update(paths)
 
     return return_value
+
 
 
 @subcommand.usage('<codereview url or issue id>')
