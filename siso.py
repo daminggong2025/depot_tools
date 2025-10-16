@@ -7,7 +7,9 @@ third_party as part of gclient sync. It will automatically find the siso
 binary when run inside a gclient source tree, so users can just type
 "siso" on the command line."""
 
+import itertools
 import os
+import platform
 import signal
 import shlex
 import shutil
@@ -40,6 +42,44 @@ def check_outdir(subcmd, out_dir):
               (out_dir, out_dir),
               file=sys.stderr)
         sys.exit(1)
+
+
+def apply_metrics_labels(args: list[str]) -> list[str]:
+    if not args:
+        return args
+    # We expect ninja calls, else this algorithm is meaningless.
+    if args[0] != "ninja":
+        return args
+
+    system_dict = {"Windows": "windows", "Darwin": "mac", "Linux": "linux"}
+    user_system = system_dict.get(platform.system(), platform.system())
+
+    # Split only by the first = to account for -metrics_project=goma-foundry-experiments
+    # type of usage. Itertools runs flatmap over the list.
+    cmd_args = list(
+        itertools.chain.from_iterable(
+            map(lambda x: x.split("=", 1)
+                if x.startswith("-") else [x], args[1:])))
+    cmd_args = list(filter(lambda x: x, cmd_args))
+    targets = []
+    for i, arg in enumerate(cmd_args, 1):
+        if not cmd_args[i - 1].startswith("-") and not arg.startswith("-"):
+            # Not prefixed by a flag and not a flag itself - a build target.
+            targets.append(arg)
+        # Respect user provided labels, abort.
+        if arg.startswith("--metrics_labels") or arg.startswith(
+                "-metrics_labels"):
+            return args
+    targets = ["all"] if not targets else targets
+    # Siso doesn't expect array, so join it into a string with another manner.
+    targets_string = "+".join(targets)
+
+    result = []
+    result.append("type=developer")
+    result.append("tool=siso")
+    result.append(f"targets={targets_string}")
+    result.append(f"host_os={user_system}")
+    return args + ["--metrics_labels", ",".join(result)]
 
 
 def load_sisorc(rcfile):
@@ -196,6 +236,7 @@ def main(args):
                 if args[1:] != new_args:
                     print('depot_tools/siso.py: %s' % shlex.join(new_args),
                           file=sys.stderr)
+                new_args = apply_metrics_labels(new_args)
                 return caffeinate.run([siso_path] + new_args, env=env)
         print(
             'depot_tools/siso.py: Could not find siso in third_party/siso '
