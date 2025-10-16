@@ -2904,8 +2904,11 @@ class GcsDependency(Dependency):
                 def TarFilter(member, path):
                     # Don't set mtime based on the archive metadata.
                     member.mtime = None
-                    # TODO: Change to data_filter when updating to Python 3.14.
-                    return tarfile.fully_trusted_filter(member, path)
+                    # Match the tarfile default filter.
+                    default_filter = (tarfile.fully_trusted_filter
+                                      if sys.version_info < (3, 14) else
+                                      tarfile.data_filter)
+                    return default_filter(member, path)
 
                 tar.extractall(path=self.output_dir, filter=TarFilter)
 
