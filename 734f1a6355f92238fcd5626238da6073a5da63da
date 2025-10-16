@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f735195d_9833e3b0",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 12
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1523227
+      },
+      "writtenOn": "2025-10-16T17:22:36Z",
+      "side": 1,
+      "message": "Thanks for the helpful feedback. Still considering/discussing on the email thread whether we should format DEPS by default or only when using the `--deps-format` flag 🤔",
+      "revId": "734f1a6355f92238fcd5626238da6073a5da63da",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
