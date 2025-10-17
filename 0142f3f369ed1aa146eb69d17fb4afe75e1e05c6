@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7ac19cad_220c3098",
+        "filename": "siso.py",
+        "patchSetId": 13
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-10-17T05:25:39Z",
+      "side": 1,
+      "message": "I still don\u0027t understand why this is necessary. Why do you need this? and how you know that -metrics_project\u003dgoma-foundry-experiments exists and is the first argument?",
+      "range": {
+        "startLine": 57,
+        "startChar": 0,
+        "endLine": 64,
+        "endChar": 0
+      },
+      "revId": "0142f3f369ed1aa146eb69d17fb4afe75e1e05c6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
