@@ -95,6 +95,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "1f070b18_5da75a27",
+        "filename": "deps_format.py",
+        "patchSetId": 12
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2025-10-17T17:22:39Z",
+      "side": 1,
+      "message": "\u003e For example, could we start off using the existing formatter used for Python files, maybe with a different configuration?\n\n+1. Chromium uses YAPF to format python files. If DEPS needs custom styles, I\u0027d consider crafting .style.yapf for DEPS. If it turns out that yapf isn\u0027t the best tool for DEPS formatting, I\u0027d consider black, which is available in depot_tools.\n- https://source.chromium.org/chromium/chromium/tools/depot_tools/+/main:black\n\n\u003e I think LibCST codemods are probably the way to go if we wish to do something like this. There\u0027s an example in Chromite:\n\nThanks for the suggestion. It looks like a great alternatives for the tree parser, if we have to implement the formatter. However, I\u0027d lean on using an existing Python formatter, if possible, due to maintenance costs and style tuning support.",
+      "parentUuid": "de314948_9eaee2e6",
+      "revId": "734f1a6355f92238fcd5626238da6073a5da63da",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "d64d14f8_9f9faf79",
         "filename": "deps_format.py",
         "patchSetId": 12
