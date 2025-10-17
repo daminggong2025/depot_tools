@@ -77,6 +77,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "de314948_9eaee2e6",
+        "filename": "deps_format.py",
+        "patchSetId": 12
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1394418
+      },
+      "writtenOn": "2025-10-17T05:50:00Z",
+      "side": 1,
+      "message": "After doing a bit of research, I think LibCST codemods (https://libcst.readthedocs.io/en/stable/codemods_tutorial.html) are probably the way to go if we wish to do something like this. There\u0027s an example in Chromite: https://crsrc.org/c/third_party/chromite/contrib/libcst_tool.py",
+      "parentUuid": "4cfcc174_4cc611a2",
+      "revId": "734f1a6355f92238fcd5626238da6073a5da63da",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "d64d14f8_9f9faf79",
         "filename": "deps_format.py",
         "patchSetId": 12
