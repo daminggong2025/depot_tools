@@ -22,6 +22,30 @@
       },
       "revId": "0142f3f369ed1aa146eb69d17fb4afe75e1e05c6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4daebf67_7adca5d8",
+        "filename": "siso.py",
+        "patchSetId": 13
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-10-17T05:31:35Z",
+      "side": 1,
+      "message": "Flags can be as both like `-metrics_project goma-foundry-experiments` and like `-metrics_project\u003dgoma-foundry-experiments`. First will be presented as [-metrics_project, goma-foundry-experiments] and second as [-metrics_project\u003dgoma-foundry-experiments], two elements vs one.\n\nSo basically I need to have only one type of data to parse, which is flag first and value second.\n\nThat all being said, it all makes sense only if we have targets, with the current code it\u0027s meaningless. I will remove this part for now and maybe bring it back when we introduce custom metrics.",
+      "parentUuid": "7ac19cad_220c3098",
+      "range": {
+        "startLine": 57,
+        "startChar": 0,
+        "endLine": 64,
+        "endChar": 0
+      },
+      "revId": "0142f3f369ed1aa146eb69d17fb4afe75e1e05c6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
