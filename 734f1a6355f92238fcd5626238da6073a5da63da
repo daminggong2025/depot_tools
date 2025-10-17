@@ -1,6 +1,29 @@
 {
   "comments": [
     {
+      "unresolved": true,
+      "key": {
+        "uuid": "f2958956_13d6ed4c",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 12
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1394418
+      },
+      "writtenOn": "2025-10-17T00:08:18Z",
+      "side": 1,
+      "message": "This is a very large number of things in a single CL. Following https://google.github.io/eng-practices/review/developer/small-cls.html, can we split this up into multiple CLs?\n\nThis CL is a bit overwhelming to review as there\u0027s so many things in it.",
+      "range": {
+        "startLine": 14,
+        "startChar": 0,
+        "endLine": 31,
+        "endChar": 52
+      },
+      "revId": "734f1a6355f92238fcd5626238da6073a5da63da",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": false,
       "key": {
         "uuid": "f735195d_9833e3b0",
@@ -14,6 +37,91 @@
       "writtenOn": "2025-10-16T17:22:36Z",
       "side": 1,
       "message": "Thanks for the helpful feedback. Still considering/discussing on the email thread whether we should format DEPS by default or only when using the `--deps-format` flag 🤔",
+      "revId": "734f1a6355f92238fcd5626238da6073a5da63da",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "062eca20_71075db4",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 12
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1394418
+      },
+      "writtenOn": "2025-10-17T00:08:18Z",
+      "side": 1,
+      "message": "I\u0027ve only contributed some drive-by fixes to `git-cl.py`\u0027s formatting functionality, so I don\u0027t think I\u0027m a great reviewer for this. Moving myself to CC.\n\nI made some general comments from a quick skim of the code.",
+      "revId": "734f1a6355f92238fcd5626238da6073a5da63da",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4cfcc174_4cc611a2",
+        "filename": "deps_format.py",
+        "patchSetId": 12
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1394418
+      },
+      "writtenOn": "2025-10-17T00:08:18Z",
+      "side": 1,
+      "message": "This seems to be quite error-prone and assumes a specific format of the input. I looked into it and it seems like the file format is generally \"Python\", as DEPS files are `exec`\u0027d: https://crsrc.org/c/buildtools/checkdeps/builddeps.py;l\u003d124;drc\u003df4ee964fb1d71dae4c7243ac78c76949c95906e5\n\nWhile I don\u0027t have a super strong opinion - an imperfect formatter is much better than no formatter - have we considered using an AST-based approach instead? For example, could we start off using the existing formatter used for Python files, maybe with a different configuration?",
+      "revId": "734f1a6355f92238fcd5626238da6073a5da63da",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d64d14f8_9f9faf79",
+        "filename": "deps_format.py",
+        "patchSetId": 12
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1394418
+      },
+      "writtenOn": "2025-10-17T00:08:18Z",
+      "side": 1,
+      "message": "\u003e Use `import` statements for packages and modules only, not for individual types, classes, or functions.\n\n\nhttps://crsrc.org/c/buildtools/checkdeps/builddeps.py;l\u003d124;drc\u003df4ee964fb1d71dae4c7243ac78c76949c95906e5",
+      "revId": "734f1a6355f92238fcd5626238da6073a5da63da",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8ab50762_d9d387bf",
+        "filename": "deps_format.py",
+        "patchSetId": 12
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1394418
+      },
+      "writtenOn": "2025-10-17T00:08:18Z",
+      "side": 1,
+      "message": "Python 2 has been deprecated for a while now, do we need this?",
+      "revId": "734f1a6355f92238fcd5626238da6073a5da63da",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f567a63c_525ebd43",
+        "filename": "deps_format.py",
+        "patchSetId": 12
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1394418
+      },
+      "writtenOn": "2025-10-17T00:08:18Z",
+      "side": 1,
+      "message": "\u003e Maximum line length is *80 characters*.\n\nhttps://google.github.io/styleguide/pyguide.html#s3.2-line-length",
       "revId": "734f1a6355f92238fcd5626238da6073a5da63da",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
