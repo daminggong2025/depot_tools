@@ -70,6 +70,30 @@
       },
       "revId": "9e656e6c1fc7357fd11cfa011cadfc8fb7dda01b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cc345f69_30b2e4cb",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1577257
+      },
+      "writtenOn": "2025-10-19T14:30:11Z",
+      "side": 1,
+      "message": "Bazel does not use env vars for configuring its behavior, all options are exposed as command-line flags.\n\nI don\u0027t remember, why are we sometimes using flags, but sometimes env vars for configuring Siso? Could we just make everything a flag (e.g. `-limits` instead of `SISO_LIMITS\u003d`?)",
+      "parentUuid": "5ee53896_0a9fb252",
+      "range": {
+        "startLine": 10,
+        "startChar": 0,
+        "endLine": 12,
+        "endChar": 0
+      },
+      "revId": "9e656e6c1fc7357fd11cfa011cadfc8fb7dda01b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
