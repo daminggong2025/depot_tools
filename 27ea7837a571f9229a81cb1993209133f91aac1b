@@ -33,6 +33,24 @@
       "message": "@gavinmak@google.com could you have a look?",
       "revId": "27ea7837a571f9229a81cb1993209133f91aac1b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7481ac03_9be3cada",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2025-10-20T20:22:10Z",
+      "side": 1,
+      "message": "one concern I have is that the README.md says depot_tools \"requires python 3.8\": https://crsrc.org/d/README.md;l\u003d3. with this change, that\u0027s becoming inaccurate. maybe change that to say \"requires Python 3.8+\" or that specific tools may require newer versions?",
+      "parentUuid": "73cfaa44_3149e5ef",
+      "revId": "27ea7837a571f9229a81cb1993209133f91aac1b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
