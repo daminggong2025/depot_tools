@@ -21,7 +21,7 @@ sys.path.insert(0, _ROOT_DIR)
 import metadata.fields.field_types as field_types
 import metadata.fields.util as util
 import metadata.validation_result as vr
-from metadata.fields.custom.license_allowlist import ALLOWED_LICENSES, ALLOWED_OPEN_SOURCE_LICENSES, ALL_LICENSES, WITH_PERMISSION_ONLY
+from metadata.fields.custom.license_allowlist import ALLOWED_LICENSES, ALLOWED_OPEN_SOURCE_LICENSES, ALL_LICENSES, WITH_PERMISSION_ONLY, OPEN_SOURCE_SPDX_LICENSES
 
 
 def process_license_value(value: str,
@@ -116,7 +116,9 @@ class LicenseField(field_types.SingleLineTextField):
                         "permissive one, do not list all options."
                     ])
             if not allowed:
-                not_allowlisted.append(process_value(license))
+                # Preserve the original casing for the warning message.
+                not_allowlisted.append(license.removeprefix("LicenseRef-").strip())
+
 
         if not_allowlisted:
             return vr.ValidationWarning(
@@ -128,6 +130,18 @@ class LicenseField(field_types.SingleLineTextField):
                 ])
 
         return None
+
+    def only_open_source_licenses(self, license_field_value: str) ->List[str]:
+        """Returns a list of licenses that are only allowed in open source projects."""
+        licenses = process_license_value(
+            license_field_value,
+            atomic_delimiter=self.VALUE_DELIMITER)
+        open_source_only = []
+        for lic, valid in licenses:
+            # Processing converts to lowercase for comparison.
+            if valid and process_value(lic) in OPEN_SOURCE_SPDX_LICENSES:
+                open_source_only.append(lic)
+        return open_source_only
 
     def narrow_type(self, value: str) -> Optional[List[str]]:
         if not value:
