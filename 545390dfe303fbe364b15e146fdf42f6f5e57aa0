@@ -58,6 +58,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "f46f1229_754b9a27",
+        "filename": "metadata/fields/custom/license.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2025-10-20T05:55:17Z",
+      "side": 1,
+      "message": "Processing is intended behaviour, this is to handle cases like \u0027LicenseRef-Blah\u0027, only \u0027Blah\u0027 should to be added to the allowlist, so only show \u0027Blah\u0027 in the warning. It\u0027s the .lower() that we don\u0027t want because \u0027mit\u0027, \u0027bsd-3-clause\u0027 just looks weird.",
+      "parentUuid": "c980ed93_8b6511fa",
+      "range": {
+        "startLine": 60,
+        "startChar": 16,
+        "endLine": 60,
+        "endChar": 71
+      },
+      "revId": "545390dfe303fbe364b15e146fdf42f6f5e57aa0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e6ecc2e1_38438c3a",
@@ -71,6 +95,30 @@
       "writtenOn": "2025-10-20T05:28:01Z",
       "side": 1,
       "message": "This comment isn\u0027t correct.",
+      "range": {
+        "startLine": 81,
+        "startChar": 12,
+        "endLine": 81,
+        "endChar": 62
+      },
+      "revId": "545390dfe303fbe364b15e146fdf42f6f5e57aa0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1cea80e2_18270fa9",
+        "filename": "metadata/fields/custom/license.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2025-10-20T05:55:17Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e6ecc2e1_38438c3a",
       "range": {
         "startLine": 81,
         "startChar": 12,
@@ -104,6 +152,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "9f292ba5_c92f757e",
+        "filename": "metadata/fields/custom/license_allowlist.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 266,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2025-10-20T05:55:17Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d1af9869_ea10279b",
+      "range": {
+        "startLine": 266,
+        "startChar": 4,
+        "endLine": 266,
+        "endChar": 25
+      },
+      "revId": "545390dfe303fbe364b15e146fdf42f6f5e57aa0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "a4633f69_5c3a8463",
@@ -117,6 +189,30 @@
       "writtenOn": "2025-10-20T05:28:01Z",
       "side": 1,
       "message": "This is dual purpose. You should only split license here.",
+      "range": {
+        "startLine": 285,
+        "startChar": 17,
+        "endLine": 285,
+        "endChar": 30
+      },
+      "revId": "545390dfe303fbe364b15e146fdf42f6f5e57aa0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "07cd1e10_aee7da78",
+        "filename": "metadata/fields/custom/license_allowlist.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 285,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2025-10-20T05:55:17Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a4633f69_5c3a8463",
       "range": {
         "startLine": 285,
         "startChar": 17,
