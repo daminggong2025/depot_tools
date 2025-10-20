@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "43a509ee_5933e323",
+        "filename": "metadata/dependency_metadata.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 150,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-10-20T02:50:49Z",
+      "side": 1,
+      "message": "Chatted offline. We should do a followup fo stop check `preprocessed_str in set`.\n\nFine to land this for now to fix the issue.",
+      "revId": "8907a5e96cbed313fa736ba8d4d34029a67af904",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
