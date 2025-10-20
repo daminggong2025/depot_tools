@@ -6925,11 +6925,11 @@ def _RunRustFmt(opts, paths, top_dir, diffs):
     cmd = [rustfmt_tool, f'--config-path={rustfmt_toml_path}']
     if opts.dry_run:
         cmd.append('--check')
-    cmd += paths
-    rustfmt_exitcode = subprocess2.call(cmd)
 
-    if opts.dry_run and rustfmt_exitcode != 0:
-        return 2
+    for paths_batch in _SplitArgsByCmdLineLimit(paths):
+        rustfmt_exitcode = subprocess2.call(cmd + paths_batch, shell=False)
+        if opts.dry_run and rustfmt_exitcode != 0:
+            return 2
 
     return 0
 
