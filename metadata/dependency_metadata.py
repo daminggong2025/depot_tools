@@ -138,18 +138,6 @@ class DependencyMetadata:
                 return False
         return True
 
-
-    def only_open_source_licenses(self, license_field_value: str) ->List[str]:
-        """Returns a list of licenses that are only allowed in open source projects."""
-        licenses = license_util.process_license_value(
-            license_field_value,
-            atomic_delimiter=known_fields.LICENSE.VALUE_DELIMITER)
-        open_source_only = []
-        for lic, valid in licenses:
-            if valid and lic in OPEN_SOURCE_SPDX_LICENSES:
-                open_source_only.append(lic)
-        return open_source_only
-
     def _assess_required_fields(self, is_open_source_project: bool = False) -> Set[field_types.MetadataField]:
         """Returns the set of required fields, based on the current
         metadata.
@@ -300,7 +288,7 @@ class DependencyMetadata:
         if not is_open_source_project:
             license_value = self._metadata.get(known_fields.LICENSE)
             if license_value is not None:
-                not_allowed_licenses = self.only_open_source_licenses(license_value)
+                not_allowed_licenses = known_fields.LICENSE.only_open_source_licenses(license_value)
                 if len(not_allowed_licenses) > 0:
                     license_result = vr.ValidationWarning(
                         reason=f"License has a license not in the allowlist."
