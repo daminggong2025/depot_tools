@@ -495,17 +495,17 @@ class DependencyValidationTest(unittest.TestCase):
 
     def test_only_open_source_licenses(self):
         """Test that only open source licenses are returned."""
-        dependency = dm.DependencyMetadata()
-        self.assertEqual(dependency.only_open_source_licenses(""), [])
-        self.assertEqual(dependency.only_open_source_licenses("MIT"), [])
-        self.assertEqual(dependency.only_open_source_licenses("GPL-2.0"), [])
-        self.assertEqual(dependency.only_open_source_licenses("MPL-2.0"), ["MPL-2.0"])
-        result = dependency.only_open_source_licenses("MIT, MPL-2.0")
+        lic = known_fields.LICENSE
+        self.assertEqual(lic.only_open_source_licenses(""), [])
+        self.assertEqual(lic.only_open_source_licenses("MIT"), [])
+        self.assertEqual(lic.only_open_source_licenses("GPL-2.0"), [])
+        self.assertEqual(lic.only_open_source_licenses("MPL-2.0"), ["MPL-2.0"])
+        result = lic.only_open_source_licenses("MIT, MPL-2.0")
         self.assertEqual(result, ["MPL-2.0"])
-        result = dependency.only_open_source_licenses("MPL-2.0, APSL-2.0")
+        result = lic.only_open_source_licenses("MPL-2.0, APSL-2.0")
         self.assertEqual(set(result), {"MPL-2.0", "APSL-2.0"})
         # Test with mix of invalid and valid licenses
-        result = dependency.only_open_source_licenses("InvalidLicense, MPL-2.0")
+        result = lic.only_open_source_licenses("InvalidLicense, MPL-2.0")
         self.assertEqual(result, ["MPL-2.0"])
 
     def test_mitigated_validation(self):
