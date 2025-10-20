@@ -21,66 +21,7 @@ sys.path.insert(0, _ROOT_DIR)
 import metadata.fields.field_types as field_types
 import metadata.fields.util as util
 import metadata.validation_result as vr
-from metadata.fields.custom.license_allowlist import ALLOWED_LICENSES, ALLOWED_OPEN_SOURCE_LICENSES, ALL_LICENSES, WITH_PERMISSION_ONLY
-
-
-def process_license_value(value: str,
-                          atomic_delimiter: str) -> List[Tuple[str, bool]]:
-    """Process a license field value, which may list multiple licenses.
-
-    Args:
-        value: the value to process, which may include both verbose and
-               atomic delimiters, e.g. "Apache, 2.0 and MIT and custom"
-        atomic_delimiter: the delimiter to use as a final step; values
-                          will not be further split after using this
-                          delimiter.
-
-    Returns: a list of the constituent licenses within the given value,
-             and whether the constituent license is a recognized license type.
-             e.g. [("Apache, 2.0", True), ("MIT", True),
-                   ("custom", False)]
-    """
-    # Check if the value is on the allowlist as-is, and thus does not
-    # require further processing.
-    if is_license_valid(value):
-        return [(value, True)]
-
-    breakdown = []
-    # Split using the standard value delimiter. This results in
-    # atomic values; there is no further splitting possible.
-    for atomic_value in value.split(atomic_delimiter):
-        atomic_value = atomic_value.strip()
-        breakdown.append(
-            (atomic_value, is_license_valid(
-                atomic_value,
-            ))
-        )
-
-    return breakdown
-
-
-def is_license_valid(value: str) -> bool:
-    """Returns whether the value is a valid license type.
-    """
-    return process_value(value) in ALL_LICENSES
-
-
-def process_value(value: str) -> bool:
-    """Removes unnecessary prefixes/suffixes.
-    """
-    return value.removeprefix("LicenseRef-").strip()
-
-
-def is_license_allowlisted(value: str, is_open_source_project: bool = False) -> bool:
-    """Returns whether the value is in the allowlist for license
-    types.
-    """
-    # Restricted licenses are not enforced by presubmits, see b/388620886 😢.
-    if process_value(value) in WITH_PERMISSION_ONLY:
-        return True
-    if is_open_source_project:
-        return process_value(value) in ALLOWED_OPEN_SOURCE_LICENSES
-    return process_value(value) in ALLOWED_LICENSES
+import metadata.fields.custom.license_allowlist as allowlist_util
 
 class LicenseField(field_types.SingleLineTextField):
     """Custom field for the package's license type(s).
@@ -97,7 +38,7 @@ class LicenseField(field_types.SingleLineTextField):
         Note: this field supports multiple values.
         """
         not_allowlisted = []
-        licenses = process_license_value(
+        licenses = allowlist_util.process_license_value(
             value,
             atomic_delimiter=self.VALUE_DELIMITER,
         )
@@ -116,7 +57,9 @@ class LicenseField(field_types.SingleLineTextField):
                         "permissive one, do not list all options."
                     ])
             if not allowed:
-                not_allowlisted.append(process_value(license))
+                # Preserve the original casing for the warning message.
+                not_allowlisted.append(license)
+
 
         if not_allowlisted:
             return vr.ValidationWarning(
@@ -129,10 +72,21 @@ class LicenseField(field_types.SingleLineTextField):
 
         return None
 
+    def only_open_source_licenses(self, license_field_value: str) -> List[str]:
+        """Returns a list of licenses that are only allowed in open source projects."""
+        licenses = allowlist_util.process_license_value(
+            license_field_value, atomic_delimiter=self.VALUE_DELIMITER)
+        open_source_only = []
+        for lic, valid in licenses:
+            # Processing converts to lowercase for comparison.
+            if valid and allowlist_util.is_open_source_license(lic):
+                open_source_only.append(lic)
+        return open_source_only
+
     def narrow_type(self, value: str) -> Optional[List[str]]:
         if not value:
             # Empty License field is equivalent to "not declared".
             return None
 
-        parts = process_value(value).split(self.VALUE_DELIMITER)
+        parts = value.split(self.VALUE_DELIMITER)
         return list(filter(bool, map(lambda str: str.strip(), parts)))
