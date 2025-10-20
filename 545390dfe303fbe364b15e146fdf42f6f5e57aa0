@@ -16,6 +16,115 @@
       "message": "My change overrode this cl instead of making a new one, can you please LGTM this one with the complete change.",
       "revId": "545390dfe303fbe364b15e146fdf42f6f5e57aa0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "78f9b455_ec9e4256",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-10-20T05:28:01Z",
+      "side": 1,
+      "message": "How about we land PS2 then fix this properly when you\u0027re back /?",
+      "revId": "545390dfe303fbe364b15e146fdf42f6f5e57aa0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c980ed93_8b6511fa",
+        "filename": "metadata/fields/custom/license.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-10-20T05:28:01Z",
+      "side": 1,
+      "message": "See my other comment. You shouldn\u0027t process_value in `process_license_value`, because it would fail to preserve the original text.",
+      "range": {
+        "startLine": 60,
+        "startChar": 16,
+        "endLine": 60,
+        "endChar": 71
+      },
+      "revId": "545390dfe303fbe364b15e146fdf42f6f5e57aa0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e6ecc2e1_38438c3a",
+        "filename": "metadata/fields/custom/license.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-10-20T05:28:01Z",
+      "side": 1,
+      "message": "This comment isn\u0027t correct.",
+      "range": {
+        "startLine": 81,
+        "startChar": 12,
+        "endLine": 81,
+        "endChar": 62
+      },
+      "revId": "545390dfe303fbe364b15e146fdf42f6f5e57aa0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d1af9869_ea10279b",
+        "filename": "metadata/fields/custom/license_allowlist.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 266,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-10-20T05:28:01Z",
+      "side": 1,
+      "message": "split_license_str\n\n// process_ is too generic",
+      "range": {
+        "startLine": 266,
+        "startChar": 4,
+        "endLine": 266,
+        "endChar": 25
+      },
+      "revId": "545390dfe303fbe364b15e146fdf42f6f5e57aa0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a4633f69_5c3a8463",
+        "filename": "metadata/fields/custom/license_allowlist.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 285,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-10-20T05:28:01Z",
+      "side": 1,
+      "message": "This is dual purpose. You should only split license here.",
+      "range": {
+        "startLine": 285,
+        "startChar": 17,
+        "endLine": 285,
+        "endChar": 30
+      },
+      "revId": "545390dfe303fbe364b15e146fdf42f6f5e57aa0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
