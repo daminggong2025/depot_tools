@@ -68,7 +68,7 @@ def is_license_valid(value: str) -> bool:
 def process_value(value: str) -> bool:
     """Removes unnecessary prefixes/suffixes.
     """
-    return value.removeprefix("LicenseRef-").strip()
+    return value.removeprefix("LicenseRef-").strip().lower()
 
 
 def is_license_allowlisted(value: str, is_open_source_project: bool = False) -> bool:
@@ -134,5 +134,5 @@ class LicenseField(field_types.SingleLineTextField):
             # Empty License field is equivalent to "not declared".
             return None
 
-        parts = process_value(value).split(self.VALUE_DELIMITER)
+        parts = value.split(self.VALUE_DELIMITER)
         return list(filter(bool, map(lambda str: str.strip(), parts)))
