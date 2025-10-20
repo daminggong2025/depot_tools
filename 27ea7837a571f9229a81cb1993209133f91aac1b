@@ -51,6 +51,24 @@
       "parentUuid": "73cfaa44_3149e5ef",
       "revId": "27ea7837a571f9229a81cb1993209133f91aac1b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "483979da_619960ce",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3395304
+      },
+      "writtenOn": "2025-10-20T23:52:46Z",
+      "side": 1,
+      "message": "Brian, since I\u0027m not a committer on Depot Tools, and each CL requires at least two votes, I\u0027m adding you back to the reviewer list.\n\nAlso, maybe we could consider updating this restriction? 3.8 is EOL on October 7, 2024.",
+      "parentUuid": "7481ac03_9be3cada",
+      "revId": "27ea7837a571f9229a81cb1993209133f91aac1b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
