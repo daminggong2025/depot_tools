@@ -1016,6 +1016,14 @@ class ChainedAuthenticator(_Authenticator):
     def debug_summary_state(self) -> str:
         return ''
 
+    def ensure_authenticated(self, gerrit_host: str,
+                             git_host: str) -> Tuple[bool, str]:
+        for a in self.authenticators:
+            if a.is_applicable(gerrit_host=gerrit_host):
+                return a.ensure_authenticated(gerrit_host, git_host)
+        return (False,
+                f'{self!r} has no applicable authenticator for {gerrit_host}')
+
 
 class ReqParams(TypedDict):
     uri: str
