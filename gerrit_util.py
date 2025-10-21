@@ -264,12 +264,12 @@ class _Authenticator(object):
         raise NotImplementedError()
 
     @classmethod
-    def is_applicable(cls, *, conn: Optional[HttpConn] = None) -> bool:
+    def is_applicable(cls, *, gerrit_host: Optional[str] = None) -> bool:
         """Must return True if this Authenticator is available in the current
         environment.
 
-        If conn is not None, return True if this Authenticator is
-        applicable to the given conn in the current environment.
+        If `gerrit_host` isn't None, it should be the hostname of a Gerrit
+        server, such as "chromium-review.googlesource.com".
         """
         raise NotImplementedError()
 
@@ -394,12 +394,12 @@ class SSOAuthenticator(_Authenticator):
         )
 
     @classmethod
-    def is_applicable(cls, *, conn: Optional[HttpConn] = None) -> bool:
+    def is_applicable(cls, *, gerrit_host: Optional[str] = None) -> bool:
         if not cls._resolve_sso_cmd():
             return False
         email: str = scm.GIT.GetConfig(os.getcwd(), 'user.email', default='')
-        if conn is not None:
-            return ShouldUseSSO(conn.host, email)
+        if gerrit_host is not None:
+            return ShouldUseSSO(gerrit_host, email)
         return email.endswith('@google.com')
 
     @classmethod
@@ -616,7 +616,7 @@ class CookiesAuthenticator(_Authenticator):
         self._gitcookies = self._EMPTY
 
     @classmethod
-    def is_applicable(cls, *, conn: Optional[HttpConn] = None) -> bool:
+    def is_applicable(cls, *, gerrit_host: Optional[str] = None) -> bool:
         # We consider CookiesAuthenticator always applicable for now.
         return True
 
@@ -775,7 +775,7 @@ class GceAuthenticator(_Authenticator):
     _token_expiration = None
 
     @classmethod
-    def is_applicable(cls, *, conn: Optional[HttpConn] = None):
+    def is_applicable(cls, *, gerrit_host: Optional[str] = None):
         if os.getenv('SKIP_GCE_AUTH_FOR_GIT'):
             return False
         if cls._cache_is_gce is None:
@@ -853,7 +853,7 @@ class LuciContextAuthenticator(_Authenticator):
     """_Authenticator implementation that uses LUCI_CONTEXT ambient local auth.
     """
     @staticmethod
-    def is_applicable(*, conn: Optional[HttpConn] = None):
+    def is_applicable(*, gerrit_host: Optional[str] = None):
         return auth.has_luci_context_local_auth()
 
     def __init__(self):
@@ -962,8 +962,8 @@ class GitCredsAuthenticator(_Authenticator):
                 "Got error trying to cache 'depot-tools.hostHasAccount': %s", e)
         return True
 
-    def is_applicable(self, *, conn: Optional[HttpConn] = None):
-        return self.gerrit_account_exists(conn.host)
+    def is_applicable(self, *, gerrit_host: Optional[str] = None):
+        return self.gerrit_account_exists(gerrit_host)
 
 
 class NoAuthenticator(_Authenticator):
@@ -971,7 +971,7 @@ class NoAuthenticator(_Authenticator):
     """
 
     @staticmethod
-    def is_applicable(*, conn: Optional[HttpConn] = None):
+    def is_applicable(*, gerrit_host: Optional[str] = None):
         return True
 
     def authenticate(self, conn: HttpConn):
@@ -990,13 +990,15 @@ class ChainedAuthenticator(_Authenticator):
     def __init__(self, authenticators: List[_Authenticator]):
         self.authenticators = list(authenticators)
 
-    def is_applicable(self, *, conn: Optional[HttpConn] = None) -> bool:
-        return bool(any(
-            a.is_applicable(conn=conn) for a in self.authenticators))
+    def is_applicable(self, *, gerrit_host: Optional[str] = None) -> bool:
+        return bool(
+            any(
+                a.is_applicable(gerrit_host=gerrit_host)
+                for a in self.authenticators))
 
     def authenticate(self, conn: HttpConn):
         for a in self.authenticators:
-            if a.is_applicable(conn=conn):
+            if a.is_applicable(gerrit_host=conn.host):
                 a.authenticate(conn)
                 break
         else:
@@ -1006,9 +1008,8 @@ class ChainedAuthenticator(_Authenticator):
     def attempt_authenticate_with_reauth(self, conn: HttpConn,
                                          context: auth.ReAuthContext) -> bool:
         for a in self.authenticators:
-            if a.is_applicable(
-                    conn=conn) and a.attempt_authenticate_with_reauth(
-                        conn, context):
+            if (a.is_applicable(gerrit_host=conn.host)
+                    and a.attempt_authenticate_with_reauth(conn, context)):
                 return True
         return False
 
