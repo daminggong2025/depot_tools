@@ -264,7 +264,7 @@ class _Authenticator(object):
         raise NotImplementedError()
 
     @classmethod
-    def is_applicable(cls, *, conn: Optional[HttpConn] = None) -> bool:
+    def is_applicable(cls, *, gerrit_host: str) -> bool:
         """Must return True if this Authenticator is available in the current
         environment.
 
@@ -283,7 +283,7 @@ class _Authenticator(object):
         return (True, '')
 
     @classmethod
-    def get(cls):
+    def get(cls, gerrit_host: str):
         """Returns: (_Authenticator) The identified _Authenticator to use.
 
         Probes the local system and its environment and identifies the
@@ -299,7 +299,7 @@ class _Authenticator(object):
 
             if use_new_auth:
                 LOGGER.debug('_Authenticator.get: using new auth stack')
-                if LuciContextAuthenticator.is_applicable():
+                if LuciContextAuthenticator.is_applicable(gerrit_host=gerrit_host):
                     LOGGER.debug(
                         '_Authenticator.get: using LUCI context authenticator')
                     ret = LuciContextAuthenticator()
@@ -323,7 +323,7 @@ class _Authenticator(object):
             ]
 
             for candidate in authenticators:
-                if candidate.is_applicable():
+                if candidate.is_applicable(gerrit_host=gerrit_host):
                     LOGGER.debug('_Authenticator.get: Selected %s.',
                                  candidate.__name__)
                     ret = candidate()
@@ -336,10 +336,10 @@ class _Authenticator(object):
             )
 
 
-def debug_auth() -> Tuple[str, str]:
+def debug_auth(gerrit_host: str) -> Tuple[str, str]:
     """Returns the name of the chosen auth scheme and any additional debugging
     information for that authentication scheme. """
-    authn = _Authenticator.get()
+    authn = _Authenticator.get(gerrit_host)
     return authn.__class__.__name__, authn.debug_summary_state()
 
 
@@ -349,7 +349,7 @@ def ensure_authenticated(gerrit_host: str, git_host: str) -> Tuple[bool, str]:
     If the error message is empty, there is no error to report. If bypassable is
     true, the caller will allow the user to continue past the error.
     """
-    return _Authenticator.get().ensure_authenticated(gerrit_host, git_host)
+    return _Authenticator.get(gerrit_host).ensure_authenticated(gerrit_host, git_host)
 
 
 class SSOAuthenticator(_Authenticator):
@@ -394,13 +394,11 @@ class SSOAuthenticator(_Authenticator):
         )
 
     @classmethod
-    def is_applicable(cls, *, conn: Optional[HttpConn] = None) -> bool:
+    def is_applicable(cls, *, gerrit_host: str) -> bool:
         if not cls._resolve_sso_cmd():
             return False
         email: str = scm.GIT.GetConfig(os.getcwd(), 'user.email', default='')
-        if conn is not None:
-            return ShouldUseSSO(conn.host, email)
-        return email.endswith('@google.com')
+        return ShouldUseSSO(gerrit_host, email)
 
     @classmethod
     def _parse_config(cls, config: Dict[str, str]) -> SSOInfo:
@@ -616,7 +614,7 @@ class CookiesAuthenticator(_Authenticator):
         self._gitcookies = self._EMPTY
 
     @classmethod
-    def is_applicable(cls, *, conn: Optional[HttpConn] = None) -> bool:
+    def is_applicable(cls, *, gerrit_host: str) -> bool:
         # We consider CookiesAuthenticator always applicable for now.
         return True
 
@@ -775,7 +773,7 @@ class GceAuthenticator(_Authenticator):
     _token_expiration = None
 
     @classmethod
-    def is_applicable(cls, *, conn: Optional[HttpConn] = None):
+    def is_applicable(cls, *, gerrit_host: str):
         if os.getenv('SKIP_GCE_AUTH_FOR_GIT'):
             return False
         if cls._cache_is_gce is None:
@@ -853,7 +851,7 @@ class LuciContextAuthenticator(_Authenticator):
     """_Authenticator implementation that uses LUCI_CONTEXT ambient local auth.
     """
     @staticmethod
-    def is_applicable(*, conn: Optional[HttpConn] = None):
+    def is_applicable(*, gerrit_host: str):
         return auth.has_luci_context_local_auth()
 
     def __init__(self):
@@ -962,8 +960,8 @@ class GitCredsAuthenticator(_Authenticator):
                 "Got error trying to cache 'depot-tools.hostHasAccount': %s", e)
         return True
 
-    def is_applicable(self, *, conn: Optional[HttpConn] = None):
-        return self.gerrit_account_exists(conn.host)
+    def is_applicable(self, *, gerrit_host: str):
+        return self.gerrit_account_exists(gerrit_host)
 
 
 class NoAuthenticator(_Authenticator):
@@ -971,7 +969,7 @@ class NoAuthenticator(_Authenticator):
     """
 
     @staticmethod
-    def is_applicable(*, conn: Optional[HttpConn] = None):
+    def is_applicable(*, gerrit_host: str):
         return True
 
     def authenticate(self, conn: HttpConn):
@@ -990,13 +988,15 @@ class ChainedAuthenticator(_Authenticator):
     def __init__(self, authenticators: List[_Authenticator]):
         self.authenticators = list(authenticators)
 
-    def is_applicable(self, *, conn: Optional[HttpConn] = None) -> bool:
-        return bool(any(
-            a.is_applicable(conn=conn) for a in self.authenticators))
+    def is_applicable(self, *, gerrit_host: str) -> bool:
+        return bool(
+            any(
+                a.is_applicable(gerrit_host=gerrit_host)
+                for a in self.authenticators))
 
     def authenticate(self, conn: HttpConn):
         for a in self.authenticators:
-            if a.is_applicable(conn=conn):
+            if a.is_applicable(gerrit_host=conn.host):
                 a.authenticate(conn)
                 break
         else:
@@ -1006,9 +1006,8 @@ class ChainedAuthenticator(_Authenticator):
     def attempt_authenticate_with_reauth(self, conn: HttpConn,
                                          context: auth.ReAuthContext) -> bool:
         for a in self.authenticators:
-            if a.is_applicable(
-                    conn=conn) and a.attempt_authenticate_with_reauth(
-                        conn, context):
+            if (a.is_applicable(gerrit_host=conn.host)
+                    and a.attempt_authenticate_with_reauth(conn, context)):
                 return True
         return False
 
@@ -1126,7 +1125,7 @@ def CreateHttpConn(host: str,
                     req_body=rendered_body)
 
     if authenticator is None:
-        authenticator = _Authenticator.get()
+        authenticator = _Authenticator.get(conn.host)
     # TODO(crbug.com/1059384): Automatically detect when running on cloudtop.
     if isinstance(authenticator, GceAuthenticator):
         print('If you\'re on a cloudtop instance, export '

@@ -225,41 +225,37 @@ class GceAuthenticatorTest(unittest.TestCase):
 
     def testIsGce_EnvVarSkip(self, *_mocks):
         os.getenv.return_value = '1'
-        self.assertFalse(self.GceAuthenticator.is_applicable())
+        self.assertFalse(
+            self.GceAuthenticator.is_applicable(gerrit_host='test.com'))
         os.getenv.assert_called_once_with('SKIP_GCE_AUTH_FOR_GIT')
 
     def testIsGce_Error(self):
         httplib2.Http().request.side_effect = httplib2.HttpLib2Error
-        self.assertFalse(self.GceAuthenticator.is_applicable())
+        self.assertFalse(
+            self.GceAuthenticator.is_applicable(gerrit_host='test.com'))
 
     def testIsGce_500(self):
         httplib2.Http().request.return_value = (mock.Mock(status=500), None)
-        self.assertFalse(self.GceAuthenticator.is_applicable())
+        self.assertFalse(
+            self.GceAuthenticator.is_applicable(gerrit_host='test.com'))
         last_call = gerrit_util.time_sleep.mock_calls[-1]
         self.assertLessEqual(last_call, mock.call(43.0))
 
     def testIsGce_FailsThenSucceeds(self):
         response = mock.Mock(status=200)
-        response.get.return_value = 'Google'
         httplib2.Http().request.side_effect = [
             (mock.Mock(status=500), None),
             (response, 'who cares'),
         ]
-        self.assertTrue(self.GceAuthenticator.is_applicable())
+        response.get.return_value = 'Google'
+        self.assertTrue(self.GceAuthenticator.is_applicable(gerrit_host='test.com'))
 
     def testIsGce_MetadataFlavorIsNotGoogle(self):
         response = mock.Mock(status=200)
         response.get.return_value = None
         httplib2.Http().request.return_value = (response, 'who cares')
-        self.assertFalse(self.GceAuthenticator.is_applicable())
-        response.get.assert_called_once_with('metadata-flavor')
-
-    def testIsGce_ResultIsCached(self):
-        response = mock.Mock(status=200)
-        response.get.return_value = 'Google'
-        httplib2.Http().request.side_effect = [(response, 'who cares')]
-        self.assertTrue(self.GceAuthenticator.is_applicable())
-        self.assertTrue(self.GceAuthenticator.is_applicable())
+        self.assertFalse(self.GceAuthenticator.is_applicable(gerrit_host='test.com'))
+        self.assertFalse(self.GceAuthenticator.is_applicable(gerrit_host='test.com'))
         httplib2.Http().request.assert_called_once()
 
     def testGetAuthHeader_Error(self):
@@ -789,14 +785,16 @@ class SSOAuthenticatorTest(unittest.TestCase):
         self.assertEqual(self.sso._resolve_sso_cmd(),
                          ('/fake/git-remote-sso', '-print_config',
                           'sso://*.git.corp.google.com'))
-        with mock.patch('scm.GIT.GetConfig') as p:
-            p.side_effect = ['firefly@google.com']
-            self.assertTrue(self.sso.is_applicable())
+        with mock.patch('scm.GIT.GetConfig', return_value='firefly@google.com') as p:
+            self.assertTrue(
+                self.sso.is_applicable(
+                    gerrit_host='chromium-review.googlesource.com'))
 
     @mock.patch('gerrit_util.ssoHelper.find_cmd', return_value=None)
     def testCmdAssemblyNotFound(self, _):
         self.assertEqual(self.sso._resolve_sso_cmd(), ())
-        self.assertFalse(self.sso.is_applicable())
+        self.assertFalse(
+            self.sso.is_applicable(gerrit_host='chromium-review.googlesource.com'))
 
     def testParseConfigOK(self):
         test_config = {

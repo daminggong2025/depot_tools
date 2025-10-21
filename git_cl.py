@@ -3005,7 +3005,8 @@ class Changelist(object):
         gclient_utils.FileWrite(os.path.join(git_info_dir, 'git-config'),
                                 git_config)
 
-        auth_name, debug_state = gerrit_util.debug_auth()
+        auth_name, debug_state = gerrit_util.debug_auth(
+            self.GetGerritHost())
         # Writes a file like CookiesAuthenticator.debug_summary_state
         gclient_utils.FileWrite(
             os.path.join(git_info_dir, f'{auth_name}.debug_summary_state'),
@@ -4023,7 +4024,7 @@ def CMDcreds_check(parser, args):
         )
 
     # Code below checks .gitcookies. Abort if using something else.
-    auth_name, _ = gerrit_util.debug_auth()
+    auth_name, _ = gerrit_util.debug_auth(self.GetGerritHost())
     if auth_name != "CookiesAuthenticator":
         message = (
             'This command is not designed for bot environment. It checks '
