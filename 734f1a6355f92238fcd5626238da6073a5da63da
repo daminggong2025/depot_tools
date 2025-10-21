@@ -131,6 +131,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "7df3ac26_cee22209",
+        "filename": "deps_format.py",
+        "patchSetId": 12
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2025-10-21T00:00:24Z",
+      "side": 1,
+      "message": "\u003e keep this list of (dependency) strings sorted\" was the main motivation for this CL.  There is a Gerrit check for \"keep-sorted\" comments, though.\n\nI\u0027d consider keep-sorted support separately. AFAIK, in all (or most if not) languages, keep-sorted is processed separately from the formatter. For instance, none of google-java-format, clang-format, swift-format, etc support keep-sorted as the formatting functionality. Buildifer might be an exception, but I\u0027d consider that buildifier is not just a formatting tool. If I use Go as metaphor, Buildifer is more like `go vet`, not `gofmt`.\n\nIf the main motivation of this formatter is to enforce keep-sorted, then I\u0027d suggest just relying on the AyeAye static analyzer for keep-sorted. \n\n@bwwilliams@google.com, would you consider just using a Python formatter and rely on the AyeAye keep-sorted analyzer to warn users? Just for **style-formatting**, developing a new binary may be an overkill.",
+      "parentUuid": "347d3ad4_3374e7d2",
+      "revId": "734f1a6355f92238fcd5626238da6073a5da63da",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "d64d14f8_9f9faf79",
         "filename": "deps_format.py",
         "patchSetId": 12
