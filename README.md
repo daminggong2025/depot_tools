@@ -2,6 +2,8 @@
 
 Tools for working with Chromium development. It requires python 3.8.
 
+Note: gsutil requires Python 3.9–3.13, other tools work with Python 3.8.
+
 
 ## Tools
 
