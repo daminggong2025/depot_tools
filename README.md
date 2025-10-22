@@ -1,6 +1,8 @@
 # depot_tools
 
-Tools for working with Chromium development. It requires python 3.8.
+Tools for Chromium development. Requires Python 3.8+.
+
+gsutil: Python 3.9–3.13 required.
 
 
 ## Tools

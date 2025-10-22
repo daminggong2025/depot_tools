@@ -26,7 +26,7 @@ DEFAULT_BIN_DIR = os.path.join(THIS_DIR, 'external_bin', 'gsutil')
 
 IS_WINDOWS = os.name == 'nt'
 
-VERSION = '4.68'
+VERSION = '5.35'
 
 # Google OAuth Context required by gsutil.
 LUCI_AUTH_SCOPES = [
@@ -257,7 +257,7 @@ def run_gsutil(target, args, clean=False):
 
     cmd = [
         'vpython3', '-vpython-spec',
-        os.path.join(THIS_DIR, 'gsutil.vpython3'), '--', gsutil_bin
+        os.path.join(THIS_DIR, 'gsutil.py.vpython3'), '--', gsutil_bin
     ] + args_opt + args
 
     boto_path = get_boto_path()

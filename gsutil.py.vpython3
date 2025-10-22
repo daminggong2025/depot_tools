@@ -11,9 +11,9 @@
 # "gsutil", where a stock system-deployed file in "/etc/" explicitly specifies
 # that the "google_compute_engine" and "boto" Python packages are available.
 
-python_version: "3.8"
+python_version: "3.11"
 
 wheel: <
   name: "infra/python/wheels/crcmod/${vpython_platform}"
-  version: "version:1.7.chromium.3"
+  version: "version:1.7.chromium.4"
 >
