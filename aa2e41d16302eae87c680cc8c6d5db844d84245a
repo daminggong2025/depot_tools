@@ -1,0 +1,372 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a058c969_99920d7b",
+        "filename": "metadata/fields/custom/license.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-10-22T04:29:09Z",
+      "side": 1,
+      "message": "Format please. indentation isn\u0027t corect. You should left indent the continuing line the same way:\n\n\n```\nArgs:\n    value: .....\n        .....\n    atomic_delimiter: .....\n        .....\n```\n\nor\n\n```\nArgs:\n    value:\n        .....\n        .....\n    atomic_delimiter:\n        .....\n        .....\n```\n\n// ditto below",
+      "range": {
+        "startLine": 40,
+        "startChar": 0,
+        "endLine": 44,
+        "endChar": 38
+      },
+      "revId": "aa2e41d16302eae87c680cc8c6d5db844d84245a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fd9707c3_cf73ddea",
+        "filename": "metadata/fields/custom/license.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-10-22T04:29:09Z",
+      "side": 1,
+      "message": "This duplicates process_licenses?\n\nCan you just use one of them? And I think this method should be private, prefix with _.",
+      "range": {
+        "startLine": 61,
+        "startChar": 8,
+        "endLine": 61,
+        "endChar": 24
+      },
+      "revId": "aa2e41d16302eae87c680cc8c6d5db844d84245a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8522a870_546211c1",
+        "filename": "metadata/fields/custom/license.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-10-22T04:29:09Z",
+      "side": 1,
+      "message": "This annotation isnt\u0027 correct.",
+      "range": {
+        "startLine": 61,
+        "startChar": 45,
+        "endLine": 61,
+        "endChar": 69
+      },
+      "revId": "aa2e41d16302eae87c680cc8c6d5db844d84245a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a67ca184_13e464e2",
+        "filename": "metadata/fields/custom/license.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-10-22T04:29:09Z",
+      "side": 1,
+      "message": "nit: all_licenses_allowed()",
+      "range": {
+        "startLine": 77,
+        "startChar": 8,
+        "endLine": 77,
+        "endChar": 32
+      },
+      "revId": "aa2e41d16302eae87c680cc8c6d5db844d84245a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "043b5a0d_bdf1b0e5",
+        "filename": "metadata/fields/custom/license.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-10-22T04:29:09Z",
+      "side": 1,
+      "message": "Replace this with a call to `allowlist_util`. I think you can get rid of process_license (which is unnecessary abstraction).\n\nAt a high level, this function should look like:\n\n```\nlicenses \u003d self.split_license(values)\n\nfor license in licenses:\n    if ...\n        return vr.ValidationError()\n    if not allowlist_util.is_allowed(license):\n        not_allowlisted.append(license)\n```",
+      "range": {
+        "startLine": 108,
+        "startChar": 19,
+        "endLine": 108,
+        "endChar": 26
+      },
+      "revId": "aa2e41d16302eae87c680cc8c6d5db844d84245a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "745af1d8_625e03f7",
+        "filename": "metadata/fields/custom/license.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-10-22T04:29:09Z",
+      "side": 1,
+      "message": "This is appending post-processed values.\n\n```\nlicenses \u003d self.process_licenses(value)\nfor license, allowed in licenses:\n    not_allowlisted.append(license)\n```",
+      "range": {
+        "startLine": 109,
+        "startChar": 16,
+        "endLine": 109,
+        "endChar": 71
+      },
+      "revId": "aa2e41d16302eae87c680cc8c6d5db844d84245a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6828d194_841911e1",
+        "filename": "metadata/fields/custom/license.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-10-22T04:29:09Z",
+      "side": 1,
+      "message": "nit: filter_open_source_project_only_licenses\n\n// the verb is relevant.",
+      "range": {
+        "startLine": 124,
+        "startChar": 8,
+        "endLine": 124,
+        "endChar": 33
+      },
+      "revId": "aa2e41d16302eae87c680cc8c6d5db844d84245a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9b9c7f71_0bebdeab",
+        "filename": "metadata/fields/custom/license.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 131,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-10-22T04:29:09Z",
+      "side": 1,
+      "message": "`list(filter(is_open_source_license, self.split_license(value)))`",
+      "range": {
+        "startLine": 126,
+        "startChar": 8,
+        "endLine": 131,
+        "endChar": 31
+      },
+      "revId": "aa2e41d16302eae87c680cc8c6d5db844d84245a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3ff05f0c_0987e75c",
+        "filename": "metadata/fields/custom/license_allowlist.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-10-22T04:29:09Z",
+      "side": 1,
+      "message": "Why do we permit this prefix?\n\nIMO we should fix READMEs to stop using this (then hard fail for new additions).",
+      "range": {
+        "startLine": 49,
+        "startChar": 13,
+        "endLine": 49,
+        "endChar": 27
+      },
+      "revId": "aa2e41d16302eae87c680cc8c6d5db844d84245a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7029014d_df2d2b49",
+        "filename": "metadata/fields/custom/license_allowlist.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 238,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-10-22T04:29:09Z",
+      "side": 1,
+      "message": "nit: normalize_value\n\nAlso consider adding .lower() here",
+      "range": {
+        "startLine": 238,
+        "startChar": 4,
+        "endLine": 238,
+        "endChar": 17
+      },
+      "revId": "aa2e41d16302eae87c680cc8c6d5db844d84245a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4a4c4b85_de925fa5",
+        "filename": "metadata/fields/custom/license_allowlist.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 244,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-10-22T04:29:09Z",
+      "side": 1,
+      "message": "nit: unexport this.",
+      "range": {
+        "startLine": 244,
+        "startChar": 4,
+        "endLine": 244,
+        "endChar": 19
+      },
+      "revId": "aa2e41d16302eae87c680cc8c6d5db844d84245a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2d1bf87e_118f05a5",
+        "filename": "metadata/fields/custom/license_allowlist.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 244,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-10-22T04:29:09Z",
+      "side": 1,
+      "message": "just list or set\n\n\"allow\" is not relevant here.",
+      "range": {
+        "startLine": 244,
+        "startChar": 32,
+        "endLine": 244,
+        "endChar": 42
+      },
+      "revId": "aa2e41d16302eae87c680cc8c6d5db844d84245a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e644739e_5296e6f6",
+        "filename": "metadata/fields/custom/license_allowlist.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 244,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-10-22T04:29:09Z",
+      "side": 1,
+      "message": "This type annotation isn\u0027t correct. \n\nShould be frozenset[str], or at least Iterable[str].",
+      "range": {
+        "startLine": 244,
+        "startChar": 44,
+        "endLine": 244,
+        "endChar": 48
+      },
+      "revId": "aa2e41d16302eae87c680cc8c6d5db844d84245a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ac803822_187fc7ed",
+        "filename": "metadata/fields/custom/license_allowlist.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 250,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-10-22T04:29:09Z",
+      "side": 1,
+      "message": "nit: `is_a_known_license()`",
+      "range": {
+        "startLine": 250,
+        "startChar": 4,
+        "endLine": 250,
+        "endChar": 14
+      },
+      "revId": "aa2e41d16302eae87c680cc8c6d5db844d84245a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3315a24b_8fbb7721",
+        "filename": "metadata/fields/custom/license_allowlist.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 254,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-10-22T04:29:09Z",
+      "side": 1,
+      "message": "if the method is unused elsewhere, prefix with _ (same for others methods in this file)",
+      "range": {
+        "startLine": 254,
+        "startChar": 4,
+        "endLine": 254,
+        "endChar": 22
+      },
+      "revId": "aa2e41d16302eae87c680cc8c6d5db844d84245a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "51b68dec_2567315e",
+        "filename": "metadata/fields/custom/license_allowlist.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 276,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-10-22T04:29:09Z",
+      "side": 1,
+      "message": "Err. I hate this name (problem for another day).\n\nis_reciprocal_license is probably cleaner.\n\nNote, \"open source license\" generally means https://opensource.org/licenses\n\nWhat you meant here are \"licenses permitted in open source projects, but not closed source project\" (aka. reciprocal / contagious\")\n\n---\n\nHigh level concept Braindump:\n```\nallowed_in_closed_source_project (or allowed_everywhere)\nallowed_in_open_source_project\nallowed_by_permission\n```",
+      "range": {
+        "startLine": 276,
+        "startChar": 34,
+        "endLine": 276,
+        "endChar": 56
+      },
+      "revId": "aa2e41d16302eae87c680cc8c6d5db844d84245a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

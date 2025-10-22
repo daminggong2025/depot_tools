@@ -84,6 +84,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "855668b9_b40ac6d8",
+        "filename": "metadata/fields/custom/license.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-10-22T04:29:09Z",
+      "side": 1,
+      "message": "Are you sure?\n\nI thought the intention is to show \u0027LicenseRef-Blah\u0027 in validation errors?\n\n`LicenseRef-` check should happen in license_allowlist.py",
+      "parentUuid": "f46f1229_754b9a27",
+      "range": {
+        "startLine": 60,
+        "startChar": 16,
+        "endLine": 60,
+        "endChar": 71
+      },
+      "revId": "545390dfe303fbe364b15e146fdf42f6f5e57aa0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "e6ecc2e1_38438c3a",
         "filename": "metadata/fields/custom/license.py",
         "patchSetId": 3
