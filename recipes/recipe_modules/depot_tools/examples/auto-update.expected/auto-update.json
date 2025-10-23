@@ -1,0 +1,27 @@
+[
+  {
+    "cmd": [
+      "ls",
+      "RECIPE_REPO[depot_tools]"
+    ],
+    "name": "root"
+  },
+  {
+    "cmd": [
+      "echo",
+      "$PATH"
+    ],
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "1"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "name": "on_path_with_update"
+  },
+  {
+    "name": "$result"
+  }
+]
