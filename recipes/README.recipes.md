@@ -22,6 +22,7 @@
   * [bot_update:tests/download_topics](#recipes-bot_update_tests_download_topics)
   * [bot_update:tests/ensure_checkout](#recipes-bot_update_tests_ensure_checkout)
   * [bot_update:tests/ensure_checkout_return_custom_result](#recipes-bot_update_tests_ensure_checkout_return_custom_result)
+  * [depot_tools:examples/auto-update](#recipes-depot_tools_examples_auto-update)
   * [depot_tools:examples/full](#recipes-depot_tools_examples_full)
   * [gclient:examples/full](#recipes-gclient_examples_full)
   * [gclient:tests/diff_deps](#recipes-gclient_tests_diff_deps)
@@ -146,9 +147,13 @@ the depot_tools repo.
 
 &emsp; **@property**<br>&mdash; **def [gsutil\_py\_path](/recipes/recipe_modules/depot_tools/api.py#44)(self):**
 
-&emsp; **@contextlib.contextmanager**<br>&mdash; **def [on\_path](/recipes/recipe_modules/depot_tools/api.py#52)(self):**
+&emsp; **@contextlib.contextmanager**<br>&mdash; **def [on\_path](/recipes/recipe_modules/depot_tools/api.py#52)(self, auto_update=False):**
 
 Use this context manager to put depot_tools on $PATH.
+
+Args:
+  auto_update (bool): Whether to allow depot_tools to update itself. By
+    default it does not update, to keep bots stable.
 
 Example:
 
@@ -1115,12 +1120,18 @@ Raises:
 
 
 &emsp; **@recipe_api.ignore_warnings('^depot_tools/BOT_UPDATE_CUSTOM_RESULT_ATTRIBUTES$')**<br>&mdash; **def [RunSteps](/recipes/recipe_modules/bot_update/tests/ensure_checkout_return_custom_result.py#28)(api, expected_checkout_dir, expected_source_root_name, expected_patch_root_name):**
+### *recipes* / [depot\_tools:examples/auto-update](/recipes/recipe_modules/depot_tools/examples/auto-update.py)
+
+[DEPS](/recipes/recipe_modules/depot_tools/examples/auto-update.py#7): [depot\_tools](#recipe_modules-depot_tools), [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/runtime][recipe_engine/recipe_modules/runtime], [recipe\_engine/step][recipe_engine/recipe_modules/step]
+
+
+&mdash; **def [RunSteps](/recipes/recipe_modules/depot_tools/examples/auto-update.py#17)(api):**
 ### *recipes* / [depot\_tools:examples/full](/recipes/recipe_modules/depot_tools/examples/full.py)
 
-[DEPS](/recipes/recipe_modules/depot_tools/examples/full.py#6): [depot\_tools](#recipe_modules-depot_tools), [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/runtime][recipe_engine/recipe_modules/runtime], [recipe\_engine/step][recipe_engine/recipe_modules/step]
+[DEPS](/recipes/recipe_modules/depot_tools/examples/full.py#6): [depot\_tools](#recipe_modules-depot_tools), [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/runtime][recipe_engine/recipe_modules/runtime], [recipe\_engine/step][recipe_engine/recipe_modules/step]
 
 
-&mdash; **def [RunSteps](/recipes/recipe_modules/depot_tools/examples/full.py#15)(api):**
+&mdash; **def [RunSteps](/recipes/recipe_modules/depot_tools/examples/full.py#16)(api):**
 ### *recipes* / [gclient:examples/full](/recipes/recipe_modules/gclient/examples/full.py)
 
 [DEPS](/recipes/recipe_modules/gclient/examples/full.py#6): [gclient](#recipe_modules-gclient), [recipe\_engine/assertions][recipe_engine/recipe_modules/assertions], [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/context][recipe_engine/recipe_modules/context], [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/step][recipe_engine/recipe_modules/step]
