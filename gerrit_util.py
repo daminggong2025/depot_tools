@@ -273,7 +273,8 @@ class _Authenticator(object):
         """
         raise NotImplementedError()
 
-    def ensure_authenticated(self, gerrit_host: str, git_host: str) -> Tuple[bool, str]:
+    def ensure_authenticated(self, *, gerrit_host: str,
+                             git_host: str) -> Tuple[bool, str]:
         """Returns (bypassable, error message).
 
         If the error message is empty, there is no error to report.
@@ -343,13 +344,15 @@ def debug_auth() -> Tuple[str, str]:
     return authn.__class__.__name__, authn.debug_summary_state()
 
 
-def ensure_authenticated(gerrit_host: str, git_host: str) -> Tuple[bool, str]:
+def ensure_authenticated(*, gerrit_host: str,
+                         git_host: str) -> Tuple[bool, str]:
     """Returns (bypassable, error message).
 
     If the error message is empty, there is no error to report. If bypassable is
     true, the caller will allow the user to continue past the error.
     """
-    return _Authenticator.get().ensure_authenticated(gerrit_host, git_host)
+    return _Authenticator.get().ensure_authenticated(gerrit_host=gerrit_host,
+                                                     git_host=git_host)
 
 
 class SSOAuthenticator(_Authenticator):
@@ -702,7 +705,8 @@ class CookiesAuthenticator(_Authenticator):
             else:
                 conn.req_headers['Authorization'] = f'Bearer {cred}'
 
-    def ensure_authenticated(self, gerrit_host: str, git_host: str) -> Tuple[bool, str]:
+    def ensure_authenticated(self, *, gerrit_host: str,
+                             git_host: str) -> Tuple[bool, str]:
         """Returns (bypassable, error message).
 
         If the error message is empty, there is no error to report.
