@@ -50,8 +50,12 @@ class DepotToolsApi(recipe_api.RecipeApi):
     return self.repo_resource('presubmit_support.py')
 
   @contextlib.contextmanager
-  def on_path(self):
+  def on_path(self, auto_update=False):
     """Use this context manager to put depot_tools on $PATH.
+
+    Args:
+      auto_update (bool): Whether to allow depot_tools to update itself. By
+        default it does not update, to keep bots stable.
 
     Example:
 
@@ -62,9 +66,14 @@ class DepotToolsApi(recipe_api.RecipeApi):
     """
     # By default Depot Tools do not auto update on the bots.
     # (crbug/1090603)
-    with self.m.context(
-        **{'env_suffixes': {
+    update = 0
+    if auto_update is True:
+      update = 1
+
+    with self.m.context(**{
+        'env_suffixes': {
             'PATH': [self.root],
-            'DEPOT_TOOLS_UPDATE': '0'
-        }}):
+            'DEPOT_TOOLS_UPDATE': f'{update}'
+        }
+    }):
       yield
