@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "86665c5a_9420d220",
+        "filename": "gerrit_util.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 1023,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-10-23T06:30:01Z",
+      "side": 1,
+      "message": "TODO: Check if any test cases are impacted.",
+      "revId": "6638e0b28d9ea114cf367b5823dc08b975876beb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
