@@ -2403,7 +2403,7 @@ class Changelist(object):
         assert self._gerrit_server and self._gerrit_host and git_host
 
         bypassable, msg = gerrit_util.ensure_authenticated(
-            git_host, self._gerrit_host)
+            gerrit_host=self._gerrit_host, git_host=git_host)
         if not msg:
             return  # OK
         if bypassable:
