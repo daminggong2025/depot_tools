@@ -2440,22 +2440,39 @@ class TestGitCl(unittest.TestCase):
         """Tests git cl checkout <issue>."""
         self.assertEqual(1, git_cl.main(['checkout', '99999']))
 
-    def _test_gerrit_ensure_authenticated_common(self, auth):
-        mock.patch(
+    def _add_patch_with_cleanup(self, *args):
+        """Creates a mock.patch(*args), starts it and register its cleanup."""
+        patcher = mock.patch(*args)
+        patcher.start()
+        self.addCleanup(patcher.stop)
+
+    def _setup_mock_for_cookies_authenticator(self, auth):
+        """Sets up mocks for CookiesAuthenticator, and returns a git_cl.Changelist() for testing."""
+
+        self._add_patch_with_cleanup(
             'gclient_utils.AskForData',
-            lambda prompt: self._mocked_call('ask_for_data', prompt)).start()
-        mock.patch(
-            'git_cl.gerrit_util.CookiesAuthenticator',
-            CookiesAuthenticatorMockFactory(hosts_with_creds=auth)).start()
-        scm.GIT.SetConfig('', 'remote.origin.url',
-                          'https://chromium.googlesource.com/my/repo')
+            lambda prompt: self._mocked_call('ask_for_data', prompt))
+
+        cookies_authenticator_factory = CookiesAuthenticatorMockFactory(
+            hosts_with_creds=auth)
+
+        self._add_patch_with_cleanup('git_cl.gerrit_util.CookiesAuthenticator',
+                                     cookies_authenticator_factory)
+
+        # Mocks _Authenticator.get as well, because it returns a ChainedAuthenticator by default.
+        self._add_patch_with_cleanup('git_cl.gerrit_util._Authenticator.get',
+                                     cookies_authenticator_factory)
+
         cl = git_cl.Changelist()
         cl.branch = 'main'
         cl.branchref = 'refs/heads/main'
         return cl
 
     def test_gerrit_ensure_authenticated_ok(self):
-        cl = self._test_gerrit_ensure_authenticated_common(
+        scm.GIT.SetConfig('', 'remote.origin.url',
+                          'https://chromium.googlesource.com/my/repo')
+
+        cl = self._setup_mock_for_cookies_authenticator(
             auth={
                 'chromium.googlesource.com': ('git-same.example.com', 'secret'),
                 'chromium-review.googlesource.com': ('git-same.example.com',
@@ -2464,25 +2481,25 @@ class TestGitCl(unittest.TestCase):
         self.assertIsNone(cl.EnsureAuthenticated(force=False))
 
     def test_gerrit_ensure_authenticated_skipped(self):
+        scm.GIT.SetConfig('', 'remote.origin.url',
+                          'https://chromium.googlesource.com/my/repo')
         scm.GIT.SetConfig('', 'gerrit.skip-ensure-authenticated', 'true')
-        cl = self._test_gerrit_ensure_authenticated_common(auth={})
+
+        cl = self._setup_mock_for_cookies_authenticator(auth={})
         self.assertIsNone(cl.EnsureAuthenticated(force=False))
 
     def test_gerrit_ensure_authenticated_sso(self):
         scm.GIT.SetConfig('', 'remote.origin.url', 'sso://repo')
 
-        mock.patch(
-            'git_cl.gerrit_util.CookiesAuthenticator',
-            CookiesAuthenticatorMockFactory(hosts_with_creds={})).start()
-
-        cl = git_cl.Changelist()
-        cl.branch = 'main'
-        cl.branchref = 'refs/heads/main'
+        cl = self._setup_mock_for_cookies_authenticator(auth={})
         cl.lookedup_issue = True
         self.assertIsNone(cl.EnsureAuthenticated(force=False))
 
     def test_gerrit_ensure_authenticated_bearer_token(self):
-        cl = self._test_gerrit_ensure_authenticated_common(
+        scm.GIT.SetConfig('', 'remote.origin.url',
+                          'https://chromium.googlesource.com/my/repo')
+
+        cl = self._setup_mock_for_cookies_authenticator(
             auth={
                 'chromium.googlesource.com': ('', 'secret'),
                 'chromium-review.googlesource.com': ('', 'secret'),
@@ -2496,7 +2513,8 @@ class TestGitCl(unittest.TestCase):
             req_body=None,
         )
         gerrit_util.CookiesAuthenticator().authenticate(conn)
-        self.assertTrue('Bearer' in conn.req_headers['Authorization'])
+        self.assertIn('Authorization', conn.req_headers)
+        self.assertIn('Bearer', conn.req_headers['Authorization'])
 
     def test_gerrit_ensure_authenticated_non_https_sso(self):
         scm.GIT.SetConfig('', 'remote.origin.url', 'custom-scheme://repo')
@@ -2508,14 +2526,10 @@ class TestGitCl(unittest.TestCase):
                   'remote': 'custom-scheme://repo'
               }), None),
         ]
-        mock.patch(
-            'git_cl.gerrit_util.CookiesAuthenticator',
-            CookiesAuthenticatorMockFactory(hosts_with_creds={})).start()
         mock.patch('logging.warning',
                    lambda *a: self._mocked_call('logging.warning', *a)).start()
-        cl = git_cl.Changelist()
-        cl.branch = 'main'
-        cl.branchref = 'refs/heads/main'
+
+        cl = self._setup_mock_for_cookies_authenticator(auth={})
         cl.lookedup_issue = True
         self.assertIsNone(cl.EnsureAuthenticated(force=False))
 
@@ -2531,14 +2545,10 @@ class TestGitCl(unittest.TestCase):
                   'url': 'git@somehost.example:foo/bar.git'
               }), None),
         ]
-        mock.patch(
-            'git_cl.gerrit_util.CookiesAuthenticator',
-            CookiesAuthenticatorMockFactory(hosts_with_creds={})).start()
         mock.patch('logging.error',
                    lambda *a: self._mocked_call('logging.error', *a)).start()
-        cl = git_cl.Changelist()
-        cl.branch = 'main'
-        cl.branchref = 'refs/heads/main'
+
+        cl = self._setup_mock_for_cookies_authenticator(auth={})
         cl.lookedup_issue = True
         self.assertIsNone(cl.EnsureAuthenticated(force=False))
 

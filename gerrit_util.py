@@ -966,8 +966,11 @@ class GitCredsAuthenticator(_Authenticator):
                 "Got error trying to cache 'depot-tools.hostHasAccount': %s", e)
         return True
 
+    @functools.cache
     def is_applicable(self, *, gerrit_host: Optional[str] = None):
-        return self.gerrit_account_exists(gerrit_host)
+        if gerrit_host:
+            return self.gerrit_account_exists(gerrit_host)
+        return False
 
 
 class NoAuthenticator(_Authenticator):
@@ -1019,6 +1022,15 @@ class ChainedAuthenticator(_Authenticator):
 
     def debug_summary_state(self) -> str:
         return ''
+
+    def ensure_authenticated(self, *, gerrit_host: str,
+                             git_host: str) -> Tuple[bool, str]:
+        for a in self.authenticators:
+            if a.is_applicable(gerrit_host=gerrit_host):
+                return a.ensure_authenticated(gerrit_host=gerrit_host,
+                                              git_host=git_host)
+        return (False,
+                f'{self!r} has no applicable authenticator for {gerrit_host}')
 
 
 class ReqParams(TypedDict):
