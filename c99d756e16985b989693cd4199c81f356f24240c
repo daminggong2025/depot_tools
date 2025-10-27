@@ -34,6 +34,24 @@
       "parentUuid": "6a469cef_00466118",
       "revId": "c99d756e16985b989693cd4199c81f356f24240c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "04d8400c_93efddb0",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-10-27T07:01:51Z",
+      "side": 1,
+      "message": "er.. OTA without gerrit account\u0027s warning message is coming from metrics.py :shrug:",
+      "parentUuid": "cec2ea67_36fb3d26",
+      "revId": "c99d756e16985b989693cd4199c81f356f24240c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
