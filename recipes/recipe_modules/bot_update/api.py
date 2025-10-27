@@ -215,6 +215,7 @@ class BotUpdateApi(recipe_api.RecipeApi):
                       download_topics=False,
                       recipe_revision_overrides=None,
                       step_tags=None,
+                      clean_ignored=False,
                       **kwargs):
     """
     Args:
@@ -251,6 +252,7 @@ class BotUpdateApi(recipe_api.RecipeApi):
         change's commit message to get this revision override requested by the
         author.
       * step_tags: a dict {tag name: tag value} of tags to add to the step
+      * clean_ignored: If True, also clean ignored files from the checkout.
     """
     assert not (ignore_input_commit and set_output_commit)
     if assert_one_gerrit_change:
@@ -413,6 +415,8 @@ class BotUpdateApi(recipe_api.RecipeApi):
     if self.m.properties.get('bot_update_experiments'):
       cmd.append('--experiments=%s' %
           ','.join(self.m.properties['bot_update_experiments']))
+    if clean_ignored:
+      cmd.append('--clean-ignored')
 
     # Inject Json output for testing.
     first_sln = cfg.solutions[0].name
