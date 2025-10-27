@@ -17,6 +17,7 @@ def RunSteps(api):
   api.bot_update.ensure_checkout()
   api.bot_update.ensure_checkout(no_fetch_tags=True, enforce_fetch=True)
   api.bot_update.ensure_checkout(step_tags={'tag': 'value'})
+  api.bot_update.ensure_checkout(clean_ignored=True)
 
 
 def GenTests(api):
