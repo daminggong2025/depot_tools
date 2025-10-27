@@ -16,6 +16,24 @@
       "message": "ptal",
       "revId": "c99d756e16985b989693cd4199c81f356f24240c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "cec2ea67_36fb3d26",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-10-27T06:26:45Z",
+      "side": 1,
+      "message": "tested with corp, linked account, OTA gmail, OTA without gerrit account.\n\nCode path and error message is correct :)",
+      "parentUuid": "6a469cef_00466118",
+      "revId": "c99d756e16985b989693cd4199c81f356f24240c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
