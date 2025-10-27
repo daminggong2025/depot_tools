@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "664a4f74_204eac05",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-10-27T05:55:20Z",
+      "side": 1,
+      "message": "Hey Scott, ptal",
+      "revId": "2a9ef279000bc8f9cc9bbd1189b5cbf5ca45e6e0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
