@@ -1,6 +1,29 @@
 {
   "comments": [
     {
+      "unresolved": true,
+      "key": {
+        "uuid": "14b9ec76_0f9b2026",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2025-10-27T18:31:31Z",
+      "side": 1,
+      "message": "Please fix this WARNING reported by Spellchecker: \"preperation\" is a possible misspelling of \"preparation\".\n\nTo bypass Spellchecke...\n\n\"preperation\" is a possible misspelling of \"preparation\".\n\nTo bypass Spellchecker, add a footer with DISABLE_SPELLCHECKER",
+      "range": {
+        "startLine": 28,
+        "startChar": 10,
+        "endLine": 28,
+        "endChar": 21
+      },
+      "revId": "2a9ef279000bc8f9cc9bbd1189b5cbf5ca45e6e0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": false,
       "key": {
         "uuid": "664a4f74_204eac05",
