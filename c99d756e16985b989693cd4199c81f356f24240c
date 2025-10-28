@@ -69,6 +69,24 @@
       "message": "Scott: wdyt about @cache?\n\nI can\u0027t think of a reason of this changing for a given gerrit_host) during the execution of depot_tools command.",
       "revId": "c99d756e16985b989693cd4199c81f356f24240c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "65e8933b_63af03ce",
+        "filename": "gerrit_util.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 969,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2025-10-28T16:29:26Z",
+      "side": 1,
+      "message": "agreed; lgtm",
+      "parentUuid": "667335db_d21f58de",
+      "revId": "c99d756e16985b989693cd4199c81f356f24240c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
