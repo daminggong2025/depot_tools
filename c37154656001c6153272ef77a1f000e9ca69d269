@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b4a22719_b72fe1e2",
+        "filename": "gerrit_util.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 969,
+      "author": {
+        "id": 3355336
+      },
+      "writtenOn": "2025-10-28T22:18:05Z",
+      "side": 1,
+      "message": "nit: in the future, this kind of thing should be separate change.  Simplifies rollbacks and bisect",
+      "revId": "c37154656001c6153272ef77a1f000e9ca69d269",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3c9c1069_30613a0c",
+        "filename": "gerrit_util.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 1017,
+      "author": {
+        "id": 3355336
+      },
+      "writtenOn": "2025-10-28T22:18:05Z",
+      "side": 1,
+      "message": "nit: can probably factor out/deduplicate the \"for ... is applicable\" logic, probably as a generator/iterator\n\n```\nfor self.applicable_authenticators(...):\n   ...\n```",
+      "revId": "c37154656001c6153272ef77a1f000e9ca69d269",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
