@@ -16,6 +16,74 @@
       "message": "Adding rbyers@ and chromium-third-party@ to reviewers according to https://chromium.googlesource.com/chromium/tools/depot_tools/+/HEAD/metadata/LICENSE_OWNERS",
       "revId": "20c357b3fb83f4d0875496a6b01982a858f81e7f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7fa62c58_140325cd",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000112
+      },
+      "writtenOn": "2025-10-28T18:01:15Z",
+      "side": 1,
+      "message": "Wow that\u0027s a lot of new licenses for one dependency update! I started cross-checking the license details and found a number of issues. Please double-check the classification of all of them and consult with opensource-licensing if necessary for use of all restricted licenses, then we can revisit the CL.",
+      "revId": "20c357b3fb83f4d0875496a6b01982a858f81e7f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "380de7f3_ae94712c",
+        "filename": "metadata/fields/custom/license_allowlist.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 151,
+      "author": {
+        "id": 1000112
+      },
+      "writtenOn": "2025-10-28T18:01:15Z",
+      "side": 1,
+      "message": "It looks like this is in the SPDX license list. Also the google license classifier calls this permissive not \u0027notice\u0027. Is there some disconnect in the tool you\u0027re running vs. https://opensource.corp.google.com/license/analyze?",
+      "revId": "20c357b3fb83f4d0875496a6b01982a858f81e7f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3e19c882_7a176c25",
+        "filename": "metadata/fields/custom/license_allowlist.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 170,
+      "author": {
+        "id": 1000112
+      },
+      "writtenOn": "2025-10-28T18:01:15Z",
+      "side": 1,
+      "message": "This is in the SPDX license list and so should be in the above list I believe. Perhaps it wasn\u0027t previously? Please investigate whether all the existing references to Libpng-2.0 should change to refer to this SPDX identifier (there\u0027s just a few it looks like).",
+      "revId": "20c357b3fb83f4d0875496a6b01982a858f81e7f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9c3c6623_8f6c1164",
+        "filename": "metadata/fields/custom/license_allowlist.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 207,
+      "author": {
+        "id": 1000112
+      },
+      "writtenOn": "2025-10-28T18:01:15Z",
+      "side": 1,
+      "message": "Adding new restricted licenses should be very rare AFAIK. Have you already done a license review and gotten permission to have Chromium depend on these two new restricted licenses? See go/thirdpartylicenses#restricted",
+      "revId": "20c357b3fb83f4d0875496a6b01982a858f81e7f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
