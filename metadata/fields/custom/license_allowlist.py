@@ -64,6 +64,7 @@ ALLOWED_SPDX_LICENSES = frozenset([
     "GPL-2.0-with-classpath-exception",
     "GPL-3.0-with-autoconf-exception",
     "MIT-0",
+    "MIT-Khronos-old",
     # go/keep-sorted end
     # notice.
     # go/keep-sorted start case=no
@@ -76,8 +77,10 @@ ALLOWED_SPDX_LICENSES = frozenset([
     "BSD-2-Clause-FreeBSD",
     "BSD-3-Clause",
     "BSD-3-Clause-Attribution",
+    "BSD-3-Clause-Open-MPI",
     "BSD-4-Clause",
     "BSD-4-Clause-UC",
+    "BSD-4.3RENO",
     "BSD-4.3TAHOE",
     "BSD-Source-Code",
     "BSL-1.0",
@@ -96,6 +99,7 @@ ALLOWED_SPDX_LICENSES = frozenset([
     "JSON",
     "Libpng",
     "libtiff",
+    "Minpack",
     "MIT",
     "MIT-Modern-Variant",
     "MS-PL",
@@ -106,10 +110,12 @@ ALLOWED_SPDX_LICENSES = frozenset([
     "Python-2.0",
     "SGI-B-2.0",
     "Spencer-86",
+    "Spencer-94",
     "SunPro",
     "Unicode-3.0",
     "Unicode-DFS-2015",
     "Unicode-DFS-2016",
+    "Unicode-TOU",
     "X11",
     "Zlib",
     # go/keep-sorted end
@@ -142,6 +148,7 @@ EXTENDED_LICENSE_CLASSIFIERS = frozenset([
     "Apache-with-Runtime-Exception",
     "base64",
     "base64-cpp",
+    "bcrypt-Solar-Designer",
     "Bitstream",
     "BLAS",
     "BSD-2-Clause-Flex",
@@ -160,6 +167,7 @@ EXTENDED_LICENSE_CLASSIFIERS = frozenset([
     "JsonCPP",
     "Khronos",
     "Libpng-2.0",
+    "libpng-2.0",
     "OpenGLUT",
     "pffft",
     "PngSuite",
@@ -202,6 +210,7 @@ WITH_PERMISSION_ONLY = frozenset([
     "CC-BY-SA-3.0",
     "GPL-2.0",
     "GPL-3.0",
+    "GPL-3.0-with-GCC-exception",
     "LGPL-2.0",
     "LGPL-2.1",
     "LGPL-3.0",
@@ -210,6 +219,7 @@ WITH_PERMISSION_ONLY = frozenset([
     # by_exception_only.
     # go/keep-sorted start case=no
     "Commercial",
+    "Microsoft-Enterprise-Windows-Driver-Kit",
     "MicrosoftEnterpriseWindowsDriverKit",
     "Opus-Patent-BSD-3-Clause",
     "Play-Core-SDK-TOS",
