@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0b95f0f4_6ff71c4d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1381059
+      },
+      "writtenOn": "2025-10-28T16:06:10Z",
+      "side": 1,
+      "message": "Adding rbyers@ and chromium-third-party@ to reviewers according to https://chromium.googlesource.com/chromium/tools/depot_tools/+/HEAD/metadata/LICENSE_OWNERS",
+      "revId": "20c357b3fb83f4d0875496a6b01982a858f81e7f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
