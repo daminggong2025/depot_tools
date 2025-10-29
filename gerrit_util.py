@@ -21,6 +21,7 @@ import re
 import shutil
 import socket
 import subprocess
+import logging
 import sys
 import tempfile
 import threading
@@ -1033,8 +1034,11 @@ class ChainedAuthenticator(_Authenticator):
     def ensure_authenticated(self, *, gerrit_host: str,
                              git_host: str) -> Tuple[bool, str]:
         for a in self.applicable_authenticators(gerrit_host=gerrit_host):
-            return a.ensure_authenticated(gerrit_host=gerrit_host,
-                                          git_host=git_host)
+            result = a.ensure_authenticated(gerrit_host=gerrit_host,
+                                            git_host=git_host)
+            logging.error('%s.ensure_authenticated(%s) = %s',
+                          type(a).__name__, gerrit_host, result)
+            return result
         return (False,
                 f'{self!r} has no applicable authenticator for {gerrit_host}')
 
