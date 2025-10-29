@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f4d13e49_515eb957",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-10-29T04:07:48Z",
+      "side": 1,
+      "message": "ptal (as suggested by ayatane in https://crrev.com/c/7065052",
+      "revId": "4ea0040db2cd49003b915b9c0b67ba401482300d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
