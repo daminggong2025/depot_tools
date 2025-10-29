@@ -2202,7 +2202,7 @@ class Changelist(object):
         # Fast best-effort checks to abort before running potentially expensive
         # hooks if uploading is likely to fail anyway. Passing these checks does
         # not guarantee that uploading will not fail.
-        self.EnsureAuthenticated(force=options.force)
+        self.EnsureAuthenticated(force=options.force, requires_reauth=True)
         self.EnsureCanUploadPatchset(force=options.force)
 
         print(f'Processing {_GetCommitCountSummary(*git_diff_args)}...')
@@ -2372,7 +2372,7 @@ class Changelist(object):
         # Fall back on still unique, but less efficient change number.
         return str(self.GetIssue())
 
-    def EnsureAuthenticated(self, force: bool) -> None:
+    def EnsureAuthenticated(self, force: bool, requires_reauth=False) -> None:
         """Best effort check that user is authenticated with Gerrit server."""
         if settings.GetGerritSkipEnsureAuthenticated():
             # For projects with unusual authentication schemes.
@@ -2402,8 +2402,17 @@ class Changelist(object):
         git_host = self._GetGitHost()
         assert self._gerrit_server and self._gerrit_host and git_host
 
+        print(git_host)
+        print(self._gerrit_host)
+
+        reauth_context = auth.ReAuthContext(
+            host=self._gerrit_host,
+            project=self.GetGerritProject()) if requires_reauth else None
+
         bypassable, msg = gerrit_util.ensure_authenticated(
-            gerrit_host=self._gerrit_host, git_host=git_host)
+            gerrit_host=self._gerrit_host,
+            git_host=git_host,
+            reauth_context=reauth_context)
         if not msg:
             return  # OK
         if bypassable:
@@ -4114,7 +4123,7 @@ def get_cl_statuses(changes: List[Changelist],
     # First, sort out authentication issues.
     logging.debug('ensuring credentials exist')
     for cl in changes:
-        cl.EnsureAuthenticated(force=False)
+        cl.EnsureAuthenticated(force=False, requires_reauth=False)
 
     def fetch(cl):
         try:
@@ -5856,7 +5865,8 @@ def _UploadAllPrecheck(
 
     # We assume all cls in the stack have the same auth requirements and only
     # check this once.
-    cls[0].EnsureAuthenticated(force=options.force)
+    print("******** BLAB: Checking for authentication..")
+    cls[0].EnsureAuthenticated(force=options.force, requires_reauth=True)
 
     cherry_pick = False
     if len(cls) > 1:
