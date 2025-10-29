@@ -16,6 +16,63 @@
       "message": "// FYI: This code tested to be working correctly for:\n\n- Non committer\n- Committer\n- Linked account committer\n- Corp SSO\n\nI\u0027ll split CL, think of tests and prepare for review / landing",
       "revId": "a4155fcfa8b05375efe911599ce76174ddca6557",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "43309a86_60d03086",
+        "filename": "gerrit_util.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 743,
+      "author": {
+        "id": 3355336
+      },
+      "writtenOn": "2025-10-29T21:35:32Z",
+      "side": 1,
+      "message": "This might cause issues with bots using cookies, they\u0027re marked as trusted robots, but they might still be included in committers groups (and thus reauth eligible),\n\nWe can just continue I think; any humans still on gitcookies will file bugs about reauth\n\nMaybe log something",
+      "revId": "a4155fcfa8b05375efe911599ce76174ddca6557",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f04111d6_e7c80454",
+        "filename": "git_cl.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 2405,
+      "author": {
+        "id": 3355336
+      },
+      "writtenOn": "2025-10-29T21:35:32Z",
+      "side": 1,
+      "message": "suggest\n\n```\nreauth_context \u003d None\nif ...:\n   reauth_context \u003d ...\n```\n\nPython ternary syntax makes this easy to overlook",
+      "revId": "a4155fcfa8b05375efe911599ce76174ddca6557",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "203b4875_26f830ca",
+        "filename": "git_cl.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 4123,
+      "author": {
+        "id": 3355336
+      },
+      "writtenOn": "2025-10-29T21:35:32Z",
+      "side": 1,
+      "message": "s/requires_reauth/require_reauth/\n\nremove s\n\nAlthough I feel like this should be inverted: `skip_reauth_check\u003dFalse`",
+      "range": {
+        "startLine": 4123,
+        "startChar": 44,
+        "endLine": 4123,
+        "endChar": 59
+      },
+      "revId": "a4155fcfa8b05375efe911599ce76174ddca6557",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
