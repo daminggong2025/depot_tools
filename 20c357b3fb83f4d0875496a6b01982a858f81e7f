@@ -71,6 +71,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "b983f762_d228facc",
+        "filename": "metadata/fields/custom/license_allowlist.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 170,
+      "author": {
+        "id": 1544922
+      },
+      "writtenOn": "2025-10-29T08:26:25Z",
+      "side": 1,
+      "message": "I agree, this should be moved to `ALLOWED_SPDX_LICENSES` as the tool says it\u0027s `notice` and I can see it on the spdx.org/licenses list.\n\nIt should currently be covered by `EXTENDED_LICENSE_CLASSIFIERS` as case should be insensitive, I believe. I would just remove this addition from this change for now.",
+      "parentUuid": "3e19c882_7a176c25",
+      "revId": "20c357b3fb83f4d0875496a6b01982a858f81e7f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "9c3c6623_8f6c1164",
         "filename": "metadata/fields/custom/license_allowlist.py",
         "patchSetId": 4
@@ -82,6 +100,24 @@
       "writtenOn": "2025-10-28T18:01:15Z",
       "side": 1,
       "message": "Adding new restricted licenses should be very rare AFAIK. Have you already done a license review and gotten permission to have Chromium depend on these two new restricted licenses? See go/thirdpartylicenses#restricted",
+      "revId": "20c357b3fb83f4d0875496a6b01982a858f81e7f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1bc49947_8a2dd8fa",
+        "filename": "metadata/fields/custom/license_allowlist.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 207,
+      "author": {
+        "id": 1544922
+      },
+      "writtenOn": "2025-10-29T08:26:25Z",
+      "side": 1,
+      "message": "+1. I think the Microsoft one might just be a renaming, but `GPL-3.0-with-GCC-exception` is `restricted` and new to this list. Both should be reviewed.\n\nLicenses which are restricted are handled on a case-by-case basis. Please reach out to opensource-licensing@google.com and be sure to include the licenses and relevant details in the email. It can be helpful to identify existing dependencies that have already been approved.",
+      "parentUuid": "9c3c6623_8f6c1164",
       "revId": "20c357b3fb83f4d0875496a6b01982a858f81e7f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
