@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1a179c37_15f34909",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-10-30T06:30:43Z",
+      "side": 1,
+      "message": "Hey Andy, this is the temporary CL jsca@ mentioned for voting Code-Review labels to unblock https://crbug.com/455899536\n\nPTAL",
+      "revId": "e1d6f8a5cddee441980f7c791f7dfb070debfe96",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
