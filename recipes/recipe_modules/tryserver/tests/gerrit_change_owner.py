@@ -16,7 +16,7 @@ DEPS = [
 
 def RunSteps(api):
   api.step(name='print owner',
-           cmd=['echo', str(api.tryserver.gerrit_change_owner)])
+           cmd=['echo', str(dict(api.tryserver.gerrit_change_owner))])
 
 
 def GenTests(api):

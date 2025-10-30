@@ -36,6 +36,8 @@ def RunSteps(api):
     assert (api.tryserver.gerrit_change_repo_project ==
             'chromium/src')
     assert api.tryserver.gerrit_change_fetch_ref == 'refs/changes/27/91827/1'
+    assert api.tryserver.gerrit_change_number == 91827
+    assert api.tryserver.gerrit_patchset_number == 1
     expected_target_ref = api.properties.get(
         'expected_target_ref', 'refs/heads/main')
     assert api.tryserver.gerrit_change_target_ref == expected_target_ref
