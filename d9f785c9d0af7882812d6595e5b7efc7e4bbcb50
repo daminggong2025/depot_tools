@@ -22,6 +22,30 @@
       },
       "revId": "d9f785c9d0af7882812d6595e5b7efc7e4bbcb50",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "32556571_4168e1c9",
+        "filename": "git_cl.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 6849,
+      "author": {
+        "id": 1126674
+      },
+      "writtenOn": "2025-10-30T18:12:30Z",
+      "side": 1,
+      "message": "Using an everything-scoped codesearch for:\n`GOOGLE_JAVA_FORMAT_PATH` and `f:google-java-format/google-java-format$`, I don\u0027t see anything other than a chromium derivative.\n\ngoogle-java-format does not come with a wrapper script. The wrapper script that depot_tools looks for here is the one that I wrote in chromium. Projects can use their own custom wrapper scripts to set options.\n\nThe chromium wrapper script does allow options via `GOOGLE_JAVA_FORMAT_ARGS`: https://source.chromium.org/chromium/chromium/src/+/main:third_party/google-java-format/google-java-format?ss\u003dchromium\u0026q\u003dgoogle-java-format\n\nFor reference, here\u0027s what works in R8\u0027s repo:\nhttps://r8-review.git.corp.google.com/c/r8/+/112160",
+      "parentUuid": "85861085_5447e5ff",
+      "range": {
+        "startLine": 6846,
+        "startChar": 4,
+        "endLine": 6849,
+        "endChar": 0
+      },
+      "revId": "d9f785c9d0af7882812d6595e5b7efc7e4bbcb50",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
