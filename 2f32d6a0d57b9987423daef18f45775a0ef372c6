@@ -34,6 +34,24 @@
       "parentUuid": "89f5baf2_62b246fa",
       "revId": "2f32d6a0d57b9987423daef18f45775a0ef372c6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5563c311_97c47a63",
+        "filename": "autoninja.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 162,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-10-30T01:02:47Z",
+      "side": 0,
+      "message": "https://crrev.com/c/7099418 accidentally switches to use Reclient without this depot_tools CL. So, I will submit this CL first.",
+      "parentUuid": "32c058ea_11d477b1",
+      "revId": "2f32d6a0d57b9987423daef18f45775a0ef372c6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
