@@ -2,11 +2,17 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import contextlib
-import hashlib
+from __future__ import annotations
 
+import collections.abc
+import dataclasses
+import functools
+import typing
+
+from recipe_engine import engine_types
 from recipe_engine import recipe_api
 
+from PB.go.chromium.org.luci.buildbucket.proto import common as common_pb2
 
 class Constants:
   def __init__(self):
@@ -24,20 +30,176 @@ class Constants:
 constants = Constants()
 
 
+@dataclasses.dataclass(frozen=True)
+class GerritChange:
+  """Type providing access to details about a Gerrit change."""
+
+  _api: TryserverApi
+  _proto: common_pb2.GerritChange
+
+  @property
+  def host(self) -> str:
+    """The gerrit host the change is from.
+
+    e.g. "chromium-review.googlesource.com"
+    """
+    return self._proto.host
+
+  @property
+  def project(self) -> str:
+    """The project/repo the change is from.
+
+    e.g. "chromium/src"
+    """
+    return self._proto.project
+
+  @property
+  def change(self) -> int:
+    """The gerrit change number."""
+    return self._proto.change
+
+  @property
+  def patchset(self) -> int:
+    """The gerrit patchset number."""
+    return self._proto.patchset
+
+  @functools.cached_property
+  def gitiles_host(self) -> str:
+    """The gitiles host that hosts the change's code.
+
+    e.g. "chromium.googlesource.com"
+    """
+    base_name = self._proto.host.removesuffix('-review.googlesource.com')
+    return f'{base_name}.googlesource.com'
+
+  @functools.cached_property
+  def repo_url(self) -> str:
+    """The gitiles URL for the repo
+
+    e.g. "https://chromium.googlesource.com/chromium/src"
+    """
+    return f'https://{self.gitiles_host}/{self.project}'
+
+  @functools.cached_property
+  def review_url(self) -> str:
+    """The review URL for the active patchset.
+
+    e.g. "https://chromium-review.googlesource.com/c/12345/1"
+    """
+    # Gerrit redirects to insert the project into the URL.
+    proto = self._proto
+    return f'https://{proto.host}/c/{proto.change}/{proto.patchset}'
+
+  @dataclasses.dataclass(frozen=True, kw_only=True)
+  class _ChangeInfo:
+    target_ref: str
+    fetch_ref: str
+    owner: collections.abc.Mapping[str, typing.Any]
+
+  @functools.cached_property
+  def _change_info(self) -> _ChangeInfo:
+    cl = self._proto
+    api = self._api
+
+    td = api._test_data if api._test_data.enabled else {}
+    mock_res = [{
+      'branch': td.get('gerrit_change_target_ref', 'main'),
+      'revisions': {
+        '184ebe53805e102605d11f6b143486d15c23a09c': {
+          '_number': str(cl.patchset),
+          'ref': 'refs/changes/%02d/%d/%d' % (
+              cl.change % 100, cl.change, cl.patchset),
+        },
+      },
+      'owner': {
+          'name': 'John Doe',
+      },
+    }]
+    res = api.m.gerrit.get_changes(
+        host='https://' + cl.host,
+        query_params=[('change', cl.change)],
+        # This list must remain static/hardcoded.
+        # If you need extra info, either change it here (hardcoded) or
+        # fetch separately.
+        o_params=['ALL_REVISIONS', 'DOWNLOAD_COMMANDS'],
+        limit=1,
+        name='fetch current CL info',
+        timeout=480,
+        step_test_data=lambda: api.m.json.test_api.output(mock_res))[0]
+
+    target_ref = res['branch']
+    if not target_ref.startswith('refs/'):
+      target_ref = f'refs/heads/{target_ref}'
+
+    for rev in res['revisions'].values():
+      if int(rev['_number']) == cl.patchset:
+        fetch_ref = rev['ref']
+        break
+    else:
+      assert False  # pragma: no cover
+
+    owner = engine_types.freeze(res['owner'])
+
+    return self._ChangeInfo(
+        target_ref=target_ref,
+        fetch_ref=fetch_ref,
+        owner=owner,
+    )
+
+  @property
+  def owner(self) -> collections.abc.Mapping[str, typing.Any]:
+    """The owner of the change.
+
+    Has the format described in
+    https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#account-info
+    """
+    return self._change_info.owner
+
+  @property
+  def target_ref(self) -> str:
+    """The destination ref of the change.
+
+    e.g. "refs/heads/main"
+    """
+    return self._change_info.target_ref
+
+  @property
+  def fetch_ref(self) -> str:
+    """The ref that can be used to fetch the change's code.
+
+    e.g. "refs/changes/27/91827/1"
+    """
+    return self._change_info.fetch_ref
+
+  @functools.cached_property
+  def commit_message(self) -> str:
+    """The commit message of the change."""
+    return self._api.m.gerrit.get_change_description(
+        host=f'https://{self._proto.host}',
+        change=self._proto.change,
+        patchset=self._proto.patchset,
+        timeout=480)
+
+  @functools.cached_property
+  def footers(
+      self) -> collections.abc.Mapping[str, collections.abc.Sequence[str]]:
+    """The footers of the change.
+
+    Footers are machine readable tags embedded in commit messages. See
+    git-footers documentation for more information.
+    """
+    return engine_types.freeze(self._api._get_footer_step(self.commit_message))
+
+  def get_footer(self, tag: str) -> collections.abc.Sequence[str]:
+    """Get the values of a specific footer."""
+    return self.footers.get(tag, ())
+
+
 class TryserverApi(recipe_api.RecipeApi):
+
   def __init__(self, *args, **kwargs):
     super(TryserverApi, self).__init__(*args, **kwargs)
-    self._gerrit_change = None  # self.m.buildbucket.common_pb2.GerritChange
-    self._gerrit_change_repo_url = None
-    self._gerrit_change_repo_host = None
-    self._gerrit_change_repo_project = None
-
-    self._gerrit_info_initialized = False
-    self._gerrit_change_target_ref = None
-    self._gerrit_change_fetch_ref = None
-    self._gerrit_change_owner = None
-    self._change_footers = None
-    self._gerrit_commit_message = None
+    self._gerrit_change: GerritChange | None = None
 
   def initialize(self):
     changes = self.m.buildbucket.build.input.gerrit_changes
@@ -54,148 +216,97 @@ class TryserverApi(recipe_api.RecipeApi):
     return constants
 
   @property
-  def gerrit_change(self):
-    """Returns current gerrit change, if there is exactly one.
+  def gerrit_change(self) -> GerritChange | None:
+    """Get the current gerrit change.
 
-    Returns a self.m.buildbucket.common_pb2.GerritChange or None.
+    If the currently executing build has exactly 1 gerrit change, then
+    the module will be initialized with that as the current change.
+    Otherwise, it will be initialized with None. Calling the set_change
+    method will change the current gerrit change.
     """
     return self._gerrit_change
 
   @property
-  def gerrit_change_repo_url(self):
+  def gerrit_change_repo_url(self) -> str | None:
     """Returns canonical URL of the gitiles repo of the current Gerrit CL.
 
     Populated iff gerrit_change is populated.
     """
-    return self._gerrit_change_repo_url
+    self.m.warning.issue('TRYSERVER_GERRIT_CHANGE_PROPERTIES')
+    return self._gerrit_change.repo_url if self._gerrit_change else None
 
   @property
-  def gerrit_change_repo_host(self):
+  def gerrit_change_repo_host(self) -> str | None:
     """Returns the host of the gitiles repo of the current Gerrit CL.
 
     Populated iff gerrit_change is populated.
     """
-    return self._gerrit_change_repo_host
+    self.m.warning.issue('TRYSERVER_GERRIT_CHANGE_PROPERTIES')
+    return self._gerrit_change.gitiles_host if self._gerrit_change else None
 
   @property
-  def gerrit_change_repo_project(self):
+  def gerrit_change_repo_project(self) -> str | None:
     """Returns the project of the gitiles repo of the current Gerrit CL.
 
     Populated iff gerrit_change is populated.
     """
-    return self._gerrit_change_repo_project
+    self.m.warning.issue('TRYSERVER_GERRIT_CHANGE_PROPERTIES')
+    return self._gerrit_change.project if self._gerrit_change else None
 
   @property
-  def gerrit_change_owner(self):
+  def gerrit_change_owner(
+      self) -> collections.abc.Mapping[str, typing.Any] | None:
     """Returns owner of the current Gerrit CL.
 
     Populated iff gerrit_change is populated.
     Is a dictionary with keys like "name".
     """
-    self._ensure_gerrit_change_info()
-    return self._gerrit_change_owner
+    self.m.warning.issue('TRYSERVER_GERRIT_CHANGE_PROPERTIES')
+    return self._gerrit_change.owner if self._gerrit_change else None
 
   @property
-  def gerrit_change_review_url(self):
+  def gerrit_change_review_url(self) -> str | None:
     """Returns the review URL for the active patchset."""
-    # Gerrit redirects to insert the project into the URL.
-    gerrit_change = self._gerrit_change
-    return 'https://%s/c/%s/%s' % (
-          gerrit_change.host, gerrit_change.change, gerrit_change.patchset)
-
-  def _ensure_gerrit_change_info(self):
-    """Initializes extra info about gerrit_change, fetched from Gerrit server.
-
-    Initializes _gerrit_change_target_ref and _gerrit_change_fetch_ref.
-
-    May emit a step when called for the first time.
-    """
-    cl = self.gerrit_change
-    if not cl:  # pragma: no cover
-      return
-
-    if self._gerrit_info_initialized:
-      return
-
-    td = self._test_data if self._test_data.enabled else {}
-    mock_res = [{
-      'branch': td.get('gerrit_change_target_ref', 'main'),
-      'revisions': {
-        '184ebe53805e102605d11f6b143486d15c23a09c': {
-          '_number': str(cl.patchset),
-          'ref': 'refs/changes/%02d/%d/%d' % (
-              cl.change % 100, cl.change, cl.patchset),
-        },
-      },
-      'owner': {
-          'name': 'John Doe',
-      },
-    }]
-    res = self.m.gerrit.get_changes(
-        host='https://' + cl.host,
-        query_params=[('change', cl.change)],
-        # This list must remain static/hardcoded.
-        # If you need extra info, either change it here (hardcoded) or
-        # fetch separately.
-        o_params=['ALL_REVISIONS', 'DOWNLOAD_COMMANDS'],
-        limit=1,
-        name='fetch current CL info',
-        timeout=480,
-        step_test_data=lambda: self.m.json.test_api.output(mock_res))[0]
-
-    self._gerrit_change_target_ref = res['branch']
-    if not self._gerrit_change_target_ref.startswith('refs/'):
-      self._gerrit_change_target_ref = (
-          'refs/heads/' + self._gerrit_change_target_ref)
-
-    for rev in res['revisions'].values():
-      if int(rev['_number']) == self.gerrit_change.patchset:
-        self._gerrit_change_fetch_ref = rev['ref']
-        break
-    self._gerrit_change_owner = dict(res['owner'])
-    self._gerrit_info_initialized = True
+    self.m.warning.issue('TRYSERVER_GERRIT_CHANGE_PROPERTIES')
+    return self._gerrit_change.review_url if self._gerrit_change else None
 
   @property
-  def gerrit_change_fetch_ref(self):
+  def gerrit_change_fetch_ref(self) -> str | None:
     """Returns gerrit patch ref, e.g. "refs/heads/45/12345/6, or None.
 
     Populated iff gerrit_change is populated.
     """
-    self._ensure_gerrit_change_info()
-    return self._gerrit_change_fetch_ref
+    self.m.warning.issue('TRYSERVER_GERRIT_CHANGE_PROPERTIES')
+    return self._gerrit_change.fetch_ref if self._gerrit_change else None
 
   @property
-  def gerrit_change_target_ref(self):
+  def gerrit_change_target_ref(self) -> str | None:
     """Returns gerrit change destination ref, e.g. "refs/heads/main".
 
     Populated iff gerrit_change is populated.
     """
-    self._ensure_gerrit_change_info()
-    return self._gerrit_change_target_ref
+    self.m.warning.issue('TRYSERVER_GERRIT_CHANGE_PROPERTIES')
+    return self._gerrit_change.target_ref if self._gerrit_change else None
 
   @property
-  def gerrit_change_number(self):
+  def gerrit_change_number(self) -> int | None:
     """Returns gerrit change patchset, e.g. 12345 for a patch ref of
     "refs/heads/45/12345/6".
 
     Populated iff gerrit_change is populated. Returns None if not populated.
     """
-    self._ensure_gerrit_change_info()
-    if not self._gerrit_change:  #pragma: nocover
-      return None
-    return int(self._gerrit_change.change)
+    self.m.warning.issue('TRYSERVER_GERRIT_CHANGE_PROPERTIES')
+    return self._gerrit_change.change if self._gerrit_change else None
 
   @property
-  def gerrit_patchset_number(self):
+  def gerrit_patchset_number(self) -> int | None:
     """Returns gerrit change patchset, e.g. 6 for a patch ref of
     "refs/heads/45/12345/6".
 
     Populated iff gerrit_change is populated Returns None if not populated..
     """
-    self._ensure_gerrit_change_info()
-    if not self._gerrit_change:  #pragma: nocover
-      return None
-    return int(self._gerrit_change.patchset)
+    self.m.warning.issue('TRYSERVER_GERRIT_CHANGE_PROPERTIES')
+    return self._gerrit_change.patchset if self._gerrit_change else None
 
   @property
   def is_tryserver(self):
@@ -333,39 +444,28 @@ class TryserverApi(recipe_api.RecipeApi):
     """
     self._set_failure_type('TEST_EXPIRED')
 
-  def get_footers(self, patch_text=None):
+  def get_footers(
+      self,
+      patch_text: str | None = None,
+  ) -> collections.abc.Mapping[str, collections.abc.Sequence[str]]:
     """Retrieves footers from the patch description.
 
     footers are machine readable tags embedded in commit messages. See
     git-footers documentation for more information.
     """
-    return self._get_footers(patch_text)
-
-  def _ensure_gerrit_commit_message(self):
-    """Fetch full commit message for Gerrit change."""
-    if self._gerrit_commit_message:
-      return
-
-    self._ensure_gerrit_change_info()
-    self._gerrit_commit_message = self.m.gerrit.get_change_description(
-        'https://%s' % self.gerrit_change.host,
-        self.gerrit_change_number,
-        self.gerrit_patchset_number,
-        timeout=480)
-
-  def _get_footers(self, patch_text=None):
     if patch_text is not None:
       return self._get_footer_step(patch_text)
-    if self._change_footers is not None:
-      return self._change_footers
-    if self.gerrit_change:
-      self._ensure_gerrit_commit_message()
-      self._change_footers = self._get_footer_step(self._gerrit_commit_message)
-      return self._change_footers
-    raise Exception(
-        'No patch text or associated changelist, cannot get footers')  #pragma: nocover
+    if self._gerrit_change is None:
+      raise Exception(
+          'No patch text or associated changelist, cannot get footers'
+      )  # pragma: nocover
+    self.m.warning.issue('TRYSERVER_GERRIT_CHANGE_PROPERTIES')
+    return self._gerrit_change.footers
 
-  def _get_footer_step(self, patch_text):
+  def _get_footer_step(
+      self,
+      patch_text: str,
+  ) -> collections.abc.Mapping[str, collections.abc.Sequence[str]]:
     result = self.m.step(
         'parse description',
         [
@@ -379,31 +479,29 @@ class TryserverApi(recipe_api.RecipeApi):
     )
     return result.json.output
 
-  def get_footer(self, tag, patch_text=None):
+  def get_footer(
+      self,
+      tag: str,
+      patch_text: str | None = None,
+  ) -> collections.abc.Sequence[str]:
     """Gets a specific tag from a CL description"""
-    footers = self._get_footers(patch_text)
-    return footers.get(tag, [])
+    footers = self.get_footers(patch_text)
+    return footers.get(tag, ())
 
   def normalize_footer_name(self, footer):
     return '-'.join([ word.title() for word in footer.strip().split('-') ])
 
-  def get_change_description(self):
+  def get_change_description(self) -> str | None:
     """Gets the CL description."""
-    self._ensure_gerrit_commit_message()
-    return self._gerrit_commit_message
+    self.m.warning.issue('TRYSERVER_GERRIT_CHANGE_PROPERTIES')
+    return self._gerrit_change.commit_message if self._gerrit_change else None
 
-  def set_change(self, change):
+  def set_change(self, change: common_pb2.GerritChange) -> None:
     """Set the gerrit change for this module.
 
     Args:
       * change: a self.m.buildbucket.common_pb2.GerritChange.
     """
-    self._gerrit_info_initialized = False
-    self._gerrit_change = change
-    gs_suffix = '-review.googlesource.com'
-    host = change.host
-    if host.endswith(gs_suffix):
-      host = '%s.googlesource.com' % host[:-len(gs_suffix)]
-    self._gerrit_change_repo_url = 'https://%s/%s' % (host, change.project)
-    self._gerrit_change_repo_host = host
-    self._gerrit_change_repo_project = change.project
+    copy = common_pb2.GerritChange()
+    copy.CopyFrom(change)
+    self._gerrit_change = GerritChange(self, copy)
