@@ -16,6 +16,23 @@
       "message": "Hey Andy, this is the temporary CL jsca@ mentioned for voting Code-Review labels to unblock https://crbug.com/455899536\n\nPTAL",
       "revId": "e1d6f8a5cddee441980f7c791f7dfb070debfe96",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "13883cfe_59968504",
+        "filename": "gerrit_review_cl.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-10-30T06:31:35Z",
+      "side": 1,
+      "message": "I fishes this list from git admin guide.\n\nPlease add / correct if any host is missing.",
+      "revId": "e1d6f8a5cddee441980f7c791f7dfb070debfe96",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
