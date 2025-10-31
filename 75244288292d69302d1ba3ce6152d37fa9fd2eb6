@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "36917b8e_f00c724e",
+        "filename": "siso.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-10-31T03:00:14Z",
+      "side": 1,
+      "message": "Can you test if the notice message gets printed twice when you call autoninja? `enabled()` is called once in autoninja and here.\n\nhttps://source.chromium.org/chromium/chromium/tools/depot_tools/+/main:build_telemetry.py;l\u003d103;drc\u003d46f5de67e137de4101c1337dd9b95252d14523e9",
+      "range": {
+        "startLine": 73,
+        "startChar": 11,
+        "endLine": 73,
+        "endChar": 34
+      },
+      "revId": "75244288292d69302d1ba3ce6152d37fa9fd2eb6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f1077f68_9658b992",
+        "filename": "siso.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-10-31T03:00:14Z",
+      "side": 1,
+      "message": "I think `build_telemetry.enabled()` already checks if it\u0027s a googler or not.\nhttps://source.chromium.org/chromium/chromium/tools/depot_tools/+/main:build_telemetry.py;l\u003d96-97;drc\u003d46f5de67e137de4101c1337dd9b95252d14523e9",
+      "range": {
+        "startLine": 75,
+        "startChar": 0,
+        "endLine": 77,
+        "endChar": 0
+      },
+      "revId": "75244288292d69302d1ba3ce6152d37fa9fd2eb6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
