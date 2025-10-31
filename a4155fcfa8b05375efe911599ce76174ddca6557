@@ -35,6 +35,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "5e827c3f_85ed51ed",
+        "filename": "gerrit_util.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 743,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-10-31T06:21:05Z",
+      "side": 1,
+      "message": "Prob a special check for CookiesAuthenticator in CMDUpload?\n\n^ I don\u0027t think bots use `git cl upload` CLI?",
+      "parentUuid": "43309a86_60d03086",
+      "revId": "a4155fcfa8b05375efe911599ce76174ddca6557",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "f04111d6_e7c80454",
@@ -52,6 +70,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "b16c2799_ab0ca813",
+        "filename": "git_cl.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 2405,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-10-31T06:21:05Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f04111d6_e7c80454",
+      "revId": "a4155fcfa8b05375efe911599ce76174ddca6557",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "203b4875_26f830ca",
@@ -65,6 +101,30 @@
       "writtenOn": "2025-10-29T21:35:32Z",
       "side": 1,
       "message": "s/requires_reauth/require_reauth/\n\nremove s\n\nAlthough I feel like this should be inverted: `skip_reauth_check\u003dFalse`",
+      "range": {
+        "startLine": 4123,
+        "startChar": 44,
+        "endLine": 4123,
+        "endChar": 59
+      },
+      "revId": "a4155fcfa8b05375efe911599ce76174ddca6557",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f72136e0_10335b34",
+        "filename": "git_cl.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 4123,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-10-31T06:21:05Z",
+      "side": 1,
+      "message": "Fair. Default check seems reasonable.\n\nEnsureAuthenticated\u0027s callsites are limited, should be alright.",
+      "parentUuid": "203b4875_26f830ca",
       "range": {
         "startLine": 4123,
         "startChar": 44,

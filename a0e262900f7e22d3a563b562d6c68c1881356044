@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "37a8cc17_9d85347b",
+        "filename": "git_cl.py",
+        "patchSetId": 10
+      },
+      "lineNbr": 4127,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-10-31T06:21:05Z",
+      "side": 1,
+      "message": "cl status doesn\u0027t need ReAuth afaik",
+      "revId": "a0e262900f7e22d3a563b562d6c68c1881356044",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
