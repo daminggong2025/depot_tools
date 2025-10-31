@@ -240,6 +240,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ce4b9dd0_591d55dd",
+        "filename": "siso.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-10-31T06:11:34Z",
+      "side": 1,
+      "message": "That\u0027s the 3rd comment of this thread. You can just pass `telemetry_cfg` like you do `should_collect_logs` flag in the current patchset.",
+      "parentUuid": "e1111e1c_aa78cbb1",
+      "range": {
+        "startLine": 73,
+        "startChar": 11,
+        "endLine": 73,
+        "endChar": 34
+      },
+      "revId": "75244288292d69302d1ba3ce6152d37fa9fd2eb6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "f1077f68_9658b992",
