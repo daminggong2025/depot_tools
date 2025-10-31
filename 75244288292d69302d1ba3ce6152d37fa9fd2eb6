@@ -120,6 +120,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "6b04140f_951c58a3",
+        "filename": "siso.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-10-31T04:54:14Z",
+      "side": 1,
+      "message": "Ah I see what you mean now. Yeah, `_notice_displayed` state should survive, but in the end it\u0027s pretty much the same thing now, unless we\u0027ll need some more parameters from the `config`. So I think the current code should be straightforward enough without any potential side effects.",
+      "parentUuid": "a51f17ca_6427fa4f",
+      "range": {
+        "startLine": 73,
+        "startChar": 11,
+        "endLine": 73,
+        "endChar": 34
+      },
+      "revId": "75244288292d69302d1ba3ce6152d37fa9fd2eb6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "f1077f68_9658b992",
