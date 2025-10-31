@@ -50,6 +50,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "2661af1d_8ae7de18",
+        "filename": "siso.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-10-31T03:41:15Z",
+      "side": 1,
+      "message": "Does this work?\n\n```\n# autoninja.py\n\ntelemetry_cfg \u003d build_telemetry.load_config()\n...\nshould_collect_logs \u003d telemetry_cfg.enabled()\n...\nsiso.main(..., telemetry_cfg \u003d telemetry_cfg)\n```\n\n```\n# siso.py\n\ndef main(args, telemetry_cfg \u003d None):\n  if not telemetry_cfg:\n    telemetry_cfg \u003d build_telemetry.load_config()\n  should_collect_logs \u003d telemetry_cfg.enabled()\n```",
+      "parentUuid": "85a70a1c_0cb704de",
+      "range": {
+        "startLine": 73,
+        "startChar": 11,
+        "endLine": 73,
+        "endChar": 34
+      },
+      "revId": "75244288292d69302d1ba3ce6152d37fa9fd2eb6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "f1077f68_9658b992",
         "filename": "siso.py",
         "patchSetId": 7
