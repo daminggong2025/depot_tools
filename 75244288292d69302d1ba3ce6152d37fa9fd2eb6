@@ -96,6 +96,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "a51f17ca_6427fa4f",
+        "filename": "siso.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-10-31T04:50:13Z",
+      "side": 1,
+      "message": "Hmm, I thought cfg\u0027s `enabled()`, which is different from `build_telemetry.enabled()`, stores `self._notice_displayed \u003d True` to prevent printing the notice multiple times. Am I missing something?\nhttps://source.chromium.org/chromium/chromium/tools/depot_tools/+/main:build_telemetry.py;l\u003d104?q\u003df:build_telemetry.py%20-file:%5Eout%20-file:%5Egen",
+      "parentUuid": "69bcc486_39a1df75",
+      "range": {
+        "startLine": 73,
+        "startChar": 11,
+        "endLine": 73,
+        "endChar": 34
+      },
+      "revId": "75244288292d69302d1ba3ce6152d37fa9fd2eb6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "f1077f68_9658b992",
