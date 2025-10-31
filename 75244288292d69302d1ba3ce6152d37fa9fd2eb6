@@ -144,6 +144,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "f1ea1154_11abe120",
+        "filename": "siso.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-10-31T04:59:49Z",
+      "side": 1,
+      "message": "\u003e but in the end it\u0027s pretty much the same thing\n\nA very minor difference is that this will allow enabling flags for `siso ninja` command without autoninja.\n\n\u003e unless we\u0027ll need some more parameters from the config.\n\nNot sure what you mean by \"some more parameters\".",
+      "parentUuid": "6b04140f_951c58a3",
+      "range": {
+        "startLine": 73,
+        "startChar": 11,
+        "endLine": 73,
+        "endChar": 34
+      },
+      "revId": "75244288292d69302d1ba3ce6152d37fa9fd2eb6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "f1077f68_9658b992",
