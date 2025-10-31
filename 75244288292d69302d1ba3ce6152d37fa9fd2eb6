@@ -168,6 +168,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "516f83c1_29ceaaf5",
+        "filename": "siso.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-10-31T05:06:52Z",
+      "side": 1,
+      "message": "I think that extracting config introduces complexity we don\u0027t need, and the current code is enough already.",
+      "parentUuid": "f1ea1154_11abe120",
+      "range": {
+        "startLine": 73,
+        "startChar": 11,
+        "endLine": 73,
+        "endChar": 34
+      },
+      "revId": "75244288292d69302d1ba3ce6152d37fa9fd2eb6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "f1077f68_9658b992",
