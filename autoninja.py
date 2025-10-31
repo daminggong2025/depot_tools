@@ -275,7 +275,7 @@ def _check_reclient_cfgs(output_dir):
                 file=sys.stderr,
             )
 
-def _main_inner(input_args, build_id):
+def _main_inner(input_args, build_id, should_collect_logs: bool):
     # If running in the Gemini CLI, automatically add --quiet if it's not
     # already present to avoid filling the context window.
     if os.environ.get('GEMINI_CLI') == '1':
@@ -283,6 +283,10 @@ def _main_inner(input_args, build_id):
             print('Adding --quiet because we\'re running under gemini-cli ('
                   'GEMINI_CLI=1)')
             input_args.append('--quiet')
+
+    # Add extra should_collect_logs that clients should process if supported.
+    if should_collect_logs:
+        input_args.append('--should_collect_logs')
 
     # if user doesn't set PYTHONPYCACHEPREFIX and PYTHONDONTWRITEBYTECODE
     # set PYTHONDONTWRITEBYTECODE=1 not to create many *.pyc in workspace
@@ -683,15 +687,15 @@ def main(args):
     # are not supported by autoninja, but that is not a real limitation.
     input_args = args
     exit_code = 127
+    should_collect_logs = build_telemetry.enabled()
     if sys.platform.startswith("win") and len(args) == 2:
         input_args = args[:1] + args[1].split()
     try:
-        exit_code = _main_inner(input_args, build_id)
+        exit_code = _main_inner(input_args, build_id, should_collect_logs)
     except KeyboardInterrupt:
         exit_code = 1
     finally:
         # Check the log collection opt-in/opt-out status, and display notice if necessary.
-        should_collect_logs = build_telemetry.enabled()
         if should_collect_logs:
             warnings.simplefilter("ignore", ResourceWarning)
             elapsed = time.time() - start
