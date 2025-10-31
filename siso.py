@@ -16,6 +16,7 @@ import shutil
 import sys
 
 import caffeinate
+import build_telemetry
 import gclient_paths
 
 
@@ -66,6 +67,22 @@ def apply_metrics_labels(args: list[str]) -> list[str]:
     result.append("tool=siso")
     result.append(f"host_os={user_system}")
     return args + ["--metrics_labels", ",".join(result)]
+
+
+def apply_telemetry_flags(args: list[str]) -> list[str]:
+    if not build_telemetry.enabled():
+        return args
+    if not _is_google_corp_machine():
+        return args
+    telemetry_flags = [
+        "enable_cloud_monitoring", "enable_cloud_profiler",
+        "enable_cloud_trace", "enable_cloud_logging"
+    ]
+    flag_to_add = []
+    for flag in telemetry_flags:
+        if f"-{flag}" not in args and f"--{flag}" not in args:
+            flag_to_add.append(f"--{flag}")
+    return args + flag_to_add
 
 
 def load_sisorc(rcfile):
@@ -223,6 +240,7 @@ def main(args):
                     print('depot_tools/siso.py: %s' % shlex.join(new_args),
                           file=sys.stderr)
                 new_args = apply_metrics_labels(new_args)
+                new_args = apply_telemetry_flags(new_args)
                 return caffeinate.run([siso_path] + new_args, env=env)
         print(
             'depot_tools/siso.py: Could not find siso in third_party/siso '
