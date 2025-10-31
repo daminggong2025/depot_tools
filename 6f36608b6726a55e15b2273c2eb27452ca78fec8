@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d9330ab7_2773f5eb",
+        "filename": "siso.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 240,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-10-31T01:47:52Z",
+      "side": 1,
+      "message": "You need to check if the user opted-in the telemetry collection. \nSee also https://source.chromium.org/chromium/chromium/tools/depot_tools/+/main:autoninja.py;l\u003d694;drc\u003d45aaf4f713f882fe2532704b99944e1a8f0936c1",
+      "range": {
+        "startLine": 240,
+        "startChar": 0,
+        "endLine": 240,
+        "endChar": 58
+      },
+      "revId": "6f36608b6726a55e15b2273c2eb27452ca78fec8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
