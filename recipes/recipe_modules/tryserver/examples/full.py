@@ -28,24 +28,6 @@ def RunSteps(api):
             'Foo', api.properties['patch_text']))])
     return
 
-  if api.tryserver.gerrit_change:
-    assert (api.tryserver.gerrit_change_repo_url ==
-            'https://chromium.googlesource.com/chromium/src')
-    assert (api.tryserver.gerrit_change_repo_host ==
-            'chromium.googlesource.com')
-    assert (api.tryserver.gerrit_change_repo_project ==
-            'chromium/src')
-    assert api.tryserver.gerrit_change_fetch_ref == 'refs/changes/27/91827/1'
-    expected_target_ref = api.properties.get(
-        'expected_target_ref', 'refs/heads/main')
-    assert api.tryserver.gerrit_change_target_ref == expected_target_ref
-    assert (api.tryserver.gerrit_change_review_url ==
-            'https://chromium-review.googlesource.com/c/91827/1')
-
-  if api.tryserver.is_gerrit_issue:
-    api.tryserver.get_footers()
-    api.tryserver.get_footer('testfooter')
-
   if api.tryserver.is_tryserver:
     api.tryserver.set_subproject_tag('v8')
 
@@ -63,9 +45,9 @@ def RunSteps(api):
                    project='infra/luci/recipes-py',
                    change=1234567,
                    patchset=1))
-  assert (api.tryserver.gerrit_change_repo_url ==
+  assert (api.tryserver.gerrit_change.repo_url ==
           'https://chromium.googlesource.com/infra/luci/recipes-py')
-  assert api.tryserver.gerrit_change_fetch_ref == 'refs/changes/67/1234567/1'
+  assert api.tryserver.gerrit_change.fetch_ref == 'refs/changes/67/1234567/1'
 
 
 def GenTests(api):
@@ -83,16 +65,6 @@ def GenTests(api):
             git_repo='https://chromium.googlesource.com/chromium/src',
             change_number=91827,
             patch_set=1))
-
-  yield (api.test('with_gerrit_patch_and_target_ref') +
-         api.buildbucket.try_build(
-            'chromium',
-            'linux',
-            git_repo='https://chromium.googlesource.com/chromium/src',
-            change_number=91827,
-            patch_set=1) +
-         api.properties(expected_target_ref='refs/heads/experiment') +
-         api.tryserver.gerrit_change_target_ref('refs/heads/experiment'))
 
   yield (api.test('with_wrong_patch_new') + api.platform('win', 32) +
          api.properties(test_patch_root='sub\\project'))

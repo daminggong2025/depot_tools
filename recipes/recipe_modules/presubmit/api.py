@@ -145,7 +145,7 @@ class PresubmitApi(recipe_api.RecipeApi):
           '--gerrit_project',
           self.m.tryserver.gerrit_change.project,
           '--gerrit_branch',
-          self.m.tryserver.gerrit_change_target_ref,
+          self.m.tryserver.gerrit_change.target_ref,
           '--gerrit_fetch',
       ]
 
