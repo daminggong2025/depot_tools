@@ -294,14 +294,16 @@ class BotUpdateApi(recipe_api.RecipeApi):
 
     # How to find the patch, if any
     if patch:
-      repo_url = self.m.tryserver.gerrit_change_repo_url
-      fetch_ref = self.m.tryserver.gerrit_change_fetch_ref
-      target_ref = self.m.tryserver.gerrit_change_target_ref
-      if repo_url and fetch_ref:
-        flags.append([
-            '--patch_ref',
-            '%s@%s:%s' % (repo_url, target_ref, fetch_ref),
-        ])
+      gerrit_change = self.m.tryserver.gerrit_change
+      if gerrit_change:
+        repo_url = gerrit_change.repo_url
+        fetch_ref = gerrit_change.fetch_ref
+        target_ref = gerrit_change.target_ref
+        if repo_url and fetch_ref:
+          flags.append([
+              '--patch_ref',
+              '%s@%s:%s' % (repo_url, target_ref, fetch_ref),
+          ])
       if patch_refs:
         flags.extend(
             ['--patch_ref', patch_ref]
@@ -606,7 +608,7 @@ class BotUpdateApi(recipe_api.RecipeApi):
     if not patch_path or path != patch_path:
       return 'HEAD'
 
-    return self.m.tryserver.gerrit_change_target_ref
+    return self.m.tryserver.gerrit_change.target_ref
 
   def resolve_fixed_revision(self, bot_update_result, name):
     """Sets a fixed revision for a single dependency using project revision

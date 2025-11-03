@@ -303,11 +303,11 @@ class GclientApi(recipe_api.RecipeApi):
     TODO(nodir): remove this. Update all recipe tests to specify a git_repo
     matching the recipe.
     """
-    cfg = gclient_config or self.c
-    repo_url = self.m.tryserver.gerrit_change_repo_url
-    if not repo_url:
+    gerrit_change = self.m.tryserver.gerrit_change
+    if not gerrit_change:
       return None
-    root =  self.get_repo_path(repo_url, gclient_config=cfg)
+    cfg = gclient_config or self.c
+    root = self.get_repo_path(gerrit_change.repo_url, gclient_config=cfg)
 
     # This is wrong, but that's what a ton of recipe tests expect today
     root = root or cfg.solutions[0].name
@@ -354,9 +354,11 @@ class GclientApi(recipe_api.RecipeApi):
     Useful for bot_update only, as this is the only consumer of gclient's config
     revision map. This doesn't overwrite the revision if it was already set.
     """
+    gerrit_change = self.m.tryserver.gerrit_change
+    if gerrit_change is None:
+      return
     cfg = gclient_config or self.c
-    repo_url = self.m.tryserver.gerrit_change_repo_url
-    path, revision = cfg.repo_path_map.get(repo_url, (None, None))
+    path, revision = cfg.repo_path_map.get(gerrit_change.repo_url, (None, None))
     if path and revision and path not in cfg.revisions:
       cfg.revisions[path] = revision
 

@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from recipe_engine import recipe_api
 from recipe_engine.post_process import (DropExpectation, StatusSuccess,
                                         StepCommandContains)
 
@@ -14,9 +15,10 @@ DEPS = [
 ]
 
 
+@recipe_api.ignore_warnings('^depot_tools/TRYSERVER_GERRIT_CHANGE_PROPERTIES$')
 def RunSteps(api):
   api.step(name='print owner',
-           cmd=['echo', str(api.tryserver.gerrit_change_owner)])
+           cmd=['echo', str(dict(api.tryserver.gerrit_change_owner))])
 
 
 def GenTests(api):

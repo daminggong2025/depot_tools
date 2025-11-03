@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from recipe_engine import post_process
+from recipe_engine import post_process, recipe_api
 
 
 DEPS = [
@@ -13,6 +13,7 @@ DEPS = [
 ]
 
 
+@recipe_api.ignore_warnings('^depot_tools/TRYSERVER_GERRIT_CHANGE_PROPERTIES$')
 def RunSteps(api):
   api.tryserver.gerrit_change_fetch_ref
 
