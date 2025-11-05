@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2d1b9c44_cfd2c483",
+        "filename": "git_auth.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 363,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2025-11-05T18:46:23Z",
+      "side": 1,
+      "message": "can we dedupe some of these blocks with something like:\n```\npaths \u003d [\u0027~/.netrc\u0027]\n  if self._is_windows():\n    paths.append(\u0027~/_netrc\u0027)\n\nfor path_str in paths:\n  ...\n```",
+      "range": {
+        "startLine": 363,
+        "startChar": 8,
+        "endLine": 363,
+        "endChar": 45
+      },
+      "revId": "808e1bfc9166877fc5d80c10bd6fb4e4f78072d9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
