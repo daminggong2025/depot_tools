@@ -34,6 +34,29 @@
       "parentUuid": "3acdb77d_d5b0dd9a",
       "revId": "64de054e2b1314ca7b97cbcebf90941e19ba5a35",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1c49009f_1cdc18b3",
+        "filename": "autoninja.py",
+        "patchSetId": 15
+      },
+      "lineNbr": 281,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-11-06T18:00:15Z",
+      "side": 1,
+      "message": "Hmm, got this lint error.\n\nhttps://ci.chromium.org/ui/p/infra/builders/try/Depot%20Tools%20Presubmit/b8699515291014461489/overview\n```\n/b/s/w/ir/kitchen-checkout/depot_tools/pylint-2.7 --args-on-stdin (40.23s) failed\n************* Module autoninja\nautoninja.py:281:31: E1131: unsupported operand type(s) for | (unsupported-binary-operation)\n************* Module siso\nsiso.py:122:30: E1131: unsupported operand type(s) for | (unsupported-binary-operation)\n```",
+      "range": {
+        "startLine": 281,
+        "startChar": 0,
+        "endLine": 281,
+        "endChar": 69
+      },
+      "revId": "64de054e2b1314ca7b97cbcebf90941e19ba5a35",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
