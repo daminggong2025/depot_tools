@@ -556,7 +556,7 @@ def CheckChangeTodoHasOwner(input_api, output_api, source_file_filter=None):
     """Checks that TODO comments have the issue number."""
     legacyTODO = '\\s*\\(.+\\)\\s*:'
     modernTODO = ':\\s*[^\\s]+\\s*\\-'
-    unowned_todo = input_api.re.compile('TODO(?!(%s|%s))' %
+    unowned_todo = input_api.re.compile('\bTODO(?!(%s|%s))' %
                                         (legacyTODO, modernTODO))
     errors = _FindNewViolationsOfRule(lambda _, x: not unowned_todo.search(x),
                                       input_api, source_file_filter)
