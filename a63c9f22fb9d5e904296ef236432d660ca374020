@@ -54,6 +54,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": true,
+      "key": {
+        "uuid": "1452b521_1e9a5048",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1493367
+      },
+      "writtenOn": "2025-11-07T16:35:15Z",
+      "side": 1,
+      "message": "Maybe you can rename `placeholder.jar` to `google-java-format.jar` to make the existing check happy?\n\nSince `placheolder.jar` is already not a real `.jar`, you can keep it with the same content and rename to `google-java-format.jar`. wdyt?\n\n(this still requires my CL to be landed).",
+      "parentUuid": "2dc0dd74_167a1664",
+      "revId": "a63c9f22fb9d5e904296ef236432d660ca374020",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": false,
       "key": {
         "uuid": "d278fe4f_3b87b2e3",
