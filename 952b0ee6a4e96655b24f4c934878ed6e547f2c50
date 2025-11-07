@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ac4880c8_9415d79c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2025-11-07T23:16:37Z",
+      "side": 1,
+      "message": "@treilly@google.com, I made a quick patch to skip the warning message in cog env. Let\u0027s land this to stop the bleed. If we conclude that a patch in CiderG extension would be better for long-term, it can be done in CLs. PTAL",
+      "revId": "952b0ee6a4e96655b24f4c934878ed6e547f2c50",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
