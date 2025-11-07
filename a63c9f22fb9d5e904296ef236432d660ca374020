@@ -36,6 +36,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": true,
+      "key": {
+        "uuid": "2dc0dd74_167a1664",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1126674
+      },
+      "writtenOn": "2025-11-07T16:11:08Z",
+      "side": 1,
+      "message": "ahhh, gotcha. So, I used the `glob()` because R8 uses depot_tools, and I\u0027ve just used a \"placeholder.jar\" to appease this check.\n\nCan you change it to explicitly exclude \"chromium-overrides.jar\", or to explicitly check for \"placeholder.jar\" as well?\n\nhttps://r8.googlesource.com/r8/+/refs/heads/main/third_party/google-java-format/",
+      "parentUuid": "192f590c_9457dac2",
+      "revId": "a63c9f22fb9d5e904296ef236432d660ca374020",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": false,
       "key": {
         "uuid": "d278fe4f_3b87b2e3",
