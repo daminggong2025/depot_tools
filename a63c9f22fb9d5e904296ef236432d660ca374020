@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": true,
+      "key": {
+        "uuid": "192f590c_9457dac2",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1493367
+      },
+      "writtenOn": "2025-11-07T15:23:59Z",
+      "side": 1,
+      "message": "`third_party/google-java-format/google-java-format` shell script requires `$THIS_DIR/cipd/google-java-format.jar` to run correctly [1].\n\nOn Mac/Windows checkout there\u0027s no `cipd/google-java-format.jar` file, because it\u0027s guarded with DEPS condition. But your `glob` call always returns `True`, because it finds `chromium-overrides.jar` which always exist in Chromium checkout.\n\nI\u0027m restoring an explicit check for `cipd/google-java-format.jar` file to fix current depot_tools breakage when java formatter is triggered even when some files are missing.\n\n1. https://source.chromium.org/chromium/chromium/src/+/main:third_party/google-java-format/google-java-format;l\u003d18;drc\u003da8d79cbba1c2e74c1727aa1dcabb19cf0f873f07",
+      "parentUuid": "af37782f_15091a7c",
+      "revId": "a63c9f22fb9d5e904296ef236432d660ca374020",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": false,
       "key": {
         "uuid": "d278fe4f_3b87b2e3",
