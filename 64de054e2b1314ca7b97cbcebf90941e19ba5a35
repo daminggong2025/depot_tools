@@ -57,6 +57,30 @@
       },
       "revId": "64de054e2b1314ca7b97cbcebf90941e19ba5a35",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "758df691_aa80c8d0",
+        "filename": "autoninja.py",
+        "patchSetId": 15
+      },
+      "lineNbr": 281,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-11-10T00:03:36Z",
+      "side": 1,
+      "message": "Ah ok, let\u0027s go with Optionals then.",
+      "parentUuid": "1c49009f_1cdc18b3",
+      "range": {
+        "startLine": 281,
+        "startChar": 0,
+        "endLine": 281,
+        "endChar": 69
+      },
+      "revId": "64de054e2b1314ca7b97cbcebf90941e19ba5a35",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
