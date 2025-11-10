@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "999e716d_d286347a",
+        "filename": "siso.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2025-11-10T04:03:04Z",
+      "side": 1,
+      "message": "It is better to have this logic from caller side as it is more clear that when this flag is applied?",
+      "revId": "b3c11eaa475bdc816aba9b65b37cd46f30c2204a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
