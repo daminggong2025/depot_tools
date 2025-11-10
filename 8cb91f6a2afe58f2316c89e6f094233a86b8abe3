@@ -1,6 +1,29 @@
 {
   "comments": [
     {
+      "unresolved": true,
+      "key": {
+        "uuid": "52e79f2e_f0f2697a",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1322871
+      },
+      "writtenOn": "2025-11-10T19:54:25Z",
+      "side": 1,
+      "message": "Can you add an example in at least the commit message explaining the difference between this and `git cl patch -b change-7137248 7137248`?\n\nIf you click \"Download\" and then click at the top \"depot_tools\", you see this command (I\u0027m not sure where gerrit populates these commands from, but might be worth reaching out if this has a unique use case and we land this).\n\nIs this basically just making it so you apply it directly to your current HEAD and so when you git cl upload it doesn\u0027t attempt to upload to this current issue? (I.E. it bases it on your current HEAD and has `git cl issue 0` so it creates a new issue?",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 7,
+        "endChar": 17
+      },
+      "revId": "8cb91f6a2afe58f2316c89e6f094233a86b8abe3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": false,
       "key": {
         "uuid": "106dc280_8cd063af",
@@ -36,6 +59,29 @@
         "startChar": 0,
         "endLine": 5670,
         "endChar": 70
+      },
+      "revId": "8cb91f6a2afe58f2316c89e6f094233a86b8abe3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d0da61ff_63640408",
+        "filename": "git_cl.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 5700,
+      "author": {
+        "id": 1322871
+      },
+      "writtenOn": "2025-11-10T19:54:25Z",
+      "side": 1,
+      "message": "this `else:` is a bit strange because it is paired with an if inside a for loop. Even if python is alright with it I might change this for readability.\n\nPerhaps\n\n```\nrevision_info \u003d None\nif not parsed_issue_arg.patchset:\n    # Use current revision by default.\n    revision_info \u003d detail[\u0027revisions\u0027][detail[\u0027current_revision\u0027]]\nelse:\n    for info in detail[\u0027revisions\u0027].values():\n        if int(info[\u0027_number\u0027]) \u003d\u003d parsed_issue_arg.patchset:\n            revision_info \u003d info\nif revision_info is None:\n    DieWithError(\u0027Couldn\\\u0027t find patchset %i in change %i\u0027 %\n                 (parsed_issue_arg.patchset, cl.GetIssue()))\n```\n\nMight read cleaner.",
+      "range": {
+        "startLine": 5700,
+        "startChar": 0,
+        "endLine": 5700,
+        "endChar": 13
       },
       "revId": "8cb91f6a2afe58f2316c89e6f094233a86b8abe3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
