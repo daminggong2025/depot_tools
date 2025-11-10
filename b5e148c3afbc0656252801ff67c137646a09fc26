@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e5142227_213209fd",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2025-11-10T03:52:15Z",
+      "side": 1,
+      "message": "Could you make revert from https://crrev.com/c/7136522 and apply fix in new patchset so that we can see diff from original CL easily?",
+      "revId": "b5e148c3afbc0656252801ff67c137646a09fc26",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
