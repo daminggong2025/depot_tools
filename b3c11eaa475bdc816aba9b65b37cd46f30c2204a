@@ -16,6 +16,24 @@
       "message": "It is better to have this logic from caller side as it is more clear that when this flag is applied?",
       "revId": "b3c11eaa475bdc816aba9b65b37cd46f30c2204a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e7c604f6_406aa84a",
+        "filename": "siso.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-11-10T04:04:56Z",
+      "side": 1,
+      "message": "We already do the same thing in the apply_metrics_labels function so I guess this is fine as is? Or I can place it in the `new_args \u003d apply_telemetry_flags(new_args)` part for both of these functions in a follow up CL.",
+      "parentUuid": "999e716d_d286347a",
+      "revId": "b3c11eaa475bdc816aba9b65b37cd46f30c2204a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
