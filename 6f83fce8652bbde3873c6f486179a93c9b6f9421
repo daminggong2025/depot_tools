@@ -70,6 +70,24 @@
       "parentUuid": "99ae5483_99faa6e9",
       "revId": "6f83fce8652bbde3873c6f486179a93c9b6f9421",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "eedd9bb2_b6e30cd1",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2025-11-10T03:10:57Z",
+      "side": 1,
+      "message": "Which shell do you use? set command doesn\u0027t change env var in bash?\n\n```sh\n$ set HOGEFUGA 1\n$ env | fgrep HOGEFUGA\n```",
+      "parentUuid": "d2c184ab_17644a9a",
+      "revId": "6f83fce8652bbde3873c6f486179a93c9b6f9421",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
