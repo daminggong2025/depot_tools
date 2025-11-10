@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "106dc280_8cd063af",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1456872
+      },
+      "writtenOn": "2025-11-10T19:30:30Z",
+      "side": 1,
+      "message": "LGTM",
+      "revId": "8cb91f6a2afe58f2316c89e6f094233a86b8abe3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9f8c464a_b606893c",
+        "filename": "git_cl.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 5670,
+      "author": {
+        "id": 1456872
+      },
+      "writtenOn": "2025-11-10T19:30:30Z",
+      "side": 1,
+      "message": "Could you add an example usage of the command in these pydoc?",
+      "range": {
+        "startLine": 5670,
+        "startChar": 0,
+        "endLine": 5670,
+        "endChar": 70
+      },
+      "revId": "8cb91f6a2afe58f2316c89e6f094233a86b8abe3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
