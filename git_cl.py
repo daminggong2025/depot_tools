@@ -5664,6 +5664,69 @@ def CMDupload(parser, args):
     return ret
 
 
+@subcommand.usage('<codereview url or CL id>')
+@metrics.collector.collect_metrics('git cl diff-apply')
+def CMDdiff_apply(parser, args):
+    """Applies a CL's diff to the current branch without authoring."""
+    if gclient_utils.IsEnvCog():
+        print('diff-apply command is not supported in non-git environment.',
+              file=sys.stderr)
+        return 1
+
+    _, args = parser.parse_args(args)
+
+    if len(args) != 1:
+        parser.error('Must specify CL number or URL.')
+
+    parsed_issue_arg = ParseIssueNumberArgument(args[0])
+    if not parsed_issue_arg.valid:
+        parser.error('Invalid issue ID or URL.')
+
+    cl = Changelist(codereview_host=parsed_issue_arg.hostname,
+                    issue=parsed_issue_arg.issue)
+
+    try:
+        detail = cl._GetChangeDetail(['ALL_REVISIONS'])
+    except GerritChangeNotExists as e:
+        DieWithError(str(e))
+
+    if not parsed_issue_arg.patchset:
+        # Use current revision by default.
+        revision_info = detail['revisions'][detail['current_revision']]
+    else:
+        for revision_info in detail['revisions'].values():
+            if int(revision_info['_number']) == parsed_issue_arg.patchset:
+                break
+        else:
+            DieWithError('Couldn\'t find patchset %i in change %i' %
+                         (parsed_issue_arg.patchset, cl.GetIssue()))
+
+    fetch_info = revision_info['fetch']['http']
+    RunGit(['fetch', fetch_info['url'], fetch_info['ref']])
+    cl_commit_hash = RunGit(['rev-parse', 'FETCH_HEAD']).strip()
+
+    parents = RunGit(['rev-list', '--parents', '-n', '1',
+                      cl_commit_hash]).strip().split()
+
+    if len(parents) > 2:
+        DieWithError(
+            "CL is a merge commit, which is not supported by diff-apply.")
+
+    # `git diff-tree -p` generates a patch against the parent, and for root
+    # commits, against an empty tree. It's exactly what we want.
+    diff_output = RunGit(['diff-tree', '-p', cl_commit_hash])
+
+    try:
+        RunCommand(['git', 'apply', '-'], stdin=diff_output.encode('utf-8'))
+        print("Successfully applied diff from CL %s." % parsed_issue_arg.issue)
+    except subprocess2.CalledProcessError as e:
+        DieWithError('Failed to apply diff from CL %s.\n'
+                     'You may have conflicts.\n'
+                     'Underlying error: %s' % (parsed_issue_arg.issue, e))
+
+    return 0
+
+
 def UploadAllSquashed(options: optparse.Values,
                       orig_args: Sequence[str]) -> int:
     """Uploads the current and upstream branches (if necessary)."""
