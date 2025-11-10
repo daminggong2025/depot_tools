@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "cc82e181_f04f4c0a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-11-10T02:46:12Z",
+      "side": 1,
+      "message": "I am unable to reproduce this issue. Is this another case of outdated local siso binary? @tikuta@google.com",
+      "revId": "6f83fce8652bbde3873c6f486179a93c9b6f9421",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
