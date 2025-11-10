@@ -52,6 +52,24 @@
       "parentUuid": "f5cf7e75_8e1bc28e",
       "revId": "6f83fce8652bbde3873c6f486179a93c9b6f9421",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d2c184ab_17644a9a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-11-10T03:06:22Z",
+      "side": 1,
+      "message": "I did, still succeeds:\n\nset NINJA_SUMMARIZE_BUILD 1; ../../depot_tools/autoninja -strict_remote -dkeepdepfile -d keeprsp -C out/Default base",
+      "parentUuid": "99ae5483_99faa6e9",
+      "revId": "6f83fce8652bbde3873c6f486179a93c9b6f9421",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
