@@ -88,6 +88,24 @@
       "parentUuid": "d2c184ab_17644a9a",
       "revId": "6f83fce8652bbde3873c6f486179a93c9b6f9421",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8abf866d_7735513f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-11-10T03:11:38Z",
+      "side": 1,
+      "message": "I use fish, the effect is similar:\n\necho $NINJA_SUMMARIZE_BUILD\n1",
+      "parentUuid": "eedd9bb2_b6e30cd1",
+      "revId": "6f83fce8652bbde3873c6f486179a93c9b6f9421",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
