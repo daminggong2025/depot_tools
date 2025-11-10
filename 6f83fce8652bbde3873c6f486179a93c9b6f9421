@@ -106,6 +106,24 @@
       "parentUuid": "eedd9bb2_b6e30cd1",
       "revId": "6f83fce8652bbde3873c6f486179a93c9b6f9421",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b06b0665_fd55801c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2025-11-10T03:21:04Z",
+      "side": 1,
+      "message": "Hmm, what happen if you run `post_build_ninja_summary.py` directly then?\n\n```sh\n$ post_build_ninja_summary.py -C out/Default\nflag provided but not defined: -enable_cloud_monitoring\nsummarize siso_metrics.json\n\n $ siso metrics summary -C \u003cdir\u003e \\\n    [--step_types \u003ctypes\u003e] \\\n    [--elapsed_time_sorting] \\\n    [--elapsed_time\u003drun|step] \\\n    [--input siso_metrics.json]\n\nsummarize \u003cdir\u003e/.siso_metrics.json (--input)\nas depot_tools/post_ninja_build_summary.py does.\n  -C string\n        ninja running directory, where siso_metrics.json exists (default \".\")\n  -elapsed_time string\n        metrics to use for elapsed time. \"run\" or \"step\". \"run\": time to run local command or call remote execution.  \"step\": full duration for the step, including preproc, waiting resource to run command etc. (default \"run\")\n  -elapsed_time_sorting\n        Sort output by elapsed time instead of weighted time\n  -input string\n        filename of siso_metrics.json to summarize (default \"siso_metrics.json\")\n  -step_types string\n        semicolon separated glob patterns (go filepath.Match) for build-step grouping\nTraceback (most recent call last):\n  File \"/usr/local/google/home/tikuta/depot_tools/post_build_ninja_summary.py\", line 390, in \u003cmodule\u003e\n    sys.exit(main())\n             ~~~~^^\n  File \"/usr/local/google/home/tikuta/depot_tools/post_build_ninja_summary.py\", line 375, in main\n    subprocess.run(cmd, check\u003dTrue)\n    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.13/subprocess.py\", line 577, in run\n    raise CalledProcessError(retcode, process.args,\n                             output\u003dstdout, stderr\u003dstderr)\nsubprocess.CalledProcessError: Command \u0027[\u0027/usr/bin/python3\u0027, \u0027/usr/local/google/home/tikuta/depot_tools/siso.py\u0027, \u0027metrics\u0027, \u0027summary\u0027, \u0027-C\u0027, \u0027out/Default\u0027]\u0027 returned non-zero exit status 2.\n```",
+      "parentUuid": "8abf866d_7735513f",
+      "revId": "6f83fce8652bbde3873c6f486179a93c9b6f9421",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
