@@ -22,6 +22,30 @@
       },
       "revId": "df41040a7859d527ba819e59712be70ea04083ce",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e01ac593_9404b0dc",
+        "filename": "git_cl.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 5679,
+      "author": {
+        "id": 4367499
+      },
+      "writtenOn": "2025-11-10T19:21:27Z",
+      "side": 1,
+      "message": "yeah, CL Number is better, thanks!",
+      "parentUuid": "849b189f_2a465bb6",
+      "range": {
+        "startLine": 5679,
+        "startChar": 35,
+        "endLine": 5679,
+        "endChar": 40
+      },
+      "revId": "df41040a7859d527ba819e59712be70ea04083ce",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
