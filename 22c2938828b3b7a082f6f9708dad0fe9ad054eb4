@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "cad5cb22_942d0b1d",
+        "filename": "autoninja.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 470,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-11-11T09:18:16Z",
+      "side": 1,
+      "message": "Like so?",
+      "parentUuid": "ff971163_4352a288",
+      "revId": "22c2938828b3b7a082f6f9708dad0fe9ad054eb4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "24c9d797_0e8c1c00",
@@ -31,6 +49,24 @@
       "writtenOn": "2025-11-11T07:56:06Z",
       "side": 1,
       "message": "wrong indent?\nit should not be part of `if sys.platform in ..`",
+      "revId": "22c2938828b3b7a082f6f9708dad0fe9ad054eb4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "592a7742_6a8f4436",
+        "filename": "autoninja.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 504,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-11-11T09:18:16Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "24c9d797_0e8c1c00",
       "revId": "22c2938828b3b7a082f6f9708dad0fe9ad054eb4",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
