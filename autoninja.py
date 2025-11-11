@@ -467,61 +467,6 @@ def _main_inner(input_args,
     if use_siso is None:
         use_siso = _get_use_siso_default(output_dir)
 
-    siso_marker = os.path.join(output_dir, ".siso_deps")
-    if use_siso:
-        # siso generates a .ninja_log file so the mere existence of a
-        # .ninja_log file doesn't imply that a ninja build was done. However
-        # if there is a .ninja_log but no .siso_deps then that implies a
-        # ninja build.
-        ninja_marker = os.path.join(output_dir, ".ninja_log")
-        if os.path.exists(ninja_marker) and not os.path.exists(siso_marker):
-            print(
-                "Run gn clean before switching from ninja to siso in %s" %
-                output_dir,
-                file=sys.stderr,
-            )
-            return 1
-
-        if j_value:
-            input_args = _convert_ninja_j_to_siso_flags(j_value, use_remoteexec,
-                                                        input_args)
-
-        # Build ID consistently used in other tools. e.g. Reclient, ninjalog.
-        os.environ.setdefault("SISO_BUILD_ID", build_id)
-        with android_build_server_helper.build_server_context(
-                build_id,
-                output_dir,
-                use_android_build_server=use_android_build_server):
-
-            def run_siso(args):
-                if summarize_build:
-                    # Print the command-line to reassure the user that the right
-                    # settings are being used.
-                    _print_cmd(args)
-                return siso.main(args, telemetry_cfg)
-            if use_remoteexec:
-                if use_reclient and not t_specified:
-                    # TODO: crbug.com/379584977 - Remove siso/reclient
-                    # integration.
-                    return reclient_helper.run_siso([
-                        'siso',
-                        'ninja',
-                        # Do not authenticate when using Reproxy.
-                        '-project=',
-                        '-reapi_instance=',
-                        '-reapi_address=',
-                    ] + input_args[1:])
-                return run_siso(["siso", "ninja"] + input_args[1:])
-            return run_siso(["siso", "ninja", "--offline"] + input_args[1:])
-
-    if os.path.exists(siso_marker):
-        print(
-            "Run gn clean before switching from siso to ninja in %s" %
-            output_dir,
-            file=sys.stderr,
-        )
-        return 1
-
     # Strip -o/--offline so ninja doesn't see them.
     input_args = [arg for arg in input_args if arg not in ("-o", "--offline")]
 
@@ -592,6 +537,63 @@ def _main_inner(input_args,
             j_value += int(os.environ.get("NINJA_CORE_ADDITION", "2"))
             ninja_args.append("-j")
             ninja_args.append("%d" % j_value)
+
+    siso_marker = os.path.join(output_dir, ".siso_deps")
+
+    if use_siso:
+        # siso generates a .ninja_log file so the mere existence of a
+        # .ninja_log file doesn't imply that a ninja build was done. However
+        # if there is a .ninja_log but no .siso_deps then that implies a
+        # ninja build.
+        ninja_marker = os.path.join(output_dir, ".ninja_log")
+        if os.path.exists(ninja_marker) and not os.path.exists(siso_marker):
+            print(
+                "Run gn clean before switching from ninja to siso in %s" %
+                output_dir,
+                file=sys.stderr,
+            )
+            return 1
+
+        if j_value:
+            input_args = _convert_ninja_j_to_siso_flags(j_value, use_remoteexec,
+                                                        input_args)
+
+        # Build ID consistently used in other tools. e.g. Reclient, ninjalog.
+        os.environ.setdefault("SISO_BUILD_ID", build_id)
+        with android_build_server_helper.build_server_context(
+                build_id,
+                output_dir,
+                use_android_build_server=use_android_build_server):
+
+            def run_siso(args):
+                if summarize_build:
+                    # Print the command-line to reassure the user that the right
+                    # settings are being used.
+                    _print_cmd(args)
+                return siso.main(args, telemetry_cfg)
+
+            if use_remoteexec:
+                if use_reclient and not t_specified:
+                    # TODO: crbug.com/379584977 - Remove siso/reclient
+                    # integration.
+                    return reclient_helper.run_siso([
+                        'siso',
+                        'ninja',
+                        # Do not authenticate when using Reproxy.
+                        '-project=',
+                        '-reapi_instance=',
+                        '-reapi_address=',
+                    ] + input_args[1:])
+                return run_siso(["siso", "ninja"] + input_args[1:])
+            return run_siso(["siso", "ninja", "--offline"] + input_args[1:])
+
+    if os.path.exists(siso_marker):
+        print(
+            "Run gn clean before switching from siso to ninja in %s" %
+            output_dir,
+            file=sys.stderr,
+        )
+        return 1
 
     if summarize_build:
         # Enable statistics collection in Ninja.
