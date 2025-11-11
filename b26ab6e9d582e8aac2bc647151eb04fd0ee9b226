@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b97f936d_962fd99b",
+        "filename": "siso.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 237,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-11-11T07:09:36Z",
+      "side": 1,
+      "message": "`args[0]` is `siso`. So this condition doesn\u0027t pass.",
+      "range": {
+        "startLine": 237,
+        "startChar": 19,
+        "endLine": 237,
+        "endChar": 26
+      },
+      "revId": "b26ab6e9d582e8aac2bc647151eb04fd0ee9b226",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
