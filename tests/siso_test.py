@@ -6,6 +6,7 @@
 import os
 import sys
 import unittest
+import platform
 
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT_DIR)
@@ -61,6 +62,44 @@ ninja --failure_verbose=false -k=0
         self.assertEqual(new_args, [
             '-credential_helper=luci-auth', '-log_dir=/tmp', 'ninja', '-k=0',
             '-C', 'out/Default'
+        ])
+
+    def test_apply_metrics_labels(self):
+        system_dict = {"Windows": "windows", "Darwin": "mac", "Linux": "linux"}
+        user_system = system_dict.get(platform.system(), platform.system())
+        args = ['ninja', '-C', 'out/Default']
+        new_args = siso.apply_metrics_labels(args)
+        self.assertEqual(new_args, [
+            'ninja', '-C', 'out/Default', '--metrics_labels',
+            'type=developer,tool=siso,host_os=%s' % user_system
+        ])
+
+    def test_apply_metrics_labels_already_exist(self):
+        args = ['ninja', '-C', 'out/Default', '--metrics_labels=foo=bar']
+        new_args = siso.apply_metrics_labels(args)
+        self.assertEqual(
+            new_args,
+            ['ninja', '-C', 'out/Default', '--metrics_labels=foo=bar'])
+
+    def test_apply_telemetry_flags(self):
+        args = ['ninja', '-C', 'out/Default']
+        new_args = siso.apply_telemetry_flags(args)
+        self.assertEqual(new_args, [
+            'ninja', '-C', 'out/Default', '--enable_cloud_monitoring',
+            '--enable_cloud_profiler', '--enable_cloud_trace',
+            '--enable_cloud_logging'
+        ])
+
+    def test_apply_telemetry_flags_some_already_applied(self):
+        args = [
+            'ninja', '-C', 'out/Default', '--enable_cloud_monitoring',
+            '-enable_cloud_profiler'
+        ]
+        new_args = siso.apply_telemetry_flags(args)
+        self.assertEqual(new_args, [
+            'ninja', '-C', 'out/Default', '--enable_cloud_monitoring',
+            '-enable_cloud_profiler', '--enable_cloud_trace',
+            '--enable_cloud_logging'
         ])
 
 
