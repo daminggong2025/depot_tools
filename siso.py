@@ -69,7 +69,35 @@ def apply_telemetry_flags(args: list[str]) -> list[str]:
         "enable_cloud_monitoring", "enable_cloud_profiler",
         "enable_cloud_trace", "enable_cloud_logging"
     ]
+    metrics_project_flag = "metrics_project"
+    project_flag = "project"
+    project = None
+    metrics_project_already_set = False
     flag_to_add = []
+    # This logic checks if
+    # 1. Metrics project already set. If so, don't change it.
+    # 2. Project flag is set. If so, use the same project for metrics.
+    # 3. Neither are set, for example if it's an offline build. If so, then we don't set anything.
+    for i, arg in enumerate(args):
+        # Check if metrics project is set. If so, then don't change it.
+        if arg.startswith(f"--{metrics_project_flag}") or arg.startswith(
+                f"-{metrics_project_flag}"):
+            metrics_project_already_set = True
+            break
+        # If we find project set, then use it as a metrics project as well.
+        # However keep looking for metrics project.
+        if arg.startswith(f"--{project_flag}") or arg.startswith(
+                f"-{project_flag}"):
+            if ('=' in arg):
+                project = arg.split("=")[1]
+            else:
+                if (i < len(args) - 1 and not args[i + 1].startswith("-")):
+                    project = args[i + 1]
+    if not metrics_project_already_set:
+        if project:
+            flag_to_add.append(f"--{metrics_project_flag}={project}")
+        else:
+            return args
     for flag in telemetry_flags:
         if f"-{flag}" not in args and f"--{flag}" not in args:
             flag_to_add.append(f"--{flag}")
