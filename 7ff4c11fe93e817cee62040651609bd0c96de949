@@ -52,6 +52,24 @@
       "parentUuid": "2c5c154a_df31fa56",
       "revId": "7ff4c11fe93e817cee62040651609bd0c96de949",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "70095a46_fb4630ff",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-11-11T23:50:05Z",
+      "side": 1,
+      "message": "Should have set the `rbe-chrome-untrusted` instead. @kerenzhu@chromium.org can you try again with this code?",
+      "parentUuid": "822c5aba_9a092504",
+      "revId": "7ff4c11fe93e817cee62040651609bd0c96de949",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
