@@ -16,6 +16,24 @@
       "message": "Thank you for the quick fix! I can confirm that this fix works for me.",
       "revId": "7ff4c11fe93e817cee62040651609bd0c96de949",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2c5c154a_df31fa56",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1439395
+      },
+      "writtenOn": "2025-11-11T22:59:32Z",
+      "side": 1,
+      "message": "The compilation completed successfully with a non-blocking error:\n\n```\n 6.24s finishing upload metrics to Cloud monitoring failed rpc error: code \u003d PermissionDenied desc \u003d Permission monitoring.metricDescriptors.create denied (or the resource may not exist).\nerror details: name \u003d DebugInfo detail \u003d Permission monitoring.metricDescriptors.create denied on projects/885976865459: no extra explanation needed. stack \u003d\nrpc error: code \u003d PermissionDenied desc \u003d Permission monitoring.metricDescriptors.create denied (or the resource may not exist).\nerror details: name \u003d DebugInfo detail \u003d Permission monitoring.metricDescriptors.create denied on projects/885976865459: no extra explanation needed. stack \u003d\nrpc error: code \u003d PermissionDenied desc \u003d Permission monitoring.metricDescriptors.create denied (or the resource may not exist).\nerror details: name \u003d DebugInfo detail \u003d Permission monitoring.metricDescriptors.create denied on projects/885976865459: no extra explanation needed. stack \u003d\nrpc error: code \u003d PermissionDenied desc \u003d Permission monitoring.metricDescriptors.create denied (or the resource may not exist).\n\n(the log repeats 10+ lines)\n```\n\nfwiw, I am working on https://webium-private.googlesource.com/.",
+      "parentUuid": "2c2aa04c_5eb50b3f",
+      "revId": "7ff4c11fe93e817cee62040651609bd0c96de949",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
