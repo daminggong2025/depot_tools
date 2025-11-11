@@ -69,7 +69,15 @@ def apply_telemetry_flags(args: list[str]) -> list[str]:
         "enable_cloud_monitoring", "enable_cloud_profiler",
         "enable_cloud_trace", "enable_cloud_logging"
     ]
+    metrics_project_flag = "metrics_project"
+    rbe_metrics_var = "RBE_metrics_project"
+    default_metrics_project = "rbe-chromium-untrusted"
     flag_to_add = []
+    if (f"-{metrics_project_flag}" not in args
+            and f"--{metrics_project_flag}" not in args
+            and not os.environ.get(rbe_metrics_var)):
+        flag_to_add.append(
+            f"--{metrics_project_flag}={default_metrics_project}")
     for flag in telemetry_flags:
         if f"-{flag}" not in args and f"--{flag}" not in args:
             flag_to_add.append(f"--{flag}")
