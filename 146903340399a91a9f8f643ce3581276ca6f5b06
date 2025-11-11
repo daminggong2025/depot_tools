@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8aa215ad_799c3d58",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-11-11T07:52:53Z",
+      "side": 1,
+      "message": "Can you append `siso:` to distinguish from other CLs? Also, the title can more clear. e.g. \"Fix enabling cloud telemetry flags\"\nThis sentence can be a body of the CL message.",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 7,
+        "endChar": 59
+      },
+      "revId": "146903340399a91a9f8f643ce3581276ca6f5b06",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
