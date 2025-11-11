@@ -69,11 +69,51 @@ def apply_telemetry_flags(args: list[str]) -> list[str]:
         "enable_cloud_monitoring", "enable_cloud_profiler",
         "enable_cloud_trace", "enable_cloud_logging"
     ]
-    flag_to_add = []
-    for flag in telemetry_flags:
-        if f"-{flag}" not in args and f"--{flag}" not in args:
-            flag_to_add.append(f"--{flag}")
-    return args + flag_to_add
+
+    def set_telemetry_flags(args: list[str]) -> list[str]:
+        flag_to_add = []
+        for flag in telemetry_flags:
+            if f"-{flag}" not in args and f"--{flag}" not in args:
+                flag_to_add.append(f"--{flag}")
+        return args + flag_to_add
+
+    metrics_project_flag = "metrics_project"
+    metrics_env_var = "RBE_metrics_project"
+    project_flag = "project"
+    project_env_var = "SISO_PROJECT"
+    # If metrics env variable is set, add flags and return.
+    if os.environ.get(metrics_env_var):
+        return set_telemetry_flags(args)
+    # Check if metrics project is set. If so, then add flags and return.
+    for arg in args:
+        if arg.startswith(f"--{metrics_project_flag}") or arg.startswith(
+                f"-{metrics_project_flag}"):
+            return set_telemetry_flags(args)
+    # Metrics flags were not found. Proceed with searching for project flags.
+    for i, arg in enumerate(args):
+        # If we find project set, then use it as a metrics project as well.
+        # However keep looking for metrics project.
+        if arg.startswith(f"--{project_flag}") or arg.startswith(
+                f"-{project_flag}"):
+            project = None
+            if ('=' in arg):
+                project = arg.split("=")[1]
+            else:
+                if (i < len(args) - 1 and not args[i + 1].startswith("-")):
+                    project = args[i + 1]
+            if project:
+                flags = set_telemetry_flags(args)
+                flags.append(f"--{metrics_project_flag}={project}")
+                return flags
+            # If project is still None, then the flag was misconfigured. Ignore it.
+    # If we didn't find any correct project, but project env variable is set, use that instead.
+    if os.environ.get(project_env_var):
+        flags = set_telemetry_flags(args)
+        flags.append(
+            f"--{metrics_project_flag}={os.environ.get(project_env_var)}")
+        return flags
+    # Default case - no flags are set, so don't add any
+    return args
 
 
 def load_sisorc(rcfile):
