@@ -34,6 +34,24 @@
       "parentUuid": "2c2aa04c_5eb50b3f",
       "revId": "7ff4c11fe93e817cee62040651609bd0c96de949",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "822c5aba_9a092504",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-11-11T23:48:40Z",
+      "side": 1,
+      "message": "Thanks Keren, we will double check the credentials on our side!",
+      "parentUuid": "2c5c154a_df31fa56",
+      "revId": "7ff4c11fe93e817cee62040651609bd0c96de949",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
