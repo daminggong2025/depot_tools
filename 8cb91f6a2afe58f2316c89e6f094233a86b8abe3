@@ -26,6 +26,30 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "71ab3676_a529ef54",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 4367499
+      },
+      "writtenOn": "2025-11-11T00:38:38Z",
+      "side": 1,
+      "message": "Yes that\u0027s correct, but let me be more specific, you first create a branch from main, then you run `git cl diff-apply \u003cCL_NUMBER\u003e` you will get the changes into your staging area, then you commit and `git cl upload`, then you will have a completely new and independent CL that has the changes of the first CL_NUMBER but now you are the author, and you can upload without authorization problems. In the other hand if you have used the `git cl patch -b change-XXXX XXXX` instead, you will end with a commit on top of the original CL_NUMBER that is before your CL, that means you won\u0027t be able to submit until that one gets approved. And other methods that we have tried like using --no-commit flag, somehow tracks the original author and you end with permissions problems to upload. We have a solution for this but may be convinient to have it in just one command. What do you think?. About your last question, Do you mean buganizer issue? Do we want that?",
+      "parentUuid": "52e79f2e_f0f2697a",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 7,
+        "endChar": 17
+      },
+      "revId": "8cb91f6a2afe58f2316c89e6f094233a86b8abe3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "106dc280_8cd063af",
         "filename": "/PATCHSET_LEVEL",
         "patchSetId": 2
@@ -64,6 +88,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "3b174697_53dcb77f",
+        "filename": "git_cl.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 5670,
+      "author": {
+        "id": 4367499
+      },
+      "writtenOn": "2025-11-11T00:38:38Z",
+      "side": 1,
+      "message": "sure, done",
+      "parentUuid": "9f8c464a_b606893c",
+      "range": {
+        "startLine": 5670,
+        "startChar": 0,
+        "endLine": 5670,
+        "endChar": 70
+      },
+      "revId": "8cb91f6a2afe58f2316c89e6f094233a86b8abe3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d0da61ff_63640408",
@@ -77,6 +125,30 @@
       "writtenOn": "2025-11-10T19:54:25Z",
       "side": 1,
       "message": "this `else:` is a bit strange because it is paired with an if inside a for loop. Even if python is alright with it I might change this for readability.\n\nPerhaps\n\n```\nrevision_info \u003d None\nif not parsed_issue_arg.patchset:\n    # Use current revision by default.\n    revision_info \u003d detail[\u0027revisions\u0027][detail[\u0027current_revision\u0027]]\nelse:\n    for info in detail[\u0027revisions\u0027].values():\n        if int(info[\u0027_number\u0027]) \u003d\u003d parsed_issue_arg.patchset:\n            revision_info \u003d info\nif revision_info is None:\n    DieWithError(\u0027Couldn\\\u0027t find patchset %i in change %i\u0027 %\n                 (parsed_issue_arg.patchset, cl.GetIssue()))\n```\n\nMight read cleaner.",
+      "range": {
+        "startLine": 5700,
+        "startChar": 0,
+        "endLine": 5700,
+        "endChar": 13
+      },
+      "revId": "8cb91f6a2afe58f2316c89e6f094233a86b8abe3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1a8c5628_495e6ed0",
+        "filename": "git_cl.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 5700,
+      "author": {
+        "id": 4367499
+      },
+      "writtenOn": "2025-11-11T00:38:38Z",
+      "side": 1,
+      "message": "agree, done",
+      "parentUuid": "d0da61ff_63640408",
       "range": {
         "startLine": 5700,
         "startChar": 0,
