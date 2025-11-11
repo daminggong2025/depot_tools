@@ -1887,14 +1887,10 @@ def CheckPatchFormatted(input_api,
             short_path = presubmit_subdir
         else:
             short_path = input_api.basename(input_api.change.RepositoryRoot())
-        display_args.append(presubmit_subdir)
-        msg = (
-            'The %s directory requires source formatting. '
-            'Please run: git cl format %s. Or, if you are in CiderG, '
-            'please use the "Format Modified Lines in All Files '
-            '(git cl format)" functionality in the command palette.' % (
-                short_path, ' '.join(display_args)))
-        return [result_factory(msg)]
+        display_args.append(presubmit_subdir or '.')
+        msg = ('The %s directory requires source formatting.' % short_path)
+        fix_command = f"git cl format {' '.join(display_args).strip()}"
+        return [output_api.FormattingWarning(msg, command=fix_command)]
     return []
 
 

@@ -479,6 +479,21 @@ class _PresubmitPromptWarning(_PresubmitResult):
     should_prompt = True
 
 
+class _FormattingWarning(_PresubmitResult):
+    """A warning specifically for formatting issues."""
+
+    def __init__(self, message, command, items=None, long_text=''):
+        super(_FormattingWarning, self).__init__(message,
+                                                 items=items,
+                                                 long_text=long_text)
+        self.command = command
+
+    def json_format(self):
+        data = super(_FormattingWarning, self).json_format()
+        data['command'] = self.command
+        return data
+
+
 # Top level object so multiprocessing can pickle
 # Public access through OutputApi object.
 class _PresubmitNotifyResult(_PresubmitResult):
@@ -610,6 +625,7 @@ class OutputApi(object):
     PresubmitError = _PresubmitError
     PresubmitPromptWarning = _PresubmitPromptWarning
     PresubmitNotifyResult = _PresubmitNotifyResult
+    FormattingWarning = _FormattingWarning
     MailTextResult = _MailTextResult
     PresubmitResultLocation = _PresubmitResultLocation
 
@@ -2116,6 +2132,39 @@ def DoPresubmitChecks(change,
             results += executer.ExecPresubmitScript(presubmit_script, filename)
 
         results += thread_pool.RunAsync()
+
+        if not results:
+            return 0, []  # No problems.
+
+        formatting_warnings = [
+            r for r in results if isinstance(r, _FormattingWarning)
+        ]
+        other_results = [
+            r for r in results if not isinstance(r, _FormattingWarning)
+        ]
+
+        if formatting_warnings:
+            # Extract unique commands
+            commands = sorted(
+                list(set(fw.command for fw in formatting_warnings)))
+
+            # Create the combined message
+            combined_command = ' && '.join(commands)
+            msg = 'Your changes require formatting.'
+            details = '\n- '.join(fw._message for fw in formatting_warnings)
+            long_text = (
+                'Please run the following command to fix:\n'
+                f'{combined_command}\n\n'
+                'If you are in CiderG, access the Command Palette and run:\n'
+                'Format Modified Lines in All Files (git cl format)\n\n'
+                f'Details:\n- {details}\n')
+
+            # Add a new aggregated warning to the list of other results.
+            output_api = OutputApi(committing)
+            aggregated_warning = output_api.PresubmitPromptWarning(
+                msg, long_text=long_text)
+            other_results.append(aggregated_warning)
+        results = other_results
 
         messages = {}
         should_prompt = False
