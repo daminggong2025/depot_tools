@@ -106,7 +106,9 @@ def apply_telemetry_flags(args: list[str], env: dict[str, str]) -> list[str]:
     if known_args.project:
         return args + flags_to_add + [f"--metrics_project={known_args.project}"]
     if project_env_var in env:
-        return args + flags_to_add + [f"--metrics_project={env[project_env_var]}"]
+        return args + flags_to_add + [
+            f"--metrics_project={env[project_env_var]}"
+        ]
     # Default case - no flags are set, so don't add any
     return args
 
