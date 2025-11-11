@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c33ec602_0dcff72a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1119849
+      },
+      "writtenOn": "2025-11-11T14:54:00Z",
+      "side": 1,
+      "message": "I\u0027m pretty sure that this broke autoninja on my machine with ` 8.61s Error: cloud project ID for Cloud monitoring must be specified by -metrics_project or RBE_metrics_project`\n\nI was able to fix this by cleaning all depot_tools config files and disabling build_telemetry, which is why I believe this CL to be the culprit",
+      "revId": "2b4898e32779fb97edb9896b0375d6a22577ccdd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
