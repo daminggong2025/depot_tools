@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ff971163_4352a288",
+        "filename": "autoninja.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 470,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2025-11-11T07:56:06Z",
+      "side": 1,
+      "message": "this is only needed for ninja.\nok to pass -o or -offline to siso.",
+      "revId": "22c2938828b3b7a082f6f9708dad0fe9ad054eb4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "24c9d797_0e8c1c00",
+        "filename": "autoninja.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 504,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2025-11-11T07:56:06Z",
+      "side": 1,
+      "message": "wrong indent?\nit should not be part of `if sys.platform in ..`",
+      "revId": "22c2938828b3b7a082f6f9708dad0fe9ad054eb4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
