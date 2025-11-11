@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "521f2fbf_cb533a00",
+        "filename": "autoninja.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 503,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2025-11-11T07:46:20Z",
+      "side": 1,
+      "message": "following is ninja specific, not siso specific,\nso siso marker check should be before this?",
+      "revId": "5a054e50c375e8c96e17d09f1987146587e0335c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
