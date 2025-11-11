@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "35ae6d2e_49049e67",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1244248
+      },
+      "writtenOn": "2025-11-11T11:55:16Z",
+      "side": 1,
+      "message": "Hi. I\u0027ve been using -j 16 since a long time ago to speed up gclient sync on an ARM Mac. Also, https://issues.chromium.org/issues/40261607#comment26 reported it as working since more than a year ago. I believe it\u0027s time to reenable parallel sync on Macs.",
+      "revId": "6903052a39363c0352a8ebd91b5e4cbeced593b1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
