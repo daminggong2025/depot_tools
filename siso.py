@@ -7,6 +7,7 @@ third_party as part of gclient sync. It will automatically find the siso
 binary when run inside a gclient source tree, so users can just type
 "siso" on the command line."""
 
+import argparse
 import itertools
 import os
 import platform
@@ -69,11 +70,37 @@ def apply_telemetry_flags(args: list[str]) -> list[str]:
         "enable_cloud_monitoring", "enable_cloud_profiler",
         "enable_cloud_trace", "enable_cloud_logging"
     ]
-    flag_to_add = []
-    for flag in telemetry_flags:
-        if f"-{flag}" not in args and f"--{flag}" not in args:
-            flag_to_add.append(f"--{flag}")
-    return args + flag_to_add
+
+    def set_telemetry_flags(args: list[str]) -> list[str]:
+        flag_to_add = []
+        for flag in telemetry_flags:
+            if f"-{flag}" not in args and f"--{flag}" not in args:
+                flag_to_add.append(f"--{flag}")
+        return args + flag_to_add
+
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument("-metrics_project", "--metrics_project")
+    parser.add_argument("-project", "--project")
+    metrics_env_var = "RBE_metrics_project"
+    project_env_var = "SISO_PROJECT"
+    # If metrics env variable is set, add flags and return.
+    if os.environ.get(metrics_env_var):
+        return set_telemetry_flags(args)
+    # Check if metrics project is set. If so, then add flags and return.
+    known_args, _ = parser.parse_known_args(args)
+    if known_args.metrics_project:
+        return set_telemetry_flags(args)
+    if known_args.project:
+        flags = set_telemetry_flags(args)
+        flags.append(f"--metrics_project={known_args.project}")
+        return flags
+    if os.environ.get(project_env_var):
+        flags = set_telemetry_flags(args)
+        flags.append(f"--metrics_project={os.environ.get(project_env_var)}")
+        return flags
+    # Default case - no flags are set, so don't add any
+    return args
 
 
 def load_sisorc(rcfile):
@@ -228,16 +255,17 @@ def main(args, telemetry_cfg: Optional[build_telemetry.Config] = None):
         for siso_path in siso_paths:
             if siso_path and os.path.isfile(siso_path):
                 check_outdir(subcmd, out_dir)
-                new_args = apply_sisorc(global_flags, subcmd_flags, args[1:],
-                                        subcmd)
-                if args[1:] != new_args:
-                    print('depot_tools/siso.py: %s' % shlex.join(new_args),
-                          file=sys.stderr)
+                new_args = global_flags
                 # Add ninja specific flags.
                 if args[1] == "ninja":
                     new_args = apply_metrics_labels(new_args)
                     if should_collect_logs:
                         new_args = apply_telemetry_flags(new_args)
+                new_args = apply_sisorc(new_args, subcmd_flags, args[1:],
+                                        subcmd)
+                if args[1:] != new_args:
+                    print('depot_tools/siso.py: %s' % shlex.join(new_args),
+                          file=sys.stderr)
                 return caffeinate.run([siso_path] + new_args, env=env)
         print(
             'depot_tools/siso.py: Could not find siso in third_party/siso '
