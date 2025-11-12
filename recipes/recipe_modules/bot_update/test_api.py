@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import collections
 import collections.abc
 import hashlib
 import struct
@@ -34,6 +35,7 @@ class BotUpdateTestApi(recipe_test_api.RecipeTestApi):
       *,
       patch_root: str | None = None,
       fixed_revisions: collections.abc.Mapping[str, str] | None = None,
+      repo_urls: collections.abc.Mapping[str, str] | None = None,
       fail_checkout: bool = False,
       fail_patch: bool | typing.Literal['download'] = False,
       commit_positions: bool = True,
@@ -53,6 +55,10 @@ class BotUpdateTestApi(recipe_test_api.RecipeTestApi):
         the resultant json will have refs replaced with generated
         revision values. The provided revisions will be reported as-is
         in the fixed_revisions of the resultant json.
+      repo_urls: A mapping from project name/checkout-relative repo path
+        to the repo URLs for the project. When constructing the
+        manifests in the result json, the the provided URLs will be used
+        for the repository values for those projects.
       fail_checkout: Whether or not the simulated checkout should fail.
       fail_patch: Whether or not the checkout should fail to apply the
         patch. A value of 'download' can be provided to indicate a
@@ -115,10 +121,16 @@ class BotUpdateTestApi(recipe_test_api.RecipeTestApi):
           'step_text': 'Some step text'
       })
 
+      repo_urls = dict(repo_urls or {})
+
+      def get_repo_url(project_name):
+        return repo_urls.setdefault(project_name,
+                                    f'https://fake.org/{project_name}.git')
+
       output.update({
           'manifest': {
               project_name: {
-                  'repository': 'https://fake.org/%s.git' % project_name,
+                  'repository': get_repo_url(project_name),
                   'revision': revision,
               }
               for project_name, revision in revisions.items()
@@ -131,7 +143,7 @@ class BotUpdateTestApi(recipe_test_api.RecipeTestApi):
               'directories': {
                   project_name: {
                       'git_checkout': {
-                          'repo_url': 'https://fake.org/%s.git' % project_name,
+                          'repo_url': get_repo_url(project_name),
                           'revision': revision
                       }
                   }
