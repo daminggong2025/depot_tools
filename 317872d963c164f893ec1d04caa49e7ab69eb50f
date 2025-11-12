@@ -81,6 +81,24 @@
       "parentUuid": "a45fbeb9_ce4ce061",
       "revId": "317872d963c164f893ec1d04caa49e7ab69eb50f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6a2975b5_17ffccac",
+        "filename": "recipes/recipe_modules/bot_update/api.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 223,
+      "author": {
+        "id": 1520537
+      },
+      "writtenOn": "2025-11-12T23:34:17Z",
+      "side": 1,
+      "message": "\u003e Tim Bain do you remember why this was done for branch?\n\nThat difference wasn\u0027t intentional on my part. @newtonlam@google.com was that intentional on your part or inadvertent? I suspect inadvertent, and partly caused by the fact that it matches the field in ChangeInfo as Garrett pointed out.\n\n\u003e The branch for refs outside of refs/heads shows up as the ref\n\nThere\u0027s a `full_branch` field that includes refs/heads. A simple non-breaking change would be to add that field to the protos to let us stay compatible with ChangeInfo from Gerrit. Any concerns with that approach?",
+      "parentUuid": "cfa88261_6d56ebdc",
+      "revId": "317872d963c164f893ec1d04caa49e7ab69eb50f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
