@@ -48,6 +48,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "343890d8_394b87b7",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 5
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-11-12T05:22:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fc763cbb_fe68a1d3",
+      "range": {
+        "startLine": 7,
+        "startChar": 10,
+        "endLine": 7,
+        "endChar": 53
+      },
+      "revId": "c8c8df936ac922ebf648585564e04235dc9ba154",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "1b562436_30fe8fb2",
@@ -61,6 +85,24 @@
       "writtenOn": "2025-11-12T01:13:08Z",
       "side": 1,
       "message": "it would be same as SISO_PROJECT or -project value?\n\nbtw, enable telemetry only for googlers, or opted-in by build_telemetry?",
+      "revId": "c8c8df936ac922ebf648585564e04235dc9ba154",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9c9771ae_3cf7da78",
+        "filename": "siso.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-11-12T05:22:43Z",
+      "side": 1,
+      "message": "Only googlers that have opted in.",
+      "parentUuid": "1b562436_30fe8fb2",
       "revId": "c8c8df936ac922ebf648585564e04235dc9ba154",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -95,6 +137,24 @@
       "writtenOn": "2025-11-12T05:22:20Z",
       "side": 1,
       "message": "I remember it makes the print message at L261 confusing. So, it needs to compare between \"the args after applying metrics labels\" and \"the args after applying sisorc\". Is it correct?",
+      "parentUuid": "e6d7be57_681fe63c",
+      "revId": "c8c8df936ac922ebf648585564e04235dc9ba154",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4cc70b7e_43cc817c",
+        "filename": "siso.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 239,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-11-12T05:22:43Z",
+      "side": 1,
+      "message": "Like so?",
       "parentUuid": "e6d7be57_681fe63c",
       "revId": "c8c8df936ac922ebf648585564e04235dc9ba154",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
