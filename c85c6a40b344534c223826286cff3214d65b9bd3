@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a43c4d7f_cf38555d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2025-11-12T02:32:51Z",
+      "side": 1,
+      "message": "Could you add test like\nhttps://crrev.com/c/5091760/9/recipes/recipe_modules/git/examples/full.py\n?\n\nYou also need to run https://source.chromium.org/chromium/chromium/tools/depot_tools/+/main:recipes/recipes.py\nlike\n```\n./recipes.py test train\n```\nto update test expectation (*.json) file when you add test case for recipe.",
+      "revId": "c85c6a40b344534c223826286cff3214d65b9bd3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
