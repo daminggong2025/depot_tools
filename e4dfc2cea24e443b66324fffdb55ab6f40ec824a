@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "a1367ff3_bec2256a",
+        "filename": "siso.py",
+        "patchSetId": 10
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-11-12T05:43:44Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "76a5bac8_008298a0",
+      "revId": "e4dfc2cea24e443b66324fffdb55ab6f40ec824a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "dc555c4a_4fc5e0bb",
@@ -31,6 +49,30 @@
       "writtenOn": "2025-11-12T05:38:19Z",
       "side": 1,
       "message": "nit: I think you don\u0027t need this helper function.\n\ne.g.\n```\nflags_to_add \u003d ...\n\nif os.environ.get(metrics_env_var):\n  return args + flags_to_add\n...\nif known_args.metrics_project:\n  return args + flags_to_add\nif known_args.project:\n  flags_to_add.append(...)\n  return args + flags_to_add\nif os.environ.get(project_env_var):\n  flags_to_add.append(...)\n  return args + flags_to_add\n  \n# It turned out that project is not specified. No flags are added here.\nreturn args\n```",
+      "range": {
+        "startLine": 74,
+        "startChar": 0,
+        "endLine": 80,
+        "endChar": 0
+      },
+      "revId": "e4dfc2cea24e443b66324fffdb55ab6f40ec824a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ecc93442_49f50de0",
+        "filename": "siso.py",
+        "patchSetId": 10
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-11-12T05:43:44Z",
+      "side": 1,
+      "message": "Agreed, done.",
+      "parentUuid": "dc555c4a_4fc5e0bb",
       "range": {
         "startLine": 74,
         "startChar": 0,
