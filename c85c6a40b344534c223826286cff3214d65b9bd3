@@ -16,6 +16,24 @@
       "message": "Could you add test like\nhttps://crrev.com/c/5091760/9/recipes/recipe_modules/git/examples/full.py\n?\n\nYou also need to run https://source.chromium.org/chromium/chromium/tools/depot_tools/+/main:recipes/recipes.py\nlike\n```\n./recipes.py test train\n```\nto update test expectation (*.json) file when you add test case for recipe.",
       "revId": "c85c6a40b344534c223826286cff3214d65b9bd3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8e99060f_7e4a9a69",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 4282079
+      },
+      "writtenOn": "2025-11-12T03:39:44Z",
+      "side": 1,
+      "message": "Ah cool, it\u0027s my first time doing this, but done!",
+      "parentUuid": "a43c4d7f_cf38555d",
+      "revId": "c85c6a40b344534c223826286cff3214d65b9bd3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
