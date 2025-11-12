@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7e198130_728d9f99",
+        "filename": "siso.py",
+        "patchSetId": 11
+      },
+      "lineNbr": 259,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2025-11-12T05:40:47Z",
+      "side": 1,
+      "message": "if subcmd \u003d\u003d \u0027ninja\u0027:\n?",
+      "revId": "960ca9e2523a9bcee153c17927f5599fa0d8dc2e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "292ff0f0_8c022614",
+        "filename": "siso.py",
+        "patchSetId": 11
+      },
+      "lineNbr": 263,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2025-11-12T05:40:47Z",
+      "side": 1,
+      "message": "hmm, it still metrics/telemetry flags are used over sisorc flags?\n\npreference order should be\n user given flags on command line\n sisorc\n automatically added metrics/telemetry flags",
+      "revId": "960ca9e2523a9bcee153c17927f5599fa0d8dc2e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
