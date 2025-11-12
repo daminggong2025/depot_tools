@@ -124,6 +124,24 @@
       "parentUuid": "884bf677_c08f2b94",
       "revId": "2b4898e32779fb97edb9896b0375d6a22577ccdd",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8109b392_42d6f74a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-11-12T11:52:39Z",
+      "side": 1,
+      "message": "The Siso version is specified in DEPS. So synching DEPS should solve the problem.\ne.g.\nhttps://source.chromium.org/chromium/chromium/src/+/main:DEPS;l\u003d270;drc\u003dd98df8827c5753785e17c583faa3a78f0d7aa0ba\n\n(I\u0027d recommend setting up an auto-roller if possible.)",
+      "parentUuid": "88c6e89c_40f3ef26",
+      "revId": "2b4898e32779fb97edb9896b0375d6a22577ccdd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
