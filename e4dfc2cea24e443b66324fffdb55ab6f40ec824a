@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d7261cf3_5a9e567d",
+        "filename": "siso.py",
+        "patchSetId": 10
+      },
+      "lineNbr": 261,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2025-11-12T05:26:05Z",
+      "side": 1,
+      "message": "need to apply it in subcmd flags, not global flags?",
+      "revId": "e4dfc2cea24e443b66324fffdb55ab6f40ec824a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
