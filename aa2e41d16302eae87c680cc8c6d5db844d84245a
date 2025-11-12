@@ -424,6 +424,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "83592578_6970a08c",
+        "filename": "metadata/fields/custom/license_allowlist.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-11-12T04:27:00Z",
+      "side": 1,
+      "message": ":(",
+      "parentUuid": "216143dc_951c0697",
+      "range": {
+        "startLine": 49,
+        "startChar": 13,
+        "endLine": 49,
+        "endChar": 27
+      },
+      "revId": "aa2e41d16302eae87c680cc8c6d5db844d84245a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "7029014d_df2d2b49",

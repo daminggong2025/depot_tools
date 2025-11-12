@@ -1,0 +1,90 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a0879547_426afb15",
+        "filename": "metadata/fields/custom/license.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-11-12T04:27:00Z",
+      "side": 1,
+      "message": "Delete this method. It\u0027s only used once in `validate`, and adds unnecessary redirection.\n\nYou should write something like this in validate():\n\n```\nlicenses \u003d self.extract_license(value)\n\nfor license in licenses:\n    ....\n\nif not allowlist_util.is_a_known_license(license):\n    not_allowlisted.append(license)\n```\n\n---\n\nGenerally, it\u0027s preferable to call `is_a_known_license` inplace. No need to add a redirection via process_license\n\nBonus fix, the current validate() implementation `for license, allowed in licenses:` isn\u0027t idiomatic, as there\u0027s no indication that `licenses` is List[Tuple]. Conventionally, we write: `for thing in things`.",
+      "range": {
+        "startLine": 36,
+        "startChar": 0,
+        "endLine": 56,
+        "endChar": 24
+      },
+      "revId": "c2f175bc0ac42324fd8bbe508a1d87e44bbe59c8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bb7b0a78_da1e1ca8",
+        "filename": "metadata/fields/custom/license.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-11-12T04:27:00Z",
+      "side": 1,
+      "message": "List comprehension or map here. For loop isn\u0027t necessary because you aren\u0027t doing complex control flow like `if-break`.\n\n```\nreturn [\n    allowlist_util.normalize_value(atomic_value)\n    for atomic_value in value.split(self.VALUE_DELIMITER)\n]\n```\n\nOr\n\n```\nreturn list(map(\n    allowlist_util.normalize_value, value.split(self.VALUE_DELIMITER)))\n```",
+      "range": {
+        "startLine": 67,
+        "startChar": 8,
+        "endLine": 72,
+        "endChar": 24
+      },
+      "revId": "c2f175bc0ac42324fd8bbe508a1d87e44bbe59c8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1d80792a_d3f6209c",
+        "filename": "metadata/fields/custom/license.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-11-12T04:27:00Z",
+      "side": 1,
+      "message": "New line between oneliner and explanation.\n\nAnd add a period to end of this sentence.\n\n\"\"\"Returns whether all licenses in the field are allowlisted.\n\nAssumes a non-empty license_field_value.\"\"\"",
+      "revId": "c2f175bc0ac42324fd8bbe508a1d87e44bbe59c8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f4d051fe_7cb78842",
+        "filename": "metadata/fields/custom/license.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-11-12T04:27:00Z",
+      "side": 1,
+      "message": "```\nreturn all(\n  allowlist_util.is_license_allowed(license, is_open_source_project)\n  for license in self._extract_licenses(license_field_value))\n```\n\nGenerally, prefer to express with fewer negations, also the built-in `all` conveys intention clearer than for + if.",
+      "range": {
+        "startLine": 78,
+        "startChar": 0,
+        "endLine": 82,
+        "endChar": 19
+      },
+      "revId": "c2f175bc0ac42324fd8bbe508a1d87e44bbe59c8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

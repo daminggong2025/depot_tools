@@ -130,6 +130,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ba6008b2_6b46f1d9",
+        "filename": "metadata/fields/custom/license.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2025-11-12T04:27:00Z",
+      "side": 1,
+      "message": "sure :/",
+      "parentUuid": "d38b12ee_f9851dc6",
+      "range": {
+        "startLine": 60,
+        "startChar": 16,
+        "endLine": 60,
+        "endChar": 71
+      },
+      "revId": "545390dfe303fbe364b15e146fdf42f6f5e57aa0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e6ecc2e1_38438c3a",
