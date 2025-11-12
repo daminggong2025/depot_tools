@@ -26,6 +26,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "fc763cbb_fe68a1d3",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 5
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-11-12T01:40:21Z",
+      "side": 1,
+      "message": "Reading https://chromium-review.googlesource.com/c/chromium/tools/depot_tools/+/7136644/comments/c33ec602_0dcff72a, it seems they are using an old version of Siso. A workaround is to use the same value with `-project`. Updating the Siso versions might be easier, depending on how many projects are using old Siso.",
+      "parentUuid": "380e055b_448b2166",
+      "range": {
+        "startLine": 7,
+        "startChar": 10,
+        "endLine": 7,
+        "endChar": 53
+      },
+      "revId": "c8c8df936ac922ebf648585564e04235dc9ba154",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "1b562436_30fe8fb2",
         "filename": "siso.py",
         "patchSetId": 5
