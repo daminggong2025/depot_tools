@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5d400168_1a768d39",
+        "filename": "siso.py",
+        "patchSetId": 11
+      },
+      "lineNbr": 241,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-11-12T05:43:52Z",
+      "side": 0,
+      "message": "I tested it locally. But I don\u0027t see the cloud logging URL. I suspect this change causes the regression.",
+      "range": {
+        "startLine": 236,
+        "startChar": 0,
+        "endLine": 241,
+        "endChar": 0
+      },
+      "revId": "c4109803d74f90f05344e9441ac0ff577acb820f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
