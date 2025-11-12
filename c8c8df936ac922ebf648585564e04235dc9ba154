@@ -63,6 +63,23 @@
       "message": "it would be same as SISO_PROJECT or -project value?\n\nbtw, enable telemetry only for googlers, or opted-in by build_telemetry?",
       "revId": "c8c8df936ac922ebf648585564e04235dc9ba154",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e6d7be57_681fe63c",
+        "filename": "siso.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 239,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2025-11-12T01:44:49Z",
+      "side": 1,
+      "message": "please apply sisorc after telemetry flags\nso that user can override them by sisorc",
+      "revId": "c8c8df936ac922ebf648585564e04235dc9ba154",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
