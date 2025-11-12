@@ -69,6 +69,24 @@
       "parentUuid": "e6800573_2c9d28cc",
       "revId": "0c3a9658bb47d78d5048d1e1a71786222319e0a0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6e621fa0_c4758e89",
+        "filename": "siso.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 117,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-11-12T05:18:25Z",
+      "side": 1,
+      "message": "Oh yeah, fixed. Can you also check another comment I left above ?",
+      "parentUuid": "e5c62e6f_e89cf098",
+      "revId": "0c3a9658bb47d78d5048d1e1a71786222319e0a0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
