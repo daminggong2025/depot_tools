@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1b562436_30fe8fb2",
+        "filename": "siso.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2025-11-12T01:13:08Z",
+      "side": 1,
+      "message": "it would be same as SISO_PROJECT or -project value?\n\nbtw, enable telemetry only for googlers, or opted-in by build_telemetry?",
+      "revId": "c8c8df936ac922ebf648585564e04235dc9ba154",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
