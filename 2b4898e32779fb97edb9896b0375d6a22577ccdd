@@ -106,6 +106,24 @@
       "parentUuid": "b97a670f_f1ad4120",
       "revId": "2b4898e32779fb97edb9896b0375d6a22577ccdd",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "88c6e89c_40f3ef26",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1439395
+      },
+      "writtenOn": "2025-11-12T06:18:40Z",
+      "side": 1,
+      "message": "We will sync to the latest Chromium ToT. Is that sufficient to upgrade siso? Or, is it something configurable separately from, e.g., DEPS or .gclient?",
+      "parentUuid": "884bf677_c08f2b94",
+      "revId": "2b4898e32779fb97edb9896b0375d6a22577ccdd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
