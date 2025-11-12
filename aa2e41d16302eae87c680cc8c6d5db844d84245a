@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "db4c96f1_b795a7ec",
+        "filename": "metadata/fields/custom/license.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2025-11-12T04:00:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a058c969_99920d7b",
+      "range": {
+        "startLine": 40,
+        "startChar": 0,
+        "endLine": 44,
+        "endChar": 38
+      },
+      "revId": "aa2e41d16302eae87c680cc8c6d5db844d84245a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "fd9707c3_cf73ddea",
@@ -70,6 +94,54 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "23b987bc_a4aff377",
+        "filename": "metadata/fields/custom/license.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2025-11-12T04:00:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8522a870_546211c1",
+      "range": {
+        "startLine": 61,
+        "startChar": 45,
+        "endLine": 61,
+        "endChar": 69
+      },
+      "revId": "aa2e41d16302eae87c680cc8c6d5db844d84245a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b6fe9748_95aea2d0",
+        "filename": "metadata/fields/custom/license.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2025-11-12T04:00:26Z",
+      "side": 1,
+      "message": "I\u0027ve cleaned it up a bit. It makes sense to have both, sometimes only the processed licenses are needed, sometimes whether those licenses are allowlisted is also needed.",
+      "parentUuid": "fd9707c3_cf73ddea",
+      "range": {
+        "startLine": 61,
+        "startChar": 8,
+        "endLine": 61,
+        "endChar": 24
+      },
+      "revId": "aa2e41d16302eae87c680cc8c6d5db844d84245a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "a67ca184_13e464e2",
@@ -83,6 +155,30 @@
       "writtenOn": "2025-10-22T04:29:09Z",
       "side": 1,
       "message": "nit: all_licenses_allowed()",
+      "range": {
+        "startLine": 77,
+        "startChar": 8,
+        "endLine": 77,
+        "endChar": 32
+      },
+      "revId": "aa2e41d16302eae87c680cc8c6d5db844d84245a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "bd9c682d_59815d29",
+        "filename": "metadata/fields/custom/license.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2025-11-12T04:00:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a67ca184_13e464e2",
       "range": {
         "startLine": 77,
         "startChar": 8,
@@ -116,6 +212,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "9692902e_7e17e804",
+        "filename": "metadata/fields/custom/license.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2025-11-12T04:00:26Z",
+      "side": 1,
+      "message": "This is fine as it is.",
+      "parentUuid": "043b5a0d_bdf1b0e5",
+      "range": {
+        "startLine": 108,
+        "startChar": 19,
+        "endLine": 108,
+        "endChar": 26
+      },
+      "revId": "aa2e41d16302eae87c680cc8c6d5db844d84245a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "745af1d8_625e03f7",
@@ -139,6 +259,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "9da14204_44a72954",
+        "filename": "metadata/fields/custom/license.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2025-11-12T04:00:26Z",
+      "side": 1,
+      "message": "Yes this is WAI. The lowercasing only happens in the check.",
+      "parentUuid": "745af1d8_625e03f7",
+      "range": {
+        "startLine": 109,
+        "startChar": 16,
+        "endLine": 109,
+        "endChar": 71
+      },
+      "revId": "aa2e41d16302eae87c680cc8c6d5db844d84245a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "6828d194_841911e1",
@@ -152,6 +296,30 @@
       "writtenOn": "2025-10-22T04:29:09Z",
       "side": 1,
       "message": "nit: filter_open_source_project_only_licenses\n\n// the verb is relevant.",
+      "range": {
+        "startLine": 124,
+        "startChar": 8,
+        "endLine": 124,
+        "endChar": 33
+      },
+      "revId": "aa2e41d16302eae87c680cc8c6d5db844d84245a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6928daee_3aa1cb40",
+        "filename": "metadata/fields/custom/license.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2025-11-12T04:00:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6828d194_841911e1",
       "range": {
         "startLine": 124,
         "startChar": 8,
@@ -187,6 +355,30 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "0efe6b4a_d205a14b",
+        "filename": "metadata/fields/custom/license.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 131,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2025-11-12T04:00:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9b9c7f71_0bebdeab",
+      "range": {
+        "startLine": 126,
+        "startChar": 8,
+        "endLine": 131,
+        "endChar": 31
+      },
+      "revId": "aa2e41d16302eae87c680cc8c6d5db844d84245a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "3ff05f0c_0987e75c",
         "filename": "metadata/fields/custom/license_allowlist.py",
         "patchSetId": 5
@@ -198,6 +390,30 @@
       "writtenOn": "2025-10-22T04:29:09Z",
       "side": 1,
       "message": "Why do we permit this prefix?\n\nIMO we should fix READMEs to stop using this (then hard fail for new additions).",
+      "range": {
+        "startLine": 49,
+        "startChar": 13,
+        "endLine": 49,
+        "endChar": 27
+      },
+      "revId": "aa2e41d16302eae87c680cc8c6d5db844d84245a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "216143dc_951c0697",
+        "filename": "metadata/fields/custom/license_allowlist.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2025-11-12T04:00:26Z",
+      "side": 1,
+      "message": "They are autorolled from google3 and use the license classifier. I think they are the ones that have been classified by the license team, but there are some in open source that have the same id, but without \u0027LicenseRef-\u0027.",
+      "parentUuid": "3ff05f0c_0987e75c",
       "range": {
         "startLine": 49,
         "startChar": 13,
@@ -221,6 +437,30 @@
       "writtenOn": "2025-10-22T04:29:09Z",
       "side": 1,
       "message": "nit: normalize_value\n\nAlso consider adding .lower() here",
+      "range": {
+        "startLine": 238,
+        "startChar": 4,
+        "endLine": 238,
+        "endChar": 17
+      },
+      "revId": "aa2e41d16302eae87c680cc8c6d5db844d84245a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "61f2621a_14143654",
+        "filename": "metadata/fields/custom/license_allowlist.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 238,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2025-11-12T04:00:26Z",
+      "side": 1,
+      "message": "Intentionally not done here so we maintain case for bug filing.",
+      "parentUuid": "7029014d_df2d2b49",
       "range": {
         "startLine": 238,
         "startChar": 4,
@@ -300,6 +540,78 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "12b5f37d_37c653ff",
+        "filename": "metadata/fields/custom/license_allowlist.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 244,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2025-11-12T04:00:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e644739e_5296e6f6",
+      "range": {
+        "startLine": 244,
+        "startChar": 44,
+        "endLine": 244,
+        "endChar": 48
+      },
+      "revId": "aa2e41d16302eae87c680cc8c6d5db844d84245a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a4bfad1d_24333b34",
+        "filename": "metadata/fields/custom/license_allowlist.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 244,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2025-11-12T04:00:26Z",
+      "side": 1,
+      "message": "both of those are function names, I\u0027d rather not overload them. `allow_list` is fine because these are all allow lists.",
+      "parentUuid": "2d1bf87e_118f05a5",
+      "range": {
+        "startLine": 244,
+        "startChar": 32,
+        "endLine": 244,
+        "endChar": 42
+      },
+      "revId": "aa2e41d16302eae87c680cc8c6d5db844d84245a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e7edd543_e56e63b5",
+        "filename": "metadata/fields/custom/license_allowlist.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 244,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2025-11-12T04:00:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4a4c4b85_de925fa5",
+      "range": {
+        "startLine": 244,
+        "startChar": 4,
+        "endLine": 244,
+        "endChar": 19
+      },
+      "revId": "aa2e41d16302eae87c680cc8c6d5db844d84245a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "ac803822_187fc7ed",
@@ -323,6 +635,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "38664415_5c0b2443",
+        "filename": "metadata/fields/custom/license_allowlist.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 250,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2025-11-12T04:00:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ac803822_187fc7ed",
+      "range": {
+        "startLine": 250,
+        "startChar": 4,
+        "endLine": 250,
+        "endChar": 14
+      },
+      "revId": "aa2e41d16302eae87c680cc8c6d5db844d84245a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "3315a24b_8fbb7721",
@@ -336,6 +672,30 @@
       "writtenOn": "2025-10-22T04:29:09Z",
       "side": 1,
       "message": "if the method is unused elsewhere, prefix with _ (same for others methods in this file)",
+      "range": {
+        "startLine": 254,
+        "startChar": 4,
+        "endLine": 254,
+        "endChar": 22
+      },
+      "revId": "aa2e41d16302eae87c680cc8c6d5db844d84245a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "45e2f3d5_46e81d63",
+        "filename": "metadata/fields/custom/license_allowlist.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 254,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2025-11-12T04:00:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3315a24b_8fbb7721",
       "range": {
         "startLine": 254,
         "startChar": 4,
