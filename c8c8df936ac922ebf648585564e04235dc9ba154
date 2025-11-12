@@ -80,6 +80,24 @@
       "message": "please apply sisorc after telemetry flags\nso that user can override them by sisorc",
       "revId": "c8c8df936ac922ebf648585564e04235dc9ba154",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3f009efb_ad6bd294",
+        "filename": "siso.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 239,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-11-12T05:22:20Z",
+      "side": 1,
+      "message": "I remember it makes the print message at L261 confusing. So, it needs to compare between \"the args after applying metrics labels\" and \"the args after applying sisorc\". Is it correct?",
+      "parentUuid": "e6d7be57_681fe63c",
+      "revId": "c8c8df936ac922ebf648585564e04235dc9ba154",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
