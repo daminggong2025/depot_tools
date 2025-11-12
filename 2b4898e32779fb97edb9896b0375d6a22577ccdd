@@ -52,6 +52,24 @@
       "parentUuid": "5d8ebd16_ad558254",
       "revId": "2b4898e32779fb97edb9896b0375d6a22577ccdd",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8b778e53_ecee002f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-11-12T01:36:45Z",
+      "side": 1,
+      "message": "I suspect you are using an old version of `siso` binary. Can you confirm which version is used (for which project)? Chromium uses `v1.4.17`.",
+      "parentUuid": "65dc3d05_26131b3a",
+      "revId": "2b4898e32779fb97edb9896b0375d6a22577ccdd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
