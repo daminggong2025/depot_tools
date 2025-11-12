@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5e66eeba_fda0024e",
+        "filename": "recipes/recipe_modules/bot_update/api.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2025-11-12T21:31:08Z",
+      "side": 1,
+      "message": "due to the nature of these particular .data* messages?\n\nIf multi-solution is important, we could map them to different checks or modify the messages.\n\ne.g. check_id could be used as a prefix and then\n\n```\n  check_id -depends on\u003e\n    check_id/solution0_name \n    check_id/solution1_name \n    etc.\n```",
+      "range": {
+        "startLine": 88,
+        "startChar": 39,
+        "endLine": 88,
+        "endChar": 46
+      },
+      "revId": "317872d963c164f893ec1d04caa49e7ab69eb50f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a45fbeb9_ce4ce061",
+        "filename": "recipes/recipe_modules/bot_update/api.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 223,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2025-11-12T21:31:08Z",
+      "side": 1,
+      "message": "this is unfortunate; @tbain@google.com do you remember why this was done for branch? This means you cannot represent CLs for anything outside of refs/heads now (e.g. refs/branch-heads/* cannot be represented in GerritChangeInfo).\n\nI remember asking that ref include refs/heads for gob sources, but I must have missed this for gerrit changes",
+      "revId": "317872d963c164f893ec1d04caa49e7ab69eb50f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
