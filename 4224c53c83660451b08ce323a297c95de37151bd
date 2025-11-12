@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a9db4fdc_cfeb004c",
+        "filename": "autoninja.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 297,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-11-12T06:17:47Z",
+      "side": 1,
+      "message": "This happens on a Googgler\u0027s workstation, too.",
+      "range": {
+        "startLine": 297,
+        "startChar": 18,
+        "endLine": 297,
+        "endChar": 27
+      },
+      "revId": "4224c53c83660451b08ce323a297c95de37151bd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b0abc264_4249632d",
+        "filename": "siso.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-11-12T06:17:47Z",
+      "side": 1,
+      "message": "same here.",
+      "range": {
+        "startLine": 73,
+        "startChar": 18,
+        "endLine": 73,
+        "endChar": 27
+      },
+      "revId": "4224c53c83660451b08ce323a297c95de37151bd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
