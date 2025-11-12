@@ -70,6 +70,24 @@
       "parentUuid": "65dc3d05_26131b3a",
       "revId": "2b4898e32779fb97edb9896b0375d6a22577ccdd",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b97a670f_f1ad4120",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1439395
+      },
+      "writtenOn": "2025-11-12T02:44:06Z",
+      "side": 1,
+      "message": "Thank you Alex for the quick fix! I can confirm that the fix works for me.\n\nI am using siso v1.4.4. The repo I am working on, https://webium-private.googlesource.com/prototype/, is a private fork of M139 Chromium.",
+      "parentUuid": "65dc3d05_26131b3a",
+      "revId": "2b4898e32779fb97edb9896b0375d6a22577ccdd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
