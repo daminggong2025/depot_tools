@@ -39,6 +39,24 @@
       "message": "this is unfortunate; @tbain@google.com do you remember why this was done for branch? This means you cannot represent CLs for anything outside of refs/heads now (e.g. refs/branch-heads/* cannot be represented in GerritChangeInfo).\n\nI remember asking that ref include refs/heads for gob sources, but I must have missed this for gerrit changes",
       "revId": "317872d963c164f893ec1d04caa49e7ab69eb50f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cfa88261_6d56ebdc",
+        "filename": "recipes/recipe_modules/bot_update/api.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 223,
+      "author": {
+        "id": 1289180
+      },
+      "writtenOn": "2025-11-12T21:54:12Z",
+      "side": 1,
+      "message": "This matches the ChangeInfo from Gerrit\u0027s API: https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#change-info\n\nThe branch for refs outside of refs/heads shows up as the ref: https://screenshot.googleplex.com/47hPozdAyhgiav2",
+      "parentUuid": "a45fbeb9_ce4ce061",
+      "revId": "317872d963c164f893ec1d04caa49e7ab69eb50f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
