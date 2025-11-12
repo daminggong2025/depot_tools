@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1913622a_29584039",
+        "filename": "siso.py",
+        "patchSetId": 24
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2025-11-12T07:40:13Z",
+      "side": 1,
+      "message": "--metrics_project\u003d{env[project_env_var]}\n\n?",
+      "revId": "1aa2b7a11e25d478930e91270b7e79b9c700e220",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
