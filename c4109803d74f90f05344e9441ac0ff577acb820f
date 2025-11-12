@@ -22,6 +22,30 @@
       },
       "revId": "c4109803d74f90f05344e9441ac0ff577acb820f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a257c9c7_75eeba15",
+        "filename": "siso.py",
+        "patchSetId": 11
+      },
+      "lineNbr": 241,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-11-12T05:51:36Z",
+      "side": 0,
+      "message": "It turned out that it was a different issue.",
+      "parentUuid": "5d400168_1a768d39",
+      "range": {
+        "startLine": 236,
+        "startChar": 0,
+        "endLine": 241,
+        "endChar": 0
+      },
+      "revId": "c4109803d74f90f05344e9441ac0ff577acb820f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
