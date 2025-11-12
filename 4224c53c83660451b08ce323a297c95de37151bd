@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "b26e918a_31fb5c6e",
+        "filename": "autoninja.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 297,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-11-12T06:21:37Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a9db4fdc_cfeb004c",
+      "range": {
+        "startLine": 297,
+        "startChar": 18,
+        "endLine": 297,
+        "endChar": 27
+      },
+      "revId": "4224c53c83660451b08ce323a297c95de37151bd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "b0abc264_4249632d",
@@ -37,6 +61,30 @@
       "writtenOn": "2025-11-12T06:17:47Z",
       "side": 1,
       "message": "same here.",
+      "range": {
+        "startLine": 73,
+        "startChar": 18,
+        "endLine": 73,
+        "endChar": 27
+      },
+      "revId": "4224c53c83660451b08ce323a297c95de37151bd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2fa94db4_410f720c",
+        "filename": "siso.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-11-12T06:21:37Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b0abc264_4249632d",
       "range": {
         "startLine": 73,
         "startChar": 18,
