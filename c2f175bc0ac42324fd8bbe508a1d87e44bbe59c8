@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ccc2344f_3f1cc273",
+        "filename": "metadata/fields/custom/license.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2025-11-12T04:47:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a0879547_426afb15",
+      "range": {
+        "startLine": 36,
+        "startChar": 0,
+        "endLine": 56,
+        "endChar": 24
+      },
+      "revId": "c2f175bc0ac42324fd8bbe508a1d87e44bbe59c8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "bb7b0a78_da1e1ca8",
@@ -37,6 +61,30 @@
       "writtenOn": "2025-11-12T04:27:00Z",
       "side": 1,
       "message": "List comprehension or map here. For loop isn\u0027t necessary because you aren\u0027t doing complex control flow like `if-break`.\n\n```\nreturn [\n    allowlist_util.normalize_value(atomic_value)\n    for atomic_value in value.split(self.VALUE_DELIMITER)\n]\n```\n\nOr\n\n```\nreturn list(map(\n    allowlist_util.normalize_value, value.split(self.VALUE_DELIMITER)))\n```",
+      "range": {
+        "startLine": 67,
+        "startChar": 8,
+        "endLine": 72,
+        "endChar": 24
+      },
+      "revId": "c2f175bc0ac42324fd8bbe508a1d87e44bbe59c8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1800d8b9_239fd1a7",
+        "filename": "metadata/fields/custom/license.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2025-11-12T04:47:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "bb7b0a78_da1e1ca8",
       "range": {
         "startLine": 67,
         "startChar": 8,
@@ -64,6 +112,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "19f5e482_45586f16",
+        "filename": "metadata/fields/custom/license.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2025-11-12T04:47:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1d80792a_d3f6209c",
+      "revId": "c2f175bc0ac42324fd8bbe508a1d87e44bbe59c8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "f4d051fe_7cb78842",
@@ -77,6 +143,30 @@
       "writtenOn": "2025-11-12T04:27:00Z",
       "side": 1,
       "message": "```\nreturn all(\n  allowlist_util.is_license_allowed(license, is_open_source_project)\n  for license in self._extract_licenses(license_field_value))\n```\n\nGenerally, prefer to express with fewer negations, also the built-in `all` conveys intention clearer than for + if.",
+      "range": {
+        "startLine": 78,
+        "startChar": 0,
+        "endLine": 82,
+        "endChar": 19
+      },
+      "revId": "c2f175bc0ac42324fd8bbe508a1d87e44bbe59c8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9666a396_af7a8003",
+        "filename": "metadata/fields/custom/license.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2025-11-12T04:47:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f4d051fe_7cb78842",
       "range": {
         "startLine": 78,
         "startChar": 0,
