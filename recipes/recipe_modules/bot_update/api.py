@@ -13,7 +13,6 @@ from recipe_engine.engine_types import StepPresentation
 
 from PB.go.chromium.org.luci.buildbucket.proto import common as common_pb2
 
-
 @dataclasses.dataclass(kw_only=True, frozen=True)
 class RelativeRoot:
   """A root that is relative to the checkout root.
@@ -308,7 +307,11 @@ class BotUpdateApi(recipe_api.RecipeApi):
             for patch_ref in patch_refs)
 
     # Compute requested revisions.
-    revisions = {}
+    # Guarantee that first solution has a revision.
+    # TODO(machenbach): We should explicitly pass HEAD for ALL solutions
+    # that don't specify anything else.
+    first_sln = cfg.solutions[0].name
+    revisions = {first_sln: 'HEAD'}
     for solution in cfg.solutions:
       if solution.revision:
         revisions[solution.name] = solution.revision
@@ -335,19 +338,13 @@ class BotUpdateApi(recipe_api.RecipeApi):
           and (in_commit.host, in_commit.project) in parsed_solution_urls):
         refs = [in_commit.ref] + refs
 
-    # Guarantee that first solution has a revision.
-    # TODO(machenbach): We should explicitly pass HEAD for ALL solutions
-    # that don't specify anything else.
-    first_sol = cfg.solutions[0].name
-    revisions[first_sol] = revisions.get(first_sol) or 'HEAD'
-
     if cfg.revisions:
       # Only update with non-empty values. Some recipe might otherwise
       # overwrite the HEAD default with an empty string.
       revisions.update(
           (k, v) for k, v in cfg.revisions.items() if v)
     if cfg.solutions and root_solution_revision:
-      revisions[first_sol] = root_solution_revision
+      revisions[first_sln] = root_solution_revision
     # Allow for overrides required to bisect into rolls.
     revisions.update(self._deps_revision_overrides)
 
@@ -419,12 +416,12 @@ class BotUpdateApi(recipe_api.RecipeApi):
       cmd.append('--clean-ignored')
 
     # Inject Json output for testing.
-    first_sln = cfg.solutions[0].name
     step_test_data = step_test_data or (lambda: self.test_api.output_json(
-        first_sln,
-        reverse_rev_map,
-        patch_root=patch_root,
+        first_sln=first_sln,
+        revisions=self._test_data.get('revisions', {}),
         fixed_revisions=fixed_revisions,
+        got_revision_mapping=reverse_rev_map,
+        patch_root=patch_root,
         fail_checkout=self._test_data.get('fail_checkout', False),
         fail_patch=self._test_data.get('fail_patch', False),
         commit_positions=self._test_data.get('commit_positions', True),
