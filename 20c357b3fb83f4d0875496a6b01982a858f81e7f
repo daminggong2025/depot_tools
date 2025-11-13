@@ -52,6 +52,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "fe1c97d9_eb990eeb",
+        "filename": "metadata/fields/custom/license_allowlist.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 151,
+      "author": {
+        "id": 1211034
+      },
+      "writtenOn": "2025-11-13T06:40:41Z",
+      "side": 1,
+      "message": "Acknowledged",
+      "parentUuid": "380de7f3_ae94712c",
+      "revId": "20c357b3fb83f4d0875496a6b01982a858f81e7f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "3e19c882_7a176c25",
@@ -89,6 +107,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "7c9f6540_de9082c6",
+        "filename": "metadata/fields/custom/license_allowlist.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 170,
+      "author": {
+        "id": 1211034
+      },
+      "writtenOn": "2025-11-13T06:40:41Z",
+      "side": 1,
+      "message": "Following up on the required permissions (b/456379224), we found that there was a bug in the license collection tool and some of the licenses were not needed. I updated the list accordingly, and now there is no change in the restricted zone. PTAL.",
+      "parentUuid": "b983f762_d228facc",
+      "revId": "20c357b3fb83f4d0875496a6b01982a858f81e7f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "9c3c6623_8f6c1164",
         "filename": "metadata/fields/custom/license_allowlist.py",
         "patchSetId": 4
@@ -118,6 +154,24 @@
       "side": 1,
       "message": "+1. I think the Microsoft one might just be a renaming, but `GPL-3.0-with-GCC-exception` is `restricted` and new to this list. Both should be reviewed.\n\nLicenses which are restricted are handled on a case-by-case basis. Please reach out to opensource-licensing@google.com and be sure to include the licenses and relevant details in the email. It can be helpful to identify existing dependencies that have already been approved.",
       "parentUuid": "9c3c6623_8f6c1164",
+      "revId": "20c357b3fb83f4d0875496a6b01982a858f81e7f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "574705d8_b5da4955",
+        "filename": "metadata/fields/custom/license_allowlist.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 207,
+      "author": {
+        "id": 1211034
+      },
+      "writtenOn": "2025-11-13T06:40:41Z",
+      "side": 1,
+      "message": "Sent email to opensource-licensing@google.com to get approval.",
+      "parentUuid": "1bc49947_8a2dd8fa",
       "revId": "20c357b3fb83f4d0875496a6b01982a858f81e7f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
