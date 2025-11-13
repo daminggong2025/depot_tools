@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "02a8e7c5_61b62caa",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 8
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1289180
+      },
+      "writtenOn": "2025-11-13T21:47:21Z",
+      "side": 1,
+      "message": "Manual rolls are prepped:\ninfra: https://crrev.com/c/7153023\nbuild: https://crrev.com/c/7153607",
+      "revId": "34552df9c23a0f015cadba33a7c1a30232b21416",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
