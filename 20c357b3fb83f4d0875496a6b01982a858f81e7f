@@ -123,6 +123,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "e47b05ab_02422962",
+        "filename": "metadata/fields/custom/license_allowlist.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 170,
+      "author": {
+        "id": 1544922
+      },
+      "writtenOn": "2025-11-13T07:12:52Z",
+      "side": 1,
+      "message": "Cool - all the additions in patchset 6 are SPDX licenses that are classified as either permissive or notice.",
+      "parentUuid": "7c9f6540_de9082c6",
+      "revId": "20c357b3fb83f4d0875496a6b01982a858f81e7f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "9c3c6623_8f6c1164",
