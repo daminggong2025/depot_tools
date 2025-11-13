@@ -99,6 +99,24 @@
       "parentUuid": "cfa88261_6d56ebdc",
       "revId": "317872d963c164f893ec1d04caa49e7ab69eb50f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6ef7c724_b92f27d4",
+        "filename": "recipes/recipe_modules/bot_update/api.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 223,
+      "author": {
+        "id": 3987854
+      },
+      "writtenOn": "2025-11-13T00:19:28Z",
+      "side": 1,
+      "message": "Ya I think it was just to align with Gerrit\u0027s ChangeInfo. I neglected to include `full_branch` because it wasn\u0027t used before. Makes sense to add it.",
+      "parentUuid": "6a2975b5_17ffccac",
+      "revId": "317872d963c164f893ec1d04caa49e7ab69eb50f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
