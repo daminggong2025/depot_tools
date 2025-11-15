@@ -11,9 +11,9 @@ import argparse
 import itertools
 import os
 import platform
-import signal
 import shlex
 import shutil
+import signal
 import sys
 from typing import Optional
 
@@ -152,6 +152,7 @@ def _fix_system_limits() -> None:
     # use `resource.setrlimit` to increase the limit when running ninja.
     if sys.platform in ["darwin", "linux"]:
         import resource
+
         # Increase the number of allowed open file descriptors to the maximum.
         fileno_limit, hard_limit = resource.getrlimit(resource.RLIMIT_NOFILE)
         if fileno_limit < hard_limit:
@@ -289,7 +290,7 @@ def main(args, telemetry_cfg: Optional[build_telemetry.Config] = None):
                     print('depot_tools/siso.py: %s' % shlex.join(new_args),
                           file=sys.stderr)
                 # Add ninja specific flags.
-                if args[1] == "ninja":
+                if subcmd == "ninja":
                     new_args = apply_metrics_labels(new_args)
                     if should_collect_logs:
                         new_args = apply_telemetry_flags(new_args, env)
