@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "beed761f_5d249d35",
+        "filename": "siso.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2025-11-17T02:39:35Z",
+      "side": 1,
+      "message": "better to check `siso help $subc` ?\nexit\u003d0 if exists, exit\u003d2 otherwise?",
+      "revId": "9e453665f2565e38aee95d517110e2edccac7ac7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
