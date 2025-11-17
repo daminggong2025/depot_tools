@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "e5cec9b9_a4e3d29d",
+        "filename": "tests/siso_test.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 188,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-11-17T05:34:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3a54b6d6_32a3c0bd",
+      "range": {
+        "startLine": 188,
+        "startChar": 21,
+        "endLine": 188,
+        "endChar": 37
+      },
+      "revId": "6ffb7c13ace8f61351a16ee30cccb87c7e6d3651",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "16ca8172_fe0a39a5",
@@ -37,6 +61,30 @@
       "writtenOn": "2025-11-17T05:25:29Z",
       "side": 1,
       "message": "Better to use mock for os.environ to prevent side effects from this environ.\nhttps://docs.python.org/3.13/library/unittest.mock.html#unittest.mock.patch.dict",
+      "range": {
+        "startLine": 198,
+        "startChar": 25,
+        "endLine": 198,
+        "endChar": 35
+      },
+      "revId": "6ffb7c13ace8f61351a16ee30cccb87c7e6d3651",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4fc757da_5cb94b52",
+        "filename": "tests/siso_test.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 198,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-11-17T05:34:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "16ca8172_fe0a39a5",
       "range": {
         "startLine": 198,
         "startChar": 25,
