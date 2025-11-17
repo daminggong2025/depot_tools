@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ffbfe64e_2ec89425",
+        "filename": "siso.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2025-11-17T02:49:12Z",
+      "side": 1,
+      "message": "Please fix this WARNING reported by Spellchecker: \"successfuly\" is a possible misspelling of \"successfully\".\n\nTo bypass Spellcheck...\n\n\"successfuly\" is a possible misspelling of \"successfully\".\n\nTo bypass Spellchecker, add a footer with DISABLE_SPELLCHECKER",
+      "range": {
+        "startLine": 40,
+        "startChar": 23,
+        "endLine": 40,
+        "endChar": 34
+      },
+      "revId": "760757624d41ac027ffbb3032d4f17fa2bc08ad1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
