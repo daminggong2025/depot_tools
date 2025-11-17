@@ -117,6 +117,24 @@
       "parentUuid": "6a2975b5_17ffccac",
       "revId": "317872d963c164f893ec1d04caa49e7ab69eb50f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "094e6e0c_302bf035",
+        "filename": "recipes/recipe_modules/bot_update/api.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 223,
+      "author": {
+        "id": 1520537
+      },
+      "writtenOn": "2025-11-17T23:52:14Z",
+      "side": 1,
+      "message": "crrev/c/7155389 added `full_branch` to the ChangeInfo proto, which allows us to represent branches that aren\u0027t refs/heads/${BRANCH_NAME}. Both fields are expected to be populated, so we still need this code, but at least we haven\u0027t lost the ability to represent branches outside refs/heads.\n\nGarrett, mind making an update to this CL to populate full_branch here?",
+      "parentUuid": "6ef7c724_b92f27d4",
+      "revId": "317872d963c164f893ec1d04caa49e7ab69eb50f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
