@@ -8,9 +8,9 @@ binary when run inside a gclient source tree, so users can just type
 "siso" on the command line."""
 
 import argparse
-import itertools
 import os
 import platform
+import subprocess
 import signal
 import shlex
 import shutil
@@ -34,6 +34,11 @@ def parse_args(args):
         elif arg.startswith("-C"):
             out_dir = arg[2:]
     return subcmd, out_dir
+
+
+# Trivial check if subcommand string appears in siso help.
+def _is_subcommand_present(siso_path: str, subc: str) -> bool:
+    return subc in str(subprocess.check_output([siso_path, "help"]))
 
 
 def check_outdir(subcmd, out_dir):
