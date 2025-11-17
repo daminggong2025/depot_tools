@@ -16,6 +16,24 @@
       "message": "better to check `siso help $subc` ?\nexit\u003d0 if exists, exit\u003d2 otherwise?",
       "revId": "9e453665f2565e38aee95d517110e2edccac7ac7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "dda0cdb6_90732b3c",
+        "filename": "siso.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-11-17T02:47:36Z",
+      "side": 1,
+      "message": "Oh even better, done!",
+      "parentUuid": "beed761f_5d249d35",
+      "revId": "9e453665f2565e38aee95d517110e2edccac7ac7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
