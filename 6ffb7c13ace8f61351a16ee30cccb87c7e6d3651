@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3a54b6d6_32a3c0bd",
+        "filename": "tests/siso_test.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 188,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2025-11-17T05:25:29Z",
+      "side": 1,
+      "message": "This should be assertEqual as order is matter?",
+      "range": {
+        "startLine": 188,
+        "startChar": 21,
+        "endLine": 188,
+        "endChar": 37
+      },
+      "revId": "6ffb7c13ace8f61351a16ee30cccb87c7e6d3651",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "16ca8172_fe0a39a5",
+        "filename": "tests/siso_test.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 198,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2025-11-17T05:25:29Z",
+      "side": 1,
+      "message": "Better to use mock for os.environ to prevent side effects from this environ.\nhttps://docs.python.org/3.13/library/unittest.mock.html#unittest.mock.patch.dict",
+      "range": {
+        "startLine": 198,
+        "startChar": 25,
+        "endLine": 198,
+        "endChar": 35
+      },
+      "revId": "6ffb7c13ace8f61351a16ee30cccb87c7e6d3651",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
