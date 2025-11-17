@@ -3,7 +3,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import io
 import os
+import shlex
 import sys
 import unittest
 import platform
@@ -211,6 +213,112 @@ ninja --failure_verbose=false -k=0
         _ = siso.apply_telemetry_flags(args, env)
         self.assertEqual(os.environ.get("GOOGLE_API_USE_CLIENT_CERTIFICATE"),
                          "false")
+
+    def test_process_args(self):
+        user_system = siso._SYSTEM_DICT.get(platform.system(),
+                                            platform.system())
+        processed_args = ['-gflag', 'ninja', '-sflag', '-C', 'out/Default']
+
+        test_cases = {
+            "no_ninja": {
+                "args": ["other", "-C", "out/Default"],
+                "subcmd": "other",
+                "should_collect_logs": True,
+                "want": ["other", "-C", "out/Default"],
+            },
+            "ninja_no_logs": {
+                "args": ["ninja", "-C", "out/Default"],
+                "subcmd": "ninja",
+                "should_collect_logs": False,
+                "want": [
+                    "ninja",
+                    "-C",
+                    "out/Default",
+                    "--metrics_labels",
+                    f"type=developer,tool=siso,host_os={user_system}",
+                ],
+            },
+            "ninja_with_logs_no_project": {
+                "args": ["ninja", "-C", "out/Default"],
+                "subcmd": "ninja",
+                "should_collect_logs": True,
+                "want": [
+                    "ninja",
+                    "-C",
+                    "out/Default",
+                    "--metrics_labels",
+                    f"type=developer,tool=siso,host_os={user_system}",
+                ],
+            },
+            "ninja_with_logs_with_project_in_args": {
+                "args": [
+                    "ninja",
+                    "-C",
+                    "out/Default",
+                    "--project=test-project",
+                ],
+                "subcmd": "ninja",
+                "should_collect_logs": True,
+                "want": [
+                    "ninja",
+                    "-C",
+                    "out/Default",
+                    "--project=test-project",
+                    "--metrics_labels",
+                    f"type=developer,tool=siso,host_os={user_system}",
+                    "--enable_cloud_monitoring",
+                    "--enable_cloud_profiler",
+                    "--enable_cloud_trace",
+                    "--enable_cloud_logging",
+                    "--metrics_project=test-project",
+                ],
+            },
+            "ninja_with_logs_with_project_in_env": {
+                "args": ["ninja", "-C", "out/Default"],
+                "subcmd": "ninja",
+                "should_collect_logs": True,
+                "env": {"SISO_PROJECT": "test-project"},
+                "want": [
+                    "ninja",
+                    "-C",
+                    "out/Default",
+                    "--metrics_labels",
+                    f"type=developer,tool=siso,host_os={user_system}",
+                    "--enable_cloud_monitoring",
+                    "--enable_cloud_profiler",
+                    "--enable_cloud_trace",
+                    "--enable_cloud_logging",
+                    "--metrics_project=test-project",
+                ],
+            },
+            "with_sisorc": {
+                "global_flags": ["-gflag"],
+                "subcmd_flags": {"ninja": ["-sflag"]},
+                "args": ["ninja", "-C", "out/Default"],
+                "subcmd": "ninja",
+                "should_collect_logs": False,
+                "want": processed_args
+                + [
+                    "--metrics_labels",
+                    f"type=developer,tool=siso,host_os={user_system}",
+                ],
+                "want_stderr": "depot_tools/siso.py: %s\n"
+                % shlex.join(processed_args),
+            },
+        }
+
+        for name, tc in test_cases.items():
+            with self.subTest(name):
+                with mock.patch('sys.stderr',
+                                new_callable=io.StringIO) as mock_stderr:
+                    got = siso._process_args(tc.get('global_flags', []),
+                                             tc.get('subcmd_flags', {}),
+                                             tc['args'], tc['subcmd'],
+                                             tc['should_collect_logs'],
+                                             tc.get('env', {}))
+                    self.assertEqual(got, tc['want'])
+                    self.assertEqual(mock_stderr.getvalue(),
+                                     tc.get('want_stderr', ''))
 
 
 if __name__ == '__main__':
