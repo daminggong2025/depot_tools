@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f9e59900_57a4ba0c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1289180
+      },
+      "writtenOn": "2025-11-17T22:33:00Z",
+      "side": 1,
+      "message": "Build downstream roll wil become non-trivial roll once https://crrev.com/c/7163666 lands",
+      "revId": "a5c4f327b948411828727ffa9aafcb29fd4640e5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
