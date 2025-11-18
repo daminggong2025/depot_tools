@@ -135,6 +135,24 @@
       "parentUuid": "6ef7c724_b92f27d4",
       "revId": "317872d963c164f893ec1d04caa49e7ab69eb50f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d6558ff1_610b4a1f",
+        "filename": "recipes/recipe_modules/bot_update/api.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 223,
+      "author": {
+        "id": 1289180
+      },
+      "writtenOn": "2025-11-18T19:55:36Z",
+      "side": 1,
+      "message": "I don\u0027t know exactly needs to be done to get the changed proto into depot_tools, I\u0027ve updated my checkout and attempting to set it results in `ValueError: Protocol message GerritChangeInfo has no \"full_branch\" field.`",
+      "parentUuid": "094e6e0c_302bf035",
+      "revId": "317872d963c164f893ec1d04caa49e7ab69eb50f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
