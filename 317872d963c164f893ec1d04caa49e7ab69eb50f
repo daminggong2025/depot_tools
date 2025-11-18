@@ -195,6 +195,24 @@
       "parentUuid": "d6558ff1_610b4a1f",
       "revId": "317872d963c164f893ec1d04caa49e7ab69eb50f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ec8eee8d_b3204348",
+        "filename": "recipes/recipe_modules/bot_update/api.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 223,
+      "author": {
+        "id": 1289180
+      },
+      "writtenOn": "2025-11-18T23:02:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "79321844_099c3c03",
+      "revId": "317872d963c164f893ec1d04caa49e7ab69eb50f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
