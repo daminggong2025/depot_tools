@@ -153,6 +153,24 @@
       "parentUuid": "094e6e0c_302bf035",
       "revId": "317872d963c164f893ec1d04caa49e7ab69eb50f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "79321844_099c3c03",
+        "filename": "recipes/recipe_modules/bot_update/api.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 223,
+      "author": {
+        "id": 1289180
+      },
+      "writtenOn": "2025-11-18T20:42:30Z",
+      "side": 1,
+      "message": "Figured it out, https://crrev.com/c/7169964 will update the recipe_engine protos",
+      "parentUuid": "d6558ff1_610b4a1f",
+      "revId": "317872d963c164f893ec1d04caa49e7ab69eb50f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
