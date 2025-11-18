@@ -11,7 +11,7 @@ import contextlib
 import functools
 import logging
 import os
-from typing import Callable, NamedTuple, TextIO
+from typing import Callable, Iterable, NamedTuple, TextIO
 import urllib.parse
 
 import gerrit_util
@@ -601,15 +601,12 @@ class ConfigWizard(object):
     def _set_sso_rewrite(self, parts: urllib.parse.SplitResult, *,
                          scope: scm.GitConfigScope) -> None:
         sso_key = _sso_rewrite_key(parts)
-        self._set_config(sso_key,
-                         _url_root_url(parts),
-                         modify_all=True,
-                         scope=scope)
+        self._set_url_rewrites(sso_key, [_url_root_url(parts)], scope=scope)
 
     def _clear_sso_rewrite(self, parts: urllib.parse.SplitResult, *,
                            scope: scm.GitConfigScope) -> None:
         sso_key = _sso_rewrite_key(parts)
-        self._set_config(sso_key, None, modify_all=True, scope=scope)
+        self._set_url_rewrites(sso_key, [], scope=scope)
 
     def _set_url_rewrite_override(self, parts: urllib.parse.SplitResult, *,
                                   scope: scm.GitConfigScope) -> None:
@@ -618,12 +615,26 @@ class ConfigWizard(object):
         This is used to override a global rewrite rule.
         """
         url_key = _url_rewrite_key(parts)
-        self._set_config(url_key, parts.geturl(), modify_all=True, scope=scope)
+        self._set_url_rewrites(url_key, [parts.geturl()], scope=scope)
 
     def _clear_url_rewrite_override(self, parts: urllib.parse.SplitResult, *,
                                     scope: scm.GitConfigScope) -> None:
         url_key = _url_rewrite_key(parts)
+        self._set_url_rewrites(url_key, [], scope=scope)
+
+    def _set_url_rewrites(self, url_key: str, targets: Iterable[str], *,
+                          scope: scm.GitConfigScope) -> None:
+        """Set URL rewrite config.
+
+        Because Git URL rewrites are set as `dest -> multiple src`, we
+        should set all of them together.
+
+        This should be called at most once per wizard invocation per
+        url_key.
+        """
         self._set_config(url_key, None, scope=scope, modify_all=True)
+        for target in targets:
+            self._set_config(url_key, target, scope=scope)
 
     def _set_config(self,
                     key: str,
