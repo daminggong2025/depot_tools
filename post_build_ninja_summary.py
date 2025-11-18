@@ -329,6 +329,13 @@ def SummarizeEntries(entries, extra_step_types, elapsed_time_sorting):
 
 
 def main():
+    # Single dashed go style flags get interpreted greedily by Python as short flags
+    # leading to -enable interpreted as -e and nable.
+    # To combat this, change it to doulbe dash.
+    for i, arg in enumerate(sys.argv):
+        if len(arg) > 2 and arg.startswith("-") and not arg.startswith("--"):
+            sys.argv[i] = "-" + arg
+
     log_file = ".ninja_log"
     metrics_file = "siso_metrics.json"
     parser = argparse.ArgumentParser()
@@ -372,6 +379,8 @@ def main():
             cmd.extend(["--step_types", args.step_types])
         if args.elapsed_time_sorting:
             cmd.append("--elapsed_time_sorting")
+        # Pass the rest of the flags to siso as is.
+        cmd += _extra_args
         subprocess.run(cmd, check=True)
         return 0
 
