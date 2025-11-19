@@ -22,6 +22,30 @@
       },
       "revId": "15bb5462c4cd6dcb3335cd032b64c34af925ba11",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "bad4f289_de09bcd5",
+        "filename": "git_auth.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 638,
+      "author": {
+        "id": 3355336
+      },
+      "writtenOn": "2025-11-19T22:37:50Z",
+      "side": 1,
+      "message": "it does indeed, thanks for the thorough review.  None of the code paths/tests currently is affected, but I have identified and fixed this issue as part of the followup work, so I\u0027ll squash the fix into here.",
+      "parentUuid": "682efdaf_4212ae8f",
+      "range": {
+        "startLine": 638,
+        "startChar": 17,
+        "endLine": 638,
+        "endChar": 28
+      },
+      "revId": "15bb5462c4cd6dcb3335cd032b64c34af925ba11",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
