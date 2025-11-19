@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "46546915_392884ed",
+        "filename": "recipes/recipe_modules/bot_update/api.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 132,
+      "author": {
+        "id": 1170419
+      },
+      "writtenOn": "2025-11-19T23:18:50Z",
+      "side": 1,
+      "message": "Is this an inaccurate comment? Or are we saying \"turboci.write_nodes()\" doesn\u0027t actually do anything?",
+      "range": {
+        "startLine": 132,
+        "startChar": 7,
+        "endLine": 132,
+        "endChar": 27
+      },
+      "revId": "573d5924ac2a2ed640297c2acf442756bb70fc8f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "abe9943f_1a089e66",
+        "filename": "recipes/recipe_modules/bot_update/api.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 210,
+      "author": {
+        "id": 1170419
+      },
+      "writtenOn": "2025-11-19T23:18:50Z",
+      "side": 1,
+      "message": "I\u0027m guessing this makes an rpc of some sorts? Is it going to be reflected in milo any way? eg: As a step?\n\nAnd if it goes wrong/fails, will debugging it be easy? How can we see logs, etc?",
+      "range": {
+        "startLine": 210,
+        "startChar": 4,
+        "endLine": 210,
+        "endChar": 23
+      },
+      "revId": "573d5924ac2a2ed640297c2acf442756bb70fc8f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "48303490_2194c8f8",
+        "filename": "recipes/recipe_modules/bot_update/api.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 406,
+      "author": {
+        "id": 1170419
+      },
+      "writtenOn": "2025-11-19T23:18:50Z",
+      "side": 1,
+      "message": "nit: Maybe mention what the val of this arg signifies? (other than making things a no-op if it\u0027s empty)",
+      "revId": "573d5924ac2a2ed640297c2acf442756bb70fc8f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
