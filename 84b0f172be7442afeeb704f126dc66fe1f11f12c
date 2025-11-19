@@ -16,6 +16,24 @@
       "message": "nit: space after colon.",
       "revId": "84b0f172be7442afeeb704f126dc66fe1f11f12c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ebc918dc_918d2dec",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 4
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1551929
+      },
+      "writtenOn": "2025-11-19T19:25:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "19713f97_569ac561",
+      "revId": "84b0f172be7442afeeb704f126dc66fe1f11f12c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
