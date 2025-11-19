@@ -1,6 +1,23 @@
 {
   "comments": [
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "c3027925_0d76b432",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1520537
+      },
+      "writtenOn": "2025-11-19T17:53:58Z",
+      "side": 1,
+      "message": "LGTM, but I\u0027ll let Robbie set CR+1 when he\u0027s satisfied since he\u0027s more familiar with Browser CI and might catch things I wouldn\u0027t recognize.",
+      "revId": "693612c898c8432d2081082156fce01866cac95e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "39b3e915_00064eac",
@@ -32,6 +49,24 @@
       "side": 1,
       "message": "patch_root isn\u0027t necessarily the path to the top-level repo, it\u0027s the path to the repo where the patch should be applied. The caller can specify it or the bot_update recipe code will determine it by matching the host and project of the change being applied to bits of configuration in the gclient config.",
       "parentUuid": "39b3e915_00064eac",
+      "revId": "693612c898c8432d2081082156fce01866cac95e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f7954ada_9a13a880",
+        "filename": "recipes/recipe_modules/bot_update/api.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 147,
+      "author": {
+        "id": 1520537
+      },
+      "writtenOn": "2025-11-19T17:53:58Z",
+      "side": 1,
+      "message": "Oh, in that case this LG. Thanks for correcting my understanding.",
+      "parentUuid": "a1aa8060_ca43ccb8",
       "revId": "693612c898c8432d2081082156fce01866cac95e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
