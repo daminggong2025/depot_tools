@@ -16,6 +16,24 @@
       "message": "The intent of mounts_to_apply was to specify the mount(s) to which the given CL would be applied. Setting this to `[patch_root]` works when `chromium/src` or the other root-level repos are the ones that are the repo for the CL, but if it was a nested repo the intent of mounts_to_apply is to hold the path to that repo itself, not to the top-level patch_root that contains it. (That allows for situations where you have different refs of the same repo checked out to sibling dirs, where one should have the CL applied and the other should not.)",
       "revId": "693612c898c8432d2081082156fce01866cac95e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a1aa8060_ca43ccb8",
+        "filename": "recipes/recipe_modules/bot_update/api.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 147,
+      "author": {
+        "id": 1289180
+      },
+      "writtenOn": "2025-11-19T17:50:46Z",
+      "side": 1,
+      "message": "patch_root isn\u0027t necessarily the path to the top-level repo, it\u0027s the path to the repo where the patch should be applied. The caller can specify it or the bot_update recipe code will determine it by matching the host and project of the change being applied to bits of configuration in the gclient config.",
+      "parentUuid": "39b3e915_00064eac",
+      "revId": "693612c898c8432d2081082156fce01866cac95e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
