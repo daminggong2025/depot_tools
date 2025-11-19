@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "39b3e915_00064eac",
+        "filename": "recipes/recipe_modules/bot_update/api.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 147,
+      "author": {
+        "id": 1520537
+      },
+      "writtenOn": "2025-11-19T16:18:24Z",
+      "side": 1,
+      "message": "The intent of mounts_to_apply was to specify the mount(s) to which the given CL would be applied. Setting this to `[patch_root]` works when `chromium/src` or the other root-level repos are the ones that are the repo for the CL, but if it was a nested repo the intent of mounts_to_apply is to hold the path to that repo itself, not to the top-level patch_root that contains it. (That allows for situations where you have different refs of the same repo checked out to sibling dirs, where one should have the CL applied and the other should not.)",
+      "revId": "693612c898c8432d2081082156fce01866cac95e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
