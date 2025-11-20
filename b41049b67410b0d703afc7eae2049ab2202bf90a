@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e0aa1a61_3032c796",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 4490717
+      },
+      "writtenOn": "2025-11-20T20:47:26Z",
+      "side": 1,
+      "message": "Comment removed by: Gavin Mak; Reason: spam",
+      "revId": "b41049b67410b0d703afc7eae2049ab2202bf90a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
