@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6c082589_59f56f60",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1373732
+      },
+      "writtenOn": "2025-11-20T23:17:59Z",
+      "side": 1,
+      "message": "Hello, jwata@! Thanks for caffeinating `autoninja` for me a while back. I\u0027m looking into caffeinating `fetch`, realized I\u0027d need to wrap more `subprocess` endpoints with caffeination, and wrapping `subprocess.run` might get confusing since `caffeinate.run` already exists as a call to a _different_ `subprocess` helper. So I want to rename the existing wrapper to match the name (and behavior) of the part of `subprocess` it calls into.\n\nI manually ran `tests/autoninja_test.py` and `tests/siso_test.py` to test this. There was one failure in `autoninja_test.py`, which appears to be a bug in that test case (see https://g-issues.chromium.org/issues/462518292); other tests pass. I don\u0027t know what additional testing I can or should do to prove this works as intended.",
+      "revId": "a7e037a715fd18db2bfb383b49ac9486c03c9329",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
