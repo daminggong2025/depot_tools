@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "bf0e642f_0d23ecc9",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1373732
+      },
+      "writtenOn": "2025-11-21T05:20:20Z",
+      "side": 1,
+      "message": "Not yet tested, just wanted to show you what I currently have for caffeinated fetching.",
+      "revId": "31aafd0d522e833a51458627453246db940435c0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
