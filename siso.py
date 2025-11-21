@@ -10,6 +10,7 @@ binary when run inside a gclient source tree, so users can just type
 import argparse
 import os
 import platform
+import psutil
 import shlex
 import shutil
 import signal
@@ -44,6 +45,28 @@ def parse_args(args):
 # and 2 if it's not present.
 def _is_subcommand_present(siso_path: str, subc: str) -> bool:
     return subprocess.call([siso_path, "help", subc]) == 0
+
+
+# Fetch PID platform independently of possibly running collector
+# and kill it.
+def _kill_collector() -> None:
+    otlp_health_port = 13133
+    # We iterate through every process we have access to and see what ports this process takes.
+    for pid in psutil.pids():
+        try:
+            proc = psutil.Process(pid)
+            connections = proc.net_connections(kind='inet')
+
+            for conn in connections:
+                if conn.laddr.port == otlp_health_port:
+                    proc.kill()
+                    proc.wait()  # Wait for it to actually die
+                    print("Process killed.")
+                    return
+
+        except (psutil.AccessDenied):
+            # AccessDenied: We hit a root/system process. Ignore it.
+            pass
 
 
 def check_outdir(subcmd, out_dir):

@@ -392,6 +392,81 @@ ninja --failure_verbose=false -k=0
                     self.assertEqual(mock_stderr.getvalue(),
                                      tc.get('want_stderr', ''))
 
+    @mock.patch('siso.psutil')
+    def test_kill_collector_process_found_and_killed(self, mock_psutil):
+        mock_proc_found = mock.Mock()
+        mock_conn_found = mock.Mock()
+        mock_conn_found.laddr.port = 13133
+        mock_proc_found.net_connections.return_value = [mock_conn_found]
+
+        # This process should not be checked because the function should exit
+        # after killing the first found process.
+        mock_proc_other = mock.Mock()
+
+        procs = {123: mock_proc_found, 456: mock_proc_other}
+
+        mock_psutil.pids.return_value = [123, 456]
+        mock_psutil.Process.side_effect = lambda pid: procs[pid]
+
+        siso._kill_collector()
+
+        mock_psutil.Process.assert_called_once_with(123)
+        mock_proc_found.kill.assert_called_once()
+        mock_proc_found.wait.assert_called_once()
+        mock_proc_other.kill.assert_not_called()
+
+    @mock.patch('siso.psutil')
+    def test_kill_collector_process_not_found(self, mock_psutil):
+        mock_proc = mock.Mock()
+        mock_conn = mock.Mock()
+        mock_conn.laddr.port = 1111
+        mock_proc.net_connections.return_value = [mock_conn]
+
+        mock_psutil.pids.return_value = [123, 456]
+        mock_psutil.Process.return_value = mock_proc
+
+        siso._kill_collector()
+
+        self.assertEqual(mock_psutil.Process.call_count, 2)
+        mock_proc.kill.assert_not_called()
+
+    @mock.patch('siso.psutil')
+    def test_kill_collector_handles_access_denied(self, mock_psutil):
+        # The mock of psutil exceptions must be exception classes to be able to
+        # raise and catch them as exceptions.
+        mock_psutil.AccessDenied = type('AccessDenied', (Exception, ), {})
+        mock_psutil.NoSuchProcess = type('NoSuchProcess', (Exception, ), {})
+
+        mock_proc_other = mock.Mock()
+        mock_conn_other = mock.Mock()
+        mock_conn_other.laddr.port = 1111
+        mock_proc_other.net_connections.return_value = [mock_conn_other]
+
+        def process_side_effect(pid):
+            if pid == 123:
+                raise mock_psutil.AccessDenied()
+            return mock_proc_other
+
+        mock_psutil.pids.return_value = [123, 456]
+        mock_psutil.Process.side_effect = process_side_effect
+
+        siso._kill_collector()
+
+        self.assertEqual(mock_psutil.Process.call_count, 2)
+        mock_proc_other.kill.assert_not_called()
+
+    @mock.patch('siso.psutil')
+    def test_kill_collector_no_processes(self, mock_psutil):
+        mock_psutil.pids.return_value = []
+
+        siso._kill_collector()
+
+        mock_psutil.pids.assert_called_once()
+        mock_psutil.Process.assert_not_called()
+
+
+if __name__ == '__main__':
+    unittest.main()
 
 if __name__ == '__main__':
     unittest.main()
