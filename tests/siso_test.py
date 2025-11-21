@@ -10,6 +10,7 @@ import sys
 import unittest
 import platform
 from unittest import mock
+import subprocess
 
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT_DIR)
@@ -578,6 +579,226 @@ ninja --failure_verbose=false -k=0
                 capture_output=True,
             )
         ])
+
+    def _start_collector_mocks(self):
+        patchers = {
+            'is_subcommand_present':
+            mock.patch('siso._is_subcommand_present', return_value=True),
+            'subprocess_popen':
+            mock.patch('siso.subprocess.Popen'),
+            'kill_collector':
+            mock.patch('siso._kill_collector'),
+            'time_sleep':
+            mock.patch('siso.time.sleep'),
+            'print':
+            mock.patch('siso.print'),
+            'http_connection':
+            mock.patch('siso.http.client.HTTPConnection'),
+            'json_loads':
+            mock.patch('siso.json.loads'),
+        }
+        mocks = {name: patcher.start() for name, patcher in patchers.items()}
+        for patcher in patchers.values():
+            self.addCleanup(patcher.stop)
+
+        m = mock.MagicMock()
+        for name, mocked in mocks.items():
+            setattr(m, name, mocked)
+
+        m.mock_conn = mock.Mock()
+        m.http_connection.return_value = m.mock_conn
+
+        return m
+
+    def _configure_http_responses(self,
+                                  mock_conn,
+                                  status_responses,
+                                  config_responses=None):
+        if config_responses is None:
+            config_responses = []
+
+        request_path_history = []
+
+        def request_side_effect(method, path):
+            request_path_history.append(path)
+
+        def getresponse_side_effect():
+            path = request_path_history[-1]
+            if path == '/health/status':
+                status_code, data = status_responses.pop(0)
+                return mock.Mock(status=status_code,
+                                 read=mock.Mock(return_value=data))
+            if path == '/health/config':
+                status_code, data = config_responses.pop(0)
+                return mock.Mock(status=status_code,
+                                 read=mock.Mock(return_value=data))
+            return mock.Mock(status=404)
+
+        mock_conn.request.side_effect = request_side_effect
+        mock_conn.getresponse.side_effect = getresponse_side_effect
+
+    def test_start_collector_subcommand_not_present(self):
+        m = self._start_collector_mocks()
+        siso_path = "siso_path"
+        project = "test-project"
+        m.is_subcommand_present.return_value = False
+        result = siso._start_collector(siso_path, project)
+        self.assertFalse(result)
+        m.is_subcommand_present.assert_called_once_with(siso_path, 'collector')
+
+    def test_start_collector_dead_then_healthy(self):
+        m = self._start_collector_mocks()
+        siso_path = "siso_path"
+        project = "test-project"
+
+        self._configure_http_responses(m.mock_conn,
+                                       status_responses=[(404, b''),
+                                                         (200,
+                                                          b'status_healthy')],
+                                       config_responses=[(200,
+                                                          b'config_project')])
+        status_healthy = {'healthy': True, 'status': 'StatusOK'}
+        config_project = {'exporters': {'googlecloud': {'project': project}}}
+        m.json_loads.side_effect = [status_healthy, config_project]
+
+        result = siso._start_collector(siso_path, project)
+
+        self.assertTrue(result)
+        m.subprocess_popen.assert_called_once_with(
+            [siso_path, "collector", "--project", project],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.STDOUT)
+        m.kill_collector.assert_not_called()
+        self.assertEqual(m.time_sleep.call_count, 1)
+
+    def test_start_collector_unhealthy_then_healthy(self):
+        m = self._start_collector_mocks()
+        siso_path = "siso_path"
+        project = "test-project"
+        self._configure_http_responses(m.mock_conn,
+                                       status_responses=[
+                                           (200, b'status_unhealthy'),
+                                           (200, b'status_healthy')
+                                       ],
+                                       config_responses=[(200,
+                                                          b'config_project')])
+
+        status_unhealthy = {'healthy': False, 'status': 'NotOK'}
+        status_healthy = {'healthy': True, 'status': 'StatusOK'}
+        config_project = {'exporters': {'googlecloud': {'project': project}}}
+        m.json_loads.side_effect = [
+            status_unhealthy, status_healthy, config_project
+        ]
+
+        result = siso._start_collector(siso_path, project)
+
+        self.assertTrue(result)
+        m.subprocess_popen.assert_called_once_with(
+            [siso_path, "collector", "--project", project],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.STDOUT)
+        m.kill_collector.assert_called_once()
+        self.assertEqual(m.time_sleep.call_count, 2)
+
+    def test_start_collector_wrong_project_then_healthy(self):
+        m = self._start_collector_mocks()
+        siso_path = "siso_path"
+        project = "test-project"
+        self._configure_http_responses(m.mock_conn,
+                                       status_responses=[
+                                           (200, b'status_healthy'),
+                                           (200, b'status_healthy')
+                                       ],
+                                       config_responses=[
+                                           (200, b'config_wrong_project'),
+                                           (200, b'config_project')
+                                       ])
+
+        status_healthy = {'healthy': True, 'status': 'StatusOK'}
+        config_wrong_project = {
+            'exporters': {
+                'googlecloud': {
+                    'project': 'wrong-project'
+                }
+            }
+        }
+        config_project = {'exporters': {'googlecloud': {'project': project}}}
+        m.json_loads.side_effect = [
+            status_healthy, config_wrong_project, status_healthy, config_project
+        ]
+
+        result = siso._start_collector(siso_path, project)
+
+        self.assertTrue(result)
+        m.subprocess_popen.assert_called_once_with(
+            [siso_path, "collector", "--project", project],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.STDOUT)
+        m.kill_collector.assert_called_once()
+        self.assertEqual(m.time_sleep.call_count, 2)
+
+    def test_start_collector_already_healthy(self):
+        m = self._start_collector_mocks()
+        siso_path = "siso_path"
+        project = "test-project"
+        self._configure_http_responses(
+            m.mock_conn,
+            status_responses=[(200, b'status_healthy')] * 2,
+            config_responses=[(200, b'config_project')])
+
+        status_healthy = {'healthy': True, 'status': 'StatusOK'}
+        config_project = {'exporters': {'googlecloud': {'project': project}}}
+        m.json_loads.side_effect = [
+            status_healthy, config_project, status_healthy
+        ]
+
+        result = siso._start_collector(siso_path, project)
+
+        self.assertTrue(result)
+        m.subprocess_popen.assert_not_called()
+        m.kill_collector.assert_not_called()
+        m.time_sleep.assert_not_called()
+
+    def test_start_collector_never_healthy(self):
+        m = self._start_collector_mocks()
+        siso_path = "siso_path"
+        project = "test-project"
+        self._configure_http_responses(m.mock_conn,
+                                       status_responses=[(404, b'')] * 6)
+
+        result = siso._start_collector(siso_path, project)
+
+        self.assertFalse(result)
+        m.subprocess_popen.assert_called_once_with(
+            [siso_path, "collector", "--project", project],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.STDOUT)
+        self.assertEqual(m.time_sleep.call_count, 5)
+
+    def test_start_collector_healthy_after_retries(self):
+        m = self._start_collector_mocks()
+        siso_path = "siso_path"
+        project = "test-project"
+        self._configure_http_responses(m.mock_conn,
+                                       status_responses=[(404, b''), (404, b''),
+                                                         (404, b''),
+                                                         (200,
+                                                          b'status_healthy')],
+                                       config_responses=[(200,
+                                                          b'config_project')])
+
+        status_healthy = {'healthy': True, 'status': 'StatusOK'}
+        config_project = {'exporters': {'googlecloud': {'project': project}}}
+        m.json_loads.side_effect = [status_healthy, config_project]
+
+        result = siso._start_collector(siso_path, project)
+
+        self.assertTrue(result)
+        m.subprocess_popen.assert_called_once_with(
+            [siso_path, "collector", "--project", project],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.STDOUT)
+        self.assertEqual(m.time_sleep.call_count, 3)
 
 if __name__ == '__main__':
     # Suppress print to console for unit tests.

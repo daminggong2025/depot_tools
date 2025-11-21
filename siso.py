@@ -8,6 +8,8 @@ binary when run inside a gclient source tree, so users can just type
 "siso" on the command line."""
 
 import argparse
+import json
+import http.client
 import os
 import platform
 import shlex
@@ -15,6 +17,8 @@ import shutil
 import signal
 import subprocess
 import sys
+import time
+from enum import Enum
 from typing import Optional
 
 import build_telemetry
@@ -45,6 +49,77 @@ def parse_args(args):
 # and 2 if it's not present.
 def _is_subcommand_present(siso_path: str, subc: str) -> bool:
     return subprocess.call([siso_path, "help", subc]) == 0
+
+
+# Start collector when present.
+# Returns boolean whether collector has started successfully.
+def _start_collector(siso_path: str, project: str) -> bool:
+    if not _is_subcommand_present(siso_path, "collector"):
+        print(f"Collector is not present in the submitted siso: {siso_path}")
+        return False
+
+    class Status(Enum):
+        HEALTHY = 1
+        WRONG_PROJECT = 2
+        UNHEALTHY = 3
+        DEAD = 4
+
+    def collector_status() -> Status:
+        conn = http.client.HTTPConnection(f"localhost:{_OTLP_HEALTH_PORT}")
+        try:
+            conn.request("GET", "/health/status")
+        except ConnectionError:
+            return Status.DEAD
+        response = conn.getresponse()
+
+        if response.status != 200:
+            return Status.DEAD
+
+        status = json.loads(response.read())
+        if not status["healthy"] or status["status"] != "StatusOK":
+            return Status.UNHEALTHY
+        if fetch_project(conn) != project:
+            return Status.WRONG_PROJECT
+        return Status.HEALTHY
+
+    def fetch_project(conn: http.client.HTTPConnection) -> str:
+        conn.request("GET", "/health/config")
+        response = conn.getresponse()
+        resp_json = json.loads(response.read())
+        try:
+            return resp_json["exporters"]["googlecloud"]["project"]
+        except KeyError:
+            return ""
+
+    # Closure fetch parameters.
+    def start_collector() -> None:
+        subprocess.Popen([siso_path, "collector", "--project", project],
+                         stdout=subprocess.DEVNULL,
+                         stderr=subprocess.STDOUT)
+
+    status = collector_status()
+    match status:
+        case Status.DEAD:
+            start_collector()
+        case Status.UNHEALTHY | Status.WRONG_PROJECT:
+            _kill_collector()
+            time.sleep(0.02)  # wait 20 ms before restarting.
+            start_collector()
+        case _:
+            pass
+
+    wait_time = 0.2
+    for i in range(0, 6):
+        if status == Status.HEALTHY:
+            break
+        if i == 5:
+            print(f"Collector never came online after {i} attempts. Giving up.")
+            return False
+        print(f"Waiting for collector to come online: attempt {i+1}")
+        time.sleep(wait_time)
+        wait_time *= 1.5
+        status = collector_status()
+    return True
 
 
 # Fetch PID platform independently of possibly running collector
@@ -110,8 +185,7 @@ def _kill_collector() -> None:
                 file=sys.stderr)
             return
         print(
-            f"Killed the {pid} collector that takes {_OTLP_HEALTH_PORT} port."
-        )
+            f"Killed the {pid} collector that takes {_OTLP_HEALTH_PORT} port.")
 
 
 def check_outdir(subcmd, out_dir):
