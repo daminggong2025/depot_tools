@@ -167,6 +167,30 @@
       },
       "revId": "31aafd0d522e833a51458627453246db940435c0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "dd3d8333_58d695f8",
+        "filename": "fetch.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 220,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-11-21T06:11:01Z",
+      "side": 1,
+      "message": "\u003e Courtesy of BooleanOptionalAction\n\nOh, didn\u0027t know this option... Good to know. However, will this be removed?\nhttps://github.com/python/cpython/blob/07410da204648efac126a42e7c9ae24031134a08/Doc/deprecations/pending-removal-in-3.14.rst#id5",
+      "parentUuid": "45b3a886_6c115cf0",
+      "range": {
+        "startLine": 220,
+        "startChar": 0,
+        "endLine": 220,
+        "endChar": 23
+      },
+      "revId": "31aafd0d522e833a51458627453246db940435c0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
