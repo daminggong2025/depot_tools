@@ -74,6 +74,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "e7d51bce_eb6c8e0e",
+        "filename": "siso.py",
+        "patchSetId": 11
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-11-21T08:00:01Z",
+      "side": 1,
+      "message": "I can\u0027t check the doc as http://docs.python.org returns 503 to me...\nBut, isn\u0027t \"subprocess.check_output() \u003d\u003d subprocess.run(..., check\u003dTrue)\" mostly?",
+      "parentUuid": "bf993294_6e3b2f46",
+      "range": {
+        "startLine": 101,
+        "startChar": 32,
+        "endLine": 101,
+        "endChar": 44
+      },
+      "revId": "c1f5ba026de220bd2a7f9e0a77d9bafb21b00652",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "c16495b6_084db0b3",
         "filename": "siso.py",
         "patchSetId": 11
@@ -109,6 +133,30 @@
       "side": 1,
       "message": "I\u0027ll give up either way whether we succeeded with killing or not, wdyt?",
       "parentUuid": "c16495b6_084db0b3",
+      "range": {
+        "startLine": 116,
+        "startChar": 0,
+        "endLine": 127,
+        "endChar": 0
+      },
+      "revId": "c1f5ba026de220bd2a7f9e0a77d9bafb21b00652",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "afc8d7d6_b481b60d",
+        "filename": "siso.py",
+        "patchSetId": 11
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-11-21T08:00:01Z",
+      "side": 1,
+      "message": "You need ``return` for else case, too.\n\nThis makes me think it\u0027s better to break from the loop to avoid the indentation.",
+      "parentUuid": "a5402f4c_15d1eebf",
       "range": {
         "startLine": 116,
         "startChar": 0,
