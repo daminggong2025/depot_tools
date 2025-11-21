@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "a1f6cdde_50324b3a",
+        "filename": "siso.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-11-21T06:47:21Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a0e53574_441a98af",
+      "range": {
+        "startLine": 76,
+        "startChar": 8,
+        "endLine": 76,
+        "endChar": 45
+      },
+      "revId": "8c60ebcb66bffb3adbbdc052745e24ef46cc08f8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "74ad833f_b374cfcb",
@@ -37,6 +61,30 @@
       "writtenOn": "2025-11-21T06:38:52Z",
       "side": 1,
       "message": "When does this happen?",
+      "range": {
+        "startLine": 77,
+        "startChar": 14,
+        "endLine": 77,
+        "endChar": 31
+      },
+      "revId": "8c60ebcb66bffb3adbbdc052745e24ef46cc08f8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "64b4f9f7_db4b7c82",
+        "filename": "siso.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-11-21T06:47:21Z",
+      "side": 1,
+      "message": "Hmm, never hopefully. I\u0027ll remove this. It should throw when netstat is not found on the system.",
+      "parentUuid": "74ad833f_b374cfcb",
       "range": {
         "startLine": 77,
         "startChar": 14,
@@ -135,6 +183,54 @@
         "startChar": 32,
         "endLine": 96,
         "endChar": 61
+      },
+      "revId": "8c60ebcb66bffb3adbbdc052745e24ef46cc08f8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3ad870d2_2a61b87b",
+        "filename": "siso.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-11-21T06:47:21Z",
+      "side": 1,
+      "message": "Hmm still don\u0027t quite get it.. Do you propose we fail completely if we fail to stop the process? No complains here.",
+      "parentUuid": "3a3b970a_98db6f8d",
+      "range": {
+        "startLine": 96,
+        "startChar": 32,
+        "endLine": 96,
+        "endChar": 61
+      },
+      "revId": "8c60ebcb66bffb3adbbdc052745e24ef46cc08f8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "91acb7e8_d16242de",
+        "filename": "siso.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-11-21T06:47:21Z",
+      "side": 1,
+      "message": "Int conversion (check if it\u0027s int), but thinking back it\u0027s a bit silly - let\u0027s just have the whole thing fail if our assumption is so off the chart.",
+      "parentUuid": "f4749660_3a92f444",
+      "range": {
+        "startLine": 96,
+        "startChar": 20,
+        "endLine": 96,
+        "endChar": 30
       },
       "revId": "8c60ebcb66bffb3adbbdc052745e24ef46cc08f8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
