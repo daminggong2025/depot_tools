@@ -50,6 +50,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "c38bec3a_538e5901",
+        "filename": "siso.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-11-21T05:57:39Z",
+      "side": 1,
+      "message": "Usually non-standard libs are not installed.",
+      "parentUuid": "731854c4_4779c346",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 22
+      },
+      "revId": "1eec6c09bcc66aa52cc475664fdf50d6f1eb5573",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "af7fb5ae_4588ec88",
         "filename": "siso.py",
         "patchSetId": 1
@@ -85,6 +109,30 @@
       "side": 1,
       "message": "Hm, the alternative is to have platform dependent code. If we really can\u0027t import psutil, then I will do that.",
       "parentUuid": "af7fb5ae_4588ec88",
+      "range": {
+        "startLine": 13,
+        "startChar": 0,
+        "endLine": 13,
+        "endChar": 13
+      },
+      "revId": "1eec6c09bcc66aa52cc475664fdf50d6f1eb5573",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "16a4f857_6ec48eed",
+        "filename": "siso.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-11-21T05:57:39Z",
+      "side": 1,
+      "message": "Yeah, having small code for this purpose would be fine.",
+      "parentUuid": "e0d51a91_dd5dc065",
       "range": {
         "startLine": 13,
         "startChar": 0,
