@@ -23,6 +23,7 @@ import gclient_paths
 
 
 _SYSTEM_DICT = {"Windows": "windows", "Darwin": "mac", "Linux": "linux"}
+OTLP_HEALTH_PORT = 13133
 
 
 def parse_args(args):
@@ -44,6 +45,59 @@ def parse_args(args):
 # and 2 if it's not present.
 def _is_subcommand_present(siso_path: str, subc: str) -> bool:
     return subprocess.call([siso_path, "help", subc]) == 0
+
+
+# Fetch PID platform independently of possibly running collector
+# and kill it.
+def _kill_collector() -> None:
+    otlp_health_port = 13133
+    if platform.system() in ["Linux", "Darwin"]:
+        # Use lsof to find the PID of the process listening on the port.
+        # The -t flag causes lsof to produce terse output with process
+        # identifiers only.
+        output = subprocess.run(['lsof', '-t', f'-i:{otlp_health_port}'],
+                                capture_output=True,
+                                check=True)
+        pids = [int(p) for p in output.stdout.strip().split()]
+        for pid in pids:
+            try:
+                os.kill(pid, signal.SIGKILL)
+                print(
+                    f"Killed the {pid} collector that takes {otlp_health_port} port."
+                )
+            except OSError as e:
+                print(
+                    f"Failed to kill the {pid} collector that takes {otlp_health_port} port: {e}"
+                )
+                pass
+            return
+    elif platform.system() == "Windows":
+        output = subprocess.run(['netstat', '-aon'],
+                                capture_output=True,
+                                check=True)
+        result = output.stdout.decode('utf-8', errors='ignore')
+        for line in result.splitlines():
+            #  Result example:
+            #  Proto  Local Address   Foreign Address     State        PID
+            #  TCP    127.0.0.1:13133   0.0.0.0:0       LISTENING     34228
+            parts = line.strip().split()
+            if len(parts) < 4:
+                continue
+            if parts[1] != f'127.0.0.1:{otlp_health_port}':
+                continue
+            pid = parts[-1]
+            res = subprocess.run(['taskkill', '/F', '/PID', pid],
+                                 capture_output=True)
+            if res.returncode != 0:
+                print(
+                    f"Failed to kill the {pid} collector that takes {otlp_health_port} port: {res.stderr}"
+                )
+            else:
+                print(
+                    f"Killed the {pid} collector that takes {otlp_health_port} port."
+                )
+            return
+
 
 
 def check_outdir(subcmd, out_dir):
