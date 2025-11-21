@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "87edb1cf_20ad2cf8",
+        "filename": "siso.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-11-21T09:55:48Z",
+      "side": 1,
+      "message": "Btw, did you check measure the overhead of calling this function? I\u0027m curious how small it is when it doesn\u0027t restart the collector daemon.",
+      "range": {
+        "startLine": 56,
+        "startChar": 4,
+        "endLine": 56,
+        "endChar": 20
+      },
+      "revId": "352b307b72c5af77fc1c8726a4cc34ddaf1f3f92",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
