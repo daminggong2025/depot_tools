@@ -45,6 +45,75 @@
       },
       "revId": "8c60ebcb66bffb3adbbdc052745e24ef46cc08f8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7a7acf8e_b44d3e95",
+        "filename": "siso.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-11-21T06:42:24Z",
+      "side": 1,
+      "message": "Probably, you don\u0027t need",
+      "range": {
+        "startLine": 92,
+        "startChar": 27,
+        "endLine": 92,
+        "endChar": 39
+      },
+      "revId": "8c60ebcb66bffb3adbbdc052745e24ef46cc08f8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f4749660_3a92f444",
+        "filename": "siso.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-11-21T06:42:24Z",
+      "side": 1,
+      "message": "When does ValueError happen?",
+      "range": {
+        "startLine": 96,
+        "startChar": 20,
+        "endLine": 96,
+        "endChar": 30
+      },
+      "revId": "8c60ebcb66bffb3adbbdc052745e24ef46cc08f8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3a3b970a_98db6f8d",
+        "filename": "siso.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-11-21T06:42:24Z",
+      "side": 1,
+      "message": "Is it better to not use `check_output` if you catch it here?",
+      "range": {
+        "startLine": 96,
+        "startChar": 32,
+        "endLine": 96,
+        "endChar": 61
+      },
+      "revId": "8c60ebcb66bffb3adbbdc052745e24ef46cc08f8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
