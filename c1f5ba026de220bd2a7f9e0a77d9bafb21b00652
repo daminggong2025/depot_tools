@@ -146,6 +146,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "25d54f0d_30173845",
+        "filename": "siso.py",
+        "patchSetId": 11
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-11-21T09:45:21Z",
+      "side": 1,
+      "message": "Hmm, I think it shouldn\u0027t block users to continue building. I\u0027d print a warning message and continue.",
+      "parentUuid": "2f8bc36c_0773e432",
+      "range": {
+        "startLine": 101,
+        "startChar": 32,
+        "endLine": 101,
+        "endChar": 44
+      },
+      "revId": "c1f5ba026de220bd2a7f9e0a77d9bafb21b00652",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "c16495b6_084db0b3",
         "filename": "siso.py",
         "patchSetId": 11
