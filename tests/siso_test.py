@@ -392,6 +392,101 @@ ninja --failure_verbose=false -k=0
                     self.assertEqual(mock_stderr.getvalue(),
                                      tc.get('want_stderr', ''))
 
+    @mock.patch('siso.platform.system', return_value='Linux')
+    @mock.patch('siso.os.kill')
+    @mock.patch('siso.subprocess.check_output')
+    def test_kill_collector_process_found_and_killed_posix(
+            self, mock_check_output, mock_os_kill, _):
+        mock_check_output.return_value = b'123\n'
+
+        siso._kill_collector()
+
+        mock_check_output.assert_called_once_with(['lsof', '-t', '-i:13133'])
+        mock_os_kill.assert_called_once_with(123, siso.signal.SIGKILL)
+
+    @mock.patch('siso.platform.system', return_value='Linux')
+    @mock.patch('siso.os.kill')
+    @mock.patch('siso.subprocess.check_output')
+    def test_kill_collector_process_not_found_posix(self, mock_check_output,
+                                                    mock_os_kill, _):
+        mock_check_output.side_effect = siso.subprocess.CalledProcessError(
+            1, 'lsof')
+
+        siso._kill_collector()
+
+        mock_check_output.assert_called_once_with(['lsof', '-t', '-i:13133'])
+        mock_os_kill.assert_not_called()
+
+    @mock.patch('siso.platform.system', return_value='Linux')
+    @mock.patch('siso.os.kill')
+    @mock.patch('siso.subprocess.check_output')
+    def test_kill_collector_kill_fails_posix(self, mock_check_output,
+                                             mock_os_kill, _):
+        mock_check_output.return_value = b'123\n'
+        mock_os_kill.side_effect = OSError
+
+        siso._kill_collector()
+
+        mock_check_output.assert_called_once_with(['lsof', '-t', '-i:13133'])
+        mock_os_kill.assert_called_once_with(123, siso.signal.SIGKILL)
+
+    @mock.patch('siso.platform.system', return_value='Windows')
+    @mock.patch('siso.subprocess.run')
+    @mock.patch('siso.subprocess.check_output')
+    def test_kill_collector_process_found_and_killed_windows(
+            self, mock_check_output, mock_subprocess_run, _):
+        netstat_output = (
+            b'  TCP    127.0.0.1:13133        [::]:0                 LISTENING       1234\r\n'
+        )
+        mock_check_output.return_value = netstat_output
+        mock_subprocess_run.return_value = mock.Mock(returncode=0, stderr='')
+
+        siso._kill_collector()
+
+        mock_check_output.assert_called_once_with(['netstat', '-aon'])
+        mock_subprocess_run.assert_called_once_with(
+            ['taskkill', '/F', '/PID', '1234'], )
+
+    @mock.patch('siso.platform.system', return_value='Windows')
+    @mock.patch('siso.subprocess.check_output')
+    def test_kill_collector_process_not_found_windows(self, mock_check_output,
+                                                      _):
+        netstat_output = (
+            b'  TCP    0.0.0.0:135            0.0.0.0:0              LISTENING       868\r\n'
+        )
+        mock_check_output.return_value = netstat_output
+
+        siso._kill_collector()
+
+        mock_check_output.assert_called_once_with(['netstat', '-aon'])
+
+    @mock.patch('siso.platform.system', return_value='Windows')
+    @mock.patch('siso.subprocess.check_output')
+    def test_kill_collector_netstat_fails_windows(self, mock_check_output, _):
+        mock_check_output.side_effect = siso.subprocess.CalledProcessError(
+            1, 'netstat')
+
+        siso._kill_collector()
+
+        mock_check_output.assert_called_once_with(['netstat', '-aon'])
+
+    @mock.patch('siso.platform.system', return_value='Windows')
+    @mock.patch('siso.subprocess.run')
+    @mock.patch('siso.subprocess.check_output')
+    def test_kill_collector_taskkill_fails_windows(self, mock_check_output,
+                                                   mock_subprocess_run, _):
+        netstat_output = (
+            b'  TCP    127.0.0.1:13133        [::]:0                 LISTENING       1234\r\n'
+        )
+        mock_check_output.return_value = netstat_output
+        mock_subprocess_run.return_value = mock.Mock(
+            returncode=1, stderr='ERROR: Cannot terminate process.')
+
+        siso._kill_collector()
+
+        mock_check_output.assert_called_once_with(['netstat', '-aon'])
+        mock_subprocess_run.assert_called_once_with(
+            ['taskkill', '/F', '/PID', '1234'])
 
 if __name__ == '__main__':
     unittest.main()
