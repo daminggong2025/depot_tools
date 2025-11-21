@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "0a4d0b8e_15d75c63",
+        "filename": "siso.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-11-21T06:37:13Z",
+      "side": 1,
+      "message": "Hmm, check_output calls run with check\u003dTrue, and CalledProcessError promises to be thrown in this case and I have no control over that check. Or do you mean something else\u003e",
+      "parentUuid": "fe31868f_61f5b65d",
+      "range": {
+        "startLine": 58,
+        "startChar": 32,
+        "endLine": 58,
+        "endChar": 44
+      },
+      "revId": "75efa65991abad5bc9dc7bf31357ab2e654272ca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "3ca0a64a_34e42c9c",
