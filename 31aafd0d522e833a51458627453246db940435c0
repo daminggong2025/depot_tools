@@ -88,6 +88,23 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "bc0d11e5_f27320a2",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1373732
+      },
+      "writtenOn": "2025-11-21T18:06:34Z",
+      "side": 1,
+      "message": "Removed the extra timeout thing, waiting for review from owner.",
+      "revId": "31aafd0d522e833a51458627453246db940435c0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "08f0a238_6e5a9cff",
         "filename": "caffeinate.py",
         "patchSetId": 5
@@ -170,6 +187,30 @@
       "side": 1,
       "message": "Okay, thank you for testing that out.",
       "parentUuid": "484e5558_fe87a6c1",
+      "range": {
+        "startLine": 59,
+        "startChar": 0,
+        "endLine": 61,
+        "endChar": 0
+      },
+      "revId": "31aafd0d522e833a51458627453246db940435c0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "735c5711_6a340808",
+        "filename": "caffeinate.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 1373732
+      },
+      "writtenOn": "2025-11-21T18:06:34Z",
+      "side": 1,
+      "message": "I\u0027ve removed the `max_sec` parameter and `-t` flag behavior, along with the verbose comment explaining `caffeinate` flags since everything remaining is reasonably obvious (I do not have to point out the interaction between `-w` and `-t`).",
+      "parentUuid": "0e5a7f6f_2fdf510a",
       "range": {
         "startLine": 59,
         "startChar": 0,
