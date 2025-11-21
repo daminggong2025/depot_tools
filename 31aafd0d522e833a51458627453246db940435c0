@@ -54,6 +54,23 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "18b92045_3f235fbe",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1373732
+      },
+      "writtenOn": "2025-11-21T06:49:32Z",
+      "side": 1,
+      "message": "Success! The fetch failed when Github started 503-ing and then my Mac slept. I mean, it counts as success for _my_ purposes. It even tested an error case!",
+      "revId": "31aafd0d522e833a51458627453246db940435c0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "08f0a238_6e5a9cff",
         "filename": "caffeinate.py",
         "patchSetId": 5
@@ -183,6 +200,30 @@
       "side": 1,
       "message": "\u003e Courtesy of BooleanOptionalAction\n\nOh, didn\u0027t know this option... Good to know. However, will this be removed?\nhttps://github.com/python/cpython/blob/07410da204648efac126a42e7c9ae24031134a08/Doc/deprecations/pending-removal-in-3.14.rst#id5",
       "parentUuid": "45b3a886_6c115cf0",
+      "range": {
+        "startLine": 220,
+        "startChar": 0,
+        "endLine": 220,
+        "endChar": 23
+      },
+      "revId": "31aafd0d522e833a51458627453246db940435c0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "69086b35_d4ecd8ac",
+        "filename": "fetch.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 220,
+      "author": {
+        "id": 1373732
+      },
+      "writtenOn": "2025-11-21T06:49:32Z",
+      "side": 1,
+      "message": "No. It refers to https://github.com/python/cpython/issues/92248, where some specific parameters for BooleanOptionalAction are removed because they never worked in the first place. I\u0027m not using any of those three parameters. BooleanOptionalAction itself is fine.",
+      "parentUuid": "dd3d8333_58d695f8",
       "range": {
         "startLine": 220,
         "startChar": 0,
