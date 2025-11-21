@@ -46,6 +46,57 @@ def _is_subcommand_present(siso_path: str, subc: str) -> bool:
     return subprocess.call([siso_path, "help", subc]) == 0
 
 
+# Fetch PID platform independently of possibly running collector
+# and kill it.
+def _kill_collector() -> None:
+    otlp_health_port = 13133
+    if platform.system() in ["Linux", "Darwin"]:
+        try:
+            # Use lsof to find the PID of the process listening on the port.
+            # The -t flag causes lsof to produce terse output with process
+            # identifiers only.
+            output = subprocess.check_output(
+                ['lsof', '-t', f'-i:{otlp_health_port}'])
+            pids = [int(p) for p in output.strip().split()]
+            for pid in pids:
+                try:
+                    os.kill(pid, signal.SIGKILL)
+                    return
+                except OSError:
+                    pass
+        except (subprocess.CalledProcessError):
+            # No process is listening on the port.
+            pass
+    elif platform.system() == "Windows":
+        try:
+            result = subprocess.check_output(['netstat',
+                                              '-aon']).decode('utf-8',
+                                                              errors='ignore')
+            for line in result.splitlines():
+                #  Result example:
+                #  Proto  Local Address   Foreign Address     State        PID
+                #  TCP    127.0.0.1:13133   0.0.0.0:0       LISTENING     34228
+                parts = line.strip().split()
+                if len(parts) < 4:
+                    continue
+                if parts[1] != f'127.0.0.1:{otlp_health_port}':
+                    continue
+                pid_str = parts[-1]
+                try:
+                    pid = int(pid_str)
+                    # Use taskkill to kill the process.
+                    subprocess.check_output(
+                        ['taskkill', '/F', '/PID',
+                         str(pid)])
+                    return
+                except (ValueError, subprocess.CalledProcessError):
+                    # PID could not be parsed, or taskkill failed.
+                    pass
+        except (subprocess.CalledProcessError, FileNotFoundError):
+            # netstat not found, or it failed.
+            pass
+
+
 def check_outdir(subcmd, out_dir):
     ninja_marker = os.path.join(out_dir, ".ninja_deps")
     if os.path.exists(ninja_marker):
