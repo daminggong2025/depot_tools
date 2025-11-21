@@ -16,6 +16,75 @@
       "message": "Not yet tested, just wanted to show you what I currently have for caffeinated fetching.",
       "revId": "31aafd0d522e833a51458627453246db940435c0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "08f0a238_6e5a9cff",
+        "filename": "caffeinate.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-11-21T05:34:16Z",
+      "side": 1,
+      "message": "Oh, this is nice. It sounds like autoninja also can converge to scope() if we want.",
+      "range": {
+        "startLine": 53,
+        "startChar": 0,
+        "endLine": 53,
+        "endChar": 50
+      },
+      "revId": "31aafd0d522e833a51458627453246db940435c0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "bb8fd200_0be27c74",
+        "filename": "caffeinate.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-11-21T05:34:16Z",
+      "side": 1,
+      "message": "Probably, not necessary for now?",
+      "range": {
+        "startLine": 59,
+        "startChar": 0,
+        "endLine": 61,
+        "endChar": 0
+      },
+      "revId": "31aafd0d522e833a51458627453246db940435c0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ebd4d92d_bbb72b3e",
+        "filename": "fetch.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 220,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-11-21T05:34:16Z",
+      "side": 1,
+      "message": "Dow we need this flag? IIRC, we discussed that enabling caffeinate by default and opt-out via `--no-caffeinate` is sufficient and simpler approach.",
+      "range": {
+        "startLine": 220,
+        "startChar": 0,
+        "endLine": 220,
+        "endChar": 23
+      },
+      "revId": "31aafd0d522e833a51458627453246db940435c0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
