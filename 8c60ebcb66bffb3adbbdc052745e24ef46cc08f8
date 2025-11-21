@@ -234,6 +234,30 @@
       },
       "revId": "8c60ebcb66bffb3adbbdc052745e24ef46cc08f8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e2fd0186_e349d37f",
+        "filename": "siso.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-11-21T07:16:47Z",
+      "side": 1,
+      "message": "There is also `subprocess.run` to run a command, which doesn\u0027t check the exit code by default, IIRC.\nIf you expect the process to fail and handle it right away, I would use `run()` to not raise an exception.\n\ne.g.\nhttps://source.chromium.org/chromium/chromium/src/+/main:v8/tools/testrunner/outproc/filecheck.py;l\u003d28-33;drc\u003d08d948d0d0ae9a2cd56f75ae138e54a9ea65e1a6",
+      "parentUuid": "3ad870d2_2a61b87b",
+      "range": {
+        "startLine": 96,
+        "startChar": 32,
+        "endLine": 96,
+        "endChar": 61
+      },
+      "revId": "8c60ebcb66bffb3adbbdc052745e24ef46cc08f8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
