@@ -258,6 +258,30 @@
       },
       "revId": "8c60ebcb66bffb3adbbdc052745e24ef46cc08f8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "05b44c46_5d7ed374",
+        "filename": "siso.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-11-21T07:24:22Z",
+      "side": 1,
+      "message": "I got you now! Adjusted window\u0027s kill.",
+      "parentUuid": "e2fd0186_e349d37f",
+      "range": {
+        "startLine": 96,
+        "startChar": 32,
+        "endLine": 96,
+        "endChar": 61
+      },
+      "revId": "8c60ebcb66bffb3adbbdc052745e24ef46cc08f8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
