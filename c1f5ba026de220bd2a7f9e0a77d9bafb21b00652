@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "cf7ecb3b_323560a3",
+        "filename": "siso.py",
+        "patchSetId": 11
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-11-21T07:51:49Z",
+      "side": 1,
+      "message": "How about this? All failing processes will return right back at the user with `check\u003dTrue` set.",
+      "parentUuid": "2816a51c_5001172a",
+      "range": {
+        "startLine": 101,
+        "startChar": 32,
+        "endLine": 101,
+        "endChar": 44
+      },
+      "revId": "c1f5ba026de220bd2a7f9e0a77d9bafb21b00652",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "c16495b6_084db0b3",
@@ -37,6 +61,30 @@
       "writtenOn": "2025-11-21T07:30:47Z",
       "side": 1,
       "message": "I think it\u0027s better to break from the loop once you found the pid.\n\ne.g.\n```\nfor ...:\n  ...\n  pid \u003d parts[-1]\n  \nres \u003d subprocess.run([\u0027taskkill\u0027, \u0027/F\u0027, \u0027/PID\u0027, pid])\nif res.returncode !\u003d 0:\n    print(...)\n    return\nprint(...)\n```",
+      "range": {
+        "startLine": 116,
+        "startChar": 0,
+        "endLine": 127,
+        "endChar": 0
+      },
+      "revId": "c1f5ba026de220bd2a7f9e0a77d9bafb21b00652",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a5402f4c_15d1eebf",
+        "filename": "siso.py",
+        "patchSetId": 11
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-11-21T07:51:49Z",
+      "side": 1,
+      "message": "I\u0027ll give up either way whether we succeeded with killing or not, wdyt?",
+      "parentUuid": "c16495b6_084db0b3",
       "range": {
         "startLine": 116,
         "startChar": 0,

@@ -72,6 +72,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "01bf3acd_c4aa5a60",
+        "filename": "siso.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-11-21T07:51:49Z",
+      "side": 1,
+      "message": "Good point.",
+      "parentUuid": "6e1b4a0d_664b0f74",
+      "range": {
+        "startLine": 58,
+        "startChar": 32,
+        "endLine": 58,
+        "endChar": 44
+      },
+      "revId": "75efa65991abad5bc9dc7bf31357ab2e654272ca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "3ca0a64a_34e42c9c",
