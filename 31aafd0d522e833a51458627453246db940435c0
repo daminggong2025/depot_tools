@@ -71,6 +71,23 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "d08a0c8b_edddcdad",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-11-21T07:19:55Z",
+      "side": 1,
+      "message": "Still LGTM and waiting for +1 from Source team.",
+      "revId": "31aafd0d522e833a51458627453246db940435c0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "08f0a238_6e5a9cff",
         "filename": "caffeinate.py",
         "patchSetId": 5
@@ -129,6 +146,30 @@
       "side": 1,
       "message": "I\u0027m imagining a scenario in the \"hm, I\u0027ll spend three hours of battery on this, but not, like, all of it\" range as a reason someone might want to use the `-t` flag in caffeinate in this mode, which could be exposed by a new command line flag. Which I should probably add to `fetch` if I\u0027m going to go ahead and leave the feature in, but it _is_ definitely on the \"corner case\" side and I could just remove it for simplicity\u0027s sake.\n\nI think the strongest argument for leaving it in (and, to be clear, it is not a strong argument) is that `man caffeinate` is not forthcoming about what happens if you use both `-w` and `-t` together (although it does document that neither flag works if you have caffeinate launch another task), and I did the experiment and I now know the answer. If I remove the logic and someone else wants it later, they have to wonder the same thing and repeat the experiment; if I leave it in, there are no questions about whether it _would_ work! This is probably not a good argument for adding an extraneous feature, so I\u0027ll take it out in the morning. (right now I am just poking at my Mac to see if it kept going with the fetch while the screen was off for a while; it had.)",
       "parentUuid": "bb8fd200_0be27c74",
+      "range": {
+        "startLine": 59,
+        "startChar": 0,
+        "endLine": 61,
+        "endChar": 0
+      },
+      "revId": "31aafd0d522e833a51458627453246db940435c0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0e5a7f6f_2fdf510a",
+        "filename": "caffeinate.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-11-21T07:19:55Z",
+      "side": 1,
+      "message": "Okay, thank you for testing that out.",
+      "parentUuid": "484e5558_fe87a6c1",
       "range": {
         "startLine": 59,
         "startChar": 0,
@@ -224,6 +265,30 @@
       "side": 1,
       "message": "No. It refers to https://github.com/python/cpython/issues/92248, where some specific parameters for BooleanOptionalAction are removed because they never worked in the first place. I\u0027m not using any of those three parameters. BooleanOptionalAction itself is fine.",
       "parentUuid": "dd3d8333_58d695f8",
+      "range": {
+        "startLine": 220,
+        "startChar": 0,
+        "endLine": 220,
+        "endChar": 23
+      },
+      "revId": "31aafd0d522e833a51458627453246db940435c0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "311473df_1f92f61a",
+        "filename": "fetch.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 220,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-11-21T07:19:55Z",
+      "side": 1,
+      "message": "Ah, thank you for your explanation!",
+      "parentUuid": "69086b35_d4ecd8ac",
       "range": {
         "startLine": 220,
         "startChar": 0,
