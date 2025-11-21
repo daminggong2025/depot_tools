@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c4453bfc_2cb9d321",
+        "filename": "siso.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-11-21T06:30:48Z",
+      "side": 1,
+      "message": "In general, please consider using try-catches on limited scopes to make it easy to understand.",
+      "range": {
+        "startLine": 54,
+        "startChar": 8,
+        "endLine": 54,
+        "endChar": 11
+      },
+      "revId": "441b46834e3a2b3452d34d61b4fc2f6b785a78fc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "15307377_8f53e839",
+        "filename": "siso.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-11-21T06:30:48Z",
+      "side": 1,
+      "message": "Better to mention what process gets killed.",
+      "range": {
+        "startLine": 64,
+        "startChar": 0,
+        "endLine": 64,
+        "endChar": 44
+      },
+      "revId": "441b46834e3a2b3452d34d61b4fc2f6b785a78fc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "aa3e5173_0858cd4d",
+        "filename": "siso.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-11-21T06:30:48Z",
+      "side": 1,
+      "message": "same here",
+      "range": {
+        "startLine": 92,
+        "startChar": 0,
+        "endLine": 92,
+        "endChar": 44
+      },
+      "revId": "441b46834e3a2b3452d34d61b4fc2f6b785a78fc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
