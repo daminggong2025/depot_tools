@@ -8,6 +8,8 @@ binary when run inside a gclient source tree, so users can just type
 "siso" on the command line."""
 
 import argparse
+import json
+import http.client
 import os
 import platform
 import shlex
@@ -15,6 +17,9 @@ import shutil
 import signal
 import subprocess
 import sys
+import time
+from concurrent.futures import ThreadPoolExecutor
+from enum import Enum
 from typing import Optional
 
 import build_telemetry
@@ -23,6 +28,7 @@ import gclient_paths
 
 
 _SYSTEM_DICT = {"Windows": "windows", "Darwin": "mac", "Linux": "linux"}
+_OTLP_DEFAULT_TCP_ENDPOINT = "127.0.0.1:4317"
 _OTLP_HEALTH_PORT = 13133
 
 
@@ -120,6 +126,102 @@ def _kill_collector() -> bool:
             f"Killed the {pid} collector that takes {_OTLP_HEALTH_PORT} port.")
         return True
     return False
+
+
+# Start collector when present.
+# Returns boolean whether collector has started successfully and a potential sockets path.
+def _start_collector(siso_path: str, sockets_file: Optional[str],
+                     project: str) -> bool:
+    if not _is_subcommand_present(siso_path, "collector"):
+        print(f"Collector is not present in the submitted siso: {siso_path}")
+        return False
+
+    class Status(Enum):
+        HEALTHY = 1
+        WRONG_PROJECT = 2
+        WRONG_ENDPOINT = 3
+        UNHEALTHY = 4
+        DEAD = 5
+
+    def collector_status() -> Status:
+        conn = http.client.HTTPConnection(f"localhost:{_OTLP_HEALTH_PORT}")
+        try:
+            conn.request("GET", "/health/status")
+        except ConnectionError:
+            return Status.DEAD
+        response = conn.getresponse()
+
+        if response.status != 200:
+            return Status.DEAD
+
+        status = json.loads(response.read())
+        if not status["healthy"] or status["status"] != "StatusOK":
+            return Status.UNHEALTHY
+        if fetch_project(conn) != project:
+            return Status.WRONG_PROJECT
+        endpoint = fetch_receiver_endpoint(conn)
+
+        expected_endpoint = sockets_file or _OTLP_DEFAULT_TCP_ENDPOINT
+        if endpoint != expected_endpoint:
+            return Status.WRONG_ENDPOINT
+
+        return Status.HEALTHY
+
+    def fetch_project(conn: http.client.HTTPConnection) -> str:
+        conn.request("GET", "/health/config")
+        response = conn.getresponse()
+        resp_json = json.loads(response.read())
+        try:
+            return resp_json["exporters"]["googlecloud"]["project"]
+        except KeyError:
+            return ""
+
+    def fetch_receiver_endpoint(conn: http.client.HTTPConnection) -> str:
+        conn.request("GET", "/health/config")
+        response = conn.getresponse()
+        resp_json = json.loads(response.read())
+        try:
+            return resp_json["receivers"]["otlp"]["protocols"]["grpc"][
+                "endpoint"]
+        except KeyError:
+            return ""
+
+    # Closure fetch parameters.
+    def start_collector(sockets_file: Optional[str]) -> None:
+        # Use Popen as it's non blocking.
+        if sockets_file:
+            subprocess.Popen([
+                siso_path, "collector", "--project", project, "--otel_socket",
+                sockets_file
+            ],
+                             stdout=subprocess.DEVNULL,
+                             stderr=subprocess.STDOUT)
+        else:
+            subprocess.Popen([siso_path, "collector", "--project", project],
+                             stdout=subprocess.DEVNULL,
+                             stderr=subprocess.STDOUT)
+
+    time_budget = 1.0
+    start = time.time()
+    status = collector_status()
+    if status == Status.HEALTHY:
+        return True
+    if status != Status.DEAD:
+        if not _kill_collector():
+            return False
+
+    start_collector(sockets_file)
+
+    time_budget -= time.time() - start
+    while True:
+        start = time.time()
+        status = collector_status()
+        if status == Status.HEALTHY:
+            return True
+        time.sleep(0.05)
+        time_budget -= time.time() - start
+        if time_budget < 0:
+            return False
 
 
 def check_outdir(subcmd, out_dir):
