@@ -3,6 +3,29 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "1b92ac4b_80d8767b",
+        "filename": "siso.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-11-21T05:40:56Z",
+      "side": 1,
+      "message": "Note that this script doesn\u0027t use vpython3.",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 22
+      },
+      "revId": "1eec6c09bcc66aa52cc475664fdf50d6f1eb5573",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "af7fb5ae_4588ec88",
         "filename": "siso.py",
         "patchSetId": 1
