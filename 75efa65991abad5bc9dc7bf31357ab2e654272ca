@@ -50,6 +50,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "6e1b4a0d_664b0f74",
+        "filename": "siso.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-11-21T07:30:47Z",
+      "side": 1,
+      "message": "This also can be `subprocess.run`",
+      "parentUuid": "0a4d0b8e_15d75c63",
+      "range": {
+        "startLine": 58,
+        "startChar": 32,
+        "endLine": 58,
+        "endChar": 44
+      },
+      "revId": "75efa65991abad5bc9dc7bf31357ab2e654272ca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "3ca0a64a_34e42c9c",
         "filename": "siso.py",
         "patchSetId": 7
