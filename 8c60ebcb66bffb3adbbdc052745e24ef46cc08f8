@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a0e53574_441a98af",
+        "filename": "siso.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-11-21T06:38:52Z",
+      "side": 1,
+      "message": "Would it be worth printing a warning message when this happens?",
+      "range": {
+        "startLine": 76,
+        "startChar": 8,
+        "endLine": 76,
+        "endChar": 45
+      },
+      "revId": "8c60ebcb66bffb3adbbdc052745e24ef46cc08f8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "74ad833f_b374cfcb",
+        "filename": "siso.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-11-21T06:38:52Z",
+      "side": 1,
+      "message": "When does this happen?",
+      "range": {
+        "startLine": 77,
+        "startChar": 14,
+        "endLine": 77,
+        "endChar": 31
+      },
+      "revId": "8c60ebcb66bffb3adbbdc052745e24ef46cc08f8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
