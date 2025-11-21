@@ -72,6 +72,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "620c76c5_3a8eca5a",
+        "filename": "siso.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-11-21T06:43:17Z",
+      "side": 1,
+      "message": "Probably, you don\u0027t need check_output to throw an exception if you catch it soon below.",
+      "parentUuid": "7a7acf8e_b44d3e95",
+      "range": {
+        "startLine": 92,
+        "startChar": 27,
+        "endLine": 92,
+        "endChar": 39
+      },
+      "revId": "8c60ebcb66bffb3adbbdc052745e24ef46cc08f8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "f4749660_3a92f444",
         "filename": "siso.py",
         "patchSetId": 8
