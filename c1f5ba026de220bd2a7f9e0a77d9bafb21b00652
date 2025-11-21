@@ -96,6 +96,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ff9bca79_64423724",
+        "filename": "siso.py",
+        "patchSetId": 11
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-11-21T08:03:02Z",
+      "side": 1,
+      "message": "That\u0027s right - now for those processes that I really except not to fail normally I do check but don\u0027t catch the exception, propagating back to the user so that we can catch bugs sooner.",
+      "parentUuid": "e7d51bce_eb6c8e0e",
+      "range": {
+        "startLine": 101,
+        "startChar": 32,
+        "endLine": 101,
+        "endChar": 44
+      },
+      "revId": "c1f5ba026de220bd2a7f9e0a77d9bafb21b00652",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "c16495b6_084db0b3",
@@ -157,6 +181,30 @@
       "side": 1,
       "message": "You need ``return` for else case, too.\n\nThis makes me think it\u0027s better to break from the loop to avoid the indentation.",
       "parentUuid": "a5402f4c_15d1eebf",
+      "range": {
+        "startLine": 116,
+        "startChar": 0,
+        "endLine": 127,
+        "endChar": 0
+      },
+      "revId": "c1f5ba026de220bd2a7f9e0a77d9bafb21b00652",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "303730b6_c39ed1b1",
+        "filename": "siso.py",
+        "patchSetId": 11
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-11-21T08:03:02Z",
+      "side": 1,
+      "message": "Hmmmm well let\u0027s do this then - I don\u0027t really have a strong opinion on this either way.",
+      "parentUuid": "afc8d7d6_b481b60d",
       "range": {
         "startLine": 116,
         "startChar": 0,
