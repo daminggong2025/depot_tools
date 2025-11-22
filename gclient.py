@@ -100,6 +100,7 @@ import urllib.parse
 
 from collections.abc import Collection, Mapping, Sequence
 
+import caffeinate
 import detect_host_arch
 import download_from_google_storage
 import git_common
@@ -3104,29 +3105,31 @@ def CMDrecurse(parser, args):
     if not args:
         print('Need to supply a command!', file=sys.stderr)
         return 1
-    root_and_entries = gclient_utils.GetGClientRootAndEntries()
-    if not root_and_entries:
-        print(
-            'You need to run gclient sync at least once to use \'recurse\'.\n'
-            'This is because .gclient_entries needs to exist and be up to date.',
-            file=sys.stderr)
-        return 1
 
-    # Normalize options.scm to a set()
-    scm_set = set()
-    for scm in options.scm:
-        scm_set.update(scm.split(','))
-    options.scm = scm_set
+    with caffeinate.scope(actually_caffeinate=options.caffeinate):
+        root_and_entries = gclient_utils.GetGClientRootAndEntries()
+        if not root_and_entries:
+            print(
+                'This operation requires an up-to-date .gclient_entries file.\n'
+                'Run \'gclient sync\' and try again.',
+                file=sys.stderr)
+            return 1
 
-    options.nohooks = True
-    client = GClient.LoadCurrentConfig(options)
-    if not client:
-        raise gclient_utils.Error(
-            'client not configured; see \'gclient config\'')
-    return client.RunOnDeps('recurse',
-                            args,
-                            ignore_requirements=True,
-                            progress=not options.no_progress)
+        # Normalize options.scm to a set()
+        scm_set = set()
+        for scm in options.scm:
+            scm_set.update(scm.split(','))
+        options.scm = scm_set
+
+        options.nohooks = True
+        client = GClient.LoadCurrentConfig(options)
+        if not client:
+            raise gclient_utils.Error(
+                'client not configured; see \'gclient config\'')
+        return client.RunOnDeps('recurse',
+                                args,
+                                ignore_requirements=True,
+                                progress=not options.no_progress)
 
 
 @subcommand.usage('[args ...]')
@@ -3341,86 +3344,90 @@ def CMDgitmodules(parser, args):
         default=[])
     options, args = parser.parse_args(args)
 
-    deps_dir = os.path.dirname(os.path.abspath(options.deps_file))
-    gclient_path = gclient_paths.FindGclientRoot(deps_dir)
-    if not gclient_path:
-        logging.error(
-            '.gclient not found\n'
-            'Make sure you are running this script from a gclient workspace.')
-        sys.exit(1)
+    with caffeinate.scope(actually_caffeinate=options.caffeinate):
+        deps_dir = os.path.dirname(os.path.abspath(options.deps_file))
+        gclient_path = gclient_paths.FindGclientRoot(deps_dir)
+        if not gclient_path:
+            logging.error(
+                '.gclient not found.\n'
+                'This script can only run from within a gclient workspace.')
+            sys.exit(1)
 
-    deps_content = gclient_utils.FileRead(options.deps_file)
-    ls = gclient_eval.Parse(deps_content, options.deps_file, None, None)
+        deps_content = gclient_utils.FileRead(options.deps_file)
+        ls = gclient_eval.Parse(deps_content, options.deps_file, None, None)
 
-    prefix_length = 0
-    if not 'use_relative_paths' in ls or ls['use_relative_paths'] != True:
-        delta_path = os.path.relpath(deps_dir, os.path.abspath(gclient_path))
-        if delta_path:
-            prefix_length = len(delta_path.replace(os.path.sep, '/')) + 1
+        prefix_length = 0
+        if not 'use_relative_paths' in ls or ls['use_relative_paths'] != True:
+            delta_path = os.path.relpath(deps_dir,
+                                         os.path.abspath(gclient_path))
+            if delta_path:
+                prefix_length = len(delta_path.replace(os.path.sep, '/')) + 1
 
-    cache_info = []
+        cache_info = []
 
-    # Git submodules shouldn't use .git suffix since it's not well supported.
-    # However, we can't update .gitmodules files since there is no guarantee
-    # that user has the latest version of depot_tools, and also they are not on
-    # some old branch which contains already contains submodules with .git.
-    # This check makes the transition easier.
-    strip_git_suffix = True
-    # Users may have an outdated depot_tools which doesn't set
-    # gclient-recursedeps, which may undo changes made by an up-to-date `gclient
-    # gitmodules` run. Users may also have an up-to-date depot_tools but an
-    # outdated chromium/src without gclient-recursedeps set which would cause
-    # confusion when they run `gclient gitmodules` and see unexpected
-    # gclient-recursedeps in the diff. We only want to set gclient-recursedeps
-    # if it's already set in the .gitmodules file or if there is no existing
-    # .gitmodules file so we know `gclient gitmodules` is being run for the
-    # first time.
-    set_recursedeps = True
-    if os.path.exists(options.output_gitmodules):
-        dot_git_pattern = re.compile(r'^(\s*)url(\s*)=.*\.git$')
-        with open(options.output_gitmodules) as f:
-            strip_git_suffix = not any(dot_git_pattern.match(l) for l in f)
-            set_recursedeps = any(
-                'gclient-recursedeps' in l for l in f)
+        # Git submodules shouldn't use .git suffix; it's not well supported.
+        # However, we can't update .gitmodules files since it is guaranteed
+        # neither that the user has the latest version of depot_tools, nor that
+        # they are not on some old branch which contains already contains
+        # submodules with .git. This check makes the transition easier.
+        strip_git_suffix = True
+        # Users may have an outdated depot_tools which doesn't set
+        # gclient-recursedeps, which may undo changes made by an up-to-date
+        # `gclient gitmodules` run. Users may also have an up-to-date
+        # depot_tools but an outdated chromium/src without gclient-recursedeps
+        # set which would cause confusion when they run `gclient gitmodules`
+        # and see unexpected gclient-recursedeps in the diff. We only want to
+        # set gclient-recursedeps if it's already set in the .gitmodules file
+        # or if there is no existing .gitmodules file so we know
+        # `gclient gitmodules` is being run for the first time.
+        set_recursedeps = True
+        if os.path.exists(options.output_gitmodules):
+            dot_git_pattern = re.compile(r'^(\s*)url(\s*)=.*\.git$')
+            with open(options.output_gitmodules) as f:
+                strip_git_suffix = not any(dot_git_pattern.match(l) for l in f)
+                set_recursedeps = any('gclient-recursedeps' in l for l in f)
 
-    recursedeps = ls.get('recursedeps')
-    with open(options.output_gitmodules, 'w', newline='') as f:
-        for path, dep in ls.get('deps').items():
-            if path in options.skip_dep:
-                continue
-            if dep.get('dep_type') != 'git':
-                continue
-            try:
-                url, commit = dep['url'].split('@', maxsplit=1)
-            except ValueError:
-                logging.error('error on %s; %s, not adding it', path,
-                              dep["url"])
-                continue
-            isRecurseDeps = recursedeps and path in recursedeps
-            if prefix_length:
-                path = path[prefix_length:]
+        recursedeps = ls.get('recursedeps')
+        with open(options.output_gitmodules, 'w', newline='') as f:
+            for path, dep in ls.get('deps').items():
+                if path in options.skip_dep:
+                    continue
+                if dep.get('dep_type') != 'git':
+                    continue
+                try:
+                    url, commit = dep['url'].split('@', maxsplit=1)
+                except ValueError:
+                    logging.error('error on %s; %s, not adding it', path,
+                                  dep["url"])
+                    continue
+                isRecurseDeps = recursedeps and path in recursedeps
+                if prefix_length:
+                    path = path[prefix_length:]
 
-            if strip_git_suffix:
-                if url.endswith('.git'):
-                    url = url[:-4]  # strip .git
-                url = url.rstrip('/')  # remove trailing slash for consistency
+                if strip_git_suffix:
+                    if url.endswith('.git'):
+                        url = url[:-4]  # strip .git
+                    url = url.rstrip('/')  # strip trailing slash if any
 
-            cache_info += ['--cacheinfo', f'160000,{commit},{path}']
-            f.write(f'[submodule "{path}"]\n\tpath = {path}\n\turl = {url}\n')
-            if 'condition' in dep:
-                f.write(f'\tgclient-condition = {dep["condition"]}\n')
-            if isRecurseDeps and set_recursedeps:
-                f.write('\tgclient-recursedeps = true\n')
-            # Windows has limit how long, so let's chunk those calls.
-            if len(cache_info) >= 100:
-                subprocess2.call(['git', 'update-index', '--add'] + cache_info)
-                cache_info = []
+                cache_info += ['--cacheinfo', f'160000,{commit},{path}']
+                f.write(
+                    f'[submodule "{path}"]\n\tpath = {path}\n\turl = {url}\n')
+                if 'condition' in dep:
+                    f.write(f'\tgclient-condition = {dep["condition"]}\n')
+                if isRecurseDeps and set_recursedeps:
+                    f.write('\tgclient-recursedeps = true\n')
+                # Windows has limit how long, so let's chunk those calls.
+                if len(cache_info) >= 100:
+                    subprocess2.call(['git', 'update-index', '--add'] +
+                                     cache_info)
+                    cache_info = []
 
-    if cache_info:
-        subprocess2.call(['git', 'update-index', '--add'] + cache_info)
-    subprocess2.call(['git', 'add', '.gitmodules'])
-    print('.gitmodules and gitlinks updated. Please check `git diff --staged` '
-          'and commit those staged changes (`git commit` without -a)')
+        if cache_info:
+            subprocess2.call(['git', 'update-index', '--add'] + cache_info)
+        subprocess2.call(['git', 'add', '.gitmodules'])
+        print('.gitmodules and gitlinks updated. Please check `git diff '
+              '--staged` and commit those staged changes (`git commit` '
+              'without -a).')
 
 
 @metrics.collector.collect_metrics('gclient flatten')
@@ -3440,41 +3447,42 @@ def CMDflatten(parser, args):
                       help='Provide a path for the output graph file')
     options, args = parser.parse_args(args)
 
-    options.nohooks = True
-    options.process_all_deps = True
-    client = GClient.LoadCurrentConfig(options)
-    if not client:
-        raise gclient_utils.Error(
-            'client not configured; see \'gclient config\'')
+    with caffeinate.scope(actually_caffeinate=options.caffeinate):
+        options.nohooks = True
+        options.process_all_deps = True
+        client = GClient.LoadCurrentConfig(options)
+        if not client:
+            raise gclient_utils.Error(
+                'client not configured; see \'gclient config\'')
 
-    # Only print progress if we're writing to a file. Otherwise, progress
-    # updates could obscure intended output.
-    code = client.RunOnDeps('flatten', args, progress=options.output_deps)
-    if code != 0:
-        return code
+        # Only print progress if we're writing to a file. Otherwise, progress
+        # updates could obscure intended output.
+        code = client.RunOnDeps('flatten', args, progress=options.output_deps)
+        if code != 0:
+            return code
 
-    flattener = Flattener(client, pin_all_deps=options.pin_all_deps)
+        flattener = Flattener(client, pin_all_deps=options.pin_all_deps)
 
-    if options.output_deps:
-        with open(options.output_deps, 'w') as f:
-            f.write(flattener.deps_string)
-    else:
-        print(flattener.deps_string)
+        if options.output_deps:
+            with open(options.output_deps, 'w') as f:
+                f.write(flattener.deps_string)
+        else:
+            print(flattener.deps_string)
 
-    if options.deps_graph_file:
-        with open(options.deps_graph_file, 'w') as f:
-            f.write('\n'.join(flattener.deps_graph_lines))
+        if options.deps_graph_file:
+            with open(options.deps_graph_file, 'w') as f:
+                f.write('\n'.join(flattener.deps_graph_lines))
 
-    deps_files = [{
-        'url': d[0],
-        'deps_file': d[1],
-        'hierarchy': d[2]
-    } for d in sorted(flattener.deps_files)]
-    if options.output_deps_files:
-        with open(options.output_deps_files, 'w') as f:
-            json.dump(deps_files, f)
+        deps_files = [{
+            'url': d[0],
+            'deps_file': d[1],
+            'hierarchy': d[2]
+        } for d in sorted(flattener.deps_files)]
+        if options.output_deps_files:
+            with open(options.output_deps_files, 'w') as f:
+                json.dump(deps_files, f)
 
-    return 0
+        return 0
 
 
 def _GNSettingsToLines(gn_args_file, gn_args):
@@ -3655,11 +3663,12 @@ def CMDgrep(parser, args):
 def CMDroot(parser, args):
     """Outputs the solution root (or current dir if there isn't one)."""
     (options, args) = parser.parse_args(args)
-    client = GClient.LoadCurrentConfig(options)
-    if client:
-        print(os.path.abspath(client.root_dir))
-    else:
-        print(os.path.abspath('.'))
+    with caffeinate.scope(actually_caffeinate=options.caffeinate):
+        client = GClient.LoadCurrentConfig(options)
+        if client:
+            print(os.path.abspath(client.root_dir))
+        else:
+            print(os.path.abspath('.'))
 
 
 @subcommand.usage('[url]')
@@ -3721,41 +3730,42 @@ def CMDconfig(parser, args):
             and options.cache_dir.lower() == 'none'):
         options.cache_dir = None
 
-    custom_vars = {}
-    for arg in options.custom_vars:
-        kv = arg.split('=', 1)
-        if len(kv) != 2:
-            parser.error('Invalid --custom-var argument: %r' % arg)
-        custom_vars[kv[0]] = gclient_eval.EvaluateCondition(kv[1], {})
+    with caffeinate.scope(actually_caffeinate=options.caffeinate):
+        custom_vars = {}
+        for arg in options.custom_vars:
+            kv = arg.split('=', 1)
+            if len(kv) != 2:
+                parser.error('Invalid --custom-var argument: %r' % arg)
+            custom_vars[kv[0]] = gclient_eval.EvaluateCondition(kv[1], {})
 
-    client = GClient('.', options)
-    if options.spec:
-        client.SetConfig(options.spec)
-    else:
-        base_url = args[0].rstrip('/')
-        if not options.name:
-            name = base_url.split('/')[-1]
-            if name.endswith('.git'):
-                name = name[:-4]
+        client = GClient('.', options)
+        if options.spec:
+            client.SetConfig(options.spec)
         else:
-            # specify an alternate relpath for the given URL.
-            name = options.name
-            if not os.path.abspath(os.path.join(os.getcwd(), name)).startswith(
-                    os.getcwd()):
-                parser.error('Do not pass a relative path for --name.')
-            if any(x in ('..', '.', '/', '\\') for x in name.split(os.sep)):
-                parser.error(
-                    'Do not include relative path components in --name.')
+            base_url = args[0].rstrip('/')
+            if not options.name:
+                name = base_url.split('/')[-1]
+                if name.endswith('.git'):
+                    name = name[:-4]
+            else:
+                # specify an alternate relpath for the given URL.
+                name = options.name
+                joined = os.path.join(os.getcwd(), name)
+                if not os.path.abspath(joined).startswith(os.getcwd()):
+                    parser.error('Do not pass a relative path for --name.')
+                if any(x in ('..', '.', '/', '\\') for x in name.split(os.sep)):
+                    parser.error(
+                        'Do not include relative path components in --name.')
 
-        deps_file = options.deps_file
-        client.SetDefaultConfig(name,
-                                deps_file,
-                                base_url,
-                                managed=not options.unmanaged,
-                                cache_dir=options.cache_dir,
-                                custom_vars=custom_vars)
-    client.SaveConfig()
-    return 0
+            deps_file = options.deps_file
+            client.SetDefaultConfig(name,
+                                    deps_file,
+                                    base_url,
+                                    managed=not options.unmanaged,
+                                    cache_dir=options.cache_dir,
+                                    custom_vars=custom_vars)
+        client.SaveConfig()
+        return 0
 
 
 @subcommand.epilog("""Example:
@@ -3781,13 +3791,14 @@ def CMDpack(parser, args):
     (options, args) = parser.parse_args(args)
     # Force jobs to 1 so the stdout is not annotated with the thread ids
     options.jobs = 1
-    client = GClient.LoadCurrentConfig(options)
-    if not client:
-        raise gclient_utils.Error(
-            'client not configured; see \'gclient config\'')
-    if options.verbose:
-        client.PrintLocationAndContents()
-    return client.RunOnDeps('pack', args)
+    with caffeinate.scope(actually_caffeinate=options.caffeinate):
+        client = GClient.LoadCurrentConfig(options)
+        if not client:
+            raise gclient_utils.Error(
+                'client not configured; see \'gclient config\'')
+        if options.verbose:
+            client.PrintLocationAndContents()
+        return client.RunOnDeps('pack', args)
 
 
 @metrics.collector.collect_metrics('gclient status')
@@ -3805,13 +3816,14 @@ def CMDstatus(parser, args):
                       'platform(s); \'all\' will process all deps_os '
                       'references')
     (options, args) = parser.parse_args(args)
-    client = GClient.LoadCurrentConfig(options)
-    if not client:
-        raise gclient_utils.Error(
-            'client not configured; see \'gclient config\'')
-    if options.verbose:
-        client.PrintLocationAndContents()
-    return client.RunOnDeps('status', args)
+    with caffeinate.scope(actually_caffeinate=options.caffeinate):
+        client = GClient.LoadCurrentConfig(options)
+        if not client:
+            raise gclient_utils.Error(
+                'client not configured; see \'gclient config\'')
+        if options.verbose:
+            client.PrintLocationAndContents()
+        return client.RunOnDeps('status', args)
 
 
 @subcommand.epilog("""Examples:
@@ -3997,49 +4009,50 @@ def CMDsync(parser, args):
                       help='Specify to skip processing of a certain type of '
                       'dep.')
     (options, args) = parser.parse_args(args)
-    client = GClient.LoadCurrentConfig(options)
 
-    if not client:
-        raise gclient_utils.Error(
-            'client not configured; see \'gclient config\'')
+    with caffeinate.scope(actually_caffeinate=options.caffeinate):
+        client = GClient.LoadCurrentConfig(options)
 
-    if options.download_topics and not options.rebase_patch_ref:
-        raise gclient_utils.Error(
-            'Warning: You cannot download topics and not rebase each patch ref')
+        if not client:
+            raise gclient_utils.Error(
+                'client not configured; see \'gclient config\'')
 
-    if options.ignore_locks:
-        print(
-            'Warning: ignore_locks is no longer used. Please remove its usage.')
+        if options.download_topics and not options.rebase_patch_ref:
+            raise gclient_utils.Error(
+                'cannot download topics without rebasing each patch ref')
 
-    if options.break_repo_locks:
-        print('Warning: break_repo_locks is no longer used. Please remove its '
-              'usage.')
+        if options.ignore_locks:
+            print('Warning: ignore_locks is no longer used. Please remove it.')
 
-    if options.revisions and options.head:
-        # TODO(maruel): Make it a parser.error if it doesn't break any builder.
-        print('Warning: you cannot use both --head and --revision')
+        if options.break_repo_locks:
+            print('Warning: break_repo_locks is no longer used. '
+                  'Please remove it.')
 
-    if options.verbose:
-        client.PrintLocationAndContents()
+        if options.revisions and options.head:
+            # TODO(maruel): Make it a parser.error if it doesn't break builders.
+            print('Warning: you cannot use both --head and --revision')
 
-    if gclient_utils.IsEnvCog():
-        ret = client.RunOnDeps('runhooks', args)
-    else:
-        ret = client.RunOnDeps('update', args)
-    if options.output_json:
-        slns = {}
-        for d in client.subtree(True):
-            normed = d.name.replace('\\', '/').rstrip('/') + '/'
-            slns[normed] = {
-                'revision': d.got_revision,
-                'scm': d.used_scm.name if d.used_scm else None,
-                'url': str(d.url) if d.url else None,
-                'was_processed': d.should_process,
-                'was_synced': d._should_sync,
-            }
-        with open(options.output_json, 'w') as f:
-            json.dump({'solutions': slns}, f)
-    return ret
+        if options.verbose:
+            client.PrintLocationAndContents()
+
+        if gclient_utils.IsEnvCog():
+            ret = client.RunOnDeps('runhooks', args)
+        else:
+            ret = client.RunOnDeps('update', args)
+        if options.output_json:
+            slns = {}
+            for d in client.subtree(True):
+                normed = d.name.replace('\\', '/').rstrip('/') + '/'
+                slns[normed] = {
+                    'revision': d.got_revision,
+                    'scm': d.used_scm.name if d.used_scm else None,
+                    'url': str(d.url) if d.url else None,
+                    'was_processed': d.should_process,
+                    'was_synced': d._should_sync,
+                }
+            with open(options.output_json, 'w') as f:
+                json.dump({'solutions': slns}, f)
+        return ret
 
 
 CMDupdate = CMDsync
@@ -4049,16 +4062,17 @@ CMDupdate = CMDsync
 def CMDvalidate(parser, args):
     """Validates the .gclient and DEPS syntax."""
     options, args = parser.parse_args(args)
-    client = GClient.LoadCurrentConfig(options)
-    if not client:
-        raise gclient_utils.Error(
-            'client not configured; see \'gclient config\'')
-    rv = client.RunOnDeps('validate', args)
-    if rv == 0:
-        print('validate: SUCCESS')
-    else:
-        print('validate: FAILURE')
-    return rv
+    with caffeinate.scope(actually_caffeinate=options.caffeinate):
+        client = GClient.LoadCurrentConfig(options)
+        if not client:
+            raise gclient_utils.Error(
+                'client not configured; see \'gclient config\'')
+        rv = client.RunOnDeps('validate', args)
+        if rv == 0:
+            print('validate: SUCCESS')
+        else:
+            print('validate: FAILURE')
+        return rv
 
 
 @metrics.collector.collect_metrics('gclient diff')
@@ -4071,13 +4085,14 @@ def CMDdiff(parser, args):
                       'platform(s); \'all\' will process all deps_os '
                       'references')
     (options, args) = parser.parse_args(args)
-    client = GClient.LoadCurrentConfig(options)
-    if not client:
-        raise gclient_utils.Error(
-            'client not configured; see \'gclient config\'')
-    if options.verbose:
-        client.PrintLocationAndContents()
-    return client.RunOnDeps('diff', args)
+    with caffeinate.scope(actually_caffeinate=options.caffeinate):
+        client = GClient.LoadCurrentConfig(options)
+        if not client:
+            raise gclient_utils.Error(
+                'client not configured; see \'gclient config\'')
+        if options.verbose:
+            client.PrintLocationAndContents()
+        return client.RunOnDeps('diff', args)
 
 
 @metrics.collector.collect_metrics('gclient revert')
@@ -4114,25 +4129,25 @@ def CMDrevert(parser, args):
                       help='No longer used.')
     (options, args) = parser.parse_args(args)
     if options.break_repo_locks:
-        print(
-            'Warning: break_repo_locks is no longer used. Please remove its ' +
-            'usage.')
+        print('Warning: break_repo_locks is no longer used. Please remove it.')
 
     # --force is implied.
     options.force = True
     options.reset = False
     options.delete_unversioned_trees = False
     options.merge = False
-    client = GClient.LoadCurrentConfig(options)
-    if not client:
-        raise gclient_utils.Error(
-            'client not configured; see \'gclient config\'')
-    return client.RunOnDeps('revert', args)
+
+    with caffeinate.scope(actually_caffeinate=options.caffeinate):
+        client = GClient.LoadCurrentConfig(options)
+        if not client:
+            raise gclient_utils.Error(
+                'client not configured; see \'gclient config\'')
+        return client.RunOnDeps('revert', args)
 
 
 @metrics.collector.collect_metrics('gclient runhooks')
 def CMDrunhooks(parser, args):
-    """Runs hooks for files that have been modified in the local working copy."""
+    """Runs hooks for files that have been modified in the working copy."""
     parser.add_option('--deps',
                       dest='deps_os',
                       metavar='OS_LIST',
@@ -4145,15 +4160,16 @@ def CMDrunhooks(parser, args):
                       default=True,
                       help='Deprecated. No effect.')
     (options, args) = parser.parse_args(args)
-    client = GClient.LoadCurrentConfig(options)
-    if not client:
-        raise gclient_utils.Error(
-            'client not configured; see \'gclient config\'')
-    if options.verbose:
-        client.PrintLocationAndContents()
-    options.force = True
-    options.nohooks = False
-    return client.RunOnDeps('runhooks', args)
+    with caffeinate.scope(actually_caffeinate=options.caffeinate):
+        client = GClient.LoadCurrentConfig(options)
+        if not client:
+            raise gclient_utils.Error(
+                'client not configured; see \'gclient config\'')
+        if options.verbose:
+            client.PrintLocationAndContents()
+        options.force = True
+        options.nohooks = False
+        return client.RunOnDeps('runhooks', args)
 
 
 # TODO(crbug.com/1481266): Collect merics for installhooks.
@@ -4165,11 +4181,12 @@ def CMDinstallhooks(parser, args):
     variable SKIP_GITLINK_PRECOMMIT=1.
     """
     (options, args) = parser.parse_args(args)
-    client = GClient.LoadCurrentConfig(options)
-    if not client:
-        raise gclient_utils.Error(
-            'client not configured; see \'gclient config\'')
-    client._InstallPreCommitHook()
+    with caffeinate.scope(actually_caffeinate=options.caffeinate):
+        client = GClient.LoadCurrentConfig(options)
+        if not client:
+            raise gclient_utils.Error(
+                'client not configured; see \'gclient config\'')
+        client._InstallPreCommitHook()
     return 0
 
 
@@ -4216,12 +4233,13 @@ def CMDrevinfo(parser, args):
         default=[],
         help='Specify to skip processing of a certain type of dep.')
     (options, args) = parser.parse_args(args)
-    client = GClient.LoadCurrentConfig(options)
-    if not client:
-        raise gclient_utils.Error(
-            'client not configured; see \'gclient config\'')
-    client.PrintRevInfo()
-    return 0
+    with caffeinate.scope(actually_caffeinate=options.caffeinate):
+        client = GClient.LoadCurrentConfig(options)
+        if not client:
+            raise gclient_utils.Error(
+                'client not configured; see \'gclient config\'')
+        client.PrintRevInfo()
+        return 0
 
 
 @metrics.collector.collect_metrics('gclient getdep')
@@ -4256,51 +4274,50 @@ def CMDgetdep(parser, args):
         'file in the current directory.')
     (options, args) = parser.parse_args(args)
 
-    if not os.path.isfile(options.deps_file):
-        raise gclient_utils.Error('DEPS file %s does not exist.' %
-                                  options.deps_file)
-    with open(options.deps_file) as f:
-        contents = f.read()
-    client = GClient.LoadCurrentConfig(options)
-    if client is not None:
-        builtin_vars = client.get_builtin_vars()
-    else:
-        logging.warning(
-            'Couldn\'t find a valid gclient config. Will attempt to parse the DEPS '
-            'file without support for built-in variables.')
-        builtin_vars = None
-    local_scope = gclient_eval.Exec(contents,
-                                    options.deps_file,
-                                    builtin_vars=builtin_vars)
-
-    for var in options.vars:
-        print(gclient_eval.GetVar(local_scope, var))
-
-    commits = {}
-    if local_scope.get(
-            'git_dependencies'
-    ) == gclient_eval.SUBMODULES and options.getdep_revisions:
-        commits.update(
-            scm_git.GIT.GetSubmoduleCommits(
-                os.getcwd(),
-                [path for path in options.getdep_revisions if ':' not in path]))
-
-    for name in options.getdep_revisions:
-        if ':' in name:
-            name, _, package = name.partition(':')
-            if not name or not package:
-                parser.error(
-                    'Wrong CIPD format: %s:%s should be of the form path:pkg.' %
-                    (name, package))
-            print(gclient_eval.GetCIPD(local_scope, name, package))
-        elif commits:
-            print(commits[name])
+    with caffeinate.scope(actually_caffeinate=options.caffeinate):
+        if not os.path.isfile(options.deps_file):
+            raise gclient_utils.Error('DEPS file %s does not exist.' %
+                                      options.deps_file)
+        with open(options.deps_file) as f:
+            contents = f.read()
+        client = GClient.LoadCurrentConfig(options)
+        if client is not None:
+            builtin_vars = client.get_builtin_vars()
         else:
-            try:
-                print(gclient_eval.GetRevision(local_scope, name))
-            except KeyError as e:
-                print(repr(e), file=sys.stderr)
-                sys.exit(2)
+            logging.warning(
+                'Couldn\'t find a valid gclient config. Will attempt to parse '
+                'the DEPS file without support for built-in variables.')
+            builtin_vars = None
+        local_scope = gclient_eval.Exec(contents,
+                                        options.deps_file,
+                                        builtin_vars=builtin_vars)
+
+        for var in options.vars:
+            print(gclient_eval.GetVar(local_scope, var))
+
+        commits = {}
+        dep_scope = local_scope.get('git_dependencies')
+        if dep_scope == gclient_eval.SUBMODULES and options.getdep_revisions:
+            submodule_commits = scm_git.GIT.GetSubmoduleCommits(
+                os.getcwd(),
+                [path for path in options.getdep_revisions if ':' not in path])
+            commits.update(submodule_commits)
+
+        for fullname in options.getdep_revisions:
+            if ':' in fullname:
+                name, _, package = fullname.partition(':')
+                if not name or not package:
+                    parser.error(f'Wrong CIPD format: {fullname} should be of '
+                                 'the form path:pkg.')
+                print(gclient_eval.GetCIPD(local_scope, name, package))
+            elif commits:
+                print(commits[fullname])
+            else:
+                try:
+                    print(gclient_eval.GetRevision(local_scope, fullname))
+                except KeyError as e:
+                    print(repr(e), file=sys.stderr)
+                    sys.exit(2)
 
 
 @metrics.collector.collect_metrics('gclient setdep')
@@ -4346,165 +4363,166 @@ def CMDsetdep(parser, args):
         parser.error(
             'You must specify at least one variable or revision to modify.')
 
-    if not os.path.isfile(options.deps_file):
-        raise gclient_utils.Error('DEPS file %s does not exist.' %
-                                  options.deps_file)
-    with open(options.deps_file) as f:
-        contents = f.read()
+    with caffeinate.scope(actually_caffeinate=options.caffeinate):
+        if not os.path.isfile(options.deps_file):
+            raise gclient_utils.Error('DEPS file %s does not exist.' %
+                                      options.deps_file)
+        with open(options.deps_file) as f:
+            contents = f.read()
 
-    client = GClient.LoadCurrentConfig(options)
-    if client is not None:
-        builtin_vars = client.get_builtin_vars()
-    else:
-        logging.warning(
-            'Couldn\'t find a valid gclient config. Will attempt to parse the DEPS '
-            'file without support for built-in variables.')
-        builtin_vars = None
-
-    local_scope = gclient_eval.Exec(contents,
-                                    options.deps_file,
-                                    builtin_vars=builtin_vars)
-
-    # Create a set of all git submodules.
-    cwd = os.path.dirname(options.deps_file) or os.getcwd()
-    git_modules = None
-    is_cog = gclient_utils.IsEnvCog()
-    if (not is_cog and 'git_dependencies' in local_scope
-            and local_scope['git_dependencies']
-            in (gclient_eval.SUBMODULES, gclient_eval.SYNC)):
-        cmd = ['git', 'ls-files', '--format=%(objectmode) %(path)']
-        with subprocess2.Popen(
-                cmd,
-                cwd=cwd,
-                stdout=subprocess2.PIPE,
-                stderr=None if options.verbose else subprocess2.DEVNULL,
-                text=True) as p:
-            git_modules = {
-                line.split()[1].strip()
-                for line in p.stdout if line.startswith('160000')
-            }
-        if p.returncode != 0:
-            print('Warning: gitlinks won\'t be updated because computing '
-                  'submodules has failed.')
-            git_modules = None
-
-    for var in options.vars:
-        name, _, value = var.partition('=')
-        if not name or not value:
-            parser.error(
-                'Wrong var format: %s should be of the form name=value.' % var)
-        if name in local_scope['vars']:
-            gclient_eval.SetVar(local_scope, name, value)
+        client = GClient.LoadCurrentConfig(options)
+        if client is not None:
+            builtin_vars = client.get_builtin_vars()
         else:
-            gclient_eval.AddVar(local_scope, name, value)
+            logging.warning(
+                'Couldn\'t find a valid gclient config. Will attempt to parse '
+                'the DEPS file without support for built-in variables.')
+            builtin_vars = None
 
-    for revision in options.setdep_revisions:
-        name, _, value = revision.partition('@')
-        if not name or not value:
-            parser.error('Wrong dep format: %s should be of the form dep@rev.' %
-                         revision)
-        if ':' in name:
-            name, _, package = name.partition(':')
-            if not name or not package:
+        local_scope = gclient_eval.Exec(contents,
+                                        options.deps_file,
+                                        builtin_vars=builtin_vars)
+
+        # Create a set of all git submodules.
+        cwd = os.path.dirname(options.deps_file) or os.getcwd()
+        git_modules = None
+        is_cog = gclient_utils.IsEnvCog()
+        # git_dependencies is defaulted to DEPS when not set.
+        git_deps = gclient_eval.DEPS
+        if 'git_dependencies' in local_scope:
+            git_deps = local_scope['git_dependencies']
+        if (not is_cog
+                and git_deps in (gclient_eval.SUBMODULES, gclient_eval.SYNC)):
+            cmd = ['git', 'ls-files', '--format=%(objectmode) %(path)']
+            with subprocess2.Popen(
+                    cmd,
+                    cwd=cwd,
+                    stdout=subprocess2.PIPE,
+                    stderr=None if options.verbose else subprocess2.DEVNULL,
+                    text=True) as p:
+                git_modules = {
+                    line.split()[1].strip()
+                    for line in p.stdout if line.startswith('160000')
+                }
+            if p.returncode != 0:
+                print('Warning: gitlinks won\'t be updated because computing '
+                      'submodules has failed.')
+                git_modules = None
+
+        for var in options.vars:
+            name, _, value = var.partition('=')
+            if not name or not value:
                 parser.error(
-                    'Wrong CIPD format: %s:%s should be of the form path:pkg@version.'
-                    % (name, package))
-            gclient_eval.SetCIPD(local_scope, name, package, value)
-        elif ',' in value:
-            objects = []
-            raw_objects = value.split('?')
-            for o in raw_objects:
-                object_info = o.split(',')
-                if len(object_info) != 4:
+                    f'Wrong var format: {var} must be of the form name=value.')
+            if name in local_scope['vars']:
+                gclient_eval.SetVar(local_scope, name, value)
+            else:
+                gclient_eval.AddVar(local_scope, name, value)
+
+        for revision in options.setdep_revisions:
+            name, _, value = revision.partition('@')
+            if not name or not value:
+                parser.error(f'Wrong dep format: {revision} must be of the '
+                             'form dep@rev.')
+            if ':' in name:
+                pkgname, _, package = name.partition(':')
+                if not pkgname or not package:
                     parser.error(
-                        'All values are required in the revision object: '
-                        'object_name, sha256sum, size_bytes and generation.')
-                objects.append({
-                    'object_name': object_info[0],
-                    'sha256sum': object_info[1],
-                    'size_bytes': object_info[2],
-                    'generation': object_info[3],
-                })
-            gclient_eval.SetGCS(local_scope, name, objects)
-        else:  # git dependencies
-            # Update DEPS only when `git_dependencies` == DEPS or SYNC.
-            # git_dependencies is defaulted to DEPS when not set.
-            if 'git_dependencies' not in local_scope or local_scope[
-                    'git_dependencies'] in (gclient_eval.DEPS,
-                                            gclient_eval.SYNC):
-                gclient_eval.SetRevision(local_scope, name, value)
+                        f'Wrong CIPD format: {revision} must be of the form '
+                        'path:pkg@version.')
+                gclient_eval.SetCIPD(local_scope, name, package, value)
+            elif ',' in value:
+                objects = []
+                raw_objects = value.split('?')
+                for o in raw_objects:
+                    object_info = o.split(',')
+                    if len(object_info) != 4:
+                        parser.error(
+                            'All values are required in the revision object: '
+                            'object_name, sha256sum, size_bytes and generation.'
+                        )
+                    objects.append({
+                        'object_name': object_info[0],
+                        'sha256sum': object_info[1],
+                        'size_bytes': object_info[2],
+                        'generation': object_info[3],
+                    })
+                gclient_eval.SetGCS(local_scope, name, objects)
+            else:  # git dependencies
+                # Update DEPS only when `git_dependencies` == DEPS or SYNC.
+                if git_deps in (gclient_eval.DEPS, gclient_eval.SYNC):
+                    gclient_eval.SetRevision(local_scope, name, value)
 
-            # Update git submodules when `git_dependencies` == SYNC or
-            # SUBMODULES.
-            if git_modules and 'git_dependencies' in local_scope and local_scope[
-                    'git_dependencies'] in (gclient_eval.SUBMODULES,
-                                            gclient_eval.SYNC):
-                if is_cog:
-                    parser.error(
-                        f'Set git dependency "{name}" is currently not '
-                        'supported.')
-                git_module_name = name
-                if not 'use_relative_paths' in local_scope or \
-                    local_scope['use_relative_paths'] != True:
-                    deps_dir = os.path.dirname(
-                        os.path.abspath(options.deps_file))
-                    gclient_path = gclient_paths.FindGclientRoot(deps_dir)
-                    delta_path = None
-                    if gclient_path:
-                        delta_path = os.path.relpath(
-                            deps_dir, os.path.abspath(gclient_path))
-                    if delta_path:
-                        prefix_length = len(delta_path.replace(
-                            os.path.sep, '/')) + 1
-                        git_module_name = name[prefix_length:]
-                # gclient setdep should update the revision, i.e., the gitlink
-                # only when the submodule entry is already present within
-                # .gitmodules.
-                if git_module_name not in git_modules:
-                    raise KeyError(
-                        f'Could not find any dependency called "{git_module_name}" in '
-                        f'.gitmodules.')
+                # Update git submodules when `git_dependencies` == SYNC or
+                # SUBMODULES.
+                if git_modules and git_deps in (gclient_eval.SUBMODULES,
+                                                gclient_eval.SYNC):
+                    if is_cog:
+                        parser.error(
+                            f'Set git dependency "{name}" is currently not '
+                            'supported.')
+                    git_module_name = name
+                    if not 'use_relative_paths' in local_scope or \
+                        local_scope['use_relative_paths'] != True:
+                        deps_dir = os.path.dirname(
+                            os.path.abspath(options.deps_file))
+                        gclient_path = gclient_paths.FindGclientRoot(deps_dir)
+                        delta_path = None
+                        if gclient_path:
+                            delta_path = os.path.relpath(
+                                deps_dir, os.path.abspath(gclient_path))
+                        if delta_path:
+                            prefix_length = len(
+                                delta_path.replace(os.path.sep, '/')) + 1
+                            git_module_name = name[prefix_length:]
+                    # gclient setdep should update the revision, i.e., the
+                    # gitlink only when the submodule entry is already present
+                    # within .gitmodules.
+                    if git_module_name not in git_modules:
+                        raise KeyError('Could not find any dependency called '
+                                       f'"{git_module_name}" in .gitmodules.')
 
-                # Update the gitlink for the submodule.
-                subprocess2.call([
-                    'git', 'update-index', '--add', '--cacheinfo',
-                    f'160000,{value},{git_module_name}'
-                ],
-                                 cwd=cwd)
+                    # Update the gitlink for the submodule.
+                    subprocess2.call([
+                        'git', 'update-index', '--add', '--cacheinfo',
+                        f'160000,{value},{git_module_name}'
+                    ],
+                                     cwd=cwd)
 
-    with open(options.deps_file, 'wb') as f:
-        f.write(gclient_eval.RenderDEPSFile(local_scope).encode('utf-8'))
+        with open(options.deps_file, 'wb') as f:
+            f.write(gclient_eval.RenderDEPSFile(local_scope).encode('utf-8'))
 
-    if git_modules:
-        subprocess2.call(['git', 'add', options.deps_file], cwd=cwd)
-        print('Changes have been staged. See changes with `git status`.\n'
-              'Use `git commit -m "Manual roll"` to commit your changes. \n'
-              'Run gclient sync to update your local dependency checkout.')
+        if git_modules:
+            subprocess2.call(['git', 'add', options.deps_file], cwd=cwd)
+            print('Changes have been staged. See changes with `git status`.\n'
+                  'Use `git commit -m "Manual roll"` to commit your changes. \n'
+                  'Run gclient sync to update your local dependency checkout.')
 
 
 @metrics.collector.collect_metrics('gclient verify')
 def CMDverify(parser, args):
     """Verifies the DEPS file deps are only from allowed_hosts."""
     (options, args) = parser.parse_args(args)
-    client = GClient.LoadCurrentConfig(options)
-    if not client:
-        raise gclient_utils.Error(
-            'client not configured; see \'gclient config\'')
-    client.RunOnDeps(None, [])
-    # Look at each first-level dependency of this gclient only.
-    for dep in client.dependencies:
-        bad_deps = dep.findDepsFromNotAllowedHosts()
-        if not bad_deps:
-            continue
-        print("There are deps from not allowed hosts in file %s" %
-              dep.deps_file)
-        for bad_dep in bad_deps:
-            print("\t%s at %s" % (bad_dep.name, bad_dep.url))
-        print("allowed_hosts:", ', '.join(dep.allowed_hosts))
-        sys.stdout.flush()
-        raise gclient_utils.Error(
-            'dependencies from disallowed hosts; check your DEPS file.')
-    return 0
+    with caffeinate.scope(actually_caffeinate=options.caffeinate):
+        client = GClient.LoadCurrentConfig(options)
+        if not client:
+            raise gclient_utils.Error(
+                'client not configured; see \'gclient config\'')
+        client.RunOnDeps(None, [])
+        # Look at each first-level dependency of this gclient only.
+        for dep in client.dependencies:
+            bad_deps = dep.findDepsFromNotAllowedHosts()
+            if not bad_deps:
+                continue
+            print("There are deps from not allowed hosts in file %s" %
+                  dep.deps_file)
+            for bad_dep in bad_deps:
+                print("\t%s at %s" % (bad_dep.name, bad_dep.url))
+            print("allowed_hosts:", ', '.join(dep.allowed_hosts))
+            sys.stdout.flush()
+            raise gclient_utils.Error(
+                'dependencies from disallowed hosts; check your DEPS file.')
+        return 0
 
 
 @subcommand.epilog("""For more information on what metrics are we collecting and
@@ -4581,6 +4599,19 @@ class OptionParser(optparse.OptionParser):
                         default=False,
                         action='store_true',
                         help='Ignored for backwards compatibility.')
+        self.add_option('--no-caffeinate',
+                        dest='caffeinate',
+                        default=True,
+                        action='store_false',
+                        help='Do not try to prevent system sleep while the '
+                        'operation is running. Operations expected to be fast '
+                        'may not try to prevent sleep anyway. Currently, '
+                        'system sleep is only prevented on macOS.')
+        # --no-caffeinate loosely implies --caffeinate exists, so allow it
+        self.add_option('--caffeinate',
+                        dest='caffeinate',
+                        action='store_true',
+                        help=optparse.SUPPRESS_HELP)
 
     def parse_args(self, args=None, _values=None):
         """Integrates standard options processing."""
