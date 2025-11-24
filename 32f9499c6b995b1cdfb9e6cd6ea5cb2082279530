@@ -37,6 +37,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "5d4678b0_7c38e46f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1286337
+      },
+      "writtenOn": "2025-11-24T19:28:41Z",
+      "side": 1,
+      "message": "This is something we\u0027ve discussed extensively in b/433778690. The goal is to have a certain people always get a specific bot added - there is no configuration I\u0027m aware of that can accomplish this right now (without also turning off the ability for those outside the group to run it). This is a low lift solution which gets us most of the way there without needing to implement new stuff in LUCI.",
+      "parentUuid": "76389e1c_dec746c0",
+      "revId": "32f9499c6b995b1cdfb9e6cd6ea5cb2082279530",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "b54ca547_8825dcfb",
         "filename": "git_cl.py",
         "patchSetId": 1
