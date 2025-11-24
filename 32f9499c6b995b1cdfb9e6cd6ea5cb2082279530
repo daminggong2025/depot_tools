@@ -20,6 +20,23 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "76389e1c_dec746c0",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2025-11-24T19:12:08Z",
+      "side": 1,
+      "message": "since the goal is to get certain bots to always run on certain changes, it seems like configuring those bots to run on those changes would be the best approach, i.e. https://chromium.googlesource.com/infra/luci/luci-go/+/HEAD/lucicfg/doc/README.md#filtering-based-on-files-touched-by-a-cl",
+      "revId": "32f9499c6b995b1cdfb9e6cd6ea5cb2082279530",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "b54ca547_8825dcfb",
         "filename": "git_cl.py",
         "patchSetId": 1
