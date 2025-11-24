@@ -70,6 +70,24 @@
       "parentUuid": "ef3420d5_e1502f65",
       "revId": "38ac742c0fa719b75de67b2ace192ebffd35f93d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "cb9236a4_e5522071",
+        "filename": "git_cl.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 877,
+      "author": {
+        "id": 1002869
+      },
+      "writtenOn": "2025-11-24T21:04:37Z",
+      "side": 1,
+      "message": "Great catch! Thanks, turns out comments can be a tree of replies instead of a linear one. Updated to account for this.",
+      "parentUuid": "6f863bea_db676b51",
+      "revId": "38ac742c0fa719b75de67b2ace192ebffd35f93d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
