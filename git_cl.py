@@ -913,6 +913,10 @@ class Settings(object):
     def GetDefaultCCList(self):
         return self._GetConfig('rietveld.cc')
 
+    def GetExtraFooters(self):
+        """Returns the extra footer specified in git config."""
+        return self._GetConfigList('depot-tools.extra-footers')
+
     def GetSquashGerritUploads(self):
         """Returns True if uploads to Gerrit should be squashed by default."""
         if self.squash_gerrit_uploads is None:
@@ -981,6 +985,10 @@ class Settings(object):
     def _GetConfig(self, key, default=''):
         self._LazyUpdateIfNeeded()
         return scm.GIT.GetConfig(self.GetRoot(), key, default)
+
+    def _GetConfigList(self, key) -> bool:
+        self._LazyUpdateIfNeeded()
+        return scm.GIT.GetConfigList(self.GetRoot(), key)
 
     def _GetConfigBool(self, key) -> bool:
         self._LazyUpdateIfNeeded()
@@ -1207,6 +1215,16 @@ class ChangeDescription(object):
             self._description_lines.insert(line_loc, new_r_line)
         else:
             self.append_footer(new_r_line)
+
+    def set_extra_footers(self, extra_footers):
+        footers = git_footers.parse_footers(self.description)
+        for f in extra_footers:
+            # We always bias towards not setting a value if it has already been
+            # set.
+            parsed_footer_line = git_footers.parse_footer(f)
+            if footers.get(parsed_footer_line[0]):
+                return
+            self.append_footer(f)
 
     def set_preserve_tryjobs(self):
         """Ensures description footer contains 'Cq-Do-Not-Cancel-Tryjobs: true'."""
@@ -2141,6 +2159,9 @@ class Changelist(object):
 
         if options.preserve_tryjobs:
             change_desc.set_preserve_tryjobs()
+        extra_footers = settings.GetExtraFooters()
+        if extra_footers:
+            change_desc.set_extra_footers(extra_footers)
 
         SaveDescriptionBackup(change_desc)
 
@@ -3228,6 +3249,9 @@ class Changelist(object):
 
             if options.preserve_tryjobs:
                 change_desc.set_preserve_tryjobs()
+            extra_footers = settings.GetExtraFooters()
+            if extra_footers:
+                change_desc.set_extra_footers(extra_footers)
 
             remote, upstream_branch = self.FetchUpstreamTuple(self.GetBranch())
             parent = external_parent or self._ComputeParent(
