@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9bf15e76_7894cd31",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002869
+      },
+      "writtenOn": "2025-11-24T21:50:56Z",
+      "side": 1,
+      "message": "Hi Yiwei, PTAL for an improvement to `git cl comments`. Thanks!",
+      "revId": "05817b1ae7958d6d86db96553c0ae59c5dbe3fae",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
