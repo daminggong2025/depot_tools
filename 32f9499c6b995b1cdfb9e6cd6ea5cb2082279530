@@ -1,0 +1,61 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "283990b7_d75fde62",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1286337
+      },
+      "writtenOn": "2025-11-24T18:15:44Z",
+      "side": 1,
+      "message": "Would you know if there\u0027s any way I can have this apply for CiderG uploads as well?",
+      "revId": "32f9499c6b995b1cdfb9e6cd6ea5cb2082279530",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b54ca547_8825dcfb",
+        "filename": "git_cl.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 918,
+      "author": {
+        "id": 1286337
+      },
+      "writtenOn": "2025-11-24T18:15:44Z",
+      "side": 1,
+      "message": "I\u0027m unsure whether there\u0027s any pattern to how we choose the namespace",
+      "range": {
+        "startLine": 918,
+        "startChar": 36,
+        "endLine": 918,
+        "endChar": 41
+      },
+      "revId": "32f9499c6b995b1cdfb9e6cd6ea5cb2082279530",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5357b4b1_d2ee01cc",
+        "filename": "git_cl.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 2162,
+      "author": {
+        "id": 1286337
+      },
+      "writtenOn": "2025-11-24T18:15:44Z",
+      "side": 1,
+      "message": "This is copying set_preserve_tryjobs which is another thing which sets a footer. LMK if there\u0027s a better location to apply the footers.",
+      "revId": "32f9499c6b995b1cdfb9e6cd6ea5cb2082279530",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
