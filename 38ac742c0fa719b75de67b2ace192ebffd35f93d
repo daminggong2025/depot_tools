@@ -34,6 +34,24 @@
       "parentUuid": "ef3420d5_e1502f65",
       "revId": "38ac742c0fa719b75de67b2ace192ebffd35f93d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e6fb086e_5dade861",
+        "filename": "git_cl.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 877,
+      "author": {
+        "id": 1002869
+      },
+      "writtenOn": "2025-11-24T20:43:02Z",
+      "side": 1,
+      "message": "Comment #2 replying to the same top level comment resolved.",
+      "parentUuid": "332c2334_a4761f33",
+      "revId": "38ac742c0fa719b75de67b2ace192ebffd35f93d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
