@@ -55,6 +55,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "41383e07_b838a6ea",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1381059
+      },
+      "writtenOn": "2025-11-24T22:02:48Z",
+      "side": 1,
+      "message": "I think in the long run, this should be expressed in the CQ configuration instead of complicating depot_tools further (You already noticed the caveat that the Cider G workflow is not supported with this proposed flow). I agree that nothing in the CQ configuration today can support your use case unless we make improvements on more flexible builder triggering condition. \n\nAs a temporary workaround, I\u0027m wondering if we could introduce a new property in the CQ configuration to allow you to bypass owners_whitelist check when Cq-Include-Trybots is specified. That way, you can define the builder with the owner_whitelist set to the group you are targeting but in the meantime, people outside the group can still use Cq-Include-Trybots footer to explicitly launch the builder. Alternatively, we could also introduce additional groups that can use Cq-Include-Trybots to trigger the builder in addition to the groups defined in owners_whitelist. I\u0027m happy to make either of those changes.",
+      "parentUuid": "5d4678b0_7c38e46f",
+      "revId": "32f9499c6b995b1cdfb9e6cd6ea5cb2082279530",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "b54ca547_8825dcfb",
         "filename": "git_cl.py",
         "patchSetId": 1
