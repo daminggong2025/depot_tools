@@ -3349,6 +3349,7 @@ class TestGitCl(unittest.TestCase):
               'infra%2Finfra~1'), {
                   '/COMMIT_MSG': [
                       {
+                          'id': 'comment_id_1',
                           'author': {
                               'email': u'reviewer@example.com'
                           },
@@ -3360,6 +3361,7 @@ class TestGitCl(unittest.TestCase):
                   ],
                   'codereview.settings': [
                       {
+                          'id': 'comment_id_2',
                           'author': {
                               'email': u'owner@example.com'
                           },
