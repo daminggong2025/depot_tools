@@ -32,7 +32,9 @@ class BuildTelemetryTest(unittest.TestCase):
 
         with unittest.mock.patch('subprocess.check_output') as run_mock:
             run_mock.return_value = ''
-            self.assertEqual(build_telemetry.check_auth(), {})
+            with unittest.mock.patch('logging.error') as mock_error:
+                self.assertEqual(build_telemetry.check_auth(), {})
+                mock_error.assert_called_once()
 
     def test_load_and_save_config(self):
         test_countdown = 2
