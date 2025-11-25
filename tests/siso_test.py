@@ -218,6 +218,145 @@ ninja --failure_verbose=false -k=0
         _ = siso.apply_telemetry_flags(args, env)
         self.assertEqual(env.get("GOOGLE_API_USE_CLIENT_CERTIFICATE"), "false")
 
+    def test_fetch_metrics_project(self):
+        test_cases = {
+            'metrics_project_arg': {
+                'args': ['--metrics_project', 'proj1'],
+                'env': {},
+                'want': 'proj1',
+            },
+            'project_arg': {
+                'args': ['--project', 'proj2'],
+                'env': {},
+                'want': 'proj2',
+            },
+            'metrics_project_and_project_args': {
+                'args': ['--metrics_project', 'proj1', '--project', 'proj2'],
+                'env': {},
+                'want': 'proj1',
+            },
+            'rbe_metrics_project_env': {
+                'args': [],
+                'env': {
+                    'RBE_metrics_project': 'proj3'
+                },
+                'want': 'proj3',
+            },
+            'siso_project_env': {
+                'args': [],
+                'env': {
+                    'SISO_PROJECT': 'proj4'
+                },
+                'want': 'proj4',
+            },
+            'rbe_and_siso_project_env': {
+                'args': [],
+                'env': {
+                    'RBE_metrics_project': 'proj3',
+                    'SISO_PROJECT': 'proj4'
+                },
+                'want': 'proj3',
+            },
+            'project_arg_and_rbe_env': {
+                'args': ['--project', 'proj2'],
+                'env': {
+                    'RBE_metrics_project': 'proj3'
+                },
+                'want': 'proj2',
+            },
+            'metrics_project_arg_and_rbe_env': {
+                'args': ['--metrics_project', 'proj1'],
+                'env': {
+                    'RBE_metrics_project': 'proj3'
+                },
+                'want': 'proj1',
+            },
+            'no_project': {
+                'args': [],
+                'env': {},
+                'want': '',
+            },
+            'short_metrics_project_arg': {
+                'args': ['-metrics_project', 'proj1'],
+                'env': {},
+                'want': 'proj1',
+            },
+            'short_project_arg': {
+                'args': ['-project', 'proj2'],
+                'env': {},
+                'want': 'proj2',
+            },
+        }
+
+        for name, tc in test_cases.items():
+            with self.subTest(name):
+                got = siso._fetch_metrics_project(tc['args'], tc['env'])
+                self.assertEqual(got, tc['want'])
+
+    @mock.patch('siso._start_collector')
+    def test_handle_collector_args(self, mock_start_collector):
+        siso_path = 'path/to/siso'
+        env = {'SISO_PROJECT': 'test-project'}
+
+        test_cases = {
+            'collector_disabled': {
+                'args': ['ninja', '-C', 'out/Default'],
+                'start_succeeds': True,
+                'want_args': ['ninja', '-C', 'out/Default'],
+                'expect_start': False,
+            },
+            'collector_enabled_starts': {
+                'args': ['ninja', '--enable_collector'],
+                'start_succeeds': True,
+                'want_args': ['ninja', '--enable_collector'],
+                'expect_start': True,
+            },
+            'collector_enabled_fails': {
+                'args': ['ninja', '--enable_collector'],
+                'start_succeeds': False,
+                'want_args': ['ninja'],
+                'expect_start': True,
+            },
+            'collector_enabled_short_arg_fails': {
+                'args': ['ninja', '-enable_collector'],
+                'start_succeeds': False,
+                'want_args': ['ninja'],
+                'expect_start': True,
+            },
+        }
+
+        for name, tc in test_cases.items():
+            with self.subTest(name):
+                with mock.patch('siso._fetch_metrics_project') as mock_fetch:
+                    # Capture arguments at call time by using a side effect.
+                    captured_args = []
+
+                    def side_effect(*args, **kwargs):
+                        captured_args.append((list(args[0]), args[1]))
+                        return 'test-project'
+
+                    mock_fetch.side_effect = side_effect
+
+                    mock_start_collector.reset_mock()
+                    mock_start_collector.return_value = tc['start_succeeds']
+
+                    # Pass a copy of args
+                    input_args = tc['args'][:]
+                    result = siso._handle_collector_args(
+                        siso_path, input_args, env)
+
+                    self.assertEqual(result, tc['want_args'])
+
+                    if tc['expect_start']:
+                        self.assertEqual(len(captured_args), 1)
+                        self.assertEqual(captured_args[0][0], tc['args'])
+                        self.assertEqual(captured_args[0][1], env)
+                        mock_start_collector.assert_called_once_with(
+                            siso_path, 'test-project')
+                    else:
+                        self.assertEqual(len(captured_args), 0)
+                        mock_start_collector.assert_not_called()
+
     def test_process_args(self):
         user_system = siso._SYSTEM_DICT.get(platform.system(),
                                             platform.system())
