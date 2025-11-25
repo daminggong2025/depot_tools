@@ -22,6 +22,30 @@
       },
       "revId": "352b307b72c5af77fc1c8726a4cc34ddaf1f3f92",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8d46b8b4_7c01659e",
+        "filename": "siso.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-11-25T00:36:09Z",
+      "side": 1,
+      "message": "Hmm not yet, good point.. I was thinking about optimizing functions after we throw them in and have actually embed the logic, but I can do it sooner if you want to start optimization immediately.",
+      "parentUuid": "87edb1cf_20ad2cf8",
+      "range": {
+        "startLine": 56,
+        "startChar": 4,
+        "endLine": 56,
+        "endChar": 20
+      },
+      "revId": "352b307b72c5af77fc1c8726a4cc34ddaf1f3f92",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
