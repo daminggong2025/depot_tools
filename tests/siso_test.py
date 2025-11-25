@@ -217,6 +217,170 @@ ninja --failure_verbose=false -k=0
         _ = siso.apply_telemetry_flags(args, env)
         self.assertEqual(env.get("GOOGLE_API_USE_CLIENT_CERTIFICATE"), "false")
 
+    def test_fetch_metrics_project(self):
+        test_cases = {
+            'metrics_project_arg': {
+                'args': ['--metrics_project', 'proj1'],
+                'env': {},
+                'want': 'proj1',
+            },
+            'project_arg': {
+                'args': ['--project', 'proj2'],
+                'env': {},
+                'want': 'proj2',
+            },
+            'metrics_project_and_project_args': {
+                'args': ['--metrics_project', 'proj1', '--project', 'proj2'],
+                'env': {},
+                'want': 'proj1',
+            },
+            'rbe_metrics_project_env': {
+                'args': [],
+                'env': {
+                    'RBE_metrics_project': 'proj3'
+                },
+                'want': 'proj3',
+            },
+            'siso_project_env': {
+                'args': [],
+                'env': {
+                    'SISO_PROJECT': 'proj4'
+                },
+                'want': 'proj4',
+            },
+            'rbe_and_siso_project_env': {
+                'args': [],
+                'env': {
+                    'RBE_metrics_project': 'proj3',
+                    'SISO_PROJECT': 'proj4'
+                },
+                'want': 'proj3',
+            },
+            'project_arg_and_rbe_env': {
+                'args': ['--project', 'proj2'],
+                'env': {
+                    'RBE_metrics_project': 'proj3'
+                },
+                'want': 'proj2',
+            },
+            'metrics_project_arg_and_rbe_env': {
+                'args': ['--metrics_project', 'proj1'],
+                'env': {
+                    'RBE_metrics_project': 'proj3'
+                },
+                'want': 'proj1',
+            },
+            'no_project': {
+                'args': [],
+                'env': {},
+                'want': '',
+            },
+            'short_metrics_project_arg': {
+                'args': ['-metrics_project', 'proj1'],
+                'env': {},
+                'want': 'proj1',
+            },
+            'short_project_arg': {
+                'args': ['-project', 'proj2'],
+                'env': {},
+                'want': 'proj2',
+            },
+        }
+
+        for name, tc in test_cases.items():
+            with self.subTest(name):
+                got = siso._fetch_metrics_project(tc['args'], tc['env'])
+                self.assertEqual(got, tc['want'])
+
+    @mock.patch('siso._start_collector')
+    @mock.patch('siso.platform.system', return_value='Linux')
+    @mock.patch('siso._fetch_metrics_project', return_value='test-project')
+    def test_handle_collector_args_disabled(self, mock_fetch, mock_system,
+                                            mock_start_collector):
+        siso_path = 'path/to/siso'
+        out_dir = 'out/Default'
+        env = {'SISO_PROJECT': 'test-project'}
+        args = ['ninja', '-C', out_dir]
+
+        result = siso._handle_collector_args(siso_path, out_dir, args, env)
+
+        self.assertEqual(result, args)
+        mock_fetch.assert_not_called()
+        mock_start_collector.assert_not_called()
+
+    @mock.patch('siso._start_collector', return_value=True)
+    @mock.patch('siso.platform.system', return_value='Linux')
+    def test_handle_collector_args_starts_linux(self, mock_system,
+                                                mock_start_collector):
+        siso_path = 'path/to/siso'
+        out_dir = 'out/Default'
+        env = {'SISO_PROJECT': 'test-project'}
+        args = ['ninja', '--enable_collector']
+
+        captured_args = []
+        def fetch_metrics_project_side_effect(args, env):
+            captured_args.append(list(args))
+            return 'test-project'
+
+        with mock.patch('siso._fetch_metrics_project',
+                        side_effect=fetch_metrics_project_side_effect):
+            result = siso._handle_collector_args(siso_path, out_dir, args, env)
+
+            sockets_file = os.path.join(os.path.abspath(out_dir),
+                                        "otel_collector.sock")
+            self.assertEqual(
+                result,
+                ['ninja', '--enable_collector', f'--collector_socket_path={sockets_file}'])
+            self.assertEqual(captured_args, [['ninja', '--enable_collector']])
+            mock_start_collector.assert_called_once_with(
+                siso_path, sockets_file, 'test-project')
+
+    @mock.patch('siso._start_collector', return_value=True)
+    @mock.patch('siso.platform.system', return_value='Windows')
+    @mock.patch('siso._fetch_metrics_project', return_value='test-project')
+    def test_handle_collector_args_starts_windows(self, mock_fetch, mock_system,
+                                                  mock_start_collector):
+        siso_path = 'path/to/siso'
+        out_dir = 'out/Default'
+        env = {'SISO_PROJECT': 'test-project'}
+        args = ['ninja', '--enable_collector']
+        original_args = list(args)
+
+        result = siso._handle_collector_args(siso_path, out_dir, args, env)
+
+        self.assertEqual(result, ['ninja', '--enable_collector'])
+        mock_fetch.assert_called_once_with(original_args, env)
+        mock_start_collector.assert_called_once_with(siso_path, None,
+                                                     'test-project')
+
+    @mock.patch('siso._start_collector', return_value=False)
+    @mock.patch('siso.platform.system', return_value='Linux')
+    def test_handle_collector_args_fails(self, mock_system,
+                                         mock_start_collector):
+        siso_path = 'path/to/siso'
+        out_dir = 'out/Default'
+        env = {'SISO_PROJECT': 'test-project'}
+        args = ['ninja', '--enable_collector']
+
+        captured_args = []
+        def fetch_metrics_project_side_effect(args, env):
+            captured_args.append(list(args))
+            return 'test-project'
+        
+        with mock.patch('siso._fetch_metrics_project',
+                        side_effect=fetch_metrics_project_side_effect):
+            result = siso._handle_collector_args(siso_path, out_dir, args, env)
+
+            self.assertEqual(result, ['ninja'])
+            self.assertEqual(captured_args, [['ninja', '--enable_collector']])
+            sockets_file = os.path.join(os.path.abspath(out_dir),
+                                        "otel_collector.sock")
+            mock_start_collector.assert_called_once_with(
+                siso_path, sockets_file, 'test-project')
+
+
+
+
     def test_process_args(self):
         user_system = siso._SYSTEM_DICT.get(platform.system(),
                                             platform.system())
