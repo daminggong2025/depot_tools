@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "625218ec_84ae5bf0",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-11-25T04:09:18Z",
+      "side": 1,
+      "message": "In a really confusing way the system has stopped me from submitting on code freeze. So we will get it in next week.",
+      "revId": "db50056e444e1ae628fb5452981659248a6c9225",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
