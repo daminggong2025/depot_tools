@@ -50,6 +50,24 @@
       "message": "Will this work on corp mac?\n\nhttps://source.chromium.org/chromium/chromium/src/+/main:third_party/openscreen/src/build/mac/should_use_hermetic_xcode.py;l\u003d30?q\u003discorpmachine is an IsCorpMachine() we use in src.git that seems to work.",
       "revId": "9df5872ff3df1035b23a969c722506289c97a391",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a6be91e8_40add9da",
+        "filename": "build_telemetry.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-11-25T02:26:48Z",
+      "side": 1,
+      "message": "It will! this command should work on every platform, but thanks for the reference!",
+      "parentUuid": "a8076304_99d2b351",
+      "revId": "9df5872ff3df1035b23a969c722506289c97a391",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
