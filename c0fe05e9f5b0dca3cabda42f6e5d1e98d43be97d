@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b397b230_f132cb8b",
+        "filename": "siso.py",
+        "patchSetId": 19
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-11-25T07:02:16Z",
+      "side": 1,
+      "message": "This can be prefixed with `_` like `_SYSTEM_DICT`.",
+      "range": {
+        "startLine": 26,
+        "startChar": 0,
+        "endLine": 26,
+        "endChar": 16
+      },
+      "revId": "c0fe05e9f5b0dca3cabda42f6e5d1e98d43be97d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "94843a02_5a9fe3d3",
+        "filename": "siso.py",
+        "patchSetId": 19
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-11-25T07:02:16Z",
+      "side": 1,
+      "message": "Please use the constant.",
+      "range": {
+        "startLine": 53,
+        "startChar": 0,
+        "endLine": 53,
+        "endChar": 28
+      },
+      "revId": "c0fe05e9f5b0dca3cabda42f6e5d1e98d43be97d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
