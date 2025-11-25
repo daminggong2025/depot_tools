@@ -70,6 +70,30 @@
       },
       "revId": "352b307b72c5af77fc1c8726a4cc34ddaf1f3f92",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "82304806_8acf3caf",
+        "filename": "siso.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-11-25T20:53:41Z",
+      "side": 1,
+      "message": "Left comments on the bug.",
+      "parentUuid": "e09c1ed3_35abd0b6",
+      "range": {
+        "startLine": 56,
+        "startChar": 4,
+        "endLine": 56,
+        "endChar": 20
+      },
+      "revId": "352b307b72c5af77fc1c8726a4cc34ddaf1f3f92",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
