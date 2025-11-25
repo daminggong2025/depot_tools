@@ -26,6 +26,52 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "e9df217e_4a389633",
+        "filename": "siso.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-11-25T08:00:34Z",
+      "side": 1,
+      "message": "Should we give up starting collector here if `_kill_collector()` failed for some reason?",
+      "range": {
+        "startLine": 100,
+        "startChar": 0,
+        "endLine": 100,
+        "endChar": 29
+      },
+      "revId": "343b4d3832f513af43b0e16d335094e7bec5b127",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ecd1ba8c_45740fc4",
+        "filename": "siso.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-11-25T08:00:34Z",
+      "side": 1,
+      "message": "Hmm, this will have the fixed overhead. Can we merge start_collector/collector_status below? \n\ne.g.\n```\nfor i in range(0, 6): // do some retries\n   start_collector()\n   collector_status()\n   // do we need sleep here? or start_collector/collector_status already has an enough interval?\n```",
+      "range": {
+        "startLine": 101,
+        "startChar": 0,
+        "endLine": 101,
+        "endChar": 61
+      },
+      "revId": "343b4d3832f513af43b0e16d335094e7bec5b127",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "779c8aba_c2dfd589",
         "filename": "siso.py",
         "patchSetId": 2
@@ -43,6 +89,23 @@
         "endLine": 105,
         "endChar": 0
       },
+      "revId": "343b4d3832f513af43b0e16d335094e7bec5b127",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cafc6eb8_f9517ca8",
+        "filename": "siso.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 106,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-11-25T08:00:34Z",
+      "side": 1,
+      "message": "Let\u0027s make sure that the total wait time of _start_collector is under 1s. If it fails, siso can start building without collector.",
       "revId": "343b4d3832f513af43b0e16d335094e7bec5b127",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
