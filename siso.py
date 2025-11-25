@@ -270,6 +270,43 @@ def apply_telemetry_flags(args: list[str], env: dict[str, str]) -> list[str]:
     return args
 
 
+def _fetch_metrics_project(args: list[str], env: dict[str, str]) -> str:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-metrics_project", "--metrics_project")
+    parser.add_argument("-project", "--project")
+    metrics_env_var = "RBE_metrics_project"
+    project_env_var = "SISO_PROJECT"
+    known_args, _ = parser.parse_known_args(args)
+    if known_args.metrics_project:
+        return known_args.metrics_project
+    if known_args.project:
+        return known_args.project
+    if metrics_env_var in env:
+        return env[metrics_env_var]
+    if project_env_var in env:
+        return env[project_env_var]
+    return ""
+
+
+def _handle_collector_args(siso_path: str, args: list[str],
+                           env: dict[str, str]) -> list[str]:
+    parser = argparse.ArgumentParser()
+    # Can only be implicit. enable_collector=true will fail.
+    parser.add_argument("-enable_collector",
+                        "--enable_collector",
+                        action='store_true',
+                        default=False)
+    known_args, _ = parser.parse_known_args(args)
+    if known_args.enable_collector:
+        started = _start_collector(siso_path, _fetch_metrics_project(args, env))
+        if not started:
+            if "-enable_collector" in args:
+                args.remove("-enable_collector")
+            elif "--enable_collector" in args:
+                args.remove("--enable_collector")
+    return args
+
+
 def load_sisorc(rcfile):
     if not os.path.exists(rcfile):
         return [], {}
@@ -343,7 +380,8 @@ def _is_google_corp_machine():
     return shutil.which("gcert") is not None
 
 
-def main(args, telemetry_cfg: Optional[build_telemetry.Config] = None):
+def main(args: list[str],
+         telemetry_cfg: Optional[build_telemetry.Config] = None):
     # Do not raise KeyboardInterrupt on SIGINT so as to give siso time to run
     # cleanup tasks. Siso will be terminated immediately after the second
     # Ctrl-C.
@@ -460,6 +498,8 @@ def main(args, telemetry_cfg: Optional[build_telemetry.Config] = None):
         ]
         for siso_path in siso_paths:
             if siso_path and os.path.isfile(siso_path):
+                processed_args = _handle_collector_args(siso_path,
+                                                        processed_args, env)
                 check_outdir(subcmd, out_dir)
                 return caffeinate.call([siso_path] + processed_args, env=env)
         print(
