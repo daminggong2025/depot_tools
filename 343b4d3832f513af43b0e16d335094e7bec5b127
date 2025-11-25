@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e75f0f0b_5904119a",
+        "filename": "siso.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-11-25T07:51:50Z",
+      "side": 1,
+      "message": "What values of healthy and status do we expect to receive?",
+      "range": {
+        "startLine": 75,
+        "startChar": 0,
+        "endLine": 75,
+        "endChar": 67
+      },
+      "revId": "343b4d3832f513af43b0e16d335094e7bec5b127",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "779c8aba_c2dfd589",
+        "filename": "siso.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-11-25T07:51:50Z",
+      "side": 1,
+      "message": "I think it\u0027s better to do early return if it\u0027s healthy. And, we have only two unhealthy cases. (DEAD or others)\n\ne.g.\n```\nstatus \u003d collector_status(connection)\nif status \u003d\u003d Status.HEALTHY:\n  return True\n  \n// Handle unhealthy caces\nif status !\u003d Status.DEAD:\n  _kill_collector()\n\nstart_collector()\n```",
+      "range": {
+        "startLine": 95,
+        "startChar": 0,
+        "endLine": 105,
+        "endChar": 0
+      },
+      "revId": "343b4d3832f513af43b0e16d335094e7bec5b127",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
