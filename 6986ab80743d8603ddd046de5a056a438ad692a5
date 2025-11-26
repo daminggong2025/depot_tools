@@ -46,6 +46,30 @@
       },
       "revId": "6986ab80743d8603ddd046de5a056a438ad692a5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "80ec18ab_8e9b518d",
+        "filename": "siso.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-11-26T01:40:17Z",
+      "side": 1,
+      "message": "Ah wait, if it\u0027s missing it\u0027s stderr. Fixing.",
+      "parentUuid": "030ef807_a91a7388",
+      "range": {
+        "startLine": 48,
+        "startChar": 27,
+        "endLine": 48,
+        "endChar": 51
+      },
+      "revId": "6986ab80743d8603ddd046de5a056a438ad692a5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
