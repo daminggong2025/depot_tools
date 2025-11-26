@@ -43,7 +43,9 @@ def parse_args(args):
 # Subcommand completes successfully if subcommand is present, returning 0,
 # and 2 if it's not present.
 def _is_subcommand_present(siso_path: str, subc: str) -> bool:
-    return subprocess.call([siso_path, "help", subc]) == 0
+    return subprocess.call([siso_path, "help", subc],
+                           stdout=subprocess.DEVNULL,
+                           stderr=subprocess.DEVNULL) == 0
 
 
 def check_outdir(subcmd, out_dir):
