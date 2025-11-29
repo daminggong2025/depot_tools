@@ -1107,7 +1107,9 @@ class _ProvidedDiffCache(_DiffCache):
         with gclient_utils.temporary_file() as diff_file:
             gclient_utils.FileWrite(diff_file, diff)
             try:
-                scm.GIT.Capture(['apply', '--reverse', '--check', diff_file],
+                scm.GIT.Capture([
+                    'apply', '--reverse', '--unidiff-zero', '--check', diff_file
+                ],
                                 cwd=local_root)
             except subprocess.CalledProcessError:
                 raise RuntimeError('Provided diff does not apply cleanly.')
