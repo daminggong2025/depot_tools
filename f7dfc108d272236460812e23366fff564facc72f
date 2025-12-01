@@ -3,6 +3,29 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "c65ed091_740b3f5c",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 4
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1381059
+      },
+      "writtenOn": "2025-12-01T18:44:26Z",
+      "side": 1,
+      "message": "Please fix this WARNING reported by Spellchecker: \"doens\u0027t\" is a possible misspelling of \"doesn\u0027t\".\n\nTo bypass Spellchecker, add a...\n\n\"doens\u0027t\" is a possible misspelling of \"doesn\u0027t\".\n\nTo bypass Spellchecker, add a footer with DISABLE_SPELLCHECKER",
+      "range": {
+        "startLine": 50,
+        "startChar": 21,
+        "endLine": 50,
+        "endChar": 28
+      },
+      "revId": "f7dfc108d272236460812e23366fff564facc72f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "c5e9b94a_0e016bd2",
         "filename": "/PATCHSET_LEVEL",
         "patchSetId": 4
