@@ -16,6 +16,23 @@
       "message": "Hi Yiwei, PTAL for an improvement to `git cl comments`. Thanks!",
       "revId": "05817b1ae7958d6d86db96553c0ae59c5dbe3fae",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a1b3f0ef_ce47f4ef",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002869
+      },
+      "writtenOn": "2025-12-01T16:27:46Z",
+      "side": 1,
+      "message": "Friendly ping now that code freeze is over 😊",
+      "revId": "05817b1ae7958d6d86db96553c0ae59c5dbe3fae",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
