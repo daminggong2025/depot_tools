@@ -39,6 +39,24 @@
       "message": "http://b/464439549 got filed recently, do you know if this change would fix that bug too?",
       "revId": "f7dfc108d272236460812e23366fff564facc72f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f5007404_3ba39c01",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2025-12-01T18:58:33Z",
+      "side": 1,
+      "message": "Yes, probably.\n\nI wasn\u0027t aware of the reported issue. It might be worth investigating why it was not caught before. This CL itself is not necessary, until cl/834917755 is landed. however, if b/464439549 revealed another flow that would cause the issue, I\u0027d be curious why it is to ensure that we made patches to cover all the possible flows.",
+      "parentUuid": "c5e9b94a_0e016bd2",
+      "revId": "f7dfc108d272236460812e23366fff564facc72f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
