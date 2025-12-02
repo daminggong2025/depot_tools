@@ -83,6 +83,28 @@ def _get_gcs_object_list_ast(package_ast: ast.Dict) -> ast.List:
     return result
 
 
+def _copy_source_ast_text(source_ast: ast.Module,
+                          source_lines: List[str]) -> str:
+    """Copies the text of a source AST node from the source file content."""
+    if source_ast.lineno == source_ast.end_lineno:
+        # Starts and ends on the same line.
+        source_line = source_lines[source_ast.lineno - 1]
+        return source_line[source_ast.col_offset:source_ast.end_col_offset]
+
+    # Copy multiline content from source. The first line and the last line of
+    # source AST should be partially copied, since the returned result will be
+    # inserted into a text string with the parts that were not copied.
+
+    # Partially copy the first line of source AST.
+    text = source_lines[source_ast.lineno - 1][source_ast.col_offset:] + '\n'
+    # Copy content in the middle.
+    text += '\n'.join(
+        source_lines[source_ast.lineno:source_ast.end_lineno - 1]) + '\n'
+    # Partially copy the last line of source AST.
+    text += source_lines[source_ast.end_lineno - 1][:source_ast.end_col_offset]
+    return text
+
+
 def _replace_ast(destination: str, dest_ast: ast.Module, source: str,
                  source_ast: ast.Module) -> str:
     """Replaces the content of dest_ast with the content of the
@@ -107,25 +129,7 @@ def _replace_ast(destination: str, dest_ast: ast.Module, source: str,
     result += lines[dest_ast.lineno - 1][:dest_ast.col_offset]
 
     # Copy data from source AST.
-    if source_ast.lineno == source_ast.end_lineno:
-        # Starts and ends on the same line.
-        result += source_lines[
-            source_ast.lineno -
-            1][source_ast.col_offset:source_ast.end_col_offset]
-    else:
-        # Copy multiline content from source. The first line and the last line
-        # of source AST should be partially copied as `result` has a partial
-        # line from `destination`.
-
-        # Partially copy the first line of source AST.
-        result += source_lines[source_ast.lineno -
-                               1][source_ast.col_offset:] + '\n'
-        # Copy content in the middle.
-        result += '\n'.join(
-            source_lines[source_ast.lineno:source_ast.end_lineno - 1]) + '\n'
-        # Partially copy the last line of source AST.
-        result += source_lines[source_ast.end_lineno -
-                               1][:source_ast.end_col_offset]
+    result += _copy_source_ast_text(source_ast, source_lines)
 
     # Copy the rest of the line after the package value.
     result += lines[dest_ast.end_lineno - 1][dest_ast.end_col_offset:] + '\n'
