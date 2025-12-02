@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "9ee5e368_30b91a61",
+        "filename": "siso.py",
+        "patchSetId": 13
+      },
+      "lineNbr": 158,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-12-02T09:13:00Z",
+      "side": 1,
+      "message": "Almost immediate, under 50ms actually when I test locally.",
+      "parentUuid": "7d384d29_aa3d133d",
+      "range": {
+        "startLine": 158,
+        "startChar": 0,
+        "endLine": 158,
+        "endChar": 29
+      },
+      "revId": "0a9ec20d3f3a9464784e26f7b2b42d89812f9f3c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "f3edab6d_b32cd31c",
@@ -47,6 +71,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "fd2fd1a7_173b0e24",
+        "filename": "siso.py",
+        "patchSetId": 13
+      },
+      "lineNbr": 171,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-12-02T09:13:00Z",
+      "side": 1,
+      "message": "No real reason :) I\u0027ll switch to run that we use everywhere.",
+      "parentUuid": "f3edab6d_b32cd31c",
+      "range": {
+        "startLine": 171,
+        "startChar": 8,
+        "endLine": 171,
+        "endChar": 24
+      },
+      "revId": "0a9ec20d3f3a9464784e26f7b2b42d89812f9f3c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "44b6458d_4d93c998",
@@ -60,6 +108,30 @@
       "writtenOn": "2025-12-02T08:00:48Z",
       "side": 1,
       "message": "Why do you need to use ThreadPoolExecutor? Is it for enforcing the timeout?",
+      "range": {
+        "startLine": 187,
+        "startChar": 0,
+        "endLine": 187,
+        "endChar": 55
+      },
+      "revId": "0a9ec20d3f3a9464784e26f7b2b42d89812f9f3c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a23a0f35_468b14df",
+        "filename": "siso.py",
+        "patchSetId": 13
+      },
+      "lineNbr": 187,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-12-02T09:13:00Z",
+      "side": 1,
+      "message": "That\u0027s right. Multiprocessing was painful to unit test, so threads instead.",
+      "parentUuid": "44b6458d_4d93c998",
       "range": {
         "startLine": 187,
         "startChar": 0,
