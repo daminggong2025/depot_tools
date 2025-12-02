@@ -33,6 +33,41 @@
       "message": "Friendly ping now that code freeze is over 😊",
       "revId": "05817b1ae7958d6d86db96553c0ae59c5dbe3fae",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "feb46cf9_7090c3e6",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1381059
+      },
+      "writtenOn": "2025-12-02T18:24:17Z",
+      "side": 1,
+      "message": "Thansk for contributing. The code itself lgtm. Could you add a new test case that covers comment thread scenario?",
+      "revId": "05817b1ae7958d6d86db96553c0ae59c5dbe3fae",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "bc0c50c0_dbe34095",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1381059
+      },
+      "writtenOn": "2025-12-02T18:24:17Z",
+      "side": 1,
+      "message": "sorry for the delay in review.",
+      "parentUuid": "a1b3f0ef_ce47f4ef",
+      "revId": "05817b1ae7958d6d86db96553c0ae59c5dbe3fae",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
