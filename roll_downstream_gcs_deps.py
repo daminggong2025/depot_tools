@@ -83,18 +83,42 @@ def _get_gcs_object_list_ast(package_ast: ast.Dict) -> ast.List:
     return result
 
 
-def _replace_ast(destination: str, dest_ast: ast.Module, source: str,
-                 source_ast: ast.Module) -> str:
+def _pretty_print_objects(objects: List[ast.Dict], item_indent: str,
+                          dict_indent: str) -> str:
+    """Pretty prints a list of object dictionaries.
+    Args:
+      objects: A list of ast.Dict nodes representing GCS objects.
+      item_indent: The indentation string for each dictionary.
+      dict_indent: The indentation string for key-value pairs inside each dict.
+    Returns:
+      A pretty-printed string representation of the list.
+    """
+    obj_strings = []
+    for dict_node in objects:
+        dict_lines = [item_indent + '{']
+        for k, v in zip(dict_node.keys, dict_node.values):
+            k_str = ast.unparse(k)
+            v_str = ast.unparse(v)
+            dict_lines.append(f"{dict_indent}{k_str}: {v_str},")
+        dict_lines.append(item_indent + '}')
+        obj_strings.append('\n'.join(dict_lines))
+    return ',\n'.join(obj_strings)
+
+
+def _replace_ast(destination: str,
+                 dest_ast: ast.Module,
+                 source: str,
+                 source_ast: ast.Module,
+                 object_name_prefixes: List[str] = None) -> str:
     """Replaces the content of dest_ast with the content of the
     same package in source_ast.
-
     Args:
       destination: Destination DEPS file content.
       dest_ast: AST in the destination DEPS file that will be replaced.
       source: Source DEPS file content.
       source_ast: AST in the source DEPS file that will replace content of
       destination.
-
+      object_name_prefixes: List of prefixes to filter GCS objects by name.
     Returns:
       Content of destination DEPS file with replaced content.
     """
@@ -106,26 +130,77 @@ def _replace_ast(destination: str, dest_ast: ast.Module, source: str,
     # Partially copy the line content before AST's value.
     result += lines[dest_ast.lineno - 1][:dest_ast.col_offset]
 
-    # Copy data from source AST.
-    if source_ast.lineno == source_ast.end_lineno:
-        # Starts and ends on the same line.
-        result += source_lines[
-            source_ast.lineno -
-            1][source_ast.col_offset:source_ast.end_col_offset]
+    # Process and copy data from source AST.
+    replacement_text = ''
+    if not object_name_prefixes:
+        if source_ast.lineno == source_ast.end_lineno:
+            # Starts and ends on the same line.
+            replacement_text = source_lines[
+                source_ast.lineno -
+                1][source_ast.col_offset:source_ast.end_col_offset]
+        else:
+            # Copy multiline content from source.
+            replacement_text = source_lines[source_ast.lineno -
+                                            1][source_ast.col_offset:] + '\n'
+            replacement_text += '\n'.join(
+                source_lines[source_ast.lineno:source_ast.end_lineno -
+                             1]) + '\n'
+            replacement_text += source_lines[source_ast.end_lineno -
+                                             1][:source_ast.end_col_offset]
     else:
-        # Copy multiline content from source. The first line and the last line
-        # of source AST should be partially copied as `result` has a partial
-        # line from `destination`.
+        kept_objects = []
+        for dict_node in source_ast.elts:
+            is_match = False
+            for key_node, value_node in zip(dict_node.keys, dict_node.values):
+                if isinstance(key_node,
+                              ast.Constant) and key_node.value == 'object_name':
+                    if isinstance(value_node, ast.Constant):
+                        obj_name = value_node.value
+                        if any(
+                                obj_name.startswith(p)
+                                for p in object_name_prefixes):
+                            is_match = True
+                            break
+            if is_match:
+                kept_objects.append(dict_node)
 
-        # Partially copy the first line of source AST.
-        result += source_lines[source_ast.lineno -
-                               1][source_ast.col_offset:] + '\n'
-        # Copy content in the middle.
-        result += '\n'.join(
-            source_lines[source_ast.lineno:source_ast.end_lineno - 1]) + '\n'
-        # Partially copy the last line of source AST.
-        result += source_lines[source_ast.end_lineno -
-                               1][:source_ast.end_col_offset]
+        if not kept_objects:
+            replacement_text = '[]'
+        else:
+            dest_is_multiline = dest_ast.lineno != dest_ast.end_lineno
+            if not dest_is_multiline:
+                replacement_text = ast.unparse(ast.List(elts=kept_objects))
+            else:
+                # Pretty print.
+                key_line_indent_len = dest_ast.col_offset
+                key_indent = ' ' * key_line_indent_len
+
+                if dest_ast.elts:
+                    first_item_line = lines[dest_ast.elts[0].lineno - 1]
+                    item_indent_len = len(first_item_line) - len(
+                        first_item_line.lstrip(' '))
+                else:
+                    item_indent_len = key_line_indent_len + 2
+                item_indent = ' ' * item_indent_len
+                dict_indent = item_indent + '  '
+
+                pretty_objects_str = _pretty_print_objects(
+                    kept_objects, item_indent, dict_indent)
+
+                start_line = lines[dest_ast.lineno - 1]
+                if '[' in start_line[dest_ast.col_offset:]:
+                    replacement_text = '[\n' + pretty_objects_str + ',\n'
+                    bracket_line = lines[dest_ast.end_lineno - 1]
+                    bracket_col = bracket_line.find(']')
+                    if bracket_col != -1:
+                        replacement_text += ' ' * bracket_col + ']'
+                    else:
+                        replacement_text += key_indent + ']'
+                else:
+                    replacement_text = ('\n' + key_indent + '[\n' +
+                                        pretty_objects_str + ',\n' +
+                                        key_indent + ']')
+    result += replacement_text
 
     # Copy the rest of the line after the package value.
     result += lines[dest_ast.end_lineno - 1][dest_ast.end_col_offset:] + '\n'
@@ -133,21 +208,22 @@ def _replace_ast(destination: str, dest_ast: ast.Module, source: str,
     # Copy the rest of the lines after the package value.
     result += '\n'.join(lines[dest_ast.end_lineno:])
     # Add trailing newline
-    if destination.endswith('\n'):
+    if destination.endswith('\n') and not result.endswith('\n'):
         result += '\n'
     return result
 
 
-def copy_packages(source_content: str, destination_content: str,
+def copy_packages(source_content: str,
+                  destination_content: str,
                   source_packages: List[str],
-                  destination_packages: List[str]) -> str:
+                  destination_packages: List[str],
+                  object_name_prefixes: List[str] = None) -> str:
     """Copies GCS packages from source to destination.
-
     Args:
       source: Source DEPS file content.
       destination: Destination DEPS file content.
       packages: List of GCS packages to copy. Only objects are copied.
-
+      object_name_prefixes: List of prefixes to filter objects by.
     Returns:
       Destination DEPS file content with packages copied.
     """
@@ -165,7 +241,8 @@ def copy_packages(source_content: str, destination_content: str,
             destination_content,
             _get_gcs_object_list_ast(dest_deps[destination_package]),
             source_content,
-            _get_gcs_object_list_ast(source_deps[source_package]))
+            _get_gcs_object_list_ast(source_deps[source_package]),
+            object_name_prefixes)
 
     return destination_content
 
@@ -188,6 +265,10 @@ def main():
                         action='append',
                         required=True,
                         help='List of DEPS packages to update')
+    parser.add_argument(
+        '--object-name-prefix',
+        action='append',
+        help='Filters GCS objects by prefix. Can be passed multiple times.')
     args = parser.parse_args()
 
     if not args.source_package:
@@ -207,7 +288,8 @@ def main():
         destination_content = f.read()
 
     new_content = copy_packages(source_content, destination_content,
-                                args.source_package, args.destination_package)
+                                args.source_package, args.destination_package,
+                                args.object_name_prefix)
 
     with open(args.destination_deps, 'w') as f:
         f.write(new_content)
