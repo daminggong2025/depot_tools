@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7b339b50_b166331a",
+        "filename": "tests/siso_test.py",
+        "patchSetId": 12
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-12-02T07:45:24Z",
+      "side": 1,
+      "message": "Can you check the presubmit error?\nhttps://ci.chromium.org/ui/p/infra/builders/try/Depot%20Tools%20Presubmit/b8696629968247253665/overview",
+      "range": {
+        "startLine": 14,
+        "startChar": 0,
+        "endLine": 14,
+        "endChar": 43
+      },
+      "revId": "d160c13298c8b75a4027adebebcf353a431a7383",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
