@@ -48,6 +48,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "f0668b10_451a3343",
+        "filename": "siso.py",
+        "patchSetId": 13
+      },
+      "lineNbr": 158,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-12-02T09:17:09Z",
+      "side": 1,
+      "message": "Mind that I mean starting from scratch and switching projects. I don\u0027t really know how to make it unhealthy. But it should be the same thing. Overall users should not notice a thing.",
+      "parentUuid": "9ee5e368_30b91a61",
+      "range": {
+        "startLine": 158,
+        "startChar": 0,
+        "endLine": 158,
+        "endChar": 29
+      },
+      "revId": "0a9ec20d3f3a9464784e26f7b2b42d89812f9f3c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "f3edab6d_b32cd31c",
