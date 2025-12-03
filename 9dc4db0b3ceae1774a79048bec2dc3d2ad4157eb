@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a0762886_7230c679",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002869
+      },
+      "writtenOn": "2025-12-03T14:02:14Z",
+      "side": 1,
+      "message": "Thanks for the reviews, Andrew and Yiwei!",
+      "revId": "9dc4db0b3ceae1774a79048bec2dc3d2ad4157eb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
