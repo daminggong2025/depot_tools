@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a2693c00_deff50db",
+        "filename": "gclient_eval.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 830,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2025-12-04T22:58:00Z",
+      "side": 1,
+      "message": "do these `.s`\u0027s need to be replaced too?",
+      "range": {
+        "startLine": 828,
+        "startChar": 0,
+        "endLine": 830,
+        "endChar": 70
+      },
+      "revId": "2f03b23129585b9debc8e9e0628cb31f76077455",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
