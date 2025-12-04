@@ -316,7 +316,7 @@ def _gclient_eval(node_or_string, filename='<unknown>', vars_dict=None):
         node_or_string = node_or_string.body
 
     def _convert(node):
-        if isinstance(node, ast.Str):
+        if isinstance(node, ast.Constant):
             if vars_dict is None:
                 return node.s
             try:
@@ -366,7 +366,7 @@ def _gclient_eval(node_or_string, filename='<unknown>', vars_dict=None):
                                                      '<unknown>')))
 
             if node.func.id == 'Str':
-                if isinstance(node.args[0], ast.Str):
+                if isinstance(node.args[0], ast.Constant):
                     return ConstantString(node.args[0].s)
                 raise ValueError(
                     'Passed a non-string to Str() (file %r, line%s)' %
@@ -594,7 +594,7 @@ def EvaluateCondition(condition, variables, referenced_variables=None):
         main_node = main_node.body
 
     def _convert(node, allow_tuple=False):
-        if isinstance(node, ast.Str):
+        if isinstance(node, ast.Constant):
             return node.s
 
         if isinstance(node, ast.Tuple) and allow_tuple:
@@ -696,7 +696,7 @@ def _UpdateAstString(tokens, node, value):
         node = node.args[0]
     position = node.lineno, node.col_offset
     quote_char = ''
-    if isinstance(node, ast.Str):
+    if isinstance(node, ast.Constant):
         quote_char = tokens[position][1][0]
         value = value.encode('unicode_escape').decode('utf-8')
     tokens[position][1] = quote_char + value + quote_char
@@ -855,7 +855,7 @@ def SetCIPD(gclient_dict, dep_name, package_name, new_version):
             "The deps entry for %s:%s has no formatting information." %
             (dep_name, package_name))
 
-    if not isinstance(node, ast.Call) and not isinstance(node, ast.Str):
+    if not isinstance(node, ast.Call) and not isinstance(node, ast.Constant):
         raise ValueError(
             "Unsupported dependency revision format. Please file a bug to the "
             "Infra>SDK component in crbug.com")
@@ -880,7 +880,7 @@ def SetRevision(gclient_dict, dep_name, new_revision):
         if isinstance(node, ast.BinOp):
             node = node.right
 
-        if isinstance(node, ast.Str):
+        if isinstance(node, ast.Constant):
             token = _gclient_eval(tokens[node.lineno, node.col_offset][1])
             if token != node.s:
                 raise ValueError(
@@ -888,7 +888,8 @@ def SetRevision(gclient_dict, dep_name, new_revision):
                     'concatenated strings are not supported.\n'
                     'Consider reformatting the DEPS file.' % dep_key)
 
-        if not isinstance(node, ast.Call) and not isinstance(node, ast.Str):
+        if not isinstance(node, ast.Call) and not isinstance(
+                node, ast.Constant):
             raise ValueError(
                 "Unsupported dependency revision format. Please file a bug to the "
                 "Infra>SDK component in crbug.com")
