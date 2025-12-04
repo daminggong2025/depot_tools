@@ -101,6 +101,10 @@ def _NodeDictSchema(dict_schema):
     return validate
 
 
+def _IsStringConstant(node):
+    return isinstance(node, ast.Constant) and isinstance(node.value, str)
+
+
 # See https://github.com/keleshev/schema for docs how to configure schema.
 _GCLIENT_DEPS_SCHEMA = _NodeDictSchema({
     schema.Optional(str):
@@ -316,11 +320,11 @@ def _gclient_eval(node_or_string, filename='<unknown>', vars_dict=None):
         node_or_string = node_or_string.body
 
     def _convert(node):
-        if isinstance(node, ast.Str):
+        if _IsStringConstant(node):
             if vars_dict is None:
-                return node.s
+                return node.value
             try:
-                return node.s.format(**vars_dict)
+                return node.value.format(**vars_dict)
             except KeyError as e:
                 raise KeyError(
                     '%s was used as a variable, but was not declared in the vars dict '
@@ -366,8 +370,8 @@ def _gclient_eval(node_or_string, filename='<unknown>', vars_dict=None):
                                                      '<unknown>')))
 
             if node.func.id == 'Str':
-                if isinstance(node.args[0], ast.Str):
-                    return ConstantString(node.args[0].s)
+                if _IsStringConstant(node.args[0]):
+                    return ConstantString(node.args[0].value)
                 raise ValueError(
                     'Passed a non-string to Str() (file %r, line%s)' %
                     (filename, getattr(node, 'lineno', '<unknown>')))
@@ -594,8 +598,8 @@ def EvaluateCondition(condition, variables, referenced_variables=None):
         main_node = main_node.body
 
     def _convert(node, allow_tuple=False):
-        if isinstance(node, ast.Str):
-            return node.s
+        if _IsStringConstant(node):
+            return node.value
 
         if isinstance(node, ast.Tuple) and allow_tuple:
             return tuple(map(_convert, node.elts))
@@ -696,11 +700,11 @@ def _UpdateAstString(tokens, node, value):
         node = node.args[0]
     position = node.lineno, node.col_offset
     quote_char = ''
-    if isinstance(node, ast.Str):
+    if _IsStringConstant(node):
         quote_char = tokens[position][1][0]
         value = value.encode('unicode_escape').decode('utf-8')
     tokens[position][1] = quote_char + value + quote_char
-    node.s = value
+    node.value = value
 
 
 def _ShiftLinesInTokens(tokens, delta, start):
@@ -793,11 +797,11 @@ def SetVar(gclient_dict, var_name, value):
 
 def _GetVarName(node):
     if isinstance(node, ast.Call):
-        return node.args[0].s
+        return node.args[0].value
 
-    if node.s.endswith('}'):
-        last_brace = node.s.rfind('{')
-        return node.s[last_brace + 1:-1]
+    if node.value.endswith('}'):
+        last_brace = node.value.rfind('{')
+        return node.value[last_brace + 1:-1]
     return None
 
 
@@ -855,7 +859,7 @@ def SetCIPD(gclient_dict, dep_name, package_name, new_version):
             "The deps entry for %s:%s has no formatting information." %
             (dep_name, package_name))
 
-    if not isinstance(node, ast.Call) and not isinstance(node, ast.Str):
+    if not isinstance(node, ast.Call) and not _IsStringConstant(node):
         raise ValueError(
             "Unsupported dependency revision format. Please file a bug to the "
             "Infra>SDK component in crbug.com")
@@ -880,15 +884,15 @@ def SetRevision(gclient_dict, dep_name, new_revision):
         if isinstance(node, ast.BinOp):
             node = node.right
 
-        if isinstance(node, ast.Str):
+        if _IsStringConstant(node):
             token = _gclient_eval(tokens[node.lineno, node.col_offset][1])
-            if token != node.s:
+            if token != node.value:
                 raise ValueError(
                     'Can\'t update value for %s. Multiline strings and implicitly '
                     'concatenated strings are not supported.\n'
                     'Consider reformatting the DEPS file.' % dep_key)
 
-        if not isinstance(node, ast.Call) and not isinstance(node, ast.Str):
+        if not isinstance(node, ast.Call) and not _IsStringConstant(node):
             raise ValueError(
                 "Unsupported dependency revision format. Please file a bug to the "
                 "Infra>SDK component in crbug.com")
@@ -897,15 +901,15 @@ def SetRevision(gclient_dict, dep_name, new_revision):
         if var_name is not None:
             SetVar(gclient_dict, var_name, new_revision)
         else:
-            if '@' in node.s:
+            if '@' in node.value:
                 # '@' is part of the last string, which we want to modify.
                 # Discard whatever was after the '@' and put the new revision in
                 # its place.
-                new_revision = node.s.split('@')[0] + '@' + new_revision
+                new_revision = node.value.split('@')[0] + '@' + new_revision
             elif '@' not in dep_dict[dep_key]:
                 # '@' is not part of the URL at all. This mean the dependency is
                 # unpinned and we should pin it.
-                new_revision = node.s + '@' + new_revision
+                new_revision = node.value + '@' + new_revision
             _UpdateAstString(tokens, node, new_revision)
             dep_dict.SetNode(dep_key, new_revision, node)
 
