@@ -1706,9 +1706,8 @@ def ListRelevantPresubmitFiles(files, root):
         try:
             for f in os.listdir(directory):
                 p = os.path.join(directory, f)
-                if os.path.isfile(p) and re.match(
-                        r'PRESUBMIT.*\.py$',
-                        f) and not f.startswith('PRESUBMIT_test'):
+                if re.match(r'PRESUBMIT.*\.py$', f) and not f.startswith(
+                        'PRESUBMIT_test') and os.path.isfile(p):
                     results.append(p)
         except OSError:
             pass
