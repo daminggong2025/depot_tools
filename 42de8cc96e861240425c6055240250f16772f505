@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "25611c45_271f80fb",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3355336
+      },
+      "writtenOn": "2025-12-04T23:02:54Z",
+      "side": 1,
+      "message": "Note: I had to change the test slightly by mocking one layer higher, as there is another environmental check to mock (works on my machine, but fails in CQ).  Probably in the future we could refactor this and inject the environment dependency explicitly for testing, but everything else here (e.g., GIT) is exposed globally and we mock those too, so...",
+      "revId": "42de8cc96e861240425c6055240250f16772f505",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
