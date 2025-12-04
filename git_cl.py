@@ -1863,6 +1863,7 @@ class Changelist(object):
                 files: Optional[Sequence[str]] = None,
                 resultdb: Optional[bool] = None,
                 realm: Optional[str] = None,
+                profile: bool = False,
                 end_commit: Optional[str] = None) -> Mapping[str, Any]:
         """Calls sys.exit() if the hook fails; returns a HookResults otherwise."""
         args = self._GetCommonPresubmitArgs(verbose, upstream)
@@ -1880,6 +1881,8 @@ class Changelist(object):
             args.append('--source_controlled_only')
         if files or all_files:
             args.append('--no_diffs')
+        if profile:
+            args.append('--profile')
 
         if resultdb and not realm:
             # TODO (crbug.com/1113463): store realm somewhere and look it up so
@@ -2194,6 +2197,10 @@ class Changelist(object):
                                         upstream=parent,
                                         description=change_desc.description,
                                         all_files=False,
+                                        files=None,
+                                        resultdb=None,
+                                        realm=None,
+                                        profile=False,
                                         end_commit=end_commit)
             self.ExtendCC(hook_results['more_cc'])
 
@@ -2305,7 +2312,11 @@ class Changelist(object):
                                         parallel=options.parallel,
                                         upstream=base_branch,
                                         description=change_desc.description,
-                                        all_files=False)
+                                        all_files=False,
+                                        files=None,
+                                        resultdb=None,
+                                        realm=None,
+                                        profile=options.profile)
             self.ExtendCC(hook_results['more_cc'])
 
         print_stats(git_diff_args)
@@ -2911,8 +2922,10 @@ class Changelist(object):
                          upstream=upstream,
                          description=description,
                          all_files=False,
+                         files=None,
                          resultdb=resultdb,
-                         realm=realm)
+                         realm=realm,
+                         profile=False)
 
         self.SubmitIssue()
         print('Issue %s has been submitted.' % self.GetIssueURL())
@@ -5265,6 +5278,9 @@ def CMDpresubmit(parser, args):
     parser.add_option('-j',
                       '--json',
                       help='File to write JSON results to, or "-" for stdout')
+    parser.add_option('--profile',
+                      action='store_true',
+                      help='Show timing information for presubmit checks.')
     options, args = parser.parse_args(args)
 
     if not options.force and git_common.is_dirty_git_tree('presubmit'):
@@ -5306,7 +5322,8 @@ def CMDpresubmit(parser, args):
                         all_files=options.all,
                         files=options.files,
                         resultdb=options.resultdb,
-                        realm=options.realm)
+                        realm=options.realm,
+                        profile=options.profile)
     if options.json:
         write_json(options.json, result)
     return 0

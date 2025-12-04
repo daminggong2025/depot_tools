@@ -250,6 +250,26 @@ class PresubmitUnittest(PresubmitTestsBase):
         presubmit_files = presubmit.ListRelevantPresubmitFiles(
             files, self.fake_root_dir)
         self.assertEqual(presubmit_files, known_files)
+        # Verify no output when profile=False (default)
+        self.assertEqual(sys.stdout.getvalue(), '')
+
+    def testListRelevantPresubmitFilesWithProfile(self):
+        files = ['blat.cc']
+        expected_presubmit = os.path.join(self.fake_root_dir, 'PRESUBMIT.py')
+        
+        os.path.isfile.side_effect = lambda f: f == expected_presubmit
+        os.listdir.side_effect = lambda d: ['PRESUBMIT.py'] if d == self.fake_root_dir else []
+        
+        presubmit_files = presubmit.ListRelevantPresubmitFiles(
+            files, self.fake_root_dir, profile=True)
+            
+        self.assertEqual(len(presubmit_files), 1)
+        self.assertEqual(presubmit_files[0], expected_presubmit)
+        output = sys.stdout.getvalue()
+        self.assertIn('ListRelevantPresubmitFiles took', output)
+        self.assertIn('Candidates checked:', output)
+        self.assertIn('os.listdir calls:', output)
+
 
     def testListUserPresubmitFiles(self):
         files = [
@@ -692,6 +712,35 @@ class PresubmitUnittest(PresubmitTestsBase):
         self.assertEqual(sys.stdout.getvalue().count('??'), 0)
         self.assertEqual(sys.stdout.getvalue().count(RUNNING_PY_CHECKS_TEXT), 1)
 
+    def testDoPresubmitChecksWithProfile(self):
+        haspresubmit_path = os.path.join(self.fake_root_dir, 'haspresubmit',
+                                         'PRESUBMIT.py')
+        root_path = os.path.join(self.fake_root_dir, 'PRESUBMIT.py')
+
+        os.path.isfile.side_effect = lambda f: f in [
+            root_path, haspresubmit_path
+        ]
+        os.listdir.return_value = ['PRESUBMIT.py']
+        gclient_utils.FileRead.return_value = self.presubmit_text
+
+        change = self.ExampleChange(extra_lines=['STORY=http://tracker/123'])
+
+        presubmit.DoPresubmitChecks(change=change,
+                                    committing=False,
+                                    verbose=True,
+                                    default_presubmit=None,
+                                    may_prompt=False,
+                                    gerrit_obj=None,
+                                    json_output=None,
+                                    profile=True)
+        
+        output = sys.stdout.getvalue()
+        self.assertIn('ListRelevantPresubmitFiles took', output)
+        # ExecPresubmitScript log usually appears if results are found.
+        # We at least verified ListRelevantPresubmitFiles instrumentation works.
+
+
+
     def testDoPresubmitChecksJsonOutput(self):
         fake_error = 'Missing LGTM'
         fake_error_items = '["!", "!!", "!!!"]'
@@ -915,7 +964,8 @@ def CheckChangeOnCommit(input_api, output_api):
         random.randint.return_value = 0
 
         change = self.ExampleChange(extra_lines=['STORY=http://tracker/123'])
-        with mock.patch('sys.stdin', StringIO('y\n')):
+        with mock.patch('sys.stdin', StringIO('y\n')), \
+                mock.patch('gclient_utils.IsEnvCog', return_value=False):
             self.assertEqual(
                 1,
                 presubmit.DoPresubmitChecks(

@@ -1663,7 +1663,7 @@ class ProvidedDiffChange(Change):
         return scm.DIFF.GetAllFiles(root)
 
 
-def ListRelevantPresubmitFiles(files, root):
+def ListRelevantPresubmitFiles(files, root, profile=False):
     """Finds all presubmit files that apply to a given set of source files.
 
     If inherit-review-settings-ok is present right under root, looks for
@@ -1672,10 +1672,12 @@ def ListRelevantPresubmitFiles(files, root):
     Args:
         files: An iterable container containing file paths.
         root: Path where to stop searching.
+        profile: If True, print timing and profiling info.
 
     Return:
         List of absolute paths of the existing PRESUBMIT.py scripts.
     """
+    start = time_time()
     files = [normpath(os.path.join(root, f)) for f in files]
 
     # List all the individual directories containing files.
@@ -1713,6 +1715,9 @@ def ListRelevantPresubmitFiles(files, root):
             pass
 
     logging.debug('Presubmit files: %s', ','.join(results))
+    elapsed_time = time_time() - start
+    if profile and elapsed_time > 0.1:
+        print(f"ListRelevantPresubmitFiles took {elapsed_time:.4f}s.")
     return results
 
 
@@ -1825,7 +1830,8 @@ class PresubmitExecuter(object):
                  dry_run=None,
                  thread_pool=None,
                  parallel=False,
-                 no_diffs=False):
+                 no_diffs=False,
+                 profile=False):
         """
         Args:
             change: The Change object.
@@ -1845,8 +1851,10 @@ class PresubmitExecuter(object):
         self.dry_run = dry_run
         self.more_cc = []
         self.thread_pool = thread_pool
+        self.thread_pool = thread_pool
         self.parallel = parallel
         self.no_diffs = no_diffs
+        self.profile = profile
 
     def ExecPresubmitScript(self, script_text, presubmit_path):
         """Executes a single presubmit script.
@@ -1888,9 +1896,13 @@ class PresubmitExecuter(object):
         context = {}
 
         try:
+            start_compile = time_time()
             exec(
                 compile(script_text, presubmit_path, 'exec', dont_inherit=True),
                 context)
+            compile_duration = time_time() - start_compile
+            if self.profile and compile_duration > 0.1:
+                 print(f"Slow compile/exec of {presubmit_path}: {compile_duration:.4f}s")
         except Exception as e:
             raise PresubmitFailure('"%s" had an exception.\n%s' %
                                    (presubmit_path, e))
@@ -1970,6 +1982,8 @@ class PresubmitExecuter(object):
 
         self.more_cc = sorted(set(self.more_cc))
 
+        if results and self.profile:
+             print(f"ExecPresubmitScript {presubmit_path} returned {len(results)} results.")
         return results
 
     def _run_check_function(self, function_name, context, sink, presubmit_path):
@@ -2014,7 +2028,7 @@ class PresubmitExecuter(object):
             event_thread.join()
 
         elapsed_time = time_time() - start_time
-        if elapsed_time > 10.0:
+        if self.profile and elapsed_time > 0.1:
             sys.stdout.write('%6.1fs to run %s from %s.\n' %
                              (elapsed_time, function_name, presubmit_path))
         if sink:
@@ -2062,7 +2076,8 @@ def DoPresubmitChecks(change,
                       dry_run=None,
                       parallel=False,
                       json_output=None,
-                      no_diffs=False):
+                      no_diffs=False,
+                      profile=False):
     """Runs all presubmit checks that apply to the files in the change.
 
     This finds all PRESUBMIT.py files in directories enclosing the files in the
@@ -2100,13 +2115,15 @@ def DoPresubmitChecks(change,
         start_time = time_time()
         presubmit_files = ListRelevantPresubmitFiles(
             change.AbsoluteLocalPaths() + change.AbsoluteLocalSubmodules(),
-            change.RepositoryRoot())
+            change.RepositoryRoot(),
+            profile=profile)
         if not presubmit_files and verbose:
             sys.stdout.write('Warning, no PRESUBMIT.py found.\n')
         results = []
         thread_pool = ThreadPool()
         executer = PresubmitExecuter(change, committing, verbose, gerrit_obj,
-                                     dry_run, thread_pool, parallel, no_diffs)
+                                     dry_run, thread_pool, parallel, no_diffs,
+                                     profile=profile)
         if default_presubmit:
             if verbose:
                 sys.stdout.write('Running default presubmit script.\n')
@@ -2553,6 +2570,9 @@ def main(argv=None):
     parser.add_argument('--no_diffs',
                         action='store_true',
                         help='Assume that all "modified" files have no diffs.')
+    parser.add_argument('--profile',
+                        action='store_true',
+                        help='Show timing information for presubmit checks.')
     options = parser.parse_args(argv)
 
     log_level = logging.ERROR
@@ -2587,7 +2607,8 @@ def main(argv=None):
                                      options.default_presubmit,
                                      options.may_prompt, gerrit_obj,
                                      options.dry_run, options.parallel,
-                                     options.json_output, options.no_diffs)
+                                     options.json_output, options.no_diffs,
+                                     profile=options.profile)
     except PresubmitFailure as e:
         import utils
         print(e, file=sys.stderr)
