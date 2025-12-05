@@ -52,6 +52,24 @@
       "parentUuid": "10bc0b45_ddb7f9da",
       "revId": "868f9487ab573bdd08a2d991c1dada73835417fb",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "48111d5b_25835747",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 4323820
+      },
+      "writtenOn": "2025-12-05T22:09:06Z",
+      "side": 1,
+      "message": "I believe you\u0027re right, it only makes one call per process, but it typically takes 0.7s from my glinux cloudtop, though it can take as much as 1.5s in the worst case. This log is in nearly 100% of my `git cl presubmit` runs:\n\n```\nRunning presubmit commit checks on branch optimize_check_for_commit_objects ...\n  checking owners took a long time: 0.7s\n```\n\nI suppose we do need a different place to put the config for cog/jj environments... I\u0027m not sure where that would be tho, off hand. I will ponder unless you have an idea.",
+      "parentUuid": "10bc0b45_ddb7f9da",
+      "revId": "868f9487ab573bdd08a2d991c1dada73835417fb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
