@@ -34,6 +34,24 @@
       "parentUuid": "0e617434_e67b1e10",
       "revId": "868f9487ab573bdd08a2d991c1dada73835417fb",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d4b150ca_a1ad508c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1381059
+      },
+      "writtenOn": "2025-12-05T21:51:35Z",
+      "side": 1,
+      "message": "That also might not work well with non-git environment. Stepping back a little bit, it looks like we did cache the result at [the caller](https://source.chromium.org/chromium/chromium/tools/depot_tools/+/main:presubmit_support.py;l\u003d598-602;drc\u003d2e88a3f08bd8c4a0014eae82729beca935f7f188). Therefore, it should just make the call once for each presubmit run. Are you saying that the call itself could just take 1.5s?",
+      "parentUuid": "10bc0b45_ddb7f9da",
+      "revId": "868f9487ab573bdd08a2d991c1dada73835417fb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
