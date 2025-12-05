@@ -16,6 +16,52 @@
       "message": "Don\u0027t have context on this, but the code itself looks okay to me",
       "revId": "be4dfad6e1f7449969e49afb58ee6be78a5b0ccb",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f485c6d3_dec994ac",
+        "filename": "siso.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-12-05T01:14:35Z",
+      "side": 1,
+      "message": "When kinds of values do fail with ValueError? May it return non-number strings?",
+      "range": {
+        "startLine": 88,
+        "startChar": 0,
+        "endLine": 88,
+        "endChar": 30
+      },
+      "revId": "be4dfad6e1f7449969e49afb58ee6be78a5b0ccb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "398f37c3_da9cf2b6",
+        "filename": "siso.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 91,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-12-05T01:14:35Z",
+      "side": 1,
+      "message": "nit: I\u0027m not sure if it\u0027s for me. But, `[pid for pid in pids if pid !\u003d 0]` looks more Python way of filtering.",
+      "range": {
+        "startLine": 91,
+        "startChar": 11,
+        "endLine": 91,
+        "endChar": 47
+      },
+      "revId": "be4dfad6e1f7449969e49afb58ee6be78a5b0ccb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
