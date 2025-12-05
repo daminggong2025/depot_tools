@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "66863c0c_1971e48a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 10
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 4418029
+      },
+      "writtenOn": "2025-12-05T10:07:00Z",
+      "side": 1,
+      "message": "I also added replacements for the remaining deprecated AST types; I planned to do this in a follow-up CL, but decided it\u0027s probably simpler to do it at once.",
+      "revId": "55ac669838636c31ffa4ac9e19073940cebfd58b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
