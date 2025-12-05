@@ -308,34 +308,34 @@ ninja --failure_verbose=false -k=0
         mock_fetch.assert_not_called()
         mock_start_collector.assert_not_called()
 
-    @mock.patch('siso._start_collector', return_value=True)
-    @mock.patch('siso.platform.system', return_value='Linux')
-    def test_handle_collector_args_starts_linux(self, mock_system,
-                                                mock_start_collector):
+    def test_handle_collector_args_starts_linux(self):
+        m = self._handle_collector_args_mocks()
+        m.os_path_exists.return_value = False
+        m.stat_s_issock.return_value = False
+
         siso_path = 'path/to/siso'
         out_dir = 'out/Default'
         env = {'SISO_PROJECT': 'test-project'}
         args = ['ninja', '--enable_collector']
 
-        captured_args = []
+        fetch_metrics_project_side_effects = ['test-project', 'test-project']
 
         def fetch_metrics_project_side_effect(args, env):
-            captured_args.append(list(args))
-            return 'test-project'
+            return fetch_metrics_project_side_effects.pop(0)
 
-        with mock.patch('siso._fetch_metrics_project',
-                        side_effect=fetch_metrics_project_side_effect):
-            result = siso._handle_collector_args(siso_path, out_dir, args, env)
+        m.fetch_metrics_project.side_effect = fetch_metrics_project_side_effect
 
-            sockets_file = os.path.join(os.path.abspath(out_dir),
-                                        "otel_collector.sock")
-            self.assertEqual(result, [
-                'ninja', '--enable_collector',
-                f'--collector_socket_path={sockets_file}'
-            ])
-            self.assertEqual(captured_args, [['ninja', '--enable_collector']])
-            mock_start_collector.assert_called_once_with(
-                siso_path, sockets_file, 'test-project')
+        result = siso._handle_collector_args(siso_path, out_dir, args, env)
+
+        self.assertEqual(result, ['ninja', '--enable_collector'])
+
+        sockets_file = os.path.join(os.path.abspath(out_dir),
+                                    "otel_collector.sock")
+        m.start_collector.assert_has_calls([
+            mock.call(siso_path, sockets_file, 'test-project'),
+            mock.call(siso_path, sockets_file=None, project='test-project')
+        ])
+        self.assertEqual(m.time_sleep.call_count, 3)
 
     @mock.patch('siso._start_collector', return_value=True)
     @mock.patch('siso.platform.system', return_value='Windows')
@@ -355,39 +355,37 @@ ninja --failure_verbose=false -k=0
         mock_start_collector.assert_called_once_with(siso_path, None,
                                                      'test-project')
 
-    @mock.patch('siso._start_collector', return_value=False)
-    @mock.patch('siso.platform.system', return_value='Linux')
-    def test_handle_collector_args_fails(self, mock_system,
-                                         mock_start_collector):
+    def test_handle_collector_args_fails(self):
+        m = self._handle_collector_args_mocks()
+        m.start_collector.return_value = False
+
+        def isdir_side_effect(path):
+            return path == self.root_dir
+
+        m.os_path_isdir.side_effect = isdir_side_effect
+
         siso_path = 'path/to/siso'
         out_dir = 'out/Default'
         env = {'SISO_PROJECT': 'test-project'}
         args = ['ninja', '--enable_collector']
 
-        captured_args = []
+        result = siso._handle_collector_args(siso_path, out_dir, args, env)
 
-        def fetch_metrics_project_side_effect(args, env):
-            captured_args.append(list(args))
-            return 'test-project'
+        self.assertEqual(result, ['ninja'])
+        sockets_file = os.path.join(os.path.abspath(out_dir),
+                                    "otel_collector.sock")
+        m.start_collector.assert_called_once_with(siso_path, sockets_file,
+                                                  'test-project')
 
-        with mock.patch('siso._fetch_metrics_project',
-                        side_effect=fetch_metrics_project_side_effect):
-            result = siso._handle_collector_args(siso_path, out_dir, args, env)
+    def test_handle_collector_args_removes_existing_socket_file(self):
+        m = self._handle_collector_args_mocks()
+        m.os_path_isfile.return_value = True
 
-            self.assertEqual(result, ['ninja'])
-            self.assertEqual(captured_args, [['ninja', '--enable_collector']])
-            sockets_file = os.path.join(os.path.abspath(out_dir),
-                                        "otel_collector.sock")
-            mock_start_collector.assert_called_once_with(
-                siso_path, sockets_file, 'test-project')
+        def isdir_side_effect(path):
+            return path == self.root_dir
 
-    @mock.patch('siso._start_collector', return_value=True)
-    @mock.patch('siso.platform.system', return_value='Linux')
-    @mock.patch('os.path.isfile', return_value=True)
-    @mock.patch('os.remove')
-    def test_handle_collector_args_removes_existing_socket_file(
-            self, mock_os_remove, mock_os_path_isfile, mock_system,
-            mock_start_collector):
+        m.os_path_isdir.side_effect = isdir_side_effect
+
         siso_path = 'path/to/siso'
         out_dir = 'out/Default'
         env = {'SISO_PROJECT': 'test-project'}
@@ -396,20 +394,21 @@ ninja --failure_verbose=false -k=0
         sockets_file = os.path.join(os.path.abspath(out_dir),
                                     "otel_collector.sock")
 
-        with mock.patch('siso._fetch_metrics_project',
-                        return_value='test-project'):
+        with mock.patch('os.remove') as mock_os_remove:
             siso._handle_collector_args(siso_path, out_dir, args, env)
 
-            mock_os_path_isfile.assert_called_once_with(sockets_file)
+            m.os_path_isfile.assert_called_once_with(sockets_file)
             mock_os_remove.assert_called_once_with(sockets_file)
 
-    @mock.patch('siso._start_collector', return_value=True)
-    @mock.patch('siso.platform.system', return_value='Linux')
-    @mock.patch('os.path.isfile', return_value=True)
-    @mock.patch('os.remove', side_effect=OSError("Permission denied"))
-    def test_handle_collector_args_remove_socket_file_fails(
-            self, mock_os_remove, mock_os_path_isfile, mock_system,
-            mock_start_collector):
+    def test_handle_collector_args_remove_socket_file_fails(self):
+        m = self._handle_collector_args_mocks()
+        m.os_path_isfile.return_value = True
+
+        def isdir_side_effect(path):
+            return path == self.root_dir
+
+        m.os_path_isdir.side_effect = isdir_side_effect
+
         siso_path = 'path/to/siso'
         out_dir = 'out/Default'
         env = {'SISO_PROJECT': 'test-project'}
@@ -419,18 +418,18 @@ ninja --failure_verbose=false -k=0
         sockets_file = os.path.join(os.path.abspath(out_dir),
                                     "otel_collector.sock")
 
-        with mock.patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
-            with mock.patch('siso._fetch_metrics_project',
-                            return_value='test-project'):
+        with mock.patch(
+                'os.remove',
+                side_effect=OSError("Permission denied")) as mock_os_remove:
+            with mock.patch('sys.stdout',
+                            new_callable=io.StringIO) as mock_stdout:
                 result_args = siso._handle_collector_args(
                     siso_path, out_dir, args, env)
 
-                mock_os_path_isfile.assert_called_once_with(sockets_file)
+                m.os_path_isfile.assert_called_once_with(sockets_file)
                 mock_os_remove.assert_called_once_with(sockets_file)
-                # It should fallback to TCP, so sockets_file is None for _start_collector
-                mock_start_collector.assert_called_once_with(
+                m.start_collector.assert_called_once_with(
                     siso_path, None, 'test-project')
-                # Check that collector_socket_path is not in the args and args is not modified
                 self.assertEqual(result_args, original_args)
                 self.assertIn(f"Failed to remove {sockets_file}",
                               mock_stdout.getvalue())
@@ -813,6 +812,46 @@ ninja --failure_verbose=false -k=0
             )
         ])
 
+    def test_handle_collector_args_socket_file_creation_success(self):
+        m = self._handle_collector_args_mocks()
+        m.stat_s_issock.return_value = True
+
+        siso_path = 'path/to/siso'
+        out_dir = 'out/Default'
+        env = {'SISO_PROJECT': 'test-project'}
+        args = ['ninja', '--enable_collector']
+
+        sockets_file = os.path.join(os.path.abspath(out_dir),
+                                    "otel_collector.sock")
+
+        exists_calls_for_socket_file = [False, False, True]
+
+        def custom_exists_side_effect(path):
+            if path == sockets_file:
+                if exists_calls_for_socket_file:
+                    return exists_calls_for_socket_file.pop(0)
+                return True
+            return False
+
+        m.os_path_exists.side_effect = custom_exists_side_effect
+
+        mock_stat_result = mock.Mock()
+        mock_stat_result.st_mode = 0o140000
+        m.os_stat.return_value = mock_stat_result
+
+        result = siso._handle_collector_args(siso_path, out_dir, args, env)
+
+        self.assertEqual(result, [
+            'ninja', '--enable_collector',
+            f'--collector_socket_path={sockets_file}'
+        ])
+        self.assertEqual(len(exists_calls_for_socket_file), 0)
+        m.os_stat.assert_called_once_with(sockets_file)
+        m.stat_s_issock.assert_called_once_with(mock_stat_result.st_mode)
+        m.start_collector.assert_called_once_with(siso_path, sockets_file,
+                                                  'test-project')
+        self.assertEqual(m.time_sleep.call_count, 2)
+
     def _start_collector_mocks(self):
         patchers = {
             'is_subcommand_present':
@@ -881,6 +920,44 @@ ninja --failure_verbose=false -k=0
 
         mock_conn.request.side_effect = request_side_effect
         mock_conn.getresponse.side_effect = getresponse_side_effect
+
+    def _handle_collector_args_mocks(self):
+        patchers = {
+            'start_collector':
+            mock.patch('siso._start_collector', return_value=True),
+            'platform_system':
+            mock.patch('siso.platform.system', return_value='Linux'),
+            'os_path_exists':
+            mock.patch('os.path.exists'),
+            'os_path_isfile':
+            mock.patch('os.path.isfile', return_value=False),
+            'os_path_islink':
+            mock.patch('os.path.islink', return_value=False),
+            'os_path_isdir':
+            mock.patch('os.path.isdir'),
+            'os_stat':
+            mock.patch('os.stat'),
+            'stat_s_issock':
+            mock.patch('siso.stat.S_ISSOCK'),
+            'time_sleep':
+            mock.patch('siso.time.sleep'),
+            'fetch_metrics_project':
+            mock.patch('siso._fetch_metrics_project',
+                       return_value='test-project'),
+        }
+        mocks = {}
+        for name, patcher in patchers.items():
+            mocks[name] = patcher.start()
+            self.addCleanup(patcher.stop)
+
+        mock_stat_result = mock.Mock()
+        mock_stat_result.st_mode = 0
+        mocks['os_stat'].return_value = mock_stat_result
+
+        m = mock.MagicMock()
+        for name, mocked in mocks.items():
+            setattr(m, name, mocked)
+        return m
 
     def test_start_collector_subcommand_not_present(self):
         m = self._start_collector_mocks()
