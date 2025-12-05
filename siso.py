@@ -15,6 +15,7 @@ import platform
 import shlex
 import shutil
 import signal
+import stat
 import subprocess
 import sys
 import time
@@ -330,6 +331,25 @@ def _resolve_sockets_folder(env: dict[str, str]) -> tuple[str, int]:
     return path, allowed_length
 
 
+def _handle_sockets_file(sockets_file: str) -> bool:
+    checks_to_do = 3
+    for _ in range(0, checks_to_do):
+        if not os.path.exists(sockets_file):
+            time.sleep(0.02)
+            continue
+        socket_file_stat = os.stat(sockets_file)
+        if not stat.S_ISSOCK(socket_file_stat.st_mode):
+            print(
+                f"Socket file {sockets_file} is of unexpected mode {socket_file_stat.st_mode}"
+            )
+            break
+        return True
+    print(
+        f"Socket file {sockets_file} never appeared after {checks_to_do} checks "
+        + "or is incorrect. Backing up to TCP uploading.")
+    return False
+
+
 def _handle_collector_args(siso_path: str, args: list[str],
                            env: dict[str, str]) -> list[str]:
     parser = argparse.ArgumentParser()
@@ -349,14 +369,21 @@ def _handle_collector_args(siso_path: str, args: list[str],
 
     started = _start_collector(siso_path, sockets_file, project)
     if started:
-        if sockets_file:
+        if not sockets_file:
+            return args
+        if _handle_sockets_file(sockets_file):
             args.append(f"--collector_connection=unix://{sockets_file}")
-    else:
-        print("Collector never came to life")
-        if "-enable_collector" in args:
-            args.remove("-enable_collector")
-        elif "--enable_collector" in args:
-            args.remove("--enable_collector")
+            return args
+        started_tcp = _start_collector(siso_path,
+                                       sockets_file=None,
+                                       project=project)
+        if started_tcp:
+            return args
+    print("Collector never came to life")
+    if "-enable_collector" in args:
+        args.remove("-enable_collector")
+    elif "--enable_collector" in args:
+        args.remove("--enable_collector")
     return args
 
 
