@@ -22,6 +22,30 @@
       },
       "revId": "466c466d82684f3a446e8d958ab9488631cb4ad3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b0eef838_70288fcb",
+        "filename": "recipes/recipe_modules/presubmit/api.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1204579
+      },
+      "writtenOn": "2025-12-05T21:17:56Z",
+      "side": 1,
+      "message": "APologies. I was wanting to ask if this has access to the \n\napi.buildbucket.build.input.experiments and got sidetracked.",
+      "parentUuid": "f32f4c61_6ba633c1",
+      "range": {
+        "startLine": 39,
+        "startChar": 11,
+        "endLine": 39,
+        "endChar": 21
+      },
+      "revId": "466c466d82684f3a446e8d958ab9488631cb4ad3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
