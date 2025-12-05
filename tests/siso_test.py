@@ -11,6 +11,7 @@ import unittest
 import platform
 from unittest import mock
 import subprocess
+import stat
 
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT_DIR)
@@ -363,10 +364,12 @@ ninja --failure_verbose=false -k=0
         mock_fetch.assert_not_called()
         mock_start_collector.assert_not_called()
 
+    @mock.patch('siso._handle_sockets_file', return_value=True)
     @mock.patch('siso._start_collector', return_value=True)
     @mock.patch('siso.platform.system', return_value='Linux')
     def test_handle_collector_args_starts_linux(self, mock_system,
-                                                mock_start_collector):
+                                                mock_start_collector,
+                                                mock_handle_sockets):
         siso_path = 'path/to/siso'
         env = {'SISO_PROJECT': 'test-project', 'XDG_RUNTIME_DIR': '/tmp/run'}
         args = ['ninja', '--enable_collector']
@@ -1297,6 +1300,93 @@ ninja --failure_verbose=false -k=0
                                                    start_new_session=True,
                                                    creationflags=0)
         m.kill_collector.assert_not_called()
+
+
+class HandleSocketsFileTest(trial_dir.TestCase):
+
+    @mock.patch('siso.time.sleep')
+    @mock.patch('siso.os.stat')
+    @mock.patch('siso.os.path.exists', return_value=False)
+    @mock.patch('sys.stdout', new_callable=io.StringIO)
+    def test_handle_sockets_file_not_found(self, mock_stdout, mock_exists,
+                                           mock_stat, mock_sleep):
+        result = siso._handle_sockets_file("/tmp/nonexistent.sock")
+        self.assertFalse(result)
+        self.assertEqual(mock_exists.call_count, 3)
+        self.assertIn(
+            "Socket file /tmp/nonexistent.sock never appeared after 3 checks or is incorrect.",
+            mock_stdout.getvalue())
+
+    @mock.patch('siso.time.sleep')
+    @mock.patch('siso.stat.S_ISSOCK', return_value=False)
+    @mock.patch('siso.os.stat')
+    @mock.patch('siso.os.path.exists', return_value=True)
+    @mock.patch('sys.stdout', new_callable=io.StringIO)
+    def test_handle_sockets_file_not_socket(self, mock_stdout, mock_exists,
+                                            mock_stat, mock_issock, mock_sleep):
+        mock_stat.return_value = mock.Mock(st_mode=12345)  # Not a socket mode
+        result = siso._handle_sockets_file("/tmp/not-a-socket.txt")
+        self.assertFalse(result)
+        mock_exists.assert_called_once_with("/tmp/not-a-socket.txt")
+        mock_stat.assert_called_once_with("/tmp/not-a-socket.txt")
+        mock_issock.assert_called_once_with(12345)
+        self.assertIn(
+            "Socket file /tmp/not-a-socket.txt is of unexpected mode 12345",
+            mock_stdout.getvalue())
+
+    @mock.patch('siso.time.sleep')
+    @mock.patch('siso.stat.S_ISSOCK', return_value=True)
+    @mock.patch('siso.os.stat')
+    @mock.patch('siso.os.path.exists', return_value=True)
+    def test_handle_sockets_file_is_socket(self, mock_exists, mock_stat,
+                                           mock_issock, mock_sleep):
+        mock_stat.return_value = mock.Mock(st_mode=stat.S_IFSOCK)
+        result = siso._handle_sockets_file("/tmp/is-a-socket.sock")
+        self.assertTrue(result)
+        mock_exists.assert_called_once_with("/tmp/is-a-socket.sock")
+        mock_stat.assert_called_once_with("/tmp/is-a-socket.sock")
+        mock_issock.assert_called_once_with(stat.S_IFSOCK)
+        mock_sleep.assert_not_called()
+
+    @mock.patch('siso.time.sleep')
+    @mock.patch('siso.stat.S_ISSOCK', return_value=True)
+    @mock.patch('siso.os.stat')
+    @mock.patch('siso.os.path.exists')
+    def test_handle_sockets_file_appears_after_retries(self, mock_exists,
+                                                       mock_stat, mock_issock,
+                                                       mock_sleep):
+        mock_exists.side_effect = [False, False, True]  # Appears on third check
+        mock_stat.return_value = mock.Mock(st_mode=stat.S_IFSOCK)
+
+        result = siso._handle_sockets_file("/tmp/eventually-appears.sock")
+        self.assertTrue(result)
+        self.assertEqual(mock_exists.call_count, 3)
+        self.assertEqual(mock_sleep.call_count,
+                         2)  # Called twice before it exists
+        mock_stat.assert_called_once_with("/tmp/eventually-appears.sock")
+        mock_issock.assert_called_once_with(stat.S_IFSOCK)
+
+    @mock.patch('siso.time.sleep')
+    @mock.patch('siso.stat.S_ISSOCK',
+                return_value=False)  # Always returns false
+    @mock.patch('siso.os.stat')
+    @mock.patch('siso.os.path.exists', return_value=True)
+    @mock.patch('sys.stdout', new_callable=io.StringIO)
+    def test_handle_sockets_file_never_becomes_socket(self, mock_stdout,
+                                                      mock_exists, mock_stat,
+                                                      mock_issock, mock_sleep):
+        mock_stat.return_value = mock.Mock(st_mode=12345)
+        result = siso._handle_sockets_file("/tmp/never-socket.txt")
+        self.assertFalse(result)
+        mock_exists.assert_called_once_with("/tmp/never-socket.txt")
+        mock_stat.assert_called_once_with("/tmp/never-socket.txt")
+        mock_issock.assert_called_once_with(12345)
+        mock_sleep.assert_not_called(
+        )  # No sleeps if it finds the file and breaks immediately
+        self.assertIn(
+            "Socket file /tmp/never-socket.txt is of unexpected mode 12345",
+            mock_stdout.getvalue())
+
 
 if __name__ == '__main__':
     # Suppress print to console for unit tests.
