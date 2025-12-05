@@ -1759,10 +1759,21 @@ def IsCodeOwnersEnabledOnHost(host):
 
 def IsCodeOwnersEnabledOnRepo(host, repo):
     """Check if the code-owners plugin is enabled for the repo."""
+    key = 'depot-tools.code-owners.%s.%s.enabled' % (host, repo)
+    cwd = os.getcwd()
+    cached = scm.GIT.GetConfig(cwd, key)
+    if cached:
+        return cached == 'true'
+
     repo = PercentEncodeForGitRef(repo)
     path = '/projects/%s/code_owners.project_config' % repo
     config = ReadHttpJsonResponse(CreateHttpConn(host, path))
-    return not config['status'].get('disabled', False)
+    enabled = not config['status'].get('disabled', False)
+    try:
+        scm.GIT.SetConfig(cwd, key, str(enabled).lower())
+    except subprocess2.CalledProcessError:
+        pass
+    return enabled
 
 
 def GetOwnersForFile(host,
