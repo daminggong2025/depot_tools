@@ -16,6 +16,7 @@ import platform
 import shlex
 import shutil
 import signal
+import stat
 import subprocess
 import sys
 import time
@@ -139,8 +140,9 @@ def _start_collector(siso_path: str, sockets_file: Optional[str],
     class Status(Enum):
         HEALTHY = 1
         WRONG_ENDPOINT = 2
-        UNHEALTHY = 3
-        DEAD = 4
+        NO_SOCKETS = 3
+        UNHEALTHY = 4
+        DEAD = 5
 
     def collector_status() -> Status:
         conn = http.client.HTTPConnection(f"localhost:{_OTLP_HEALTH_PORT}")
@@ -161,6 +163,9 @@ def _start_collector(siso_path: str, sockets_file: Optional[str],
         expected_endpoint = sockets_file or _OTLP_DEFAULT_TCP_ENDPOINT
         if endpoint != expected_endpoint:
             return Status.WRONG_ENDPOINT
+        if sockets_file:
+            if not os.path.exists(sockets_file):
+                return Status.NO_SOCKETS
 
         return Status.HEALTHY
 
