@@ -16,6 +16,24 @@
       "message": "I think caching is a good idea given the enablement of code owners plugin should never changes. However, I\u0027m wondering if there\u0027s any particular reason to cache the result in git config rather than in memory (e.g. using @functools.lru_cache decorator) ?",
       "revId": "868f9487ab573bdd08a2d991c1dada73835417fb",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "10bc0b45_ddb7f9da",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 4323820
+      },
+      "writtenOn": "2025-12-05T18:31:35Z",
+      "side": 1,
+      "message": "I was thinking it would be nice to persist on disk somewhere, and the git config is a convenient place to store it per-repository. If we store it in memory, we\u0027ll have to make the call once every presubmit time we run a script?",
+      "parentUuid": "0e617434_e67b1e10",
+      "revId": "868f9487ab573bdd08a2d991c1dada73835417fb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
