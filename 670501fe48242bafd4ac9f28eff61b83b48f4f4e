@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "5f145dca_81abd05a",
+        "filename": "siso.py",
+        "patchSetId": 21
+      },
+      "lineNbr": 191,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-12-05T08:24:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "203336d1_c1bb3a2e",
+      "range": {
+        "startLine": 191,
+        "startChar": 0,
+        "endLine": 191,
+        "endChar": 24
+      },
+      "revId": "670501fe48242bafd4ac9f28eff61b83b48f4f4e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "3daba889_07026a76",
@@ -47,6 +71,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "5768d605_fcc738a4",
+        "filename": "siso.py",
+        "patchSetId": 21
+      },
+      "lineNbr": 192,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-12-05T08:24:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3daba889_07026a76",
+      "range": {
+        "startLine": 192,
+        "startChar": 23,
+        "endLine": 192,
+        "endChar": 28
+      },
+      "revId": "670501fe48242bafd4ac9f28eff61b83b48f4f4e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "948642c7_f6ac687f",
@@ -60,6 +108,30 @@
       "writtenOn": "2025-12-05T07:09:59Z",
       "side": 1,
       "message": "Does it need to be `DEVNULL`?",
+      "range": {
+        "startLine": 197,
+        "startChar": 47,
+        "endLine": 197,
+        "endChar": 53
+      },
+      "revId": "670501fe48242bafd4ac9f28eff61b83b48f4f4e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "087fef7e_da9db094",
+        "filename": "siso.py",
+        "patchSetId": 21
+      },
+      "lineNbr": 197,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-12-05T08:24:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "948642c7_f6ac687f",
       "range": {
         "startLine": 197,
         "startChar": 47,
@@ -107,6 +179,30 @@
       "side": 1,
       "message": "It would be easier to manage like:\n```\nwhile time.time() - start \u003c 1:\n```",
       "parentUuid": "8780725a_b5cfaa40",
+      "range": {
+        "startLine": 222,
+        "startChar": 0,
+        "endLine": 222,
+        "endChar": 27
+      },
+      "revId": "670501fe48242bafd4ac9f28eff61b83b48f4f4e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a60eea83_9ca8e11a",
+        "filename": "siso.py",
+        "patchSetId": 21
+      },
+      "lineNbr": 222,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-12-05T08:24:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c3b0051b_e0f6875e",
       "range": {
         "startLine": 222,
         "startChar": 0,
