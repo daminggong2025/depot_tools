@@ -65,6 +65,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": true,
+      "key": {
+        "uuid": "89b4975a_97ddcaa3",
+        "filename": "siso.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-12-05T04:11:19Z",
+      "side": 1,
+      "message": "\u003e Maybe they will sometimes print some garbage.\n\nIf you haven\u0027t seen any unexpected result, I would let it fail or print the raw output because it might be just a bug in the parsing logic.",
+      "parentUuid": "5891c842_ef74c728",
+      "range": {
+        "startLine": 88,
+        "startChar": 0,
+        "endLine": 88,
+        "endChar": 30
+      },
+      "revId": "be4dfad6e1f7449969e49afb58ee6be78a5b0ccb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": false,
       "key": {
         "uuid": "398f37c3_da9cf2b6",
