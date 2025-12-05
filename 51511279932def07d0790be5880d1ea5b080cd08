@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4d98f5ad_93dee65b",
+        "filename": "siso.py",
+        "patchSetId": 11
+      },
+      "lineNbr": 320,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-12-05T14:04:17Z",
+      "side": 1,
+      "message": "Do users specify -enable_collector explicitly during experiment?",
+      "range": {
+        "startLine": 320,
+        "startChar": 25,
+        "endLine": 320,
+        "endChar": 42
+      },
+      "revId": "51511279932def07d0790be5880d1ea5b080cd08",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b3f11c86_9d9770b8",
+        "filename": "siso.py",
+        "patchSetId": 11
+      },
+      "lineNbr": 325,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-12-05T14:04:17Z",
+      "side": 1,
+      "message": "You can do an early return:\n\n```\nif not known_args.enable_collector:\n  return args\n```",
+      "range": {
+        "startLine": 325,
+        "startChar": 0,
+        "endLine": 325,
+        "endChar": 35
+      },
+      "revId": "51511279932def07d0790be5880d1ea5b080cd08",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "65cbb753_73e137fd",
+        "filename": "siso.py",
+        "patchSetId": 11
+      },
+      "lineNbr": 329,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-12-05T14:04:17Z",
+      "side": 1,
+      "message": "Why do you put the socket under a specific out directory? My understanding is that it\u0027s going to be shared with other build directories/other projects.\n\ne.g. \n```\nautoninja -C out/foo # start a collector with out/foo/otel_collector.sock\nautoninja -C out/bar # try to start a collector with out/bar/otel_collector.sock\n```\n\nSo, I think the socket file needs to be a globally unique path.",
+      "range": {
+        "startLine": 328,
+        "startChar": 0,
+        "endLine": 329,
+        "endChar": 68
+      },
+      "revId": "51511279932def07d0790be5880d1ea5b080cd08",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "734a67b4_4bf26032",
+        "filename": "siso.py",
+        "patchSetId": 11
+      },
+      "lineNbr": 332,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-12-05T14:04:17Z",
+      "side": 1,
+      "message": "Hmm, I may miss if you have changed the design. But, I thought you keep collector running if it\u0027s already running.",
+      "range": {
+        "startLine": 332,
+        "startChar": 0,
+        "endLine": 332,
+        "endChar": 43
+      },
+      "revId": "51511279932def07d0790be5880d1ea5b080cd08",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
