@@ -211,6 +211,30 @@
       },
       "revId": "670501fe48242bafd4ac9f28eff61b83b48f4f4e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "74af5ed4_79af5484",
+        "filename": "siso.py",
+        "patchSetId": 21
+      },
+      "lineNbr": 222,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-12-05T13:48:00Z",
+      "side": 1,
+      "message": "Seems not yet for the while condition.",
+      "parentUuid": "a60eea83_9ca8e11a",
+      "range": {
+        "startLine": 222,
+        "startChar": 0,
+        "endLine": 222,
+        "endChar": 27
+      },
+      "revId": "670501fe48242bafd4ac9f28eff61b83b48f4f4e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
