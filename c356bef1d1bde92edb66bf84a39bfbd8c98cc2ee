@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6d787825_d769add9",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 4323820
+      },
+      "writtenOn": "2025-12-05T01:28:13Z",
+      "side": 1,
+      "message": "We might also want to do this for IsCodeOwnersEnabledOnHost, but I figured I\u0027d get buy in on this CL before doing that.",
+      "revId": "c356bef1d1bde92edb66bf84a39bfbd8c98cc2ee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
