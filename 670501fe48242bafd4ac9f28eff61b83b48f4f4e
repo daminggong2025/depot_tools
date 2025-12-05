@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "203336d1_c1bb3a2e",
+        "filename": "siso.py",
+        "patchSetId": 21
+      },
+      "lineNbr": 191,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-12-05T07:04:15Z",
+      "side": 1,
+      "message": "nit: you just need to modify the command.\n\n```\ncmd \u003d [siso_path, \"collector\", \"-project\", project]\nif sockets_file:\n  cmd +\u003d [\"--otel_socket\", sockets_file]\n```",
+      "range": {
+        "startLine": 191,
+        "startChar": 0,
+        "endLine": 191,
+        "endChar": 24
+      },
+      "revId": "670501fe48242bafd4ac9f28eff61b83b48f4f4e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
