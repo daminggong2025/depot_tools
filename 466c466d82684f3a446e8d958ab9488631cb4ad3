@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f32f4c61_6ba633c1",
+        "filename": "recipes/recipe_modules/presubmit/api.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1381059
+      },
+      "writtenOn": "2025-12-05T20:56:44Z",
+      "side": 1,
+      "message": "I think you are missing the declaration of the `in_rdb_exp` variable.",
+      "range": {
+        "startLine": 39,
+        "startChar": 11,
+        "endLine": 39,
+        "endChar": 21
+      },
+      "revId": "466c466d82684f3a446e8d958ab9488631cb4ad3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
