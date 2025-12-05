@@ -15,6 +15,7 @@ import platform
 import shlex
 import shutil
 import signal
+import stat
 import subprocess
 import sys
 import time
@@ -341,14 +342,36 @@ def _handle_collector_args(siso_path: str, out_dir: str, args: list[str],
         started = _start_collector(siso_path, sockets_file,
                                    _fetch_metrics_project(args, env))
         if started:
-            if sockets_file:
+            if not sockets_file:
+                return args
+            checks_to_do = 3
+            for _ in range(0, checks_to_do):
+                if not os.path.exists(sockets_file):
+                    time.sleep(0.02)
+                    continue
+                socket_file_stat = os.stat(sockets_file)
+                if not stat.S_ISSOCK(socket_file_stat.st_mode):
+                    print(
+                        f"Socket file {sockets_file} is of unexpected mode {socket_file_stat.st_mode}"
+                    )
+                    break
                 args.append(f"--collector_socket_path={sockets_file}")
-        else:
-            print("Collector never came to life")
-            if "-enable_collector" in args:
-                args.remove("-enable_collector")
-            elif "--enable_collector" in args:
-                args.remove("--enable_collector")
+                return args
+            print(
+                f"Socket file {sockets_file} never appeared after {checks_to_do} checks. "
+                + "Backing up to TCP uploading.")
+            started_tcp = _start_collector(siso_path,
+                                           sockets_file=None,
+                                           project=_fetch_metrics_project(
+                                               args, env))
+            if started_tcp:
+                return args
+
+        print("Collector never came to life")
+        if "-enable_collector" in args:
+            args.remove("-enable_collector")
+        elif "--enable_collector" in args:
+            args.remove("--enable_collector")
     return args
 
 
