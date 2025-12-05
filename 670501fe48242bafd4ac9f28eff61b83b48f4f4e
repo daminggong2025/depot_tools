@@ -22,6 +22,52 @@
       },
       "revId": "670501fe48242bafd4ac9f28eff61b83b48f4f4e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3daba889_07026a76",
+        "filename": "siso.py",
+        "patchSetId": 21
+      },
+      "lineNbr": 192,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-12-05T07:09:59Z",
+      "side": 1,
+      "message": "Don\u0027t you need `creation_flags` for Windows and `start_new_session\u003dTrue` for Linux?\ne.g.\nhttps://source.chromium.org/chromium/chromium/tools/depot_tools/+/main:autoninja.py;l\u003d665-666?q\u003df:autoninja.py%20-file:%5Eout%20-file:%5Egen",
+      "range": {
+        "startLine": 192,
+        "startChar": 23,
+        "endLine": 192,
+        "endChar": 28
+      },
+      "revId": "670501fe48242bafd4ac9f28eff61b83b48f4f4e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "948642c7_f6ac687f",
+        "filename": "siso.py",
+        "patchSetId": 21
+      },
+      "lineNbr": 197,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-12-05T07:09:59Z",
+      "side": 1,
+      "message": "Does it need to be `DEVNULL`?",
+      "range": {
+        "startLine": 197,
+        "startChar": 47,
+        "endLine": 197,
+        "endChar": 53
+      },
+      "revId": "670501fe48242bafd4ac9f28eff61b83b48f4f4e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
