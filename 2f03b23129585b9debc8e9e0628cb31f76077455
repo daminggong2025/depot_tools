@@ -22,6 +22,30 @@
       },
       "revId": "2f03b23129585b9debc8e9e0628cb31f76077455",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "680f6a1c_b1691d29",
+        "filename": "gclient_eval.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 830,
+      "author": {
+        "id": 4418029
+      },
+      "writtenOn": "2025-12-05T07:31:19Z",
+      "side": 1,
+      "message": "Yes, good catch.",
+      "parentUuid": "a2693c00_deff50db",
+      "range": {
+        "startLine": 828,
+        "startChar": 0,
+        "endLine": 830,
+        "endChar": 70
+      },
+      "revId": "2f03b23129585b9debc8e9e0628cb31f76077455",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
