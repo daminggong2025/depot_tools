@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8ff5869b_a68a8e6e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 4495638
+      },
+      "writtenOn": "2025-12-05T00:58:19Z",
+      "side": 1,
+      "message": "7227736: Update bot_update to provide manifest information for source check | https://chromium-review.googlesource.com/c/chromium/tools/depot_tools/+/7227736",
+      "revId": "a0a276ebbfdba8abffdf3ff9de9054fce2dacb88",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
