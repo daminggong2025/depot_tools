@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ba5a2f60_942cfa5a",
+        "filename": "gerrit_util.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 138,
+      "author": {
+        "id": 4323820
+      },
+      "writtenOn": "2025-12-06T02:14:56Z",
+      "side": 1,
+      "message": "This writes to the config directory in favor of git config, per the other comment thread. I would use something like the atomicwrites lib for this, but idk how reasonable it is to add a dependency... and this code is not too involved to maintain, perhaps.",
+      "revId": "47467f82dd606d3e9a396a5827a4d908cab921dd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
