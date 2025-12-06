@@ -40,11 +40,13 @@ import httplib2.socks
 
 import auth
 import gclient_utils
+import lockfile
 import metrics
 import metrics_utils
 import newauth
 import scm
 import subprocess2
+import utils
 
 
 # HACK: httplib2 has significant bugs with its proxy support in
@@ -1757,12 +1759,80 @@ def IsCodeOwnersEnabledOnHost(host):
     return 'code-owners-checkCodeOwner' in capabilities
 
 
+def _GetCachePath():
+    return utils.depot_tools_config_path('gerrit_cache.json')
+
+
+@contextlib.contextmanager
+def _AtomicFileWriter(path, mode='w'):
+    """Atomic file writer context manager."""
+    # Create temp file in same directory to ensure atomic rename works
+    fd, temp_path = tempfile.mkstemp(dir=os.path.dirname(path),
+                                     text='b' not in mode)
+    try:
+        with os.fdopen(fd, mode) as f:
+            yield f
+        # Atomic rename (with retries for Windows)
+        gclient_utils.safe_rename(temp_path, path)
+    except Exception:
+        # Cleanup on failure
+        if os.path.exists(temp_path):
+            os.remove(temp_path)
+        raise
+
+
+def _GetCacheValue(key):
+    """Retrieves a value from the global JSON cache."""
+    cache_path = _GetCachePath()
+    if not os.path.exists(cache_path):
+        return None
+    try:
+        with open(cache_path, 'r') as f:
+            data = json.load(f)
+            return data.get(key)
+    except (IOError, ValueError) as e:
+        logging.debug('Failed to read gerrit cache from %s: %s', cache_path, e)
+        return None
+
+
+def _SetCacheValue(key, value):
+    """Sets a value in the global JSON cache."""
+    cache_path = _GetCachePath()
+    try:
+        with lockfile.lock(cache_path, timeout=1):
+            data = {}
+            if os.path.exists(cache_path):
+                try:
+                    with open(cache_path, 'r') as f:
+                        data = json.load(f)
+                except (IOError, ValueError):
+                    logging.warning('Corrupted gerrit cache at %s, resetting.',
+                                    cache_path)
+
+            data[key] = value
+
+            with _AtomicFileWriter(cache_path, 'w') as f:
+                json.dump(data, f)
+    except (IOError, OSError, lockfile.LockError) as e:
+        logging.warning('Failed to write to gerrit cache at %s: %s', cache_path,
+                        e)
+
+
 def IsCodeOwnersEnabledOnRepo(host, repo):
     """Check if the code-owners plugin is enabled for the repo."""
+    key = 'depot-tools.code-owners.%s.%s.enabled' % (host, repo)
+    cached = _GetCacheValue(key)
+    if cached is not None:
+        return cached == 'true'
+
     repo = PercentEncodeForGitRef(repo)
     path = '/projects/%s/code_owners.project_config' % repo
+
     config = ReadHttpJsonResponse(CreateHttpConn(host, path))
-    return not config['status'].get('disabled', False)
+
+    enabled = not config['status'].get('disabled', False)
+    _SetCacheValue(key, str(enabled).lower())
+    return enabled
 
 
 def GetOwnersForFile(host,

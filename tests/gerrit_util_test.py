@@ -6,9 +6,11 @@
 
 import json
 import os
+import shutil
 import socket
 import subprocess
 import sys
+import tempfile
 import textwrap
 import unittest
 
@@ -718,18 +720,32 @@ class GerritUtilTest(unittest.TestCase):
             mock.call('host', 'params', None, 500, None, 0),
         ], mockQueryChanges.mock_calls)
 
+    @mock.patch('gerrit_util._SetCacheValue')
+    @mock.patch('gerrit_util._GetCacheValue', return_value=None)
     @mock.patch('gerrit_util.CreateHttpConn')
     @mock.patch('gerrit_util.ReadHttpJsonResponse')
     def testIsCodeOwnersEnabledOnRepo_Disabled(self, mockJsonResponse,
-                                               mockCreateHttpConn):
+                                               mockCreateHttpConn,
+                                               mockGetCacheValue,
+                                               mockSetCacheValue):
         mockJsonResponse.return_value = {'status': {'disabled': True}}
         self.assertFalse(gerrit_util.IsCodeOwnersEnabledOnRepo('host', 'repo'))
+        mockSetCacheValue.assert_called_with(mock.ANY, 'false')
 
+    @mock.patch('gerrit_util._SetCacheValue')
+    @mock.patch('gerrit_util._GetCacheValue', return_value=None)
     @mock.patch('gerrit_util.CreateHttpConn')
     @mock.patch('gerrit_util.ReadHttpJsonResponse')
     def testIsCodeOwnersEnabledOnRepo_Enabled(self, mockJsonResponse,
-                                              mockCreateHttpConn):
+                                              mockCreateHttpConn,
+                                              mockGetCacheValue,
+                                              mockSetCacheValue):
         mockJsonResponse.return_value = {'status': {}}
+        self.assertTrue(gerrit_util.IsCodeOwnersEnabledOnRepo('host', 'repo'))
+        mockSetCacheValue.assert_called_with(mock.ANY, 'true')
+
+    @mock.patch('gerrit_util._GetCacheValue', return_value='true')
+    def testIsCodeOwnersEnabledOnRepo_CacheHit(self, mockGetCacheValue):
         self.assertTrue(gerrit_util.IsCodeOwnersEnabledOnRepo('host', 'repo'))
 
     @mock.patch('gerrit_util.CreateHttpConn')
@@ -1015,6 +1031,58 @@ class ShouldUseSSOTest(unittest.TestCase):
                                  'self',
                                  authenticator=mock.ANY)
 
+
+class AtomicFileWriterTest(unittest.TestCase):
+
+    def setUp(self):
+        self.test_dir = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, self.test_dir)
+
+    def testSuccess(self):
+        path = os.path.join(self.test_dir, 'test_file')
+        with gerrit_util._AtomicFileWriter(path, 'w') as f:
+            f.write('content')
+
+        self.assertTrue(os.path.exists(path))
+        with open(path, 'r') as f:
+            self.assertEqual(f.read(), 'content')
+
+    def testFailure(self):
+        path = os.path.join(self.test_dir, 'test_file')
+        try:
+            with gerrit_util._AtomicFileWriter(path, 'w') as f:
+                f.write('content')
+                raise ValueError('oops')
+        except ValueError:
+            pass
+
+        self.assertFalse(os.path.exists(path))
+
+    def testOverwrite(self):
+        path = os.path.join(self.test_dir, 'test_file')
+        with open(path, 'w') as f:
+            f.write('old')
+
+        with gerrit_util._AtomicFileWriter(path, 'w') as f:
+            f.write('new')
+
+        with open(path, 'r') as f:
+            self.assertEqual(f.read(), 'new')
+
+    def testOverwriteFailure(self):
+        path = os.path.join(self.test_dir, 'test_file')
+        with open(path, 'w') as f:
+            f.write('old')
+
+        try:
+            with gerrit_util._AtomicFileWriter(path, 'w') as f:
+                f.write('new')
+                raise ValueError('oops')
+        except ValueError:
+            pass
+
+        with open(path, 'r') as f:
+            self.assertEqual(f.read(), 'old')
 
 if __name__ == '__main__':
     unittest.main()
