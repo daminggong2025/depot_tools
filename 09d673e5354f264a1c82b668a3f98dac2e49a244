@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "da220d03_a167748a",
+        "filename": "recipes/recipe_modules/presubmit/api.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1381059
+      },
+      "writtenOn": "2025-12-06T05:37:26Z",
+      "side": 1,
+      "message": "```suggestion\n            in self.m.buildbucket.build.input.experiments):\n```",
+      "range": {
+        "startLine": 40,
+        "startChar": 15,
+        "endLine": 40,
+        "endChar": 61
+      },
+      "revId": "09d673e5354f264a1c82b668a3f98dac2e49a244",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
