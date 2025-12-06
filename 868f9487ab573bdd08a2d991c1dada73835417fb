@@ -88,6 +88,24 @@
       "parentUuid": "48111d5b_25835747",
       "revId": "868f9487ab573bdd08a2d991c1dada73835417fb",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "731ba856_a9d42203",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 4323820
+      },
+      "writtenOn": "2025-12-06T00:37:18Z",
+      "side": 1,
+      "message": "Digging deeper, I figured out why I was seeing it take 1.5s when the config request usually takes 0.7s.... it\u0027s because my benchmark code was capturing the handshake request as well, which happens the first time any request is made, so it\u0027s actually 2 requests when the request is not cached, and both of those requests are 0.7s+ in latency, so caching does indeed save a consistent 1.5s per `git cl presubmit` run on my cloudtop, which maths out to a \u003e200x performance improvement.\n\n```\n--- Run 1 (Cache Disabled / First Run) ---\nBENCHMARK_REQ_START: GET http://chromium-review.git.corp.google.com/a/accounts/self/emails\nBENCHMARK_REQ_END: GET http://chromium-review.git.corp.google.com/a/accounts/self/emails took 0.9099s\nBENCHMARK_REQ_START: GET http://chromium-review.git.corp.google.com/a/projects/chromium%2Fsrc/code_owners.project_config\nBENCHMARK_REQ_END: GET http://chromium-review.git.corp.google.com/a/projects/chromium%2Fsrc/code_owners.project_config took 0.6481s\nResult: True\nTotal time: 1.6346s\n\n--- Run 2 (Cache Enabled / Second Run) ---\nResult: True\nTotal time: 0.0076s\n```",
+      "parentUuid": "0d0b0182_2f542b77",
+      "revId": "868f9487ab573bdd08a2d991c1dada73835417fb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
