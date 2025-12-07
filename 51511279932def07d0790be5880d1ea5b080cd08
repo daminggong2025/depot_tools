@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "71201694_a3589312",
+        "filename": "siso.py",
+        "patchSetId": 11
+      },
+      "lineNbr": 320,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-12-07T23:31:18Z",
+      "side": 1,
+      "message": "That\u0027s right, for now it\u0027s an opt in. I think we can swap this to implicit behavior once we are out of 2026 Jan code freeze.",
+      "parentUuid": "4d98f5ad_93dee65b",
+      "range": {
+        "startLine": 320,
+        "startChar": 25,
+        "endLine": 320,
+        "endChar": 42
+      },
+      "revId": "51511279932def07d0790be5880d1ea5b080cd08",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "b3f11c86_9d9770b8",
@@ -37,6 +61,30 @@
       "writtenOn": "2025-12-05T14:04:17Z",
       "side": 1,
       "message": "You can do an early return:\n\n```\nif not known_args.enable_collector:\n  return args\n```",
+      "range": {
+        "startLine": 325,
+        "startChar": 0,
+        "endLine": 325,
+        "endChar": 35
+      },
+      "revId": "51511279932def07d0790be5880d1ea5b080cd08",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b8968827_f2647d39",
+        "filename": "siso.py",
+        "patchSetId": 11
+      },
+      "lineNbr": 325,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-12-07T23:31:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b3f11c86_9d9770b8",
       "range": {
         "startLine": 325,
         "startChar": 0,
@@ -70,6 +118,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "348e327d_b46cc0ff",
+        "filename": "siso.py",
+        "patchSetId": 11
+      },
+      "lineNbr": 329,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-12-07T23:31:18Z",
+      "side": 1,
+      "message": "Actually no, the whole reason we went for sockets is for users not to step on each other toes when they are on a same machine. So each user, or each build rather, will have their own sockets file. The previous design was to have one port, which would have this problem of connections congestion.\n\nOne thing I realize is that it generally should be impossible to run multiple collector instances though because we are expecting the same health port. So we kind of still congesting on the same socket file. We can discuss this later as well, we can remove the sockets code without much issues later.",
+      "parentUuid": "65cbb753_73e137fd",
+      "range": {
+        "startLine": 328,
+        "startChar": 0,
+        "endLine": 329,
+        "endChar": 68
+      },
+      "revId": "51511279932def07d0790be5880d1ea5b080cd08",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "734a67b4_4bf26032",
@@ -83,6 +155,30 @@
       "writtenOn": "2025-12-05T14:04:17Z",
       "side": 1,
       "message": "Hmm, I may miss if you have changed the design. But, I thought you keep collector running if it\u0027s already running.",
+      "range": {
+        "startLine": 332,
+        "startChar": 0,
+        "endLine": 332,
+        "endChar": 43
+      },
+      "revId": "51511279932def07d0790be5880d1ea5b080cd08",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a26d58c2_f25b42bb",
+        "filename": "siso.py",
+        "patchSetId": 11
+      },
+      "lineNbr": 332,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-12-07T23:31:18Z",
+      "side": 1,
+      "message": "Deleting the existing sockets file is actually no big deal for a specific build. Again, it\u0027s not everyone shared file, it\u0027s a file specific to a build.",
+      "parentUuid": "734a67b4_4bf26032",
       "range": {
         "startLine": 332,
         "startChar": 0,
