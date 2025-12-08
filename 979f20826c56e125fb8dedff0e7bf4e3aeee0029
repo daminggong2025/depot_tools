@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "eae24413_16345277",
+        "filename": "siso.py",
+        "patchSetId": 17
+      },
+      "lineNbr": 176,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-12-08T08:42:17Z",
+      "side": 1,
+      "message": "Python for whatever reason gives up on this closure and complains that the var doesn\u0027t exist. I have 0 idea why so I just blindly comply.",
+      "parentUuid": "c338c418_ffd453fd",
+      "range": {
+        "startLine": 176,
+        "startChar": 24,
+        "endLine": 176,
+        "endChar": 51
+      },
+      "revId": "979f20826c56e125fb8dedff0e7bf4e3aeee0029",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "1f0109ad_25661640",
@@ -37,6 +61,30 @@
       "writtenOn": "2025-12-08T08:08:45Z",
       "side": 1,
       "message": "Why does it still need to remove the existing socket file?",
+      "range": {
+        "startLine": 183,
+        "startChar": 0,
+        "endLine": 183,
+        "endChar": 52
+      },
+      "revId": "979f20826c56e125fb8dedff0e7bf4e3aeee0029",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fbd16816_dee029d2",
+        "filename": "siso.py",
+        "patchSetId": 17
+      },
+      "lineNbr": 183,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-12-08T08:42:17Z",
+      "side": 1,
+      "message": "If socket file is taken it will refuse anyone else, even if the process is long dead. So deleting it to prevent this from happening.",
+      "parentUuid": "1f0109ad_25661640",
       "range": {
         "startLine": 183,
         "startChar": 0,
@@ -93,6 +141,54 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "8fa8f180_4768046a",
+        "filename": "siso.py",
+        "patchSetId": 17
+      },
+      "lineNbr": 329,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-12-08T08:42:17Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "81bfecb6_e6332d12",
+      "range": {
+        "startLine": 326,
+        "startChar": 0,
+        "endLine": 329,
+        "endChar": 59
+      },
+      "revId": "979f20826c56e125fb8dedff0e7bf4e3aeee0029",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e8d6cc63_8497c245",
+        "filename": "siso.py",
+        "patchSetId": 17
+      },
+      "lineNbr": 329,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-12-08T08:42:17Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b23749eb_aeaf6c2f",
+      "range": {
+        "startLine": 329,
+        "startChar": 35,
+        "endLine": 329,
+        "endChar": 38
+      },
+      "revId": "979f20826c56e125fb8dedff0e7bf4e3aeee0029",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "7e29c580_40a06770",
@@ -106,6 +202,30 @@
       "writtenOn": "2025-12-08T08:05:39Z",
       "side": 1,
       "message": "Do we want to create a socket per project if we still specify -project?",
+      "range": {
+        "startLine": 330,
+        "startChar": 43,
+        "endLine": 330,
+        "endChar": 62
+      },
+      "revId": "979f20826c56e125fb8dedff0e7bf4e3aeee0029",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "92e6b866_bdf70fa8",
+        "filename": "siso.py",
+        "patchSetId": 17
+      },
+      "lineNbr": 330,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-12-08T08:42:17Z",
+      "side": 1,
+      "message": "Why not, done.",
+      "parentUuid": "7e29c580_40a06770",
       "range": {
         "startLine": 330,
         "startChar": 43,
