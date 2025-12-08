@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "042ed022_97a33af3",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 14
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-12-08T00:05:10Z",
+      "side": 1,
+      "message": "@ukai@google.com due to the fact that we can have only one collector running on a system (conflicting ports) it seems counterintuitive we are using multiple different socket files as to switch between them the collector needs to be restarted, and the same goes for switching projects. WDYT about that? Should we switch to a global socket file? Or forfeit sockets altogether and use TCP alone?",
+      "revId": "48dad87024f89b0cbccfc64da957d6a793ccac87",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
