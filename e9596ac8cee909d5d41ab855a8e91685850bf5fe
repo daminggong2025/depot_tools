@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6af55d66_fc2cdb70",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 2925,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2025-12-08T22:49:14Z",
+      "side": 1,
+      "message": "hard-coding the path seems fragile.\n\nI am assuming that alint is also not preinstalled for googlers, either (it\u0027s not on my machine current), so probably it should squawk if it\u0027s not found, if the user is not a googler.\n\n@yiwzhang@google.com maybe you can comment on the best way to do this? Do we need a single place to list \"applications depot_tools will use if present\", and a way to alert users who *should* have them that they\u0027re missing? The git sso helpers also come to mind.",
+      "range": {
+        "startLine": 2923,
+        "startChar": 0,
+        "endLine": 2925,
+        "endChar": 17
+      },
+      "revId": "e9596ac8cee909d5d41ab855a8e91685850bf5fe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
