@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "81bfecb6_e6332d12",
+        "filename": "siso.py",
+        "patchSetId": 17
+      },
+      "lineNbr": 329,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-12-08T08:05:39Z",
+      "side": 1,
+      "message": "Can you extract the logic as a helper function? \nAlso, is it better t o create a subdirectory?",
+      "range": {
+        "startLine": 326,
+        "startChar": 0,
+        "endLine": 329,
+        "endChar": 59
+      },
+      "revId": "979f20826c56e125fb8dedff0e7bf4e3aeee0029",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b23749eb_aeaf6c2f",
+        "filename": "siso.py",
+        "patchSetId": 17
+      },
+      "lineNbr": 329,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-12-08T08:05:39Z",
+      "side": 1,
+      "message": "nit: env.get",
+      "range": {
+        "startLine": 329,
+        "startChar": 35,
+        "endLine": 329,
+        "endChar": 38
+      },
+      "revId": "979f20826c56e125fb8dedff0e7bf4e3aeee0029",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7e29c580_40a06770",
+        "filename": "siso.py",
+        "patchSetId": 17
+      },
+      "lineNbr": 330,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-12-08T08:05:39Z",
+      "side": 1,
+      "message": "Do we want to create a socket per project if we still specify -project?",
+      "range": {
+        "startLine": 330,
+        "startChar": 43,
+        "endLine": 330,
+        "endChar": 62
+      },
+      "revId": "979f20826c56e125fb8dedff0e7bf4e3aeee0029",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
