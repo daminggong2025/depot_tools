@@ -137,10 +137,9 @@ def _start_collector(siso_path: str, sockets_file: Optional[str],
 
     class Status(Enum):
         HEALTHY = 1
-        WRONG_PROJECT = 2
-        WRONG_ENDPOINT = 3
-        UNHEALTHY = 4
-        DEAD = 5
+        WRONG_ENDPOINT = 2
+        UNHEALTHY = 3
+        DEAD = 4
 
     def collector_status() -> Status:
         conn = http.client.HTTPConnection(f"localhost:{_OTLP_HEALTH_PORT}")
@@ -156,8 +155,6 @@ def _start_collector(siso_path: str, sockets_file: Optional[str],
         status = json.loads(response.read())
         if not status["healthy"] or status["status"] != "StatusOK":
             return Status.UNHEALTHY
-        if fetch_project(conn) != project:
-            return Status.WRONG_PROJECT
         endpoint = fetch_receiver_endpoint(conn)
 
         expected_endpoint = sockets_file or _OTLP_DEFAULT_TCP_ENDPOINT
