@@ -6,6 +6,7 @@ import os
 import random
 
 import gerrit_util
+from gerrit_cache import GerritCache
 import git_common
 
 
@@ -213,12 +214,24 @@ class GerritClient(OwnersClient):
                                     paths))
 
 
-def GetCodeOwnersClient(host, project, branch):
+def GetCodeOwnersClient(host, project, branch, cache=None):
     """Get a new OwnersClient.
 
     Uses GerritClient and raises an exception if code-owners plugin is not
     available."""
-    if gerrit_util.IsCodeOwnersEnabledOnHost(host):
+    key = GerritCache.get_host_code_owners_enabled_key(host)
+    is_enabled = None
+    if cache:
+        cached = cache.get(key)
+        if cached is not None:
+            is_enabled = (cached == 'true')
+
+    if is_enabled is None:
+        is_enabled = gerrit_util.IsCodeOwnersEnabledOnHost(host)
+        if cache:
+            cache.set(key, str(is_enabled).lower())
+
+    if is_enabled:
         return GerritClient(host, project, branch)
     raise Exception(
         'code-owners plugin is not enabled. Ask your host admin to enable it '

@@ -45,6 +45,8 @@ import gclient_paths  # Exposed through the API
 import gclient_utils
 import git_footers
 import gerrit_util
+from gerrit_cache import GerritCache
+import lockfile
 import owners_client
 import owners_finder
 import presubmit_canned_checks
@@ -597,8 +599,21 @@ class GerritAccessor(object):
 
     def IsCodeOwnersEnabledOnRepo(self):
         if self.code_owners_enabled is None:
-            self.code_owners_enabled = gerrit_util.IsCodeOwnersEnabledOnRepo(
+            key = GerritCache.get_code_owners_enabled_key(
                 self.host, self.project)
+            if hasattr(self, 'persistent_cache') and self.persistent_cache:
+                cached = self.persistent_cache.get(key)
+                if cached is not None:
+                    self.code_owners_enabled = (cached == 'true')
+
+            if self.code_owners_enabled is None:
+                self.code_owners_enabled = gerrit_util.IsCodeOwnersEnabledOnRepo(
+                    self.host, self.project)
+                if hasattr(self, 'persistent_cache') and self.persistent_cache:
+                    self.persistent_cache.set(
+                        key,
+                        str(self.code_owners_enabled).lower())
+
         return self.code_owners_enabled
 
 
@@ -626,6 +641,9 @@ class OutputApi(object):
         if self.is_committing:
             return self.PresubmitNotifyResult(*args, **kwargs)
         return self.PresubmitPromptWarning(*args, **kwargs)
+
+
+
 
 
 class InputApi(object):
@@ -790,7 +808,8 @@ class InputApi(object):
                 self.owners_client = owners_client.GetCodeOwnersClient(
                     host=self.gerrit.host,
                     project=self.gerrit.project,
-                    branch=self.gerrit.branch)
+                    branch=self.gerrit.branch,
+                    cache=self.gerrit.persistent_cache)
             except Exception as e:
                 print('Failed to set owners_client - %s' % str(e))
         self.owners_finder = owners_finder.OwnersFinder
@@ -807,6 +826,9 @@ class InputApi(object):
                                                             '<hash_set>') else
             (a, b, header) for (a, b, header) in cpplint._re_pattern_templates
         ]
+
+        if self.gerrit:
+            self.gerrit.persistent_cache = GerritCache(change.RepositoryRoot())
 
     def SetTimeout(self, timeout):
         self.thread_pool.timeout = timeout
