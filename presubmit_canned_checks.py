@@ -8,6 +8,8 @@ import functools
 import io as _io
 import os as _os
 import time
+import re
+import subprocess as _subprocess
 
 import metadata.discover
 import metadata.validate
@@ -2906,4 +2908,65 @@ def CheckValidHostsInDEPSOnUpload(input_api, output_api):
             output_api.PresubmitError(
                 'DEPS file must have only git dependencies.',
                 long_text=error.output)
+        ]
+
+
+def CheckAyeAye(input_api, output_api):
+    """
+    Runs AyeAye analyzers.
+    """
+
+    def strip_ansi_codes(text):
+        ansi_escape = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
+        return ansi_escape.sub('', text)
+
+    alint_path = '/google/src/cloud/lminchin/alint/google3/blaze-bin/wireless/android/busytown/ayeaye/alint/alint'
+    if not _os.path.exists(alint_path):
+        return []
+
+    # Determine the git repository root
+    repo_root = input_api.change.RepositoryRoot()
+    if not repo_root:
+        return [
+            output_api.PresubmitError("Could not determine repository root.")
+        ]
+
+    try:
+        process = input_api.subprocess.Popen([alint_path],
+                                             stdout=input_api.subprocess.PIPE,
+                                             stderr=input_api.subprocess.STDOUT,
+                                             cwd=repo_root)
+        stdout, _ = process.communicate()
+        output_str = stdout.decode('utf-8', 'ignore')
+
+        if not output_str.strip():
+            return []
+
+        error_lines = []
+        warning_lines = []
+
+        for line in output_str.splitlines():
+            clean_line = strip_ansi_codes(line).strip()
+            if not clean_line:
+                continue
+            if clean_line.startswith("ERROR:"):
+                error_lines.append(line)
+            elif clean_line.startswith("WARNING:"):
+                warning_lines.append(line)
+
+        results = []
+        if error_lines:
+            results.append(
+                output_api.PresubmitError('AyeAye check errors:\n' +
+                                          '\n'.join(error_lines)))
+        if warning_lines:
+            results.append(
+                output_api.PresubmitPromptWarning('AyeAye check warnings:\n' +
+                                                  '\n'.join(warning_lines)))
+
+        return results
+    except Exception as e:
+        return [
+            output_api.PresubmitError(
+                f"Unexpected error in CheckAyeAye: {type(e).__name__} - {e}")
         ]
