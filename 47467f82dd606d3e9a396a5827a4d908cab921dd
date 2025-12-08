@@ -16,6 +16,24 @@
       "message": "This writes to the config directory in favor of git config, per the other comment thread. I would use something like the atomicwrites lib for this, but idk how reasonable it is to add a dependency... and this code is not too involved to maintain, perhaps.",
       "revId": "47467f82dd606d3e9a396a5827a4d908cab921dd",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d7a00162_72828da6",
+        "filename": "gerrit_util.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 138,
+      "author": {
+        "id": 1381059
+      },
+      "writtenOn": "2025-12-08T17:08:56Z",
+      "side": 1,
+      "message": "Thanks for the great analysis and I like where this implementation is going. But I think sharing global cache wouldn\u0027t go well if you are working on multiple repos at the same time because running `git cl presubmit` will invalidate the cache all the other repos.\n\nI like the idea of a separate file for caching but I also think it\u0027s better to have a per-repo cache. How about using a temp file as cache and store that path in git config (e.g. depot_tools.gerrit_cache.path\u003d/path/to/temp). For non-git environment, we could teach it to read the path from some env var(our start-up script in Cog could be responsible for setting the path).\n\nAlso, can we move the implementation to [here](https://source.chromium.org/chromium/chromium/tools/depot_tools/+/main:presubmit_support.py;l\u003d598-602;drc\u003d2e88a3f08bd8c4a0014eae82729beca935f7f188) because we can now retire the in-process cache and I think it might be useful to leave gerrit_util module just purely talk to Gerrit",
+      "parentUuid": "ba5a2f60_942cfa5a",
+      "revId": "47467f82dd606d3e9a396a5827a4d908cab921dd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
