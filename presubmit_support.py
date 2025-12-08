@@ -45,6 +45,7 @@ import gclient_paths  # Exposed through the API
 import gclient_utils
 import git_footers
 import gerrit_util
+import lockfile
 import owners_client
 import owners_finder
 import presubmit_canned_checks
@@ -597,8 +598,21 @@ class GerritAccessor(object):
 
     def IsCodeOwnersEnabledOnRepo(self):
         if self.code_owners_enabled is None:
-            self.code_owners_enabled = gerrit_util.IsCodeOwnersEnabledOnRepo(
-                self.host, self.project)
+            key = 'depot-tools.code-owners.%s.%s.enabled' % (self.host,
+                                                             self.project)
+            if hasattr(self, 'persistent_cache') and self.persistent_cache:
+                cached = self.persistent_cache.get(key)
+                if cached is not None:
+                    self.code_owners_enabled = (cached == 'true')
+
+            if self.code_owners_enabled is None:
+                self.code_owners_enabled = gerrit_util.IsCodeOwnersEnabledOnRepo(
+                    self.host, self.project)
+                if hasattr(self, 'persistent_cache') and self.persistent_cache:
+                    self.persistent_cache.set(
+                        key,
+                        str(self.code_owners_enabled).lower())
+
         return self.code_owners_enabled
 
 
@@ -626,6 +640,103 @@ class OutputApi(object):
         if self.is_committing:
             return self.PresubmitNotifyResult(*args, **kwargs)
         return self.PresubmitPromptWarning(*args, **kwargs)
+
+
+@contextlib.contextmanager
+def _AtomicFileWriter(path, mode='w'):
+    """Atomic file writer context manager."""
+    # Create temp file in same directory to ensure atomic rename works
+    fd, temp_path = tempfile.mkstemp(dir=os.path.dirname(path),
+                                     text='b' not in mode)
+    try:
+        with os.fdopen(fd, mode) as f:
+            yield f
+        # Atomic rename
+        gclient_utils.safe_rename(temp_path, path)
+    except Exception:
+        # Cleanup on failure
+        if os.path.exists(temp_path):
+            os.remove(temp_path)
+        raise
+
+
+class GerritCache(object):
+    """Simple JSON file-based cache for Gerrit API results."""
+
+    def __init__(self, root_dir):
+        self.root_dir = root_dir
+        self.cache_path = self._get_cache_path()
+
+    def _get_cache_path(self):
+        path = os.environ.get('DEPOT_TOOLS_GERRIT_CACHE_PATH')
+        if path:
+            return path
+
+        try:
+            path = scm.GIT.GetConfig(self.root_dir,
+                                     'depot-tools.gerrit-cache-path')
+            if path:
+                return path
+        except Exception:
+            pass
+
+        try:
+            if self.root_dir:
+                # Use a deterministic name based on the repo path
+                sanitized_path = re.sub(r'[^a-zA-Z0-9]', '_',
+                                        os.path.abspath(self.root_dir))
+                filename = 'gerrit_cache_%s.json' % sanitized_path
+                path = os.path.join(tempfile.gettempdir(), filename)
+            else:
+                # Fallback to random name if no root_dir
+                fd, path = tempfile.mkstemp(prefix='gerrit_cache_',
+                                            suffix='.json')
+                os.close(fd)
+
+            if not os.path.exists(path):
+                with open(path, 'w') as f:
+                    json.dump({}, f)
+
+            try:
+                scm.GIT.SetConfig(self.root_dir,
+                                  'depot-tools.gerrit-cache-path', path)
+            except Exception:
+                # If we can't set config (e.g. not a git repo), just return the temp path.
+                # It will be a per-process cache in that case.
+                pass
+            return path
+        except Exception:
+            return None
+
+    def get(self, key):
+        if not self.cache_path or not os.path.exists(self.cache_path):
+            return None
+        try:
+            with open(self.cache_path, 'r') as f:
+                data = json.load(f)
+                return data.get(key)
+        except (IOError, ValueError):
+            return None
+
+    def set(self, key, value):
+        if not self.cache_path:
+            return
+        try:
+            with lockfile.lock(self.cache_path, timeout=1):
+                data = {}
+                if os.path.exists(self.cache_path):
+                    try:
+                        with open(self.cache_path, 'r') as f:
+                            data = json.load(f)
+                    except (IOError, ValueError):
+                        pass
+
+                data[key] = value
+
+                with _AtomicFileWriter(self.cache_path, 'w') as f:
+                    json.dump(data, f)
+        except Exception:
+            pass
 
 
 class InputApi(object):
@@ -807,6 +918,9 @@ class InputApi(object):
                                                             '<hash_set>') else
             (a, b, header) for (a, b, header) in cpplint._re_pattern_templates
         ]
+
+        if self.gerrit:
+            self.gerrit.persistent_cache = GerritCache(change.RepositoryRoot())
 
     def SetTimeout(self, timeout):
         self.thread_pool.timeout = timeout
