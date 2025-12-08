@@ -34,6 +34,24 @@
       "parentUuid": "ba5a2f60_942cfa5a",
       "revId": "47467f82dd606d3e9a396a5827a4d908cab921dd",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bdb83879_bacd9bce",
+        "filename": "gerrit_util.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 138,
+      "author": {
+        "id": 4323820
+      },
+      "writtenOn": "2025-12-08T22:03:17Z",
+      "side": 1,
+      "message": "Sure, that does sound better. I\u0027ve reworked the file writing to use per-repo paths, eg. /tmp/gerrit_cache__path_to_repo.json. The cache path is chosen via: DEPOT_TOOLS_GERRIT_CACHE_PATH (env) \u003e depot-tools.gerrit-cache-path (git config) \u003e Deterministic Temp File\n\nI also moved the implementation to its own file, cause that lets me use it in owners_client.py without circular imports. Is there anything I need to do to get the new _test.py file picked up by automation?",
+      "parentUuid": "d7a00162_72828da6",
+      "revId": "47467f82dd606d3e9a396a5827a4d908cab921dd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
