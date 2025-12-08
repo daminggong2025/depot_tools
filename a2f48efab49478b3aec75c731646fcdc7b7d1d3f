@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "661f2faa_cc6ed0ed",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1381059
+      },
+      "writtenOn": "2025-12-08T21:36:35Z",
+      "side": 1,
+      "message": "This is amazing 👍",
+      "range": {
+        "startLine": 13,
+        "startChar": 50,
+        "endLine": 14,
+        "endChar": 43
+      },
+      "revId": "a2f48efab49478b3aec75c731646fcdc7b7d1d3f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "88818e55_216f886f",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 2086,
+      "author": {
+        "id": 1381059
+      },
+      "writtenOn": "2025-12-08T21:36:35Z",
+      "side": 1,
+      "message": "should we add `--full-name` since it\u0027s implicitly included via `--full-tree` option and there is no guarantee that the command is running from repo root.",
+      "revId": "a2f48efab49478b3aec75c731646fcdc7b7d1d3f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "74128c7a_61c943f0",
+        "filename": "tests/check_for_commit_objects_test.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1381059
+      },
+      "writtenOn": "2025-12-08T21:36:35Z",
+      "side": 1,
+      "message": "2025",
+      "range": {
+        "startLine": 2,
+        "startChar": 16,
+        "endLine": 2,
+        "endChar": 20
+      },
+      "revId": "a2f48efab49478b3aec75c731646fcdc7b7d1d3f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
