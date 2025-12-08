@@ -6,9 +6,11 @@
 
 import json
 import os
+import shutil
 import socket
 import subprocess
 import sys
+import tempfile
 import textwrap
 import unittest
 
@@ -731,6 +733,8 @@ class GerritUtilTest(unittest.TestCase):
                                               mockCreateHttpConn):
         mockJsonResponse.return_value = {'status': {}}
         self.assertTrue(gerrit_util.IsCodeOwnersEnabledOnRepo('host', 'repo'))
+
+
 
     @mock.patch('gerrit_util.CreateHttpConn')
     @mock.patch('gerrit_util.ReadHttpJsonResponse')

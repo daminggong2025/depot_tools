@@ -40,11 +40,13 @@ import httplib2.socks
 
 import auth
 import gclient_utils
+import lockfile
 import metrics
 import metrics_utils
 import newauth
 import scm
 import subprocess2
+import utils
 
 
 # HACK: httplib2 has significant bugs with its proxy support in
@@ -130,6 +132,8 @@ def log_retry_and_sleep(seconds, attempt, try_limit):
                 try_limit - attempt - 1)
     time_sleep(seconds)
     return seconds * random.uniform(MIN_BACKOFF, MAX_BACKOFF)
+
+
 
 
 class GerritError(Exception):
@@ -1761,7 +1765,9 @@ def IsCodeOwnersEnabledOnRepo(host, repo):
     """Check if the code-owners plugin is enabled for the repo."""
     repo = PercentEncodeForGitRef(repo)
     path = '/projects/%s/code_owners.project_config' % repo
+
     config = ReadHttpJsonResponse(CreateHttpConn(host, path))
+
     return not config['status'].get('disabled', False)
 
 
