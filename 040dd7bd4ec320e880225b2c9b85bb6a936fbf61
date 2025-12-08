@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b39125bb_00e643f1",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 2094,
+      "author": {
+        "id": 1381059
+      },
+      "writtenOn": "2025-12-08T21:25:20Z",
+      "side": 1,
+      "message": "should this be \u0027\\0\u0027 instead of zero?",
+      "range": {
+        "startLine": 2094,
+        "startChar": 45,
+        "endLine": 2094,
+        "endChar": 46
+      },
+      "revId": "040dd7bd4ec320e880225b2c9b85bb6a936fbf61",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
