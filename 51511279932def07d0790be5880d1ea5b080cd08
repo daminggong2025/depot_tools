@@ -166,6 +166,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "9aa7f81c_8b1b180d",
+        "filename": "siso.py",
+        "patchSetId": 11
+      },
+      "lineNbr": 329,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-12-08T02:43:00Z",
+      "side": 1,
+      "message": "Well unique an in per build config. Not unique per system.\n\nThe restart of collector is constant time and really fast, 0.05 when it starts normally or 1 second if it fails and we have to back up.",
+      "parentUuid": "2e2ccf4f_ed461f13",
+      "range": {
+        "startLine": 328,
+        "startChar": 0,
+        "endLine": 329,
+        "endChar": 68
+      },
+      "revId": "51511279932def07d0790be5880d1ea5b080cd08",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "734a67b4_4bf26032",
