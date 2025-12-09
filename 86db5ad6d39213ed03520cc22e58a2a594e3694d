@@ -1,0 +1,106 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b9653e4b_3ae20a44",
+        "filename": "siso.py",
+        "patchSetId": 33
+      },
+      "lineNbr": 183,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2025-12-09T06:20:48Z",
+      "side": 1,
+      "message": "better to do this in _resolve_sockets_folder, or after defining sockets_file?",
+      "revId": "86db5ad6d39213ed03520cc22e58a2a594e3694d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e5c5da06_83e56557",
+        "filename": "siso.py",
+        "patchSetId": 33
+      },
+      "lineNbr": 185,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2025-12-09T06:20:48Z",
+      "side": 1,
+      "message": "if os.path.exists(sockets_file):\n?",
+      "revId": "86db5ad6d39213ed03520cc22e58a2a594e3694d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "58e807c5_f7af08b7",
+        "filename": "siso.py",
+        "patchSetId": 33
+      },
+      "lineNbr": 193,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2025-12-09T06:20:48Z",
+      "side": 1,
+      "message": "to stderr?\nor better to fail, rather than fallback?",
+      "revId": "86db5ad6d39213ed03520cc22e58a2a594e3694d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7cf3b929_23264010",
+        "filename": "siso.py",
+        "patchSetId": 33
+      },
+      "lineNbr": 354,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2025-12-09T06:20:48Z",
+      "side": 1,
+      "message": "--collector_address\u003dunix://{sockets_file}\n?",
+      "revId": "86db5ad6d39213ed03520cc22e58a2a594e3694d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b8f79975_46c96bf0",
+        "filename": "siso.py",
+        "patchSetId": 33
+      },
+      "lineNbr": 356,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2025-12-09T06:20:48Z",
+      "side": 1,
+      "message": "stderr?",
+      "revId": "86db5ad6d39213ed03520cc22e58a2a594e3694d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c4554993_fae7b750",
+        "filename": "siso.py",
+        "patchSetId": 33
+      },
+      "lineNbr": 357,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2025-12-09T06:20:48Z",
+      "side": 1,
+      "message": "args.append(\"--enable_collector\u003dfalse\")\n?",
+      "revId": "86db5ad6d39213ed03520cc22e58a2a594e3694d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
