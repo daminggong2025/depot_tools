@@ -16,6 +16,24 @@
       "message": "I\u0027m not sure how to modify the tests to get the necessary coverage. Reading the test, it seems to call:\n\nlib/depot_tools/infra/config/recipes.cfg\n\nI tried to read through \n./recipes/recipe_modules/presubmit/test_api.py, do I need to update some sort of protobuf properties so the tests can get the coverage they need?\n\nI\u0027d normally expect some type of test like this to modify? https://source.chromium.org/chromium/infra/infra_superproject/+/main:build/recipes/recipe_modules/chromium_tests/tests/steps/resultdb.py;drc\u003dc4623988e11815a8111f7cea4fbaeb3e63712f25;l\u003d80",
       "revId": "8f23b3b6e37e86d680a80296c4383b6c5b1afddc",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0a5a7271_575bf221",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 10
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1381059
+      },
+      "writtenOn": "2025-12-09T16:41:03Z",
+      "side": 1,
+      "message": "You\u0027ll need to add a new test case similar to [this](https://chromium.googlesource.com/chromium/tools/depot_tools/+/e0a877ed8f3f1685b9ca9bcadb1430bf5640ffc7/recipes/recipe_modules/presubmit/tests/execute.py#57). When you construct the test build using `api.buildbucket.try_build(...)`, you can add an additional experiment using the [experiments](https://source.chromium.org/chromium/infra/infra_superproject/+/main:recipes-py/recipe_modules/buildbucket/test_api.py;l\u003d184;drc\u003dbd938f90e18e67c2985312dee2d63e720c9675cf) kwargs. I\u0027d use StepCommandContains checker to make sure the newly added options are included in the step command.",
+      "parentUuid": "6bc1fd5a_0b22ad35",
+      "revId": "8f23b3b6e37e86d680a80296c4383b6c5b1afddc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
