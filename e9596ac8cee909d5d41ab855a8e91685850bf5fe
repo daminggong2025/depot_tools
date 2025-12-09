@@ -3,6 +3,40 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "9714c801_33b3185c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1381059
+      },
+      "writtenOn": "2025-12-09T17:07:06Z",
+      "side": 1,
+      "message": "Could you add some test in https://chromium.googlesource.com/chromium/tools/depot_tools/+/HEAD/tests/presubmit_canned_checks_test.py",
+      "revId": "e9596ac8cee909d5d41ab855a8e91685850bf5fe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a4f7f17d_bba0c533",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1381059
+      },
+      "writtenOn": "2025-12-09T17:07:06Z",
+      "side": 1,
+      "message": "I don\u0027t think this is used anywhere?",
+      "revId": "e9596ac8cee909d5d41ab855a8e91685850bf5fe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "6af55d66_fc2cdb70",
         "filename": "presubmit_canned_checks.py",
         "patchSetId": 2
@@ -116,6 +150,92 @@
         "endLine": 2925,
         "endChar": 17
       },
+      "revId": "e9596ac8cee909d5d41ab855a8e91685850bf5fe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "44edde90_8cf2000d",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 2935,
+      "author": {
+        "id": 1381059
+      },
+      "writtenOn": "2025-12-09T17:07:06Z",
+      "side": 1,
+      "message": "Is alint smart enough to figure out which analyzer to run for the given repo/change?",
+      "range": {
+        "startLine": 2935,
+        "startChar": 46,
+        "endLine": 2935,
+        "endChar": 56
+      },
+      "revId": "e9596ac8cee909d5d41ab855a8e91685850bf5fe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c662aa6c_fcb1b264",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 2956,
+      "author": {
+        "id": 1381059
+      },
+      "writtenOn": "2025-12-09T17:07:06Z",
+      "side": 1,
+      "message": "Not a hard blocker for this CL: Could we improve alint to return more structured (e.g. JSON) and detailed output so that it is easier to parse here and translate to [PresubmitResult](https://source.chromium.org/chromium/chromium/tools/depot_tools/+/main:presubmit_support.py;l\u003d378;drc\u003d2e88a3f08bd8c4a0014eae82729beca935f7f188). For example, I believe some AyeAye findings have location information and if we can use that to populate the location of PresubmitResult, the finding would show up inline in Cider though the [cider-g-findings extension](http://go/cider-g-findings).",
+      "range": {
+        "startLine": 2948,
+        "startChar": 0,
+        "endLine": 2956,
+        "endChar": 0
+      },
+      "revId": "e9596ac8cee909d5d41ab855a8e91685850bf5fe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "332a8630_6cdf2e88",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 2961,
+      "author": {
+        "id": 1381059
+      },
+      "writtenOn": "2025-12-09T17:07:06Z",
+      "side": 1,
+      "message": "Why not one PresubmitError for each error lines? Same for warnings.",
+      "range": {
+        "startLine": 2959,
+        "startChar": 0,
+        "endLine": 2961,
+        "endChar": 66
+      },
+      "revId": "e9596ac8cee909d5d41ab855a8e91685850bf5fe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2355ad6d_54058f84",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 2967,
+      "author": {
+        "id": 1381059
+      },
+      "writtenOn": "2025-12-09T17:07:06Z",
+      "side": 1,
+      "message": "we have [info-equivalent level](https://source.chromium.org/chromium/chromium/tools/depot_tools/+/main:presubmit_support.py;l\u003d484-485;drc\u003d2e88a3f08bd8c4a0014eae82729beca935f7f188) too. Does alint result also include INFO level findings?",
       "revId": "e9596ac8cee909d5d41ab855a8e91685850bf5fe",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
