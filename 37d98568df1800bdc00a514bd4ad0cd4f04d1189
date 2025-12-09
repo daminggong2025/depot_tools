@@ -39,6 +39,23 @@
       },
       "revId": "37d98568df1800bdc00a514bd4ad0cd4f04d1189",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c4298030_15030067",
+        "filename": "recipes/recipe_modules/presubmit/tests/execute.py",
+        "patchSetId": 12
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1381059
+      },
+      "writtenOn": "2025-12-09T20:49:05Z",
+      "side": 1,
+      "message": "I think this should assert step command contains [\u0027rdb\u0027, \u0027stream\u0027, \u0027-module-scheme\u0027, \u0027flat\u0027, \u0027-module-name\u0027, \u0027//:presubmit\u0027, \u0027--\u0027]",
+      "revId": "37d98568df1800bdc00a514bd4ad0cd4f04d1189",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
