@@ -1114,7 +1114,7 @@ ninja --failure_verbose=false -k=0
     @mock.patch('siso.platform.system', return_value='Linux')
     @mock.patch('siso.json.loads')
     def test_start_collector_wrong_project_no_restart(self, mock_json_loads,
-                                                        _mock_system):
+                                                      _mock_system):
         m = self._start_collector_mocks()
         siso_path = "siso_path"
         project = "test-project"
