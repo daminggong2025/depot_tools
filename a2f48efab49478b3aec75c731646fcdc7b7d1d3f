@@ -41,6 +41,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "eaa895f8_847cf1f0",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 2086,
+      "author": {
+        "id": 4323820
+      },
+      "writtenOn": "2025-12-09T02:17:00Z",
+      "side": 1,
+      "message": "Turns out what we want is actually --full-tree in both cases. Providing files (and not -r) lets us constrain the output to just what\u0027s changed in the case of \u003c1000 files.",
+      "parentUuid": "88818e55_216f886f",
+      "revId": "a2f48efab49478b3aec75c731646fcdc7b7d1d3f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "74128c7a_61c943f0",
@@ -54,6 +72,30 @@
       "writtenOn": "2025-12-08T21:36:35Z",
       "side": 1,
       "message": "2025",
+      "range": {
+        "startLine": 2,
+        "startChar": 16,
+        "endLine": 2,
+        "endChar": 20
+      },
+      "revId": "a2f48efab49478b3aec75c731646fcdc7b7d1d3f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "894027e2_5df01ba9",
+        "filename": "tests/check_for_commit_objects_test.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 4323820
+      },
+      "writtenOn": "2025-12-09T02:17:00Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "74128c7a_61c943f0",
       "range": {
         "startLine": 2,
         "startChar": 16,
