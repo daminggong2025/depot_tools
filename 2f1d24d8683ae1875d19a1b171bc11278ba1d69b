@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ef0a2b16_ce4a1920",
+        "filename": "siso.py",
+        "patchSetId": 30
+      },
+      "lineNbr": 327,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-12-09T02:28:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c735701b_916fd035",
+      "revId": "2f1d24d8683ae1875d19a1b171bc11278ba1d69b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "4322aa79_cd12dcb7",
@@ -31,6 +49,24 @@
       "writtenOn": "2025-12-09T00:48:30Z",
       "side": 1,
       "message": "don\u0027t make the dir for group/world accessable?\n0o700 ?",
+      "revId": "2f1d24d8683ae1875d19a1b171bc11278ba1d69b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b269d5a2_d7598024",
+        "filename": "siso.py",
+        "patchSetId": 30
+      },
+      "lineNbr": 329,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-12-09T02:28:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4322aa79_cd12dcb7",
       "revId": "2f1d24d8683ae1875d19a1b171bc11278ba1d69b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
