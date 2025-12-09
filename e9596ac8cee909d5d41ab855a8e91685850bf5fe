@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "83c693c3_d2125252",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 4456454
+      },
+      "writtenOn": "2025-12-09T18:20:06Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9714c801_33b3185c",
+      "revId": "e9596ac8cee909d5d41ab855a8e91685850bf5fe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "a4f7f17d_bba0c533",
@@ -31,6 +49,24 @@
       "writtenOn": "2025-12-09T17:07:06Z",
       "side": 1,
       "message": "I don\u0027t think this is used anywhere?",
+      "revId": "e9596ac8cee909d5d41ab855a8e91685850bf5fe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8c84082d_f6c0f994",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 4456454
+      },
+      "writtenOn": "2025-12-09T18:20:06Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a4f7f17d_bba0c533",
       "revId": "e9596ac8cee909d5d41ab855a8e91685850bf5fe",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -177,6 +213,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "4fd272c5_9cb87b83",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 2935,
+      "author": {
+        "id": 4456454
+      },
+      "writtenOn": "2025-12-09T18:20:06Z",
+      "side": 1,
+      "message": "Yep - each analyzer within alint has a `ShouldRun` function that determines whether it should run on a given change",
+      "parentUuid": "44edde90_8cf2000d",
+      "range": {
+        "startLine": 2935,
+        "startChar": 46,
+        "endLine": 2935,
+        "endChar": 56
+      },
+      "revId": "e9596ac8cee909d5d41ab855a8e91685850bf5fe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "c662aa6c_fcb1b264",
@@ -190,6 +250,30 @@
       "writtenOn": "2025-12-09T17:07:06Z",
       "side": 1,
       "message": "Not a hard blocker for this CL: Could we improve alint to return more structured (e.g. JSON) and detailed output so that it is easier to parse here and translate to [PresubmitResult](https://source.chromium.org/chromium/chromium/tools/depot_tools/+/main:presubmit_support.py;l\u003d378;drc\u003d2e88a3f08bd8c4a0014eae82729beca935f7f188). For example, I believe some AyeAye findings have location information and if we can use that to populate the location of PresubmitResult, the finding would show up inline in Cider though the [cider-g-findings extension](http://go/cider-g-findings).",
+      "range": {
+        "startLine": 2948,
+        "startChar": 0,
+        "endLine": 2956,
+        "endChar": 0
+      },
+      "revId": "e9596ac8cee909d5d41ab855a8e91685850bf5fe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "da595476_31013913",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 2956,
+      "author": {
+        "id": 4456454
+      },
+      "writtenOn": "2025-12-09T18:20:06Z",
+      "side": 1,
+      "message": "Definitely agree, working on this in parallel.",
+      "parentUuid": "c662aa6c_fcb1b264",
       "range": {
         "startLine": 2948,
         "startChar": 0,
@@ -223,6 +307,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "dd85ae4a_4c0dc4a7",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 2961,
+      "author": {
+        "id": 4456454
+      },
+      "writtenOn": "2025-12-09T18:20:06Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "332a8630_6cdf2e88",
+      "range": {
+        "startLine": 2959,
+        "startChar": 0,
+        "endLine": 2961,
+        "endChar": 66
+      },
+      "revId": "e9596ac8cee909d5d41ab855a8e91685850bf5fe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "2355ad6d_54058f84",
@@ -236,6 +344,24 @@
       "writtenOn": "2025-12-09T17:07:06Z",
       "side": 1,
       "message": "we have [info-equivalent level](https://source.chromium.org/chromium/chromium/tools/depot_tools/+/main:presubmit_support.py;l\u003d484-485;drc\u003d2e88a3f08bd8c4a0014eae82729beca935f7f188) too. Does alint result also include INFO level findings?",
+      "revId": "e9596ac8cee909d5d41ab855a8e91685850bf5fe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "453094df_d59c0557",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 2967,
+      "author": {
+        "id": 4456454
+      },
+      "writtenOn": "2025-12-09T18:20:06Z",
+      "side": 1,
+      "message": "Thanks - yes there are theoretically info-level findings (although I don\u0027t know how often they\u0027re used). However the alint tool prints other stuff (relating to the tool itself, not individual analyzers) as info logs too. I think it would be good to get this submitted for now so we can verify it works, and when we\u0027ve got the structured output from alint we can also propagate info findings without doing brittle text parsing.",
+      "parentUuid": "2355ad6d_54058f84",
       "revId": "e9596ac8cee909d5d41ab855a8e91685850bf5fe",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
