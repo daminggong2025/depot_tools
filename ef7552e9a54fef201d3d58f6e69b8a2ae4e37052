@@ -16,6 +16,24 @@
       "message": "The impact of this change is pre-empted significantly by the next one (since the next CL has a much much smaller dataset to iterate over), but I wrote this one first, and it is better, so we may as well keep it, I figure.",
       "revId": "ef7552e9a54fef201d3d58f6e69b8a2ae4e37052",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "abbf19c0_95072a61",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 4323820
+      },
+      "writtenOn": "2025-12-09T18:24:56Z",
+      "side": 1,
+      "message": "Acknowledged",
+      "parentUuid": "8dcbaf49_5c8857b3",
+      "revId": "ef7552e9a54fef201d3d58f6e69b8a2ae4e37052",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
