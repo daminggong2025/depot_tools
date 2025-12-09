@@ -46,6 +46,30 @@
       },
       "revId": "e9596ac8cee909d5d41ab855a8e91685850bf5fe",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cdb4e643_910ed582",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 2925,
+      "author": {
+        "id": 4456454
+      },
+      "writtenOn": "2025-12-09T13:20:41Z",
+      "side": 1,
+      "message": "Thanks - yeah for users on gLinux it will be available in binFS without any extra work. We\u0027re working on a solution for gMac, but for now I didn\u0027t want to add any disruption to the upload flow for those users.\n\nI\u0027m going to test this out in a small directory first, so if there are any issues (e.g. with gcert) we can spot them there before doing a chromium-wide rollout.",
+      "parentUuid": "4e449d5e_e4c360e3",
+      "range": {
+        "startLine": 2923,
+        "startChar": 0,
+        "endLine": 2925,
+        "endChar": 17
+      },
+      "revId": "e9596ac8cee909d5d41ab855a8e91685850bf5fe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
