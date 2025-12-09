@@ -963,13 +963,12 @@ def CheckChangeOnCommit(input_api, output_api):
                     may_prompt=False,
                     gerrit_obj=None,
                     json_output=None))
-            text = (
-                RUNNING_PY_CHECKS_TEXT + 'Warning, no PRESUBMIT.py found.\n'
-                'Running default presubmit script.\n'
-                '** Presubmit ERRORS: 1 **\n!!\n\n'
-                'There were presubmit errors.\n'
-                'Was the presubmit check useful? If not, view the file\'s\n'
-                'blame on Code Search to figure out who to ask for help.\n')
+            text = (RUNNING_PY_CHECKS_TEXT + 'Warning, no PRESUBMIT.py found.\n'
+                    'Running default presubmit script.\n'
+                    '** Presubmit ERRORS: 1 **\n!!\n\n'
+                    'There were presubmit errors.\n'
+                    'Was the presubmit check useful? If not, view the file\'s\n'
+                    'blame on Code Search to figure out who to ask for help.\n')
             self.assertEqual(sys.stdout.getvalue(), text)
 
     def ExampleChange(self, extra_lines=None):
