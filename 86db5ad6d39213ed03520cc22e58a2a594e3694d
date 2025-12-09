@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "547a3e11_c9de62fc",
+        "filename": "siso.py",
+        "patchSetId": 33
+      },
+      "lineNbr": 183,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-12-09T06:30:47Z",
+      "side": 1,
+      "message": "If collector is already running and we delete file from under it it might lead to not so good consequences. So I think it should belong to the startup sequence.",
+      "parentUuid": "b9653e4b_3ae20a44",
+      "revId": "86db5ad6d39213ed03520cc22e58a2a594e3694d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e5c5da06_83e56557",
@@ -31,6 +49,24 @@
       "writtenOn": "2025-12-09T06:20:48Z",
       "side": 1,
       "message": "if os.path.exists(sockets_file):\n?",
+      "revId": "86db5ad6d39213ed03520cc22e58a2a594e3694d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4708950a_5c8599f3",
+        "filename": "siso.py",
+        "patchSetId": 33
+      },
+      "lineNbr": 185,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-12-09T06:30:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e5c5da06_83e56557",
       "revId": "86db5ad6d39213ed03520cc22e58a2a594e3694d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -52,6 +88,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "769acf5c_68fc066e",
+        "filename": "siso.py",
+        "patchSetId": 33
+      },
+      "lineNbr": 193,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-12-09T06:30:47Z",
+      "side": 1,
+      "message": "Sounds good, killing collector.",
+      "parentUuid": "58e807c5_f7af08b7",
+      "revId": "86db5ad6d39213ed03520cc22e58a2a594e3694d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "7cf3b929_23264010",
@@ -65,6 +119,24 @@
       "writtenOn": "2025-12-09T06:20:48Z",
       "side": 1,
       "message": "--collector_address\u003dunix://{sockets_file}\n?",
+      "revId": "86db5ad6d39213ed03520cc22e58a2a594e3694d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2e204394_370a2d7d",
+        "filename": "siso.py",
+        "patchSetId": 33
+      },
+      "lineNbr": 354,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-12-09T06:30:47Z",
+      "side": 1,
+      "message": "I think we can handle unix and non unix on ninja and collector side instead to avoid complexity here.",
+      "parentUuid": "7cf3b929_23264010",
       "revId": "86db5ad6d39213ed03520cc22e58a2a594e3694d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -86,6 +158,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "d1153d35_80fe91b3",
+        "filename": "siso.py",
+        "patchSetId": 33
+      },
+      "lineNbr": 356,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-12-09T06:30:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b8f79975_46c96bf0",
+      "revId": "86db5ad6d39213ed03520cc22e58a2a594e3694d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "c4554993_fae7b750",
@@ -99,6 +189,24 @@
       "writtenOn": "2025-12-09T06:20:48Z",
       "side": 1,
       "message": "args.append(\"--enable_collector\u003dfalse\")\n?",
+      "revId": "86db5ad6d39213ed03520cc22e58a2a594e3694d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b8bee1c7_41524c49",
+        "filename": "siso.py",
+        "patchSetId": 33
+      },
+      "lineNbr": 357,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-12-09T06:30:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c4554993_fae7b750",
       "revId": "86db5ad6d39213ed03520cc22e58a2a594e3694d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
