@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "01226159_ff7f8367",
+        "filename": "siso.py",
+        "patchSetId": 13
+      },
+      "lineNbr": 146,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2025-12-09T00:55:18Z",
+      "side": 1,
+      "message": "hmm, can\u0027t we use same endpoint with collector endpoint?\n(or use unix domain socket, if endpoint uses unix domain socket?)",
+      "revId": "0b8b7e54b69c12ad6b91623365c796ae4e0e7194",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cdd33c98_d2761040",
+        "filename": "siso.py",
+        "patchSetId": 13
+      },
+      "lineNbr": 334,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2025-12-09T00:55:18Z",
+      "side": 1,
+      "message": "check this in collector_status?",
+      "revId": "0b8b7e54b69c12ad6b91623365c796ae4e0e7194",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
