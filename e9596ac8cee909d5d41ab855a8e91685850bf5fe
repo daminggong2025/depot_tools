@@ -22,6 +22,30 @@
       },
       "revId": "e9596ac8cee909d5d41ab855a8e91685850bf5fe",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4e449d5e_e4c360e3",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 2925,
+      "author": {
+        "id": 1381059
+      },
+      "writtenOn": "2025-12-09T00:03:47Z",
+      "side": 1,
+      "message": "I think it is distributed through binFS which will be available on everyone\u0027s workstation/cloudtop. So technically this code is correct. \n\nThat said, I also concerned that now gcert is required to access `/google/bin/releases/alint/alint` in binFS and I\u0027m wondering if that\u0027d be disruptive to chrome developers. Robbie, do you happen to know whether gcert is anyway required after we switch to use sso for authentication?\n\n\u003e maybe you can comment on the best way to do this? Do we need a single place to list \"applications depot_tools will use if present\", and a way to alert users who should have them that they\u0027re missing? The git sso helpers also come to mind.\n\nThis sounds like a bigger problem to solve. I don\u0027t have a good solution offhand. Given the distributed nature of the PRESUBMIT system. Maybe having the input_api expose a method like `check_installation(executable, helper_msg\u003dNone, installation_guide\u003dNone,)` would be best we can do?",
+      "parentUuid": "6af55d66_fc2cdb70",
+      "range": {
+        "startLine": 2923,
+        "startChar": 0,
+        "endLine": 2925,
+        "endChar": 17
+      },
+      "revId": "e9596ac8cee909d5d41ab855a8e91685850bf5fe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
