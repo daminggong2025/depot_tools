@@ -5,14 +5,20 @@
 
 import io
 import os.path
+import re
+import shutil
 import sys
+import tempfile
 import unittest
-from unittest import mock
+
 
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT_DIR)
 
 import gclient_utils
+import gerrit_util
+import gerrit_cache
+import unittest.mock as mock
 import presubmit_support
 import subprocess2
 from testing_support import fake_repos
@@ -521,6 +527,13 @@ class PresubmitResultTest(unittest.TestCase):
             False,
         }
         self.assertEqual(result.json_format(), expected)
+
+
+
+
+
+
+
 
 if __name__ == "__main__":
     unittest.main()
