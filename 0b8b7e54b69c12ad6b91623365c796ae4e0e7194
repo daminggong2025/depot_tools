@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "07f54ab4_e177b047",
+        "filename": "siso.py",
+        "patchSetId": 13
+      },
+      "lineNbr": 146,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-12-09T01:16:29Z",
+      "side": 1,
+      "message": "If user changed the endpoing we lose the previous endpoint. So I think we need some ground truth unless we want to have multiple collectors running. The idea is that we have only 1 collector at a time.",
+      "parentUuid": "01226159_ff7f8367",
+      "revId": "0b8b7e54b69c12ad6b91623365c796ae4e0e7194",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "cdd33c98_d2761040",
@@ -31,6 +49,24 @@
       "writtenOn": "2025-12-09T00:55:18Z",
       "side": 1,
       "message": "check this in collector_status?",
+      "revId": "0b8b7e54b69c12ad6b91623365c796ae4e0e7194",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3b0d0305_c39354ec",
+        "filename": "siso.py",
+        "patchSetId": 13
+      },
+      "lineNbr": 334,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-12-09T01:16:29Z",
+      "side": 1,
+      "message": "Great idea",
+      "parentUuid": "cdd33c98_d2761040",
       "revId": "0b8b7e54b69c12ad6b91623365c796ae4e0e7194",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
