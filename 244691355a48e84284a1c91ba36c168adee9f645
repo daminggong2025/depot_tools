@@ -1,0 +1,113 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "78375ddd_9d6d6a77",
+        "filename": "gerrit_cache.py",
+        "patchSetId": 20
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1381059
+      },
+      "writtenOn": "2025-12-09T05:34:21Z",
+      "side": 1,
+      "message": "get_repo_code_owners_enabled_key",
+      "range": {
+        "startLine": 42,
+        "startChar": 8,
+        "endLine": 42,
+        "endChar": 35
+      },
+      "revId": "244691355a48e84284a1c91ba36c168adee9f645",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "55bf0683_cb15edb7",
+        "filename": "gerrit_cache.py",
+        "patchSetId": 20
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1381059
+      },
+      "writtenOn": "2025-12-09T05:34:21Z",
+      "side": 1,
+      "message": "I think we can remove depot-tools from the key but add it to the cache file name",
+      "range": {
+        "startLine": 43,
+        "startChar": 16,
+        "endLine": 43,
+        "endChar": 28
+      },
+      "revId": "244691355a48e84284a1c91ba36c168adee9f645",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8399c169_c1747ff8",
+        "filename": "gerrit_cache.py",
+        "patchSetId": 20
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1381059
+      },
+      "writtenOn": "2025-12-09T05:34:21Z",
+      "side": 1,
+      "message": "I\u0027d prefix the file with depot_tools as well\n```suggestion\n                filename \u003d \u0027depot_tools_gerrit_cache_%s.json\u0027 % sanitized_path\n                path \u003d os.path.join(tempfile.gettempdir(), filename)\n            else:\n                fd, path \u003d tempfile.mkstemp(prefix\u003d\u0027depot_tools_gerrit_cache_\u0027,\n```",
+      "range": {
+        "startLine": 67,
+        "startChar": 0,
+        "endLine": 70,
+        "endChar": 67
+      },
+      "revId": "244691355a48e84284a1c91ba36c168adee9f645",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fb708886_7922bd67",
+        "filename": "presubmit_support.py",
+        "patchSetId": 20
+      },
+      "lineNbr": 827,
+      "author": {
+        "id": 1381059
+      },
+      "writtenOn": "2025-12-09T05:34:21Z",
+      "side": 1,
+      "message": "I think this can go the the constructor of GerritAccessor.",
+      "range": {
+        "startLine": 827,
+        "startChar": 12,
+        "endLine": 827,
+        "endChar": 79
+      },
+      "revId": "244691355a48e84284a1c91ba36c168adee9f645",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6dde3ff7_95540e9a",
+        "filename": "tests/presubmit_support_test.py",
+        "patchSetId": 20
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1381059
+      },
+      "writtenOn": "2025-12-09T05:34:21Z",
+      "side": 1,
+      "message": "should we revert the change of this file?",
+      "revId": "244691355a48e84284a1c91ba36c168adee9f645",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
