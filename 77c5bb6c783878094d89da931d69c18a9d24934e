@@ -16,6 +16,24 @@
       "message": "is this retriable error?",
       "revId": "77c5bb6c783878094d89da931d69c18a9d24934e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "20aa23e9_be96fa09",
+        "filename": "siso.py",
+        "patchSetId": 18
+      },
+      "lineNbr": 164,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-12-09T06:37:24Z",
+      "side": 1,
+      "message": "It is not, good point.",
+      "parentUuid": "862ad3b5_2b5389af",
+      "revId": "77c5bb6c783878094d89da931d69c18a9d24934e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
