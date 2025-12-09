@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c735701b_916fd035",
+        "filename": "siso.py",
+        "patchSetId": 30
+      },
+      "lineNbr": 327,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2025-12-09T00:48:30Z",
+      "side": 1,
+      "message": "better to include username?",
+      "revId": "2f1d24d8683ae1875d19a1b171bc11278ba1d69b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4322aa79_cd12dcb7",
+        "filename": "siso.py",
+        "patchSetId": 30
+      },
+      "lineNbr": 329,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2025-12-09T00:48:30Z",
+      "side": 1,
+      "message": "don\u0027t make the dir for group/world accessable?\n0o700 ?",
+      "revId": "2f1d24d8683ae1875d19a1b171bc11278ba1d69b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
