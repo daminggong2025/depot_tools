@@ -8,6 +8,7 @@ import functools
 import io as _io
 import os as _os
 import time
+import re
 
 import metadata.discover
 import metadata.validate
@@ -2073,11 +2074,25 @@ def CheckForCommitObjects(input_api, output_api):
         spaceparts = tabparts[0].split(' ', 2)
         return (spaceparts[0], spaceparts[1], spaceparts[2], tabparts[1])
 
-    full_tree = input_api.subprocess.check_output(
-        ['git', 'ls-tree', '-r', '--full-tree', '-z', 'HEAD'],
-        cwd=input_api.PresubmitLocalPath())
+    # If the number of affected files is small, we can avoid scanning the entire
+    # tree.
+    affected_files = list(input_api.AffectedFiles())
+    cmd = ['git', 'ls-tree', '-z', '--full-tree', 'HEAD']
+    if len(affected_files) < 1000:
+        # We need to pass the paths relative to the repository root.
+        repo_root = input_api.change.RepositoryRoot()
+        files_to_check = [
+            input_api.os_path.relpath(f.AbsoluteLocalPath(), repo_root)
+            for f in affected_files
+        ]
+        cmd.extend(['--'] + files_to_check)
+    else:
+        cmd.extend(['-r'])
 
-    if _GIT_MODE_SUBMODULE not in full_tree:
+    tree_data = input_api.subprocess.check_output(
+        cmd, cwd=input_api.PresubmitLocalPath())
+
+    if _GIT_MODE_SUBMODULE not in tree_data:
         return []
 
     # commit_tree_entries holds all commit entries (ie gitlink, submodule
@@ -2085,16 +2100,16 @@ def CheckForCommitObjects(input_api, output_api):
     commit_tree_entries = []
     pos = 0
     while True:
-        pos = full_tree.find(_GIT_MODE_SUBMODULE, pos)
+        pos = tree_data.find(_GIT_MODE_SUBMODULE, pos)
         if pos == -1:
             break
 
         # Check if this occurrence is at the start of an entry.
         # It must be at the start of the string or preceded by a null terminator.
-        if pos == 0 or full_tree[pos - 1] == 0:
+        if pos == 0 or tree_data[pos - 1] == 0:
             # Find the end of this entry.
-            end = full_tree.find(b'\0', pos)
-            entry = full_tree[pos:end]
+            end = tree_data.find(b'\0', pos)
+            entry = tree_data[pos:end]
 
             tree_entry = parse_tree_entry(entry.decode('utf-8'))
             if tree_entry[1] == 'commit':
@@ -2927,4 +2942,62 @@ def CheckValidHostsInDEPSOnUpload(input_api, output_api):
             output_api.PresubmitError(
                 'DEPS file must have only git dependencies.',
                 long_text=error.output)
+        ]
+
+
+def CheckAyeAye(input_api, output_api):
+    """
+    Runs AyeAye analyzers.
+    """
+
+    def strip_ansi_codes(text):
+        ansi_escape = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
+        return ansi_escape.sub('', text)
+
+    def strip_severity_prefix(text):
+        for prefix in ["ERROR:", "WARNING:", "INFO:"]:
+            if text.startswith(prefix):
+                return text[len(prefix):].strip()
+        return text
+
+    alint_path = '/google/bin/releases/alint/alint'
+    if not _os.path.exists(alint_path):
+        return []
+
+    # Determine the git repository root
+    repo_root = input_api.change.RepositoryRoot()
+    if not repo_root:
+        return [
+            output_api.PresubmitError("Could not determine repository root.")
+        ]
+
+    try:
+        process = input_api.subprocess.Popen([alint_path],
+                                             stdout=input_api.subprocess.PIPE,
+                                             stderr=input_api.subprocess.STDOUT,
+                                             cwd=repo_root)
+        stdout, _ = process.communicate()
+        output_str = stdout.decode('utf-8', 'ignore')
+
+        if not output_str.strip():
+            return []
+
+        results = []
+        for line in output_str.splitlines():
+            clean_line = strip_ansi_codes(line).strip()
+            if not clean_line:
+                continue
+            if clean_line.startswith("ERROR:"):
+                results.append(
+                    output_api.PresubmitError(
+                        strip_severity_prefix(clean_line)))
+            elif clean_line.startswith("WARNING:"):
+                results.append(
+                    output_api.PresubmitPromptWarning(
+                        strip_severity_prefix(clean_line)))
+        return results
+    except Exception as e:
+        return [
+            output_api.PresubmitError(
+                f"Unexpected error in CheckAyeAye: {type(e).__name__} - {e}")
         ]
