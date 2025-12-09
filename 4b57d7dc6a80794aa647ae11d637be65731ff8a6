@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "4756f286_a6782a84",
+        "filename": "siso.py",
+        "patchSetId": 36
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-12-09T08:20:47Z",
+      "side": 1,
+      "message": "Good point but I will send a separate cleanup CL for this.",
+      "parentUuid": "427fcc0e_998bb707",
+      "revId": "4b57d7dc6a80794aa647ae11d637be65731ff8a6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "3b5c90d0_e0e910ea",
@@ -31,6 +49,24 @@
       "writtenOn": "2025-12-09T08:16:15Z",
       "side": 1,
       "message": "ok to proceed if project is not set?",
+      "revId": "4b57d7dc6a80794aa647ae11d637be65731ff8a6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e37a1bfb_b141c5b9",
+        "filename": "siso.py",
+        "patchSetId": 36
+      },
+      "lineNbr": 346,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-12-09T08:20:47Z",
+      "side": 1,
+      "message": "Nope, we should bail.",
+      "parentUuid": "3b5c90d0_e0e910ea",
       "revId": "4b57d7dc6a80794aa647ae11d637be65731ff8a6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
