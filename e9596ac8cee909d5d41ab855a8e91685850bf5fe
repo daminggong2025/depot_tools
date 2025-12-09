@@ -94,6 +94,30 @@
       },
       "revId": "e9596ac8cee909d5d41ab855a8e91685850bf5fe",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2a8a3f4e_2f70a88f",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 2925,
+      "author": {
+        "id": 4456454
+      },
+      "writtenOn": "2025-12-09T15:22:09Z",
+      "side": 1,
+      "message": "Thanks Andrew - yeah I think we can start to add warnings if it\u0027s not running in expected scenarios (i.e. Googler on gLinux) once we\u0027re happy it\u0027s adding value",
+      "parentUuid": "4a03b30f_7b1bdf81",
+      "range": {
+        "startLine": 2923,
+        "startChar": 0,
+        "endLine": 2925,
+        "endChar": 17
+      },
+      "revId": "e9596ac8cee909d5d41ab855a8e91685850bf5fe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
