@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "cf8b6b2d_53b649ba",
+        "filename": "siso.py",
+        "patchSetId": 34
+      },
+      "lineNbr": 192,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-12-09T07:16:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9e257178_999a56cb",
+      "revId": "dcd3c2860a2907a8e389fc3bd64159627e489523",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "b52104b4_05ca5564",
@@ -31,6 +49,24 @@
       "writtenOn": "2025-12-09T07:11:09Z",
       "side": 1,
       "message": "delete socket file if exists  here?",
+      "revId": "dcd3c2860a2907a8e389fc3bd64159627e489523",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d160366c_fe26d2a0",
+        "filename": "siso.py",
+        "patchSetId": 34
+      },
+      "lineNbr": 213,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-12-09T07:16:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b52104b4_05ca5564",
       "revId": "dcd3c2860a2907a8e389fc3bd64159627e489523",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
