@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6bc1fd5a_0b22ad35",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 10
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1204579
+      },
+      "writtenOn": "2025-12-09T05:54:58Z",
+      "side": 1,
+      "message": "I\u0027m not sure how to modify the tests to get the necessary coverage. Reading the test, it seems to call:\n\nlib/depot_tools/infra/config/recipes.cfg\n\nI tried to read through \n./recipes/recipe_modules/presubmit/test_api.py, do I need to update some sort of protobuf properties so the tests can get the coverage they need?\n\nI\u0027d normally expect some type of test like this to modify? https://source.chromium.org/chromium/infra/infra_superproject/+/main:build/recipes/recipe_modules/chromium_tests/tests/steps/resultdb.py;drc\u003dc4623988e11815a8111f7cea4fbaeb3e63712f25;l\u003d80",
+      "revId": "8f23b3b6e37e86d680a80296c4383b6c5b1afddc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
