@@ -143,6 +143,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "d774c13b_16f0f789",
+        "filename": "siso.py",
+        "patchSetId": 33
+      },
+      "lineNbr": 354,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2025-12-09T07:11:09Z",
+      "side": 1,
+      "message": "I prefer unix:// prefix for unix domain socket address to make it dial address as is.",
+      "parentUuid": "2e204394_370a2d7d",
+      "revId": "86db5ad6d39213ed03520cc22e58a2a594e3694d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "b8f79975_46c96bf0",
         "filename": "siso.py",
         "patchSetId": 33
@@ -207,6 +225,24 @@
       "side": 1,
       "message": "Done",
       "parentUuid": "c4554993_fae7b750",
+      "revId": "86db5ad6d39213ed03520cc22e58a2a594e3694d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6b4a4f13_0a6a7e90",
+        "filename": "siso.py",
+        "patchSetId": 33
+      },
+      "lineNbr": 357,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2025-12-09T07:11:09Z",
+      "side": 1,
+      "message": "no need to remove then?\nlast flag is effective.",
+      "parentUuid": "b8bee1c7_41524c49",
       "revId": "86db5ad6d39213ed03520cc22e58a2a594e3694d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
