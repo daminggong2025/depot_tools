@@ -16,7 +16,7 @@ def recipes_py(*args):
     subprocess.check_call([os.path.join(ROOT_DIR, 'recipes', 'recipes.py'),
                            '--package', recipes_cfg_path] + list(args))
 
-
+    print(recipes_cfg_path)
 recipes_py('test', 'run')
 
 recipes_py('lint')
