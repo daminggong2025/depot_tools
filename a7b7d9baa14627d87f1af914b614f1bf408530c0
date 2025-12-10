@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a5191893_8d9517e2",
+        "filename": "siso.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2025-12-10T05:13:43Z",
+      "side": 1,
+      "message": "sys.platform.startswith(\"win\")\n\nused in most other places in depot_tools?",
+      "revId": "a7b7d9baa14627d87f1af914b614f1bf408530c0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
