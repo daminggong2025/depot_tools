@@ -16,6 +16,24 @@
       "message": "sys.platform.startswith(\"win\")\n\nused in most other places in depot_tools?",
       "revId": "a7b7d9baa14627d87f1af914b614f1bf408530c0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1e642a40_e9fdc065",
+        "filename": "siso.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-12-10T05:20:34Z",
+      "side": 1,
+      "message": "Actually the only option is win32: https://docs.python.org/3.11/library/sys.html#sys.platform\n\nMaybe folks were extra careful? I see no big reason to have \"startswith\" myself, and even 64 bit systems will return win32.",
+      "parentUuid": "a5191893_8d9517e2",
+      "revId": "a7b7d9baa14627d87f1af914b614f1bf408530c0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
