@@ -264,36 +264,58 @@ def test_handle_collector_args_disabled(mocker: Any) -> None:
     mock_start_collector.assert_not_called()
 
 
-@pytest.mark.skipif(sys.platform == 'win32',
-                    reason='Skipping Linux-specific test on Windows')
-def test_handle_collector_args_starts_linux(siso_test_fixture: Any,
-                                            mocker: Any) -> None:
+@pytest.mark.parametrize("platform_name, env_vars_for_socket_path_setting", [
+    pytest.param('linux', (('XDG_RUNTIME_DIR', '{tmp_path_str}/run'), ),
+                 id='linux-xdg'),
+    pytest.param('linux', tuple(), id='linux-no-xdg'),
+    pytest.param('darwin', (('TMPDIR', '{tmp_path_str}/var_tmp'), ),
+                 id='darwin-tmpdir'),
+    pytest.param('darwin', tuple(), id='darwin-no-tmpdir'),
+])
+def test_handle_collector_args_starts_platform(
+        siso_test_fixture: Any, mocker: Any, tmp_path: Path, platform_name: str,
+        env_vars_for_socket_path_setting: Tuple[Tuple[str, str], ...]) -> None:
     mock_start_collector = mocker.patch('siso._start_collector',
                                         return_value=True)
-    mocker.patch('sys.platform', new='linux')
+    mocker.patch('sys.platform', new=platform_name)
 
     siso_path = 'path/to/siso'
-    env = {'SISO_PROJECT': 'test-project', 'XDG_RUNTIME_DIR': '/tmp/run'}
+    project = 'test-project'
+    # 'testuser' is set by siso_test_fixture
+
+    env = {'SISO_PROJECT': project}
+
+    # Format env_vars_for_socket_path_setting with tmp_path and update env
+    formatted_env_vars = {}
+    for key, value_template in env_vars_for_socket_path_setting:
+        formatted_env_vars[key] = value_template.format(
+            tmp_path_str=str(tmp_path))
+    env.update(formatted_env_vars)
+
     args = ['ninja', '--enable_collector']
 
     captured_args = []
 
-    def fetch_metrics_project_side_effect(args, env):
-        captured_args.append(list(args))
-        return 'test-project'
+    def fetch_metrics_project_side_effect(args_list, env_dict):
+        captured_args.append(list(args_list))
+        return project
 
     mocker.patch('siso._fetch_metrics_project',
                  side_effect=fetch_metrics_project_side_effect)
+
     result = siso._handle_collector_args(siso_path, args, env)
 
-    sockets_file = "/tmp/run/testuser/siso/test-project.sock"
+    # Resolve the sockets folder using the configured environment
+    sockets_folder, _ = siso._resolve_sockets_folder(env)
+    sockets_file = os.path.join(sockets_folder, f"{project}.sock")
+
     assert result == [
         'ninja', '--enable_collector',
         f'--collector_address=unix://{sockets_file}'
     ]
     assert captured_args == [['ninja', '--enable_collector']]
     mock_start_collector.assert_called_once_with(siso_path, sockets_file,
-                                                 'test-project')
+                                                 project)
 
 
 def test_handle_collector_args_starts_windows(mocker: Any) -> None:
