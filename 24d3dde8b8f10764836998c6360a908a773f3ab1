@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "21373b91_d1f62129",
+        "filename": "tests/siso_test.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 685,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2025-12-10T05:17:15Z",
+      "side": 1,
+      "message": "no test for darwin?",
+      "revId": "24d3dde8b8f10764836998c6360a908a773f3ab1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
