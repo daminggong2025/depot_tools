@@ -99,3 +99,6 @@ testing_support/google_appengine
 
 # Ignore gemini-cli configs
 /.gemini/
+
+# Ignore coverage results file
+.coverage
