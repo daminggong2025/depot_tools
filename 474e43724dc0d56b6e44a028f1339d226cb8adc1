@@ -22,6 +22,30 @@
       },
       "revId": "474e43724dc0d56b6e44a028f1339d226cb8adc1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d8504bd2_02c7db03",
+        "filename": ".vpython3",
+        "patchSetId": 3
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-12-10T05:45:15Z",
+      "side": 1,
+      "message": "I will send a CL to get a new version.",
+      "parentUuid": "24cc8c42_3a534e16",
+      "range": {
+        "startLine": 109,
+        "startChar": 0,
+        "endLine": 109,
+        "endChar": 26
+      },
+      "revId": "474e43724dc0d56b6e44a028f1339d226cb8adc1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
