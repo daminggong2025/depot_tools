@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "24cc8c42_3a534e16",
+        "filename": ".vpython3",
+        "patchSetId": 3
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 1577257
+      },
+      "writtenOn": "2025-12-10T05:32:47Z",
+      "side": 1,
+      "message": "Mhm, that version is from September 2023, the latest \"coverage\" release is 7.13.0. How can we update this to the latest version?",
+      "range": {
+        "startLine": 109,
+        "startChar": 0,
+        "endLine": 109,
+        "endChar": 26
+      },
+      "revId": "474e43724dc0d56b6e44a028f1339d226cb8adc1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
