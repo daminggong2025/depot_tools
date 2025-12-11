@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "98085fa9_793105f9",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 10
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-12-11T04:14:00Z",
+      "side": 1,
+      "message": "Hmm, does presubmit support running pytest?",
+      "range": {
+        "startLine": 7,
+        "startChar": 38,
+        "endLine": 7,
+        "endChar": 44
+      },
+      "revId": "beb0fe9e9f99a9f070f1686a1ec1c0ab5c3c8e71",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
