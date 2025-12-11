@@ -16,6 +16,24 @@
       "message": "Hey, I believe this CL is causing the win-presubmit failure in our autoroller, e.g. https://ci.chromium.org/ui/p/chromium/builders/try/win-presubmit/1520395/infra due to command being too long.\n\nCan you take a look?",
       "revId": "7c09ebfd12c9470ec2ff6c02685c3a157a9290b7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "13cf6857_847d226a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 14
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 4323820
+      },
+      "writtenOn": "2025-12-11T21:01:47Z",
+      "side": 1,
+      "message": "We discussed in chat, but to recap for future readers: there\u0027s a 8191 character limit on windows. I\u0027m adding a secondary check to trigger the fallback to full tree parsing when that limit is passed.",
+      "parentUuid": "a2a3bd16_8aa86350",
+      "revId": "7c09ebfd12c9470ec2ff6c02685c3a157a9290b7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
