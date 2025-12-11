@@ -46,6 +46,30 @@
       },
       "revId": "beb0fe9e9f99a9f070f1686a1ec1c0ab5c3c8e71",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fc92e7bd_c34debf2",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 10
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-12-11T04:18:34Z",
+      "side": 1,
+      "message": "Documentation: https://docs.pytest.org/en/stable/how-to/usage.html#calling-pytest-from-python-code",
+      "parentUuid": "4e726643_a5bcab78",
+      "range": {
+        "startLine": 7,
+        "startChar": 38,
+        "endLine": 7,
+        "endChar": 44
+      },
+      "revId": "beb0fe9e9f99a9f070f1686a1ec1c0ab5c3c8e71",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
