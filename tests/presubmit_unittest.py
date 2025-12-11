@@ -625,7 +625,7 @@ class PresubmitUnittest(PresubmitTestsBase):
                                            gerrit_obj=None,
                                            verbose=False))
         expected = (r'Running post upload checks \.\.\.\n')
-        self.assertRegexpMatches(sys.stdout.getvalue(), expected)
+        self.assertRegex(sys.stdout.getvalue(), expected)
 
     def testDoPostUploadExecuterWarning(self):
         path = os.path.join(self.fake_root_dir, 'PRESUBMIT.py')
@@ -662,7 +662,7 @@ class PresubmitUnittest(PresubmitTestsBase):
                     '\*\* Post Upload Hook Messages \*\*\n'
                     '!!\n'
                     '\n')
-        self.assertRegexpMatches(sys.stdout.getvalue(), expected)
+        self.assertRegex(sys.stdout.getvalue(), expected)
 
     def testDoPresubmitChecksNoWarningsOrErrors(self):
         haspresubmit_path = os.path.join(self.fake_root_dir, 'haspresubmit',
@@ -3300,7 +3300,7 @@ the current line as well!
         for result in results:
             result.handle()
         if expected_output:
-            self.assertRegexpMatches(sys.stdout.getvalue(), expected_output)
+            self.assertRegex(sys.stdout.getvalue(), expected_output)
         else:
             self.assertEqual(sys.stdout.getvalue(), expected_output)
         sys.stdout.truncate(0)
