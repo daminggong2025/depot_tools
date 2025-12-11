@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e33d98f3_f4b60268",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1338159
+      },
+      "writtenOn": "2025-12-11T21:16:04Z",
+      "side": 1,
+      "message": "LGTM with one comment. Thanks for the quick fix!",
+      "revId": "d2836ec4021124336a654239b9d608d8a21c684a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "19635b38_1882835a",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 2093,
+      "author": {
+        "id": 1338159
+      },
+      "writtenOn": "2025-12-11T21:16:04Z",
+      "side": 1,
+      "message": "I think it is more common to use `input_api.is_windows`?",
+      "range": {
+        "startLine": 2093,
+        "startChar": 12,
+        "endLine": 2093,
+        "endChar": 41
+      },
+      "revId": "d2836ec4021124336a654239b9d608d8a21c684a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
