@@ -75,6 +75,10 @@ _CORP_LINK_KEYWORD = '.corp.google'
 # See https://git-scm.com/docs/git-ls-tree#_output_format
 _GIT_MODE_SUBMODULE = b'160000'
 
+# Windows command line character limit. See
+# https://learn.microsoft.com/en-us/troubleshoot/windows-client/shell-experience/command-line-string-limitation
+_WIN_COMMAND_LINE_CHAR_LIMIT = 8191
+
 
 ### Description checks
 
@@ -2085,7 +2089,13 @@ def CheckForCommitObjects(input_api, output_api):
             input_api.os_path.relpath(f.AbsoluteLocalPath(), repo_root)
             for f in affected_files
         ]
-        cmd.extend(['--'] + files_to_check)
+        # On Windows, the command line is limited to 8191 characters.
+        if (input_api.platform == 'win32' and
+                len(' '.join(cmd + ['--'] + files_to_check)) >
+                _WIN_COMMAND_LINE_CHAR_LIMIT):
+            cmd.extend(['-r'])
+        else:
+            cmd.extend(['--'] + files_to_check)
     else:
         cmd.extend(['-r'])
 
