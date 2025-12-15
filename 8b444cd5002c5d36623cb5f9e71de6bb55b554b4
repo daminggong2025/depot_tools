@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "156822f3_6ff91f4a",
+        "filename": "build_telemetry.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-12-15T06:39:06Z",
+      "side": 1,
+      "message": "How about keeping the name and it as a function while changing the early return when already loaded?",
+      "range": {
+        "startLine": 32,
+        "startChar": 0,
+        "endLine": 33,
+        "endChar": 29
+      },
+      "revId": "8b444cd5002c5d36623cb5f9e71de6bb55b554b4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0e6dd9e7_225958b8",
+        "filename": "build_telemetry.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-12-15T06:39:06Z",
+      "side": 1,
+      "message": "Why is this extra check necessary?",
+      "range": {
+        "startLine": 35,
+        "startChar": 24,
+        "endLine": 35,
+        "endChar": 35
+      },
+      "revId": "8b444cd5002c5d36623cb5f9e71de6bb55b554b4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f9569130_a1e921ca",
+        "filename": "build_telemetry.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-12-15T06:39:06Z",
+      "side": 1,
+      "message": "Hmm, this looks unintuitive about what it does.",
+      "range": {
+        "startLine": 142,
+        "startChar": 0,
+        "endLine": 142,
+        "endChar": 14
+      },
+      "revId": "8b444cd5002c5d36623cb5f9e71de6bb55b554b4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
