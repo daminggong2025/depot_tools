@@ -454,6 +454,8 @@ def main(args, telemetry_cfg: Optional[build_telemetry.Config] = None):
     _fix_system_limits()
 
     def _ignore(signum, frame):
+        if not callable(original_sigint_handler):
+            return
         try:
             # Call the original signal handler.
             original_sigint_handler(signum, frame)
