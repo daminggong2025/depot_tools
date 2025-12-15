@@ -447,6 +447,7 @@ def main(args, telemetry_cfg: Optional[build_telemetry.Config] = None):
     # cleanup tasks. Siso will be terminated immediately after the second
     # Ctrl-C.
     original_sigint_handler = signal.getsignal(signal.SIGINT)
+    assert callable(original_sigint_handler)
     if not telemetry_cfg:
         telemetry_cfg = build_telemetry.load_config()
     should_collect_logs = telemetry_cfg.enabled()
