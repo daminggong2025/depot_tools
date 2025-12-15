@@ -34,7 +34,6 @@ import gclient_paths
 import gclient_utils
 import gn_helper
 import ninja
-import ninjalog_uploader
 import reclient_helper
 import siso
 
@@ -71,6 +70,7 @@ autoninja:
 def _import_from_path(module_name, file_path):
     try:
         spec = importlib.util.spec_from_file_location(module_name, file_path)
+        assert spec and spec.loader
         module = importlib.util.module_from_spec(spec)
         sys.modules[module_name] = module
         spec.loader.exec_module(module)
@@ -262,7 +262,7 @@ def _check_reclient_cfgs(output_dir):
             rewrapper_cfg_lines = f.readlines()
     if cr_build_revision and rewrapper_cfg_lines:
         rewrapper_cfg_revision = rewrapper_cfg_lines[0].strip().lstrip("# ")
-        if not "llvmorg" in rewrapper_cfg_revision:
+        if "llvmorg" not in rewrapper_cfg_revision:
             # linux.cfg may set revision in 2nd line.
             rewrapper_cfg_revision = rewrapper_cfg_lines[1].strip().lstrip("# ")
         if rewrapper_cfg_revision != cr_build_revision:
@@ -397,8 +397,8 @@ def _main_inner(input_args,
 
     # Use the server for target_os="android" (where it is relevant), unless it
     # is disabled via GN arg.
-    if use_android_build_server is None and is_android:
-        use_android_build_server = True
+    if use_android_build_server is None:
+        use_android_build_server = is_android
 
     if use_remoteexec:
         if use_reclient:
@@ -478,6 +478,7 @@ def _main_inner(input_args,
     # Check whether the limit can be raised to a large enough value. If yes,
     # use `ulimit -n .... &&` as a prefix to increase the limit when running
     # ninja.
+    fileno_limit, hard_limit = None, None
     if sys.platform in ["darwin", "linux"]:
         import resource
         # Increase the number of allowed open file descriptors to the maximum.
@@ -581,6 +582,7 @@ def _main_inner(input_args,
             # Use a j value that reliably works with the open file descriptors
             # limit.
             if sys.platform in ["darwin", "linux"]:
+                assert fileno_limit is not None
                 j_value = min(j_value, int(fileno_limit * 0.8))
 
             ninja_args.append("%d" % j_value)
@@ -604,7 +606,7 @@ def _main_inner(input_args,
 
     with android_build_server_helper.build_server_context(
             build_id, output_dir,
-            use_android_build_server=use_android_build_server):
+            use_android_build_server):
         if use_reclient and not t_specified:
             return reclient_helper.run_ninja(ninja_args)
         return ninja.main(ninja_args)
