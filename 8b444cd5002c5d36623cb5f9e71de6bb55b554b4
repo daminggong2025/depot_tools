@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "5465e59c_059c74fc",
+        "filename": "build_telemetry.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-12-15T06:44:18Z",
+      "side": 1,
+      "message": "I tried it before but it looked like bunch of `self.load()` which was hard to read unless you know what load actually means. Which is how I ended up with this design.",
+      "parentUuid": "156822f3_6ff91f4a",
+      "range": {
+        "startLine": 32,
+        "startChar": 0,
+        "endLine": 33,
+        "endChar": 29
+      },
+      "revId": "8b444cd5002c5d36623cb5f9e71de6bb55b554b4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "0e6dd9e7_225958b8",
@@ -47,6 +71,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "7ec5114d_111a2640",
+        "filename": "build_telemetry.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-12-15T06:44:18Z",
+      "side": 1,
+      "message": "It might be {} which will return False in implicit check. So to avoid that and be explicit that it\u0027s \"set once\" not \"keep setting until we get something of value\"",
+      "parentUuid": "0e6dd9e7_225958b8",
+      "range": {
+        "startLine": 35,
+        "startChar": 24,
+        "endLine": 35,
+        "endChar": 35
+      },
+      "revId": "8b444cd5002c5d36623cb5f9e71de6bb55b554b4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "f9569130_a1e921ca",
@@ -60,6 +108,30 @@
       "writtenOn": "2025-12-15T06:39:06Z",
       "side": 1,
       "message": "Hmm, this looks unintuitive about what it does.",
+      "range": {
+        "startLine": 142,
+        "startChar": 0,
+        "endLine": 142,
+        "endChar": 14
+      },
+      "revId": "8b444cd5002c5d36623cb5f9e71de6bb55b554b4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1bc63625_2f755301",
+        "filename": "build_telemetry.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-12-15T06:44:18Z",
+      "side": 1,
+      "message": "Yeah, agreed.. Added a function for readability, how about that?",
+      "parentUuid": "f9569130_a1e921ca",
       "range": {
         "startLine": 142,
         "startChar": 0,
