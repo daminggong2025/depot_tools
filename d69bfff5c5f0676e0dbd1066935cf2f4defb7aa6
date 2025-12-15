@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "eebb26cb_6341e77a",
+        "filename": "autoninja.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 405,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-12-15T08:12:16Z",
+      "side": 1,
+      "message": "nit:\n\n```\nuse_android_build_server \u003d is_android is True\n```",
+      "range": {
+        "startLine": 402,
+        "startChar": 0,
+        "endLine": 405,
+        "endChar": 44
+      },
+      "revId": "d69bfff5c5f0676e0dbd1066935cf2f4defb7aa6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6977f577_0df6eb8d",
+        "filename": "autoninja.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 489,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-12-15T08:12:16Z",
+      "side": 1,
+      "message": "Can this value be None?",
+      "range": {
+        "startLine": 489,
+        "startChar": 8,
+        "endLine": 489,
+        "endChar": 20
+      },
+      "revId": "d69bfff5c5f0676e0dbd1066935cf2f4defb7aa6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
