@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "79926e34_fd4a956a",
+        "filename": "build_telemetry.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-12-15T06:59:28Z",
+      "side": 1,
+      "message": "Rather than having two methods for the same logic, is it better to always use this function?\n\ne.g.\n\n```\n    @property\n    def user(self):\n        return self.load_config().get(\"user\", \"\")\n```\n\nI would also call it load() as the class name is already \"Config\".",
+      "range": {
+        "startLine": 32,
+        "startChar": 0,
+        "endLine": 32,
+        "endChar": 26
+      },
+      "revId": "676baa7fc0d84303818924e53437a6f14df85e18",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

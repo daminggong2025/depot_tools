@@ -97,6 +97,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "dd39ba21_ca0bef31",
+        "filename": "build_telemetry.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-12-15T06:59:28Z",
+      "side": 1,
+      "message": "Hmm, looking at the code, it can\u0027t be {}, though. There is code like this:\n\n```\n        if not config:\n            config \u003d {\n                \"user\": check_auth().get(\"email\", \"\"),\n                \"status\": None,\n                \"countdown\": self._countdown,\n                \"version\": VERSION,\n            }\n        ...\n        self._config \u003d config\n```",
+      "parentUuid": "7ec5114d_111a2640",
+      "range": {
+        "startLine": 35,
+        "startChar": 24,
+        "endLine": 35,
+        "endChar": 35
+      },
+      "revId": "8b444cd5002c5d36623cb5f9e71de6bb55b554b4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "f9569130_a1e921ca",
         "filename": "build_telemetry.py",
         "patchSetId": 3
