@@ -22,6 +22,30 @@
       },
       "revId": "90c13152c8b18df563aaa8dbc7b6056dc5701d5e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ef5bd86c_0105e206",
+        "filename": "siso.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 459,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-12-15T06:38:44Z",
+      "side": 1,
+      "message": "No, this is bad. I stand by my original CL, patching linter is not a solution.",
+      "parentUuid": "0c6f66f4_9a8e0fbd",
+      "range": {
+        "startLine": 459,
+        "startChar": 53,
+        "endLine": 459,
+        "endChar": 65
+      },
+      "revId": "90c13152c8b18df563aaa8dbc7b6056dc5701d5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
