@@ -16,6 +16,29 @@
       "message": "This change is ready for review.",
       "revId": "3c824d9917577c47d1abbbd56677005629beaa18",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5c9d185e_3ed8ac77",
+        "filename": "cipd.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 3270325
+      },
+      "writtenOn": "2025-12-15T15:56:24Z",
+      "side": 1,
+      "message": "is there a reason to build this command in a variable like this? it seems less readable to me than simply executing it directly. I know this cl removes `-File`, but I can\u0027t figure out what it\u0027s doing to solve the original problem that `-File` solved\n\nor maybe this format _is_ what solves the problem? if so, let\u0027s add a comment to explain why it\u0027s done this way so it doesn\u0027t get reversed in the future.",
+      "range": {
+        "startLine": 80,
+        "startChar": 0,
+        "endLine": 80,
+        "endChar": 3
+      },
+      "revId": "3c824d9917577c47d1abbbd56677005629beaa18",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
