@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "afa9abbf_e8bcae53",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1001629
+      },
+      "writtenOn": "2025-12-15T20:13:51Z",
+      "side": 1,
+      "message": "tikuta: could you give a second committer\u0027s +1? 😊",
+      "revId": "f0bb7eb98a755f31a77fa0ffe1f4e0714423425e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
