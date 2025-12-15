@@ -142,6 +142,30 @@
       },
       "revId": "90c13152c8b18df563aaa8dbc7b6056dc5701d5e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "aa650977_881d92f5",
+        "filename": "siso.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 459,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-12-15T07:38:51Z",
+      "side": 1,
+      "message": "I\u0027ve made the assert statement that in one line essentially does the same thing now.",
+      "parentUuid": "6c3b38a9_a93bb729",
+      "range": {
+        "startLine": 459,
+        "startChar": 53,
+        "endLine": 459,
+        "endChar": 65
+      },
+      "revId": "90c13152c8b18df563aaa8dbc7b6056dc5701d5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
