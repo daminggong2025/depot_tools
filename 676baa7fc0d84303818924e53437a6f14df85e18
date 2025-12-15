@@ -22,6 +22,30 @@
       },
       "revId": "676baa7fc0d84303818924e53437a6f14df85e18",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9ccec193_1c8a5227",
+        "filename": "build_telemetry.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-12-15T07:03:17Z",
+      "side": 1,
+      "message": "Yeah, good point, called it load_config() though, I did not even notice the class name myself until you said it so at least for me it\u0027s more readable.",
+      "parentUuid": "79926e34_fd4a956a",
+      "range": {
+        "startLine": 32,
+        "startChar": 0,
+        "endLine": 32,
+        "endChar": 26
+      },
+      "revId": "676baa7fc0d84303818924e53437a6f14df85e18",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
