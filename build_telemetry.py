@@ -25,15 +25,8 @@ class Config:
 
     def __init__(self, config_path, countdown):
         self._config_path = config_path
-        self._config = None
         self._notice_displayed = False
         self._countdown = countdown
-
-    def load(self):
-        """Loads the build telemetry config."""
-        if self._config:
-            return
-
         config = {}
         if os.path.isfile(self._config_path):
             with open(self._config_path) as f:
@@ -53,8 +46,6 @@ class Config:
             }
         if not config.get("user"):
             config["user"] = check_auth().get("email", "")
-
-
         self._config = config
 
     def save(self):
@@ -71,54 +62,44 @@ class Config:
 
     @property
     def is_googler(self):
-        return self.user.endswith("@google.com")
+        return self.user and self.user.endswith("@google.com")
 
     @property
     def user(self):
-        if not self._config:
-            return
         return self._config.get("user", "")
-
 
     @property
     def countdown(self):
-        if not self._config:
-            return
         return self._config.get("countdown")
 
     @property
     def version(self):
-        if not self._config:
-            return
         return self._config.get("version")
 
     def enabled(self):
-        if not self._config:
-            print("WARNING: depot_tools.build_telemetry: %s is not loaded." %
-                  self._config_path,
-                  file=sys.stderr)
-            return False
+        config = self._config
         if not self.is_googler or not self.is_corp_machine:
             return False
-        if self._config.get("status") == "opt-out":
+        if config.get("status") == "opt-out":
             return False
 
         if self._should_show_notice():
-            remaining = max(0, self._config["countdown"] - 1)
+            remaining = max(0, config["countdown"] - 1)
             self._show_notice(remaining)
             self._notice_displayed = True
-            self._config["countdown"] = remaining
+            config["countdown"] = remaining
             self.save()
 
         # Telemetry collection will happen.
         return True
 
     def _should_show_notice(self):
+        config = self._config
         if self._notice_displayed:
             return False
-        if self._config.get("countdown") == 0:
+        if config.get("countdown") == 0:
             return False
-        if self._config.get("status") == "opt-in":
+        if config.get("status") == "opt-in":
             return False
         return True
 
@@ -148,7 +129,6 @@ class Config:
 def load_config(cfg_path=_DEFAULT_CONFIG_PATH, countdown=_DEFAULT_COUNTDOWN):
     """Loads the config from the default location."""
     cfg = Config(cfg_path, countdown)
-    cfg.load()
     return cfg
 
 
@@ -162,7 +142,7 @@ def check_auth():
             stderr=subprocess.DEVNULL,
             timeout=3,
         )
-    except Exception as e:
+    except Exception:
         return {}
     try:
         return json.loads(out)
