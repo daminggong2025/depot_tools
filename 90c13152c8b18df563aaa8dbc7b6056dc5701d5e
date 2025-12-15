@@ -118,6 +118,30 @@
       },
       "revId": "90c13152c8b18df563aaa8dbc7b6056dc5701d5e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6c3b38a9_a93bb729",
+        "filename": "siso.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 459,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-12-15T07:34:05Z",
+      "side": 1,
+      "message": "\u003e Linter is complaining that signal.getsignal can return both function and an integer\n\nI was able to reproduce error with Pylant from VSCode\u0027s Python extension. \nIf the purpose is to give a hint to the linter, you could write a helper function like:\n\n```\ndef get_sigint_handler() -\u003e Callable:\n    return signal.getsignal(signal.SIGINT) # type: ignore[reportReturnType]\n```\n\nHowever, I\u0027m not a big fun of fighting with  the type lint errors in Python, which isn\u0027t designed as a statically typed language. At least, I don\u0027t have experiences with dealing with them nicely.",
+      "parentUuid": "6a8599c6_056f66c2",
+      "range": {
+        "startLine": 459,
+        "startChar": 53,
+        "endLine": 459,
+        "endChar": 65
+      },
+      "revId": "90c13152c8b18df563aaa8dbc7b6056dc5701d5e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
