@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "24eb61af_6c1add24",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-12-15T07:13:18Z",
+      "side": 1,
+      "message": "Actually I\u0027ve noticed that load is always called the moment we make the class. Can\u0027t we just put all this stuff in __init__ then?",
+      "revId": "f3d543975bf977ec5c6942b55db246967b4208f9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
