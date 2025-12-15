@@ -94,6 +94,30 @@
       },
       "revId": "feb01bfa2bf41be5f19558ace0cf25d4e56ac7bd",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "64c657c9_0f467c56",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-12-15T06:28:01Z",
+      "side": 1,
+      "message": "Can you disable the linter, in that case?",
+      "parentUuid": "eb6a63a1_0801bf1d",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 9,
+        "endChar": 56
+      },
+      "revId": "feb01bfa2bf41be5f19558ace0cf25d4e56ac7bd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
