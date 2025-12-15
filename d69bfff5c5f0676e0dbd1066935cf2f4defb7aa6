@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "6c8b1020_c2f001c5",
+        "filename": "autoninja.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 405,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-12-15T08:21:56Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "eebb26cb_6341e77a",
+      "range": {
+        "startLine": 402,
+        "startChar": 0,
+        "endLine": 405,
+        "endChar": 44
+      },
+      "revId": "d69bfff5c5f0676e0dbd1066935cf2f4defb7aa6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "6977f577_0df6eb8d",
@@ -37,6 +61,30 @@
       "writtenOn": "2025-12-15T08:12:16Z",
       "side": 1,
       "message": "Can this value be None?",
+      "range": {
+        "startLine": 489,
+        "startChar": 8,
+        "endLine": 489,
+        "endChar": 20
+      },
+      "revId": "d69bfff5c5f0676e0dbd1066935cf2f4defb7aa6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "de64f494_a40b20e7",
+        "filename": "autoninja.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 489,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2025-12-15T08:21:56Z",
+      "side": 1,
+      "message": "I hope not, but if it will be, `int(fileno_limit * 0.8)` will crash either way, so this will just make sure that linter is also on the same page. unbound values however will cause another issue and will also crash the program. Think of it more of go\u0027s `var` preassignment.",
+      "parentUuid": "6977f577_0df6eb8d",
       "range": {
         "startLine": 489,
         "startChar": 8,
