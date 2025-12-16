@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "dc817487_1afb74d2",
+        "filename": "tests/siso_test.py",
+        "patchSetId": 14
+      },
+      "lineNbr": 211,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-12-16T04:41:01Z",
+      "side": 1,
+      "message": "Using hardcoded `/` in `want_path_template` and then doing `replace(os.sep, \u0027/\u0027)` later adds a bit of complexity. \n\nPerhaps you could stick to `os.path.join` for constructing the expected paths, which would make the test logic simpler and avoid platform-specific path separator issues, similar to how the original test was implemented.",
+      "range": {
+        "startLine": 211,
+        "startChar": 0,
+        "endLine": 211,
+        "endChar": 0
+      },
+      "revId": "c019704f35e5cb0b621ba7ffb543b77c7105b90b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "90a1d4ad_b4946079",
+        "filename": "tests/siso_test.py",
+        "patchSetId": 14
+      },
+      "lineNbr": 549,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-12-16T04:41:01Z",
+      "side": 1,
+      "message": "It seems some test cases from the original `test_process_args` were not migrated. The following seem to be missing:\n\n* `with_sisorc_global_flags_only`\n* `with_sisorc_subcmd_flags_only`\n* `with_sisorc_global_and_subcmd_flags_and_telemetry`\n* `with_sisorc_non_ninja_subcmd`",
+      "range": {
+        "startLine": 549,
+        "startChar": 0,
+        "endLine": 549,
+        "endChar": 0
+      },
+      "revId": "c019704f35e5cb0b621ba7ffb543b77c7105b90b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6bfcf183_be7389de",
+        "filename": "tests/siso_test.py",
+        "patchSetId": 14
+      },
+      "lineNbr": 639,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-12-16T04:41:01Z",
+      "side": 1,
+      "message": "Several test cases from the original `test_kill_collector_windows` seem to be missing here. The missing cases appear to be:\n\n* `multiple_pids_found`\n* `netstat_fails`\n* `taskkill_fails`",
+      "range": {
+        "startLine": 639,
+        "startChar": 0,
+        "endLine": 639,
+        "endChar": 0
+      },
+      "revId": "c019704f35e5cb0b621ba7ffb543b77c7105b90b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
