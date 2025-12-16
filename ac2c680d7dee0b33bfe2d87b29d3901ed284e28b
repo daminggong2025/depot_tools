@@ -16,6 +16,29 @@
       "message": "Patchset 2 works without the variable `EXECUTE_CIPD_IMPL` that was introduced in patchset 1.\n\n`-Command` [documentation](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_powershell_exe?view\u003dpowershell-5.1) states:\n\n\u003e In cmd.exe, there is no such thing as a script block (or ScriptBlock type), so the value passed to Command is always a string. \n\n\u003e If the value of Command is a string, Command must be the last parameter for pwsh, because all arguments following it are interpreted as part of the command to execute.",
       "revId": "ac2c680d7dee0b33bfe2d87b29d3901ed284e28b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4a335761_174a3ae6",
+        "filename": "cipd.bat",
+        "patchSetId": 2
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2025-12-16T18:55:06Z",
+      "side": 1,
+      "message": "windodws paths can contain single quotes, let\u0027s use escaped double quotes instead like\n```\n    -Command \"\u0026 \\\"%CIPD_IMPL%\\\"\" ^\n```\n\nfor all these",
+      "range": {
+        "startLine": 81,
+        "startChar": 4,
+        "endLine": 85,
+        "endChar": 37
+      },
+      "revId": "ac2c680d7dee0b33bfe2d87b29d3901ed284e28b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
