@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f02c7c4e_c8cf1d5a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3677251
+      },
+      "writtenOn": "2025-12-16T05:52:24Z",
+      "side": 1,
+      "message": "Patchset 2 works without the variable `EXECUTE_CIPD_IMPL` that was introduced in patchset 1.\n\n`-Command` [documentation](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_powershell_exe?view\u003dpowershell-5.1) states:\n\n\u003e In cmd.exe, there is no such thing as a script block (or ScriptBlock type), so the value passed to Command is always a string. \n\n\u003e If the value of Command is a string, Command must be the last parameter for pwsh, because all arguments following it are interpreted as part of the command to execute.",
+      "revId": "ac2c680d7dee0b33bfe2d87b29d3901ed284e28b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
