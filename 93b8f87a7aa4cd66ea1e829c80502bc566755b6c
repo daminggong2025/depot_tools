@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1d6e8fb4_4d5e632c",
+        "filename": "tests/siso_test.py",
+        "patchSetId": 18
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2025-12-16T07:59:50Z",
+      "side": 1,
+      "message": "I think using `os.path.join()` is much more popular than `from os.path import join`.\n\n\"os.path.join()\"\nhttps://source.chromium.org/search?q\u003dos.path.join%20-file:%5Eout%20-file:%5Egen\n\n\"from os.path import join\"\nhttps://source.chromium.org/search?q\u003d%22from%20os.path%20import%20join%22%20-file:%5Eout%20-file:%5Egen\u0026sq\u003d",
+      "range": {
+        "startLine": 13,
+        "startChar": 0,
+        "endLine": 13,
+        "endChar": 24
+      },
+      "revId": "93b8f87a7aa4cd66ea1e829c80502bc566755b6c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
