@@ -39,6 +39,30 @@
       },
       "revId": "3c824d9917577c47d1abbbd56677005629beaa18",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8db10fe6_11afa836",
+        "filename": "cipd.bat",
+        "patchSetId": 1
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 3677251
+      },
+      "writtenOn": "2025-12-16T05:19:46Z",
+      "side": 1,
+      "message": "The previous approach of building the command in a variable was less readable and has been corrected.\n\nThis CL uses `-Command` instead of `-File` which will not trigger dot-sourcing.\n\nThe `-Command` accepts a command string enclosed in double quotes. To solve whitespace problem, we need use single quotes to enclose the variables.",
+      "parentUuid": "5c9d185e_3ed8ac77",
+      "range": {
+        "startLine": 80,
+        "startChar": 0,
+        "endLine": 80,
+        "endChar": 3
+      },
+      "revId": "3c824d9917577c47d1abbbd56677005629beaa18",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
