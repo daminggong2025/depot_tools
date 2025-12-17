@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6bbf7cf7_2d5ee0f1",
+        "filename": "gerrit_util.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 1021,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2025-12-17T19:05:49Z",
+      "side": 1,
+      "message": "`credential` here and below",
+      "range": {
+        "startLine": 1021,
+        "startChar": 42,
+        "endLine": 1021,
+        "endChar": 53
+      },
+      "revId": "476550a52a55e090f792e285b8d3681956adf77c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c8a9676a_44b3c00e",
+        "filename": "gerrit_util.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 1032,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2025-12-17T19:05:49Z",
+      "side": 1,
+      "message": "should we wrap this in a try/except for CalledProcessError if git exits with a non-zero exit code?",
+      "range": {
+        "startLine": 1032,
+        "startChar": 17,
+        "endLine": 1032,
+        "endChar": 40
+      },
+      "revId": "476550a52a55e090f792e285b8d3681956adf77c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
