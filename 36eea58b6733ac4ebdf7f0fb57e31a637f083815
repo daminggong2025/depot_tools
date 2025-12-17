@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5eb7c78b_9171c5b0",
+        "filename": "tests/gerrit_util_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 343,
+      "author": {
+        "id": 3355336
+      },
+      "writtenOn": "2025-12-17T01:46:23Z",
+      "side": 0,
+      "message": "Test was originally shadowed by below and thus broken, might as well fix while I\u0027m here.",
+      "revId": "36eea58b6733ac4ebdf7f0fb57e31a637f083815",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
