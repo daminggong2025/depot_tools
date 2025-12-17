@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "01f08044_dfddebb0",
+        "filename": "gerrit_util.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 1114,
+      "author": {
+        "id": 3355336
+      },
+      "writtenOn": "2025-12-17T22:19:06Z",
+      "side": 1,
+      "message": "driveby fix usage of LOGGER",
+      "revId": "0c6e9177c9f68b18c569b9083eda9cc76373f436",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
