@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "eab0e49f_54760899",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2025-12-17T19:18:53Z",
+      "side": 1,
+      "message": "have no permission to vote; +gavinmak@ for a stamp.",
+      "revId": "ace585f8561604c64b9f73ce6b09993b4df20ae5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
