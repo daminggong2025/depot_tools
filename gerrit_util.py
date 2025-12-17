@@ -1014,10 +1014,24 @@ class GitCredsAuthenticator(_Authenticator):
                 self._authenticator.get_access_token()
             else:
                 self._authenticator.get_authorization_header(reauth_context)
+                # Also check that the user's Git config has useHttpPath set.
+                if not self._is_usehttppath_set(f'https://{git_host}'):
+                    return (
+                        False,
+                        'You have not set credentials.useHttpPath in your Git config.'
+                        ' You can set this by running:\n'
+                        '  git config credentials.useHttpPath true')
             return (True, '')
         except (auth.GitLoginRequiredError, auth.GitReAuthRequiredError,
                 auth.GitUnknownError) as e:
             return (False, str(e))
+
+    @staticmethod
+    def _is_usehttppath_set(url: str) -> bool:
+        # scm.GIT doesn't support --get-urlmatch
+        output = subprocess.check_output(
+            ['git', 'config', '--get-urlmatch', 'credential.usehttppath', url])
+        return output.decode().rstrip() in ['true', 'yes', 'on']
 
 
 
