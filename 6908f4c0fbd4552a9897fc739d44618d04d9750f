@@ -34,6 +34,40 @@
       "parentUuid": "344fa5be_43123eec",
       "revId": "6908f4c0fbd4552a9897fc739d44618d04d9750f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "922814cb_e691a4f1",
+        "filename": "jj/README.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1303432
+      },
+      "writtenOn": "2025-12-18T00:38:17Z",
+      "side": 1,
+      "message": "OK. After much time we have finally reached a decision with kerz@ staff that we can move forward with moving JJ support to depot_tools with the caveat that we have to be EXCEEDINGLY CLEAR on that it is NOT OFFICIALLY SUPPORTED and EXPERIMENTAL.\n\nSo I think we need to add some very clear language to this README that we\u0027re all aligned on for that and then we can move over the rest of things.\n\nI would suggest something like this immediately after the title section and before \"Getting started\":\n\n\n\n\n\nUnsupported status of jj\n\njj is not officially supported for working with Chromium or any other projects that leverage depot_tools. The support that exists within depot_tools is community contributed and works on a best-effort and as-is basis. If something doesn\u0027t work in jj you\u0027re welcome to contribute a fix, or use git as the supported version control CLI.\n\nThere is no SLO for triage or fixing of bugs and no dedicated staffing responsible for jj.",
+      "revId": "6908f4c0fbd4552a9897fc739d44618d04d9750f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e808c22a_029dff16",
+        "filename": "jj/README.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1303432
+      },
+      "writtenOn": "2025-12-18T00:38:17Z",
+      "side": 1,
+      "message": "Maybe for a subsequent CL but should you have guidance for people who want to contribute or report issues?",
+      "revId": "6908f4c0fbd4552a9897fc739d44618d04d9750f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
