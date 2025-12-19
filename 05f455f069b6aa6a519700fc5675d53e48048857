@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2de254eb_8884a3cf",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2025-12-19T18:24:04Z",
+      "side": 1,
+      "message": "pinned to CL - will pin to main commit when it lands",
+      "revId": "05f455f069b6aa6a519700fc5675d53e48048857",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
