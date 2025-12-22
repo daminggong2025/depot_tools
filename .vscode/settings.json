@@ -7,5 +7,7 @@
         "-p",
         "*_test.py"
     ],
-    "python.defaultInterpreterPath": "vpython3"
+    "python.defaultInterpreterPath": "vpython3",
+    "python-envs.defaultEnvManager": "ms-python.python:system",
+    "python-envs.pythonProjects": []
 }
