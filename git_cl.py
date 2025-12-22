@@ -7024,12 +7024,9 @@ def _RunRustFmt(opts, paths, top_dir, diffs):
     except rustfmt.NotFoundError as e:
         DieWithError(e)
 
-    chromium_src_path = gclient_paths.GetPrimarySolutionPath()
-    rustfmt_toml_path = os.path.join(chromium_src_path, '.rustfmt.toml')
-
     # TODO(crbug.com/1440869): Support formatting only the changed lines
     # if `opts.full or settings.GetFormatFullByDefault()` is False.
-    cmd = [rustfmt_tool, f'--config-path={rustfmt_toml_path}']
+    cmd = [rustfmt_tool, *rustfmt.GetRustfmtArgs()]
     if opts.dry_run:
         cmd.append('--check')
 

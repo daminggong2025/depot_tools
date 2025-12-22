@@ -38,6 +38,23 @@ def FindRustfmtToolInChromiumTree():
     return tool_path
 
 
+def FindRustfmtTool() -> str | None:
+    """Return a path to the rustfmt executable if it exists."""
+    try:
+        return FindRustfmtToolInChromiumTree()
+    except NotFoundError as e:
+        return gclient_paths.FindInPath('rustfmt')
+
+
+def GetRustfmtArgs():
+    chromium_src_path = gclient_paths.GetPrimarySolutionPath()
+    if chromium_src_path is None:
+        return []
+    rustfmt_toml_path = os.path.join(chromium_src_path, '.rustfmt.toml')
+    if not os.path.exists(rustfmt_toml_path):
+        return []
+    return [f'--config-path={rustfmt_toml_path}']
+
 def IsRustfmtSupported():
     try:
         FindRustfmtToolInChromiumTree()
