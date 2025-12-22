@@ -32,30 +32,7 @@ def PruneVirtualEnv():
         if not os.path.isfile(os.path.join(p, 'activate_this.py'))
     ])
 
-
-def findGnInPath():
-    env_path = os.getenv('PATH')
-    if not env_path:
-        return
-    for bin_dir in env_path.split(os.pathsep):
-        if bin_dir.rstrip(os.sep).endswith('depot_tools'):
-            # skip depot_tools to avoid calling gn.py infinitely.
-            continue
-        gn_path = os.path.join(bin_dir, 'gn' + gclient_paths.GetExeSuffix())
-        if os.path.isfile(gn_path):
-            return gn_path
-
-
-def main(args):
-    # Prune all evidence of VPython/VirtualEnv out of the environment. This
-    # means that we 'unwrap' vpython VirtualEnv path/env manipulation.
-    # Invocations of `python` from GN should never inherit the gn.py's own
-    # VirtualEnv. This also helps to ensure that generated ninja files do not
-    # reference python.exe from the VirtualEnv generated from depot_tools' own
-    # .vpython3 file (or lack thereof), but instead reference the default python
-    # from the PATH.
-    PruneVirtualEnv()
-
+def FindGnTool():
     # Try in primary solution location first, with the gn binary having been
     # downloaded by cipd in the projects DEPS.
     primary_solution_path = gclient_paths.GetPrimarySolutionPath()
@@ -63,15 +40,15 @@ def main(args):
         gn_path = os.path.join(primary_solution_path, 'third_party', 'gn',
                                'gn' + gclient_paths.GetExeSuffix())
         if os.path.exists(gn_path):
-            return subprocess.call([gn_path] + args[1:])
+            return gn_path
 
     # Otherwise try the old .sha1 and download_from_google_storage locations
     # inside of buildtools.
     bin_path = gclient_paths.GetBuildtoolsPlatformBinaryPath()
     if not bin_path:
-        gn_path = findGnInPath()
+        gn_path = gclient_paths.FindInPath('gn')
         if gn_path:
-            return subprocess.call([gn_path] + args[1:])
+            return gn_path
         print(
             'gn.py: Could not find checkout in any parent of the current '
             'path.\nThis must be run inside a checkout.',
@@ -86,14 +63,24 @@ def main(args):
     paths = [new_gn_path, old_gn_path]
     for path in paths:
         if os.path.isfile(path):
-            return subprocess.call([path] + args[1:])
+            return path
+
+
+def main(args):
+    # Prune all evidence of VPython/VirtualEnv out of the environment. This
+    # means that we 'unwrap' vpython VirtualEnv path/env manipulation.
+    # Invocations of `python` from GN should never inherit the gn.py's own
+    # VirtualEnv. This also helps to ensure that generated ninja files do not
+    # reference python.exe from the VirtualEnv generated from depot_tools' own
+    # .vpython3 file (or lack thereof), but instead reference the default python
+    # from the PATH.
+    PruneVirtualEnv()
+    gn = FindGnTool()
+    if gn:
+        os.execv(gn, [gn] + args[1:])
     print('gn.py: Could not find gn executable at: %s' % paths, file=sys.stderr)
     return 2
 
 
 if __name__ == '__main__':
-    try:
-        sys.exit(main(sys.argv))
-    except KeyboardInterrupt:
-        sys.stderr.write('interrupted\n')
-        sys.exit(1)
+    main(sys.argv)
