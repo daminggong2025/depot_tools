@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7d082742_5985e387",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3486876
+      },
+      "writtenOn": "2025-12-29T14:58:13Z",
+      "side": 1,
+      "message": "Will submit this after the code freeze",
+      "revId": "ae16144faaf8d5b5269a5649376e3bbfc92da09b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
