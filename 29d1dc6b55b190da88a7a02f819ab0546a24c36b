@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "87f34c22_594a7a13",
+        "filename": "gn.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2025-12-30T18:33:29Z",
+      "side": 1,
+      "message": "`paths` isn\u0027t defined here",
+      "range": {
+        "startLine": 78,
+        "startChar": 57,
+        "endLine": 78,
+        "endChar": 62
+      },
+      "revId": "29d1dc6b55b190da88a7a02f819ab0546a24c36b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "690ec046_03ce9012",
+        "filename": "gn.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2025-12-30T18:33:29Z",
+      "side": 1,
+      "message": "do we want to keep this wrapped with `sys.exit`?",
+      "range": {
+        "startLine": 87,
+        "startChar": 4,
+        "endLine": 87,
+        "endChar": 18
+      },
+      "revId": "29d1dc6b55b190da88a7a02f819ab0546a24c36b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
