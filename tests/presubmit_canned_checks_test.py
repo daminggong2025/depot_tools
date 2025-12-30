@@ -757,6 +757,9 @@ class CheckAyeAyeTest(unittest.TestCase):
         self.assertEqual(results[0].type, 'error')
         self.assertIn("Failed to run.", results[0].message)
 
+if __name__ == '__main__':
+    unittest.main()
+
 
 class CheckForCommitObjectsTest(unittest.TestCase):
 
@@ -769,7 +772,6 @@ class CheckForCommitObjectsTest(unittest.TestCase):
         self.patcher = mock.patch('presubmit_canned_checks._ParseDeps')
         self.mock_parse_deps = self.patcher.start()
         self.mock_parse_deps.return_value = {'git_dependencies': 'DEPS'}
-        self.input_api.change.RepositoryRoot = lambda: ''
 
     def tearDown(self):
         self.patcher.stop()
@@ -863,6 +865,59 @@ class CheckForCommitObjectsTest(unittest.TestCase):
         results = presubmit_canned_checks.CheckForCommitObjects(
             self.input_api, self.output_api)
         self.assertEqual(0, len(results))
+<<<<<<< PATCH SET (c0c99b7b2c0490192015f79cf2b9bb1231d72547 Revert "Optimize CheckForCommitObjects by batching `git ls-t)
+||||||| BASE      (7c09ebfd12c9470ec2ff6c02685c3a157a9290b7 Optimize CheckForCommitObjects by batching `git ls-tree` ope)
+
+    def testRunFromSubdir_SmallFiles_NoSubmodules(self):
+        self.input_api.presubmit_local_path = os.path.join(ROOT_DIR, 'subdir')
+        self.input_api.change.RepositoryRoot = lambda: ROOT_DIR
+        self.input_api.files = [MockAffectedFile('foo.txt', 'content')]
+        self.input_api.subprocess.check_output.return_value = b''
+
+        results = presubmit_canned_checks.CheckForCommitObjects(
+            self.input_api, self.output_api)
+        self.assertEqual(0, len(results))
+
+    def testRunFromSubdir_SmallFiles_WithSubmodules(self):
+        self.input_api.presubmit_local_path = os.path.join(ROOT_DIR, 'subdir')
+        self.input_api.change.RepositoryRoot = lambda: ROOT_DIR
+        self.input_api.files = [MockAffectedFile('foo.txt', 'content')]
+        self.input_api.subprocess.check_output.return_value = b'160000 commit 1234\tsubmodule\0'
+
+        results = presubmit_canned_checks.CheckForCommitObjects(
+            self.input_api, self.output_api)
+        self.assertEqual(1, len(results))
+        self.assertIn('submodule', results[0].items)
+
+    def testRunFromSubdir_LargeFiles_NoSubmodules(self):
+        self.input_api.presubmit_local_path = os.path.join(ROOT_DIR, 'subdir')
+        self.input_api.change.RepositoryRoot = lambda: ROOT_DIR
+        self.input_api.files = [
+            MockAffectedFile(f'f{i}', '') for i in range(1001)
+        ]
+        self.input_api.subprocess.check_output.return_value = b''
+
+        results = presubmit_canned_checks.CheckForCommitObjects(
+            self.input_api, self.output_api)
+        self.assertEqual(0, len(results))
+
+    def testRunFromSubdir_LargeFiles_WithSubmodules(self):
+        self.input_api.presubmit_local_path = os.path.join(ROOT_DIR, 'subdir')
+        self.input_api.change.RepositoryRoot = lambda: ROOT_DIR
+        self.input_api.files = [
+            MockAffectedFile(f'f{i}', '') for i in range(1001)
+        ]
+        self.input_api.subprocess.check_output.return_value = b'160000 commit 1234\tsubmodule\0'
+
+        results = presubmit_canned_checks.CheckForCommitObjects(
+            self.input_api, self.output_api)
+        self.assertEqual(1, len(results))
+        self.assertIn('submodule', results[0].items)
+
+
+if __name__ == '__main__':
+    unittest.main()
+=======
 
     def testRunFromSubdir_SmallFiles_NoSubmodules(self):
         self.input_api.presubmit_local_path = os.path.join(ROOT_DIR, 'subdir')
@@ -951,3 +1006,4 @@ class CheckForCommitObjectsTest(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+>>>>>>> BASE      (967382fdcd1477dab3a7fec8eec3e3d5368bb0fe Roll recipe dependencies (trivial).)
