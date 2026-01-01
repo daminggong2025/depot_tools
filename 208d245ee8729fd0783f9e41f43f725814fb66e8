@@ -16,6 +16,23 @@
       "message": "GreedyRegister3142",
       "revId": "208d245ee8729fd0783f9e41f43f725814fb66e8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8df442f2_d57f5ee3",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 4550656
+      },
+      "writtenOn": "2026-01-01T06:23:42Z",
+      "side": 1,
+      "message": "From 208d245ee8729fd0783f9e41f43f725814fb66e8 Mon Sep 17 00:00:00 2001\nFrom: Fumitoshi Ukai \u003cukai@google.com\u003e\nDate: Mon, 12 May 2025 06:22:14 -0700\nSubject: [PATCH] git_cl: run gn.py instead of gn\n\nfix for https://ci.chromium.org/ui/p/devtools-frontend/builders/try/dtf_presubmit_linux/b8715095169268935393/overview\n\nChange-Id: I1fa4565ffe44ea0ed29b4b8710ddf933d19f9f44\nReviewed-on: https://chromium-review.googlesource.com/c/chromium/tools/depot_tools/+/6536211\nCommit-Queue: Brian Ryner \u003cbryner@google.com\u003e\nReviewed-by: Brian Ryner \u003cbryner@google.com\u003e\nAuto-Submit: Fumitoshi Ukai \u003cukai@google.com\u003e\nReviewed-by: Takuto Ikuta \u003ctikuta@chromium.org\u003e\nReviewed-by: Liviu Rau \u003cliviurau@chromium.org\u003e\n---\n\ndiff --git a/git_cl.py b/git_cl.py\nindex 3dccac8..bd176d5 100755\n--- a/git_cl.py\n+++ b/git_cl.py\n@@ -6938,7 +6938,7 @@\n \n \n def _RunGnFormat(opts, paths, top_dir, upstream_commit):\n-    cmd \u003d [\u0027gn\u0027, \u0027format\u0027]\n+    cmd \u003d [sys.executable, os.path.join(DEPOT_TOOLS, \u0027gn.py\u0027), \u0027format\u0027]\n     if opts.dry_run or opts.diff:\n         cmd.append(\u0027--dry-run\u0027)\n     return_value \u003d 0",
+      "revId": "208d245ee8729fd0783f9e41f43f725814fb66e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
