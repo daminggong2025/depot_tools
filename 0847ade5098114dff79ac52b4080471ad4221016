@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bd2f1b3f_7006bfd7",
+        "filename": "siso.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 552,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2026-01-05T09:20:35Z",
+      "side": 0,
+      "message": "I thought the global flags are modified intentionally at this location. Are you sure this is correct?",
+      "range": {
+        "startLine": 551,
+        "startChar": 0,
+        "endLine": 552,
+        "endChar": 72
+      },
+      "revId": "0847ade5098114dff79ac52b4080471ad4221016",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
