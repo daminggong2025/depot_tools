@@ -16,6 +16,24 @@
       "message": "I\u0027m getting this locally:\n\n$ autoninja -C out/bisect d8\nCollector never came to life\nflag provided but not defined: -enable_collector\nbuild the requested targets as ninja.",
       "revId": "d80f3ba2408f0fbbdfa37640d5caf65ce3bb043e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a0bf1974_3e623d7b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115956
+      },
+      "writtenOn": "2026-01-05T09:57:08Z",
+      "side": 1,
+      "message": "It still works before this commit. Can we revert?\n\nI am building an older version of V8 (with older deps...) but that should be supported.",
+      "parentUuid": "7edfd1cf_e86c1c77",
+      "revId": "d80f3ba2408f0fbbdfa37640d5caf65ce3bb043e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
