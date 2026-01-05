@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "722515ef_39f45de2",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 12
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 4547178
+      },
+      "writtenOn": "2026-01-05T03:05:57Z",
+      "side": 1,
+      "message": "Some app not install so you change the version for every app be work like talabat, hide mock location",
+      "revId": "5e033c9735e3ac9502a725600ce6f2c41e0de2b9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
