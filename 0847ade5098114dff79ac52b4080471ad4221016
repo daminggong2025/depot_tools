@@ -22,6 +22,30 @@
       },
       "revId": "0847ade5098114dff79ac52b4080471ad4221016",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "af839855_f904a086",
+        "filename": "siso.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 552,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-01-05T09:27:43Z",
+      "side": 0,
+      "message": "It just produces a flag list with no side effects, as I\u0027ve worked before to make sure functions are side effects free where possible.. I don\u0027t think there is a big deal where we put it.",
+      "parentUuid": "bd2f1b3f_7006bfd7",
+      "range": {
+        "startLine": 551,
+        "startChar": 0,
+        "endLine": 552,
+        "endChar": 72
+      },
+      "revId": "0847ade5098114dff79ac52b4080471ad4221016",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
