@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fbf51388_d6e85566",
+        "filename": "gn.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-01-06T19:33:42Z",
+      "side": 1,
+      "message": "if both `bin_path` and `gn_path` are None, this script won\u0027t print the error messages on L64/65. can we make sure some error is printed in this case?",
+      "range": {
+        "startLine": 53,
+        "startChar": 8,
+        "endLine": 53,
+        "endChar": 19
+      },
+      "revId": "8e75c8915e97073ef95232a61070f677fe9f0581",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "70b04e13_90f35bf6",
+        "filename": "gn.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-01-06T19:33:42Z",
+      "side": 1,
+      "message": "do we also want to keep `KeyboardInterrupt` handling?",
+      "range": {
+        "startLine": 87,
+        "startChar": 4,
+        "endLine": 87,
+        "endChar": 28
+      },
+      "revId": "8e75c8915e97073ef95232a61070f677fe9f0581",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
