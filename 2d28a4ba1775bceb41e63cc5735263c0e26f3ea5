@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8a999b59_aa5c0b2d",
+        "filename": "format.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-01-06T20:13:55Z",
+      "side": 1,
+      "message": "the `NotImplementedError` in L140 seems to contradict this. should we change the docstring or the raise?",
+      "range": {
+        "startLine": 19,
+        "startChar": 2,
+        "endLine": 19,
+        "endChar": 37
+      },
+      "revId": "2d28a4ba1775bceb41e63cc5735263c0e26f3ea5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "03c97ec7_e9a4de02",
+        "filename": "format.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-01-06T20:13:55Z",
+      "side": 1,
+      "message": "let\u0027s use `None` as default instead and initialize base to `[]` if `None`",
+      "range": {
+        "startLine": 40,
+        "startChar": 51,
+        "endLine": 40,
+        "endChar": 54
+      },
+      "revId": "2d28a4ba1775bceb41e63cc5735263c0e26f3ea5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
