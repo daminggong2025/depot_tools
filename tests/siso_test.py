@@ -75,17 +75,16 @@ def test_apply_sisorc(siso_test_fixture: Any) -> None:
 
 
 def test_is_subcommand_present(mocker: Any) -> None:
-    mock_call = mocker.patch("siso.subprocess.call")
 
-    def side_effect(cmd, *_, **__):
-        if cmd[2] in ["collector", "ninja"]:
-            return 0
-        return 2
+    def side_effect(_: str, subcmd):
+        if subcmd in ["collector", "ninja"]:
+            return "help page"
+        return ""
 
-    mock_call.side_effect = side_effect
-    assert siso._is_subcommand_present("siso_path", "collector")
-    assert siso._is_subcommand_present("siso_path", "ninja")
-    assert not siso._is_subcommand_present("siso_path", "unknown")
+    mocker.patch("siso._subcommand_help", side_effect=side_effect)
+    assert siso._subcommand_help("siso_path", "collector")
+    assert siso._subcommand_help("siso_path", "ninja")
+    assert not siso._subcommand_help("siso_path", "unknown")
 
 
 @pytest.mark.parametrize("args, want", [
@@ -105,7 +104,14 @@ def test_apply_metrics_labels(args: List[str], want: List[str]) -> None:
 
 @pytest.fixture
 def siso_subcmd_present(mocker: Any) -> Generator[None, None, None]:
-    mocker.patch("siso._is_subcommand_present", return_value=True)
+    mocker.patch("siso._subcommand_help",
+                 return_value="""
+Starts the OTEL collector daemon.
+  -collector_address string
+    	address to listen on for collector. Can be path for unix socket unix:///path/to/socket or host:port. (default "127.0.0.1:4317")
+  -project string
+    	cloud project ID. can be set by $SISO_PROJECT
+                 """)
     yield
 
 
@@ -183,12 +189,36 @@ def test_apply_telemetry_flags_sets_expected_env_var(siso_subcmd_present: Any,
 
 def test_apply_telemetry_flags_collector_not_present(mocker: Any) -> None:
 
-    def mock_subcommand(_: str, subcmd: str) -> bool:
+    def mock_subcommand(_: str, subcmd: str) -> str:
         if subcmd == "collector":
-            return False
-        return True
+            return ""
+        return "help page"
 
-    mocker.patch("siso._is_subcommand_present", side_effect=mock_subcommand)
+    mocker.patch("siso._subcommand_help", side_effect=mock_subcommand)
+    args = ["ninja", "-C", "out/Default", "--metrics_project", "some_project"]
+    env = {}
+    want = [
+        "ninja", "-C", "out/Default", "--metrics_project", "some_project",
+        "--enable_cloud_monitoring", "--enable_cloud_profiler",
+        "--enable_cloud_trace", "--enable_cloud_logging"
+    ]
+    got = siso.apply_telemetry_flags(args, env, "siso_path")
+    assert got == want
+
+
+def test_apply_telemetry_flags_collector_present_flag_not_present(
+        mocker: Any) -> None:
+
+    def mock_subcommand(_: str, subcmd: str) -> str:
+        if subcmd == "collector":
+            return """
+Starts the OTEL collector daemon.
+  -project string
+    	cloud project ID. can be set by $SISO_PROJECT
+        """
+        return ""
+
+    mocker.patch("siso._subcommand_help", side_effect=mock_subcommand)
     args = ["ninja", "-C", "out/Default", "--metrics_project", "some_project"]
     env = {}
     want = [
