@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "e9a3b812_edafca5e",
+        "filename": "gn.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1450817
+      },
+      "writtenOn": "2026-01-06T22:56:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fbf51388_d6e85566",
+      "range": {
+        "startLine": 53,
+        "startChar": 8,
+        "endLine": 53,
+        "endChar": 19
+      },
+      "revId": "8e75c8915e97073ef95232a61070f677fe9f0581",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "70b04e13_90f35bf6",
@@ -37,6 +61,30 @@
       "writtenOn": "2026-01-06T19:33:42Z",
       "side": 1,
       "message": "do we also want to keep `KeyboardInterrupt` handling?",
+      "range": {
+        "startLine": 87,
+        "startChar": 4,
+        "endLine": 87,
+        "endChar": 28
+      },
+      "revId": "8e75c8915e97073ef95232a61070f677fe9f0581",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "026d49c4_57b30ada",
+        "filename": "gn.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 1450817
+      },
+      "writtenOn": "2026-01-06T22:56:27Z",
+      "side": 1,
+      "message": "I swapped `subprocess.call` for `os.execv`, which makes `KeyboardInterrupt` not work (since the python process is replaced with gn instead of starting a subprocess).\n\nI think it\u0027s a better solution because signal handling is much easier to achieve this way, and I don\u0027t think the keyboardinterrupt catch is providing any value. If you prefer it that way I can switch back though.",
+      "parentUuid": "70b04e13_90f35bf6",
       "range": {
         "startLine": 87,
         "startChar": 4,
