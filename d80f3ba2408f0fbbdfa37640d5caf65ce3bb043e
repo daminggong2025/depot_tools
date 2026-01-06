@@ -52,6 +52,24 @@
       "parentUuid": "a0bf1974_3e623d7b",
       "revId": "d80f3ba2408f0fbbdfa37640d5caf65ce3bb043e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e3ef7bac_d4664dfb",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-01-06T05:01:25Z",
+      "side": 1,
+      "message": "Taking it back, we have got https://buganizer.corp.google.com/issues/473530378 report. That is being fixed in https://chromium-review.googlesource.com/c/chromium/tools/depot_tools/+/7365204",
+      "parentUuid": "4911b3b0_c7807013",
+      "revId": "d80f3ba2408f0fbbdfa37640d5caf65ce3bb043e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
