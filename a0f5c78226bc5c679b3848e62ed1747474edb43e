@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e9c856b9_73f7e2cb",
+        "filename": "siso.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 259,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2026-01-06T05:10:38Z",
+      "side": 1,
+      "message": "Discussed offline: this will add a bit of overhead by calling help command twice. But, we will switch to set environment variables in the next Siso release.",
+      "range": {
+        "startLine": 257,
+        "startChar": 0,
+        "endLine": 259,
+        "endChar": 54
+      },
+      "revId": "a0f5c78226bc5c679b3848e62ed1747474edb43e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
