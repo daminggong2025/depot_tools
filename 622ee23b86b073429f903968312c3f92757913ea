@@ -50,6 +50,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "e6a68ec1_863b91b4",
+        "filename": "format.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1000768
+      },
+      "writtenOn": "2026-01-07T15:42:22Z",
+      "side": 1,
+      "message": "running `./format.py foo.py` should format the file `foo.py`\n\ni know it feels a little bikeshedding, but such a proposal feels like it at least needs a 1 pager to cover use cases \u0026 expectations.  trying to design the interface on the fly while coding will make it that much harder to change once people start using it.",
+      "parentUuid": "8c5ef256_40f4d4db",
+      "range": {
+        "startLine": 13,
+        "startChar": 0,
+        "endLine": 15,
+        "endChar": 54
+      },
+      "revId": "622ee23b86b073429f903968312c3f92757913ea",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "fc874cbf_52a817f6",
         "filename": "format.py",
         "patchSetId": 6
@@ -96,6 +120,24 @@
       "side": 1,
       "message": "Does that still apply given what I mentioned about shebangs on windows?",
       "parentUuid": "d8d0ffd4_9bea7e6d",
+      "revId": "622ee23b86b073429f903968312c3f92757913ea",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3cd923d0_354d53fe",
+        "filename": "format.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1000768
+      },
+      "writtenOn": "2026-01-07T15:42:22Z",
+      "side": 1,
+      "message": "shebang is irrelevant to this point.  execvp does a PATH search for you which is what shutil.which is doing.\n\ni don\u0027t have a Windows box offhand to double check this.",
+      "parentUuid": "712042af_b8185bcd",
       "revId": "622ee23b86b073429f903968312c3f92757913ea",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -154,6 +196,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "4f6dc181_b7374244",
+        "filename": "format.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 1000768
+      },
+      "writtenOn": "2026-01-07T15:42:22Z",
+      "side": 1,
+      "message": "it might depend on how it\u0027s invoked.  i don\u0027t know if there are documents, internal or external, that get into these nuances.  or if depot_tools/Chromium ever developed a guide/best practices, or if every script author just copies \u0026 pastes whatever they notice somewhere else.\n\niiuc, subprocess.run with shell\u003dTrue would work on all platforms.  i think that\u0027s how gsutil.py does it.  obviously subprocess is fork+exec while you\u0027re doing a plain exec, but considering other aspects, i would argue it should use subprocess and format.py should have higher level logic.",
+      "parentUuid": "ec8b1dd3_76e1467a",
+      "revId": "622ee23b86b073429f903968312c3f92757913ea",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "eee89f12_c837e832",
         "filename": "format.py",
         "patchSetId": 6
@@ -183,6 +243,75 @@
       "side": 1,
       "message": "I can remove this if you want, but this was designed to work the same way as `git cl format`, which makes a similar assumption (when `--lucicfg` is set).\n\nMy assumption was that the equivalent of a `--lucicfg` flag for this would be controlling which files get sent to this formatter.\n\nEg. If you want only files under the lucicfg directory to be formatted as lucicfg files, you could write in your jj config:\n```\npatterns \u003d [\n  \"glob:lucicfg/**/*.star\",\n]\n```",
       "parentUuid": "eee89f12_c837e832",
+      "revId": "622ee23b86b073429f903968312c3f92757913ea",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "297174c3_b684c4bc",
+        "filename": "format.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 1000768
+      },
+      "writtenOn": "2026-01-07T15:42:22Z",
+      "side": 1,
+      "message": ".star files are used with Bazel (since that\u0027s where it came from), and there are projects using depot_tools that also use Bazel.\n\nthis formatter isn\u0027t doing it now, but seems like it should sniff shebangs.  then you could support python programs that don\u0027t use .py suffix, and lucicfg files can opt-in with `#!/usr/bin/env lucicfg`.  although that isn\u0027t a silver bullet.",
+      "parentUuid": "cebe7a37_3905f4ce",
+      "revId": "622ee23b86b073429f903968312c3f92757913ea",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "22a8f7ca_c04eec8a",
+        "filename": "format.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 1000768
+      },
+      "writtenOn": "2026-01-07T15:42:22Z",
+      "side": 1,
+      "message": "`./format.py` crashes\n\n`./format.py --help` doesn\u0027t work\n\n`./format.py foo.py bar.py` ignores extra args",
+      "revId": "622ee23b86b073429f903968312c3f92757913ea",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6d68ef54_cd0b8086",
+        "filename": "format.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 140,
+      "author": {
+        "id": 1000768
+      },
+      "writtenOn": "2026-01-07T15:42:22Z",
+      "side": 1,
+      "message": "all of this logic should really be in a main() function.  the code under these `__main__` blocks should be like one line.\n\nhttps://www.chromium.org/chromium-os/developer-library/reference/style-guides/python/#main-modules\n\notherwise every variable you define here is in the module\u0027s namespace which means it\u0027s visible to every func you invoke.  for example, you define `fname` \u0026 `suffix`, and `handle_lucicfg()` also defines `fname`.",
+      "revId": "622ee23b86b073429f903968312c3f92757913ea",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a105714e_18372637",
+        "filename": "format.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 1000768
+      },
+      "writtenOn": "2026-01-07T15:42:22Z",
+      "side": 1,
+      "message": "why is this talking about jj ?  nothing in here is specific to jj, nor is that tool required to do development anywhere.",
       "revId": "622ee23b86b073429f903968312c3f92757913ea",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
