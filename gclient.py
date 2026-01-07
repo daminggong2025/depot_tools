@@ -87,6 +87,7 @@ import json
 import logging
 import optparse
 import os
+import pathlib
 import platform
 import posixpath
 import pprint
@@ -106,6 +107,7 @@ import git_common
 import gclient_eval
 import gclient_paths
 import gclient_scm
+import jj_scm
 import gclient_utils
 import git_cache
 import metrics
@@ -1721,6 +1723,8 @@ def _detect_host_os():
 class GitDependency(Dependency):
     """A Dependency object that represents a single git checkout."""
     _is_env_cog = None
+    # A similar concept to a jj workspace, but for a whole repo including submodules.
+    _jj_root = None
 
     @staticmethod
     def _IsCog():
@@ -1751,13 +1755,45 @@ class GitDependency(Dependency):
         if self._IsCog():
             return gclient_scm.CogWrapper()
 
-        return gclient_scm.GitWrapper(self.url,
-                                      self.root.root_dir,
-                                      self.name,
-                                      self.outbuf,
-                                      out_cb,
-                                      print_outbuf=self.print_outbuf)
 
+        if GitDependency._jj_root is None:
+            try:
+                dst = pathlib.Path(pathlib.Path(self.root.root_dir, self.name, '.jj/repo').read_text())
+                # It's a jj workspace.
+                # eg. if we have workspace/src, dst is repo/src/.jj/repo, so jj_root is repo
+                GitDependency._jj_root = pathlib.Path(*dst.parts[:-len(self.name.split('/')) - 2])
+            except IsADirectoryError:
+                # It's a jj repo
+                GitDependency._jj_root = pathlib.Path(self.root.root_dir)
+            except FileNotFoundError:
+                # It's a git repo
+                GitDependency._jj_root = False
+            # For now, disable this feature by default until it's been better
+            # tested. It *should* work, but it has the potential to mess up
+            # entire repos so I'm instead making it opt-in while I use it
+            # personally for at least a few weeks.
+            if 'GCLIENT_EXPERIMENTAL_JJ_SYNC' not in os.environ:
+                GitDependency._jj_root = False
+
+        if GitDependency._jj_root:
+            return jj_scm.JjWrapper(
+                GitDependency._jj_root,
+                self.url,
+                self.root.root_dir,
+                self.name,
+                self.outbuf,
+                out_cb,
+                print_outbuf=self.print_outbuf,
+            )
+        else:
+            return gclient_scm.GitWrapper(
+                self.url,
+                self.root.root_dir,
+                self.name,
+                self.outbuf,
+                out_cb,
+                print_outbuf=self.print_outbuf,
+            )
 
 class GClient(GitDependency):
     """Object that represent a gclient checkout. A tree of Dependency(), one per
