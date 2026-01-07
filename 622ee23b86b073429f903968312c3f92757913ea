@@ -89,6 +89,54 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "8c17b184_6c11ee19",
+        "filename": "format.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1450817
+      },
+      "writtenOn": "2026-01-07T23:32:50Z",
+      "side": 1,
+      "message": "Does go/google3format suffice? My design was basically:\n* Copy the user interface of google3format, because we have the same considerations as them\n* Copy the feature set of `git cl format`, since this is designed to be an alternative to `git cl format` (a way of formatting files for people not using git).\n\nIf you\u0027d like, I can move this to a jj directory, since although the spec isn\u0027t specific to jj I assume jj will be the main user. `jj fix` always passes the file to stdin and provides the filename. Users should never run `./format foo.py`. Instead they (if using jj) will run `jj fix foo.py` (or `jj fix` to format all modified files).",
+      "parentUuid": "e6a68ec1_863b91b4",
+      "range": {
+        "startLine": 13,
+        "startChar": 0,
+        "endLine": 15,
+        "endChar": 54
+      },
+      "revId": "622ee23b86b073429f903968312c3f92757913ea",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e279dd2f_1ce11a03",
+        "filename": "format.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1450817
+      },
+      "writtenOn": "2026-01-07T23:32:50Z",
+      "side": 1,
+      "message": "I based this upon go/google3format, which notably does not support `google3format foo.py`. It requires that you instead run `cat foo.cc | google3format --depot_path //depot/path/foo.cc --whole-file \u003e foo.cc`.\n\ngo/google3format specifically says in the requirements for the tool that it must:\n* Take only the exact original file content on stdin.\n* Give only the exact formatted file content on stdout.\n\nIt does not support passing a list of files directly, as:\n* It is not designed to be used by an end-user directly\n* It is designed to be able to be ran in parallel by other tools\n* It does not want to require files to be materialized on disk\n\nThis formatter follows the opinion of google3format that a formatter is a tool that the user cannot choose to skip, and thus the user should not run it manually but instead it should be run for the user. Specifically, `jj upload` runs formatters as a pre-upload hook.\n\nBoth `hg fix` and `jj fix` run formatters on commits that may not be materialrized on disk. If I have a stack of commits that I\u0027m about to upload, for example, I want to format each commit in the stack rather than just format what\u0027s on disk (which is precisely what `jj fix` does).",
+      "parentUuid": "e6a68ec1_863b91b4",
+      "range": {
+        "startLine": 13,
+        "startChar": 0,
+        "endLine": 15,
+        "endChar": 54
+      },
+      "revId": "622ee23b86b073429f903968312c3f92757913ea",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "fc874cbf_52a817f6",
@@ -102,6 +150,24 @@
       "writtenOn": "2026-01-07T01:24:25Z",
       "side": 1,
       "message": "ironically, this file needs formatting",
+      "revId": "622ee23b86b073429f903968312c3f92757913ea",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7de82bcc_613679dd",
+        "filename": "format.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1450817
+      },
+      "writtenOn": "2026-01-07T23:32:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fc874cbf_52a817f6",
       "revId": "622ee23b86b073429f903968312c3f92757913ea",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -159,6 +225,42 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "94d23a6d_5de258c5",
+        "filename": "format.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1450817
+      },
+      "writtenOn": "2026-01-07T23:32:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3cd923d0_354d53fe",
+      "revId": "622ee23b86b073429f903968312c3f92757913ea",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "54370d6a_be2c3fca",
+        "filename": "format.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1450817
+      },
+      "writtenOn": "2026-01-07T23:32:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3cd923d0_354d53fe",
+      "revId": "622ee23b86b073429f903968312c3f92757913ea",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "6309e84d_4c0155b5",
@@ -172,6 +274,42 @@
       "writtenOn": "2026-01-07T01:24:25Z",
       "side": 1,
       "message": "all funcs really should have docstrings, even if they\u0027re just one-liners",
+      "revId": "622ee23b86b073429f903968312c3f92757913ea",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "13e25e2f_8303f4a5",
+        "filename": "format.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1450817
+      },
+      "writtenOn": "2026-01-07T23:32:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6309e84d_4c0155b5",
+      "revId": "622ee23b86b073429f903968312c3f92757913ea",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "79836352_f31b6c98",
+        "filename": "format.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1450817
+      },
+      "writtenOn": "2026-01-07T23:32:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6309e84d_4c0155b5",
       "revId": "622ee23b86b073429f903968312c3f92757913ea",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -229,6 +367,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "1151e289_e32cb4f4",
+        "filename": "format.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 1450817
+      },
+      "writtenOn": "2026-01-07T23:32:50Z",
+      "side": 1,
+      "message": "I checked and on windows you do need the interpreter. `subprocess.run` complains that it\u0027s not a valid win32 application, and with `shell\u003dTrue` it opens up the \"select an app to open this .py file\" prompt.",
+      "parentUuid": "4f6dc181_b7374244",
+      "revId": "622ee23b86b073429f903968312c3f92757913ea",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "eee89f12_c837e832",
@@ -282,6 +438,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "f230d583_3965ba1c",
+        "filename": "format.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 1450817
+      },
+      "writtenOn": "2026-01-07T23:32:50Z",
+      "side": 1,
+      "message": "I\u0027ve added a comment that this is something that we could do in the future, but that we didn\u0027t want to do it now to match `git cl format` behavior.",
+      "parentUuid": "297174c3_b684c4bc",
+      "revId": "622ee23b86b073429f903968312c3f92757913ea",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "22a8f7ca_c04eec8a",
@@ -295,6 +469,42 @@
       "writtenOn": "2026-01-07T15:42:22Z",
       "side": 1,
       "message": "`./format.py` crashes\n\n`./format.py --help` doesn\u0027t work\n\n`./format.py foo.py bar.py` ignores extra args",
+      "revId": "622ee23b86b073429f903968312c3f92757913ea",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "44e247a9_ed90830a",
+        "filename": "format.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 1450817
+      },
+      "writtenOn": "2026-01-07T23:32:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "22a8f7ca_c04eec8a",
+      "revId": "622ee23b86b073429f903968312c3f92757913ea",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "dfd218d5_5c3d9fb0",
+        "filename": "format.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 1450817
+      },
+      "writtenOn": "2026-01-07T23:32:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "22a8f7ca_c04eec8a",
       "revId": "622ee23b86b073429f903968312c3f92757913ea",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -316,6 +526,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "cf05b514_25f9103d",
+        "filename": "format.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 140,
+      "author": {
+        "id": 1450817
+      },
+      "writtenOn": "2026-01-07T23:32:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6d68ef54_cd0b8086",
+      "revId": "622ee23b86b073429f903968312c3f92757913ea",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "a105714e_18372637",
@@ -329,6 +557,42 @@
       "writtenOn": "2026-01-07T15:42:22Z",
       "side": 1,
       "message": "why is this talking about jj ?  nothing in here is specific to jj, nor is that tool required to do development anywhere.",
+      "revId": "622ee23b86b073429f903968312c3f92757913ea",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4a486f18_b786b337",
+        "filename": "format.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 1450817
+      },
+      "writtenOn": "2026-01-07T23:32:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a105714e_18372637",
+      "revId": "622ee23b86b073429f903968312c3f92757913ea",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0d8cfb6c_c861b766",
+        "filename": "format.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 1450817
+      },
+      "writtenOn": "2026-01-07T23:32:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a105714e_18372637",
       "revId": "622ee23b86b073429f903968312c3f92757913ea",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
