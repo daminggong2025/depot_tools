@@ -1,6 +1,23 @@
 {
   "comments": [
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ff987cad_f4e7bc5e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1303432
+      },
+      "writtenOn": "2026-01-07T23:25:11Z",
+      "side": 1,
+      "message": "I believe we\u0027ve already made the git cl format code fairly generic, in that it\u0027s called from Cider G which is not git with various diffs, etc. Do we need to add a new tool at all? What\u0027s preventing you from just using (or refactoring) the existing depot_tools formatting code used by git cl.",
+      "revId": "622ee23b86b073429f903968312c3f92757913ea",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "a37879e2_d30d992f",
