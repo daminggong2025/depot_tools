@@ -26,6 +26,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "8c5ef256_40f4d4db",
+        "filename": "format.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1450817
+      },
+      "writtenOn": "2026-01-07T01:37:44Z",
+      "side": 1,
+      "message": "Would you prefer it if I followed clang-format\u0027s convention and instead of `formatter foo.extension` I used `formatter --assume-filename\u003dfoo.extension`? This would be consistent with most formatters.\n\nI mostly didn\u0027t do it that way because I figured there was only one parameter so there was no point using argparse.",
+      "parentUuid": "a37879e2_d30d992f",
+      "range": {
+        "startLine": 13,
+        "startChar": 0,
+        "endLine": 15,
+        "endChar": 54
+      },
+      "revId": "622ee23b86b073429f903968312c3f92757913ea",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "fc874cbf_52a817f6",
         "filename": "format.py",
         "patchSetId": 6
@@ -54,6 +78,24 @@
       "writtenOn": "2026-01-07T01:24:25Z",
       "side": 1,
       "message": "use execvp and you don\u0027t need the shutil.which logic anywhere",
+      "revId": "622ee23b86b073429f903968312c3f92757913ea",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "712042af_b8185bcd",
+        "filename": "format.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1450817
+      },
+      "writtenOn": "2026-01-07T01:37:44Z",
+      "side": 1,
+      "message": "Does that still apply given what I mentioned about shebangs on windows?",
+      "parentUuid": "d8d0ffd4_9bea7e6d",
       "revId": "622ee23b86b073429f903968312c3f92757913ea",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -94,6 +136,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "ec8b1dd3_76e1467a",
+        "filename": "format.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 1450817
+      },
+      "writtenOn": "2026-01-07T01:37:44Z",
+      "side": 1,
+      "message": "I was under the impression that the shebang wouldn\u0027t work on windows?",
+      "parentUuid": "306b55a5_9a343782",
+      "revId": "622ee23b86b073429f903968312c3f92757913ea",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "eee89f12_c837e832",
         "filename": "format.py",
         "patchSetId": 6
@@ -105,6 +165,24 @@
       "writtenOn": "2026-01-07T01:24:25Z",
       "side": 1,
       "message": "not all star files are lucicfg files",
+      "revId": "622ee23b86b073429f903968312c3f92757913ea",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cebe7a37_3905f4ce",
+        "filename": "format.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 1450817
+      },
+      "writtenOn": "2026-01-07T01:37:44Z",
+      "side": 1,
+      "message": "I can remove this if you want, but this was designed to work the same way as `git cl format`, which makes a similar assumption (when `--lucicfg` is set).\n\nMy assumption was that the equivalent of a `--lucicfg` flag for this would be controlling which files get sent to this formatter.\n\nEg. If you want only files under the lucicfg directory to be formatted as lucicfg files, you could write in your jj config:\n```\npatterns \u003d [\n  \"glob:lucicfg/**/*.star\",\n]\n```",
+      "parentUuid": "eee89f12_c837e832",
       "revId": "622ee23b86b073429f903968312c3f92757913ea",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
