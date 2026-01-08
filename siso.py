@@ -182,9 +182,9 @@ def _start_collector(siso_path: str, sockets_file: Optional[str],
             creationflags = subprocess.CREATE_NEW_PROCESS_GROUP
         cmd = [siso_path, "collector", "--project", project]
         if sockets_file:
-            cmd += ["--collector_address", f"unix://{sockets_file}"]
+            os.environ["SISO_COLLECTOR_ADDRESS"] = f"unix://{sockets_file}"
         else:
-            cmd += ["--collector_address", _OTLP_DEFAULT_TCP_ENDPOINT]
+            os.environ["SISO_COLLECTOR_ADDRESS"] = _OTLP_DEFAULT_TCP_ENDPOINT
         subprocess.Popen(
             cmd,
             stdout=subprocess.DEVNULL,
@@ -259,9 +259,6 @@ def apply_telemetry_flags(args: list[str], env: dict[str, str],
         "enable_cloud_monitoring", "enable_cloud_profiler",
         "enable_cloud_trace", "enable_cloud_logging"
     ]
-    if "collector_address" in _subcommand_help(siso_path, "collector"):
-        if "collector_address" in _subcommand_help(siso_path, "ninja"):
-            telemetry_flags.append("enable_collector")
     # Despite go.dev/issue/68312 being fixed, the issue is still reproducible
     # for googlers. Due to this, the flag is still applied while the
     # issue is being investigated.
@@ -340,20 +337,12 @@ def _resolve_sockets_folder(env: dict[str, str]) -> tuple[str, int]:
     return path, allowed_length
 
 
-def _handle_collector_args(siso_path: str, args: list[str],
-                           env: dict[str, str]) -> list[str]:
-    parser = argparse.ArgumentParser()
-    # Can only be implicit. enable_collector=true will fail.
-    parser.add_argument("-enable_collector",
-                        "--enable_collector",
-                        action='store_true',
-                        default=False)
-    known_args, _ = parser.parse_known_args(args)
-    if not known_args.enable_collector:
-        return args
+def _handle_collector(siso_path: str, args: list[str], env: dict[str,
+                                                                 str]) -> None:
     project = _fetch_metrics_project(args, env)
     if not project:
-        return args
+        os.environ.pop("SISO_COLLECTOR_ADDRESS", None)
+        return
     sockets_file = None
     if sys.platform in ["darwin", "linux"]:
         path, remainder_len = _resolve_sockets_folder(env)
@@ -362,17 +351,12 @@ def _handle_collector_args(siso_path: str, args: list[str],
     started = _start_collector(siso_path, sockets_file, project)
     if started:
         if sockets_file:
-            args.append(f"--collector_address=unix://{sockets_file}")
+            os.environ["SISO_COLLECTOR_ADDRESS"] = f"unix://{sockets_file}"
         else:
-            args.append(f"--collector_address={_OTLP_DEFAULT_TCP_ENDPOINT}")
+            os.environ["SISO_COLLECTOR_ADDRESS"] = _OTLP_DEFAULT_TCP_ENDPOINT
     else:
         print("Collector never came to life", file=sys.stderr)
-        if "-enable_collector" in args:
-            args.remove("-enable_collector")
-        elif "--enable_collector" in args:
-            args.remove("--enable_collector")
-        args.append("--enable_collector=false")
-    return args
+        os.environ.pop("SISO_COLLECTOR_ADDRESS", None)
 
 
 def load_sisorc(rcfile: str) -> tuple[list[str], dict[str, list[str]]]:
@@ -567,8 +551,8 @@ def main(args: list[str],
                                                args[1:], subcmd,
                                                should_collect_logs, siso_path,
                                                env)
-                processed_args = _handle_collector_args(siso_path,
-                                                        processed_args, env)
+                if should_collect_logs:
+                    _handle_collector(siso_path, processed_args, env)
                 check_outdir(out_dir)
                 return caffeinate.call([siso_path] + processed_args, env=env)
         print(
