@@ -978,9 +978,13 @@ class GitWrapper(SCMWrapper):
 
         self._SetFetchConfig(options)
 
+        no_history = hasattr(options, 'no_history') and options.no_history
         # Fetch upstream if we don't already have |revision|.
+        # If we use the --no-history attribute, we don't need to retrieve
+        # the state of all remote branches, thus reducing the time spent
+        # retrieving code.
         if not scm.GIT.IsValidRevision(
-                self.checkout_path, revision, sha_only=True):
+                self.checkout_path, revision, sha_only=True) and not no_history:
             self._Fetch(options, prune=options.force)
 
             if not scm.GIT.IsValidRevision(
@@ -1746,6 +1750,8 @@ class GitWrapper(SCMWrapper):
         """Attempts to fetch |revision| if not available in local repo.
 
         Returns possibly updated revision."""
+        if not depth and hasattr(options, 'no_history') and options.no_history:
+            depth = 1
         if not scm.GIT.IsValidRevision(self.checkout_path, revision):
             self._Fetch(options, refspec=revision, depth=depth)
             revision = self._Capture(['rev-parse', 'FETCH_HEAD'])
