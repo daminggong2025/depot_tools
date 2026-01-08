@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "62092e88_b1c6d969",
+        "filename": "siso.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-01-08T05:41:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7ae6cca1_90eb5b04",
+      "range": {
+        "startLine": 48,
+        "startChar": 0,
+        "endLine": 53,
+        "endChar": 43
+      },
+      "revId": "4c18c8371d8cebe317558cc92310774ad2bd406f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "7c4cc3d9_1d64b719",
@@ -37,6 +61,30 @@
       "writtenOn": "2026-01-08T05:22:12Z",
       "side": 1,
       "message": "Are there any check that `siso collector` subcommand exists? or is it fine to let it fail if Siso is an old version?",
+      "range": {
+        "startLine": 183,
+        "startChar": 0,
+        "endLine": 183,
+        "endChar": 60
+      },
+      "revId": "4c18c8371d8cebe317558cc92310774ad2bd406f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c588a3bd_d35e26c9",
+        "filename": "siso.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 183,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-01-08T05:41:43Z",
+      "side": 1,
+      "message": "There is no check now, with this change the collector will never start, so there will be 1 second lag that will get dissolved with updates. I think it\u0027s an acceptable tradeoff. Let\u0027s have crash info be sent into DEVNULL",
+      "parentUuid": "7c4cc3d9_1d64b719",
       "range": {
         "startLine": 183,
         "startChar": 0,

@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "eb6b3d93_bbb0c377",
+        "filename": "siso.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 194,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-01-08T05:41:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1054445a_d045b6a9",
+      "range": {
+        "startLine": 184,
+        "startChar": 0,
+        "endLine": 194,
+        "endChar": 9
+      },
+      "revId": "f7db9faf2ad93f6a3c6332f602dde5efbac93a34",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "97ace8c4_ca967ebd",
@@ -37,6 +61,30 @@
       "writtenOn": "2026-01-08T05:17:14Z",
       "side": 1,
       "message": "It might be safer to return collector_address from this function and modify the environment variable only in main().",
+      "range": {
+        "startLine": 340,
+        "startChar": 0,
+        "endLine": 341,
+        "endChar": 79
+      },
+      "revId": "f7db9faf2ad93f6a3c6332f602dde5efbac93a34",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9ef9784a_fbc4e2c4",
+        "filename": "siso.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 341,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-01-08T05:41:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "97ace8c4_ca967ebd",
       "range": {
         "startLine": 340,
         "startChar": 0,
