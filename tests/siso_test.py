@@ -127,19 +127,19 @@ Starts the OTEL collector daemon.
         "--enable_cloud_profiler"
     ],
                  id="some_already_applied_no_env_flags"),
-    pytest.param([
-        "ninja", "-C", "out/Default", "--metrics_project", "some_project"
-    ], {}, [
-        "ninja", "-C", "out/Default", "--metrics_project", "some_project",
-        "--enable_cloud_monitoring", "--enable_cloud_profiler",
-        "--enable_cloud_trace", "--enable_cloud_logging", "--enable_collector"
-    ],
-                 id="metrics_project_set"),
+    pytest.param(
+        ["ninja", "-C", "out/Default", "--metrics_project", "some_project"], {},
+        [
+            "ninja", "-C", "out/Default", "--metrics_project", "some_project",
+            "--enable_cloud_monitoring", "--enable_cloud_profiler",
+            "--enable_cloud_trace", "--enable_cloud_logging"
+        ],
+        id="metrics_project_set"),
     pytest.param(["ninja", "-C", "out/Default"],
                  {"RBE_metrics_project": "some_project"}, [
                      "ninja", "-C", "out/Default", "--enable_cloud_monitoring",
                      "--enable_cloud_profiler", "--enable_cloud_trace",
-                     "--enable_cloud_logging", "--enable_collector"
+                     "--enable_cloud_logging"
                  ],
                  id="metrics_project_set_thru_env"),
     pytest.param(["ninja", "-C", "out/Default", "--project", "some_project"],
@@ -147,15 +147,14 @@ Starts the OTEL collector daemon.
                      "ninja", "-C", "out/Default", "--project", "some_project",
                      "--enable_cloud_monitoring", "--enable_cloud_profiler",
                      "--enable_cloud_trace", "--enable_cloud_logging",
-                     "--enable_collector", "--metrics_project=some_project"
+                     "--metrics_project=some_project"
                  ],
                  id="cloud_project_set"),
     pytest.param(["ninja", "-C", "out/Default"],
                  {"SISO_PROJECT": "some_project"}, [
                      "ninja", "-C", "out/Default", "--enable_cloud_monitoring",
                      "--enable_cloud_profiler", "--enable_cloud_trace",
-                     "--enable_cloud_logging", "--enable_collector",
-                     "--metrics_project=some_project"
+                     "--enable_cloud_logging", "--metrics_project=some_project"
                  ],
                  id="cloud_project_set_thru_env"),
     pytest.param(
@@ -163,8 +162,7 @@ Starts the OTEL collector daemon.
         {"SISO_PROJECT": "some_project"}, [
             "ninja", "-C", "out/Default", "--enable_cloud_profiler=false",
             "--enable_cloud_monitoring", "--enable_cloud_trace",
-            "--enable_cloud_logging", "--enable_collector",
-            "--metrics_project=some_project"
+            "--enable_cloud_logging", "--metrics_project=some_project"
         ],
         id="respects_set_flags"),
 ])
@@ -237,8 +235,7 @@ def test_apply_telemetry_flags_help_pages(mocker: Any, collector_help: str,
         "--enable_cloud_monitoring", "--enable_cloud_profiler",
         "--enable_cloud_trace", "--enable_cloud_logging"
     ]
-    if collector_present:
-        want.append("--enable_collector")
+    # --enable_collector is no longer added
     got = siso.apply_telemetry_flags(args, env, "siso_path")
     assert got == want
 
@@ -321,20 +318,20 @@ def test_resolve_sockets_folder(siso_test_fixture: Any, tmp_path: Path,
 
 
 def test_handle_collector_args_disabled(mocker: Any) -> None:
-    mock_fetch = mocker.patch("siso._fetch_metrics_project",
-                              return_value="test-project")
+    mock_fetch = mocker.patch("siso._fetch_metrics_project", return_value="")
     mock_start_collector = mocker.patch("siso._start_collector")
     mocker.patch("sys.platform", new="linux")
+    mocker.patch.dict("os.environ", {}, clear=True)
 
     siso_path = "path/to/siso"
     out_dir = "out/Default"
     env = {"SISO_PROJECT": "test-project"}
     args = ["ninja", "-C", out_dir]
 
-    result = siso._handle_collector_args(siso_path, args, env)
+    siso._handle_collector(siso_path, args, env)
 
-    assert result == args
-    mock_fetch.assert_not_called()
+    assert "SISO_COLLECTOR_ADDRESS" not in os.environ
+    mock_fetch.assert_called_once_with(args, env)
     mock_start_collector.assert_not_called()
 
 
@@ -358,17 +355,15 @@ def test_handle_collector_args_starts_linux(siso_test_fixture: Any,
 
     mocker.patch("siso._fetch_metrics_project",
                  side_effect=fetch_metrics_project_side_effect)
-    result = siso._handle_collector_args(siso_path, args, env)
+    mocker.patch.dict("os.environ", {}, clear=True)
+    siso._handle_collector(siso_path, args, env)
 
     sockets_file = os.path.join("/tmp", "run", "testuser", "siso",
                                 "test-project.sock")
-    assert result == [
-        "ninja", "--enable_collector",
-        f"--collector_address=unix://{sockets_file}"
-    ]
     assert captured_args == [["ninja", "--enable_collector"]]
     mock_start_collector.assert_called_once_with(siso_path, sockets_file,
                                                  "test-project")
+    assert os.environ["SISO_COLLECTOR_ADDRESS"] == f"unix://{sockets_file}"
 
 
 def test_handle_collector_args_starts_windows(mocker: Any) -> None:
@@ -377,16 +372,15 @@ def test_handle_collector_args_starts_windows(mocker: Any) -> None:
     mock_fetch = mocker.patch("siso._fetch_metrics_project",
                               return_value="test-project")
     mocker.patch("sys.platform", new="win32")
+    mocker.patch.dict("os.environ", {}, clear=True)
     siso_path = "path/to/siso"
     env = {"SISO_PROJECT": "test-project"}
     args = ["ninja", "--enable_collector"]
 
-    result = siso._handle_collector_args(siso_path, args, env)
+    siso._handle_collector(siso_path, args, env)
 
-    assert result == [
-        "ninja", "--enable_collector",
-        f"--collector_address={siso._OTLP_DEFAULT_TCP_ENDPOINT}"
-    ]
+    assert os.environ[
+        "SISO_COLLECTOR_ADDRESS"] == siso._OTLP_DEFAULT_TCP_ENDPOINT
     mock_fetch.assert_called_once_with(args, env)
     mock_start_collector.assert_called_once_with(siso_path, None,
                                                  "test-project")
@@ -412,9 +406,10 @@ def test_handle_collector_args_fails(siso_test_fixture: Any,
 
     mocker.patch("siso._fetch_metrics_project",
                  side_effect=fetch_metrics_project_side_effect)
-    result = siso._handle_collector_args(siso_path, args, env)
+    mocker.patch.dict("os.environ", {}, clear=True)
+    siso._handle_collector(siso_path, args, env)
 
-    assert result == ["ninja", "--enable_collector=false"]
+    assert "SISO_COLLECTOR_ADDRESS" not in os.environ
     assert captured_args == [["ninja", "--enable_collector"]]
     sockets_file = os.path.join("/tmp", "run", "testuser", "siso",
                                 "test-project.sock")
@@ -576,43 +571,41 @@ def test_start_collector_remove_socket_file_fails(
             ],
             "",
             id="ninja_with_logs_no_project"),
-        pytest.param(
-            [], {},
-            ["ninja", "-C", "out/Default", "--project=test-project"], "ninja",
-            True, {}, [
-                "ninja",
-                "-C",
-                "out/Default",
-                "--project=test-project",
-                "--metrics_labels",
-                f"type=developer,tool=siso,host_os={siso._SYSTEM_DICT.get(sys.platform, sys.platform)}",
-                "--enable_cloud_monitoring",
-                "--enable_cloud_profiler",
-                "--enable_cloud_trace",
-                "--enable_cloud_logging",
-                "--enable_collector",
-                "--metrics_project=test-project",
-            ],
-            "",
-            id="ninja_with_logs_with_project_in_args"),
-        pytest.param(
-            [], {}, ["ninja", "-C", "out/Default"], "ninja", True,
-            {"SISO_PROJECT": "test-project"},
-            [
-                "ninja",
-                "-C",
-                "out/Default",
-                "--metrics_labels",
-                f"type=developer,tool=siso,host_os={siso._SYSTEM_DICT.get(sys.platform, sys.platform)}",
-                "--enable_cloud_monitoring",
-                "--enable_cloud_profiler",
-                "--enable_cloud_trace",
-                "--enable_cloud_logging",
-                "--enable_collector",
-                "--metrics_project=test-project",
-            ],
-            "",
-            id="ninja_with_logs_with_project_in_env"),
+                    pytest.param(
+                        [], {},
+                        ["ninja", "-C", "out/Default", "--project=test-project"], "ninja",
+                        True, {}, [
+                            "ninja",
+                            "-C",
+                            "out/Default",
+                            "--project=test-project",
+                            "--metrics_labels",
+                            f"type=developer,tool=siso,host_os={siso._SYSTEM_DICT.get(sys.platform, sys.platform)}",
+                            "--enable_cloud_monitoring",
+                            "--enable_cloud_profiler",
+                            "--enable_cloud_trace",
+                            "--enable_cloud_logging",
+                            "--metrics_project=test-project",
+                        ],
+                        "",
+                        id="ninja_with_logs_with_project_in_args"),
+                    pytest.param(
+                        [], {}, ["ninja", "-C", "out/Default"], "ninja", True,
+                        {"SISO_PROJECT": "test-project"},
+                        [
+                            "ninja",
+                            "-C",
+                            "out/Default",
+                            "--metrics_labels",
+                            f"type=developer,tool=siso,host_os={siso._SYSTEM_DICT.get(sys.platform, sys.platform)}",
+                            "--enable_cloud_monitoring",
+                            "--enable_cloud_profiler",
+                            "--enable_cloud_trace",
+                            "--enable_cloud_logging",
+                            "--metrics_project=test-project",
+                        ],
+                        "",
+                        id="ninja_with_logs_with_project_in_env"),
         pytest.param(
             ["-gflag"], {"ninja": ["-sflag"]}, ["ninja", "-C", "out/Default"],
             "ninja", False, {}, [
@@ -661,32 +654,31 @@ def test_start_collector_remove_socket_file_fails(
             % shlex.join(["ninja", "-sflag_only", "-C", "out/Default"]),
             id="with_sisorc_subcmd_flags_only"
         ),
-        pytest.param(
-            ["-gflag_tel"],
-            {"ninja": ["-sflag_tel"]},
-            ["ninja", "-C", "out/Default"],
-            "ninja",
-            True,
-            {"SISO_PROJECT": "telemetry-project"},
-            [
-                "-gflag_tel",
-                "ninja",
-                "-sflag_tel",
-                "-C",
-                "out/Default",
-                "--metrics_labels",
-                f"type=developer,tool=siso,host_os={siso._SYSTEM_DICT.get(sys.platform, sys.platform)}",
-                "--enable_cloud_monitoring",
-                "--enable_cloud_profiler",
-                "--enable_cloud_trace",
-                "--enable_cloud_logging",
-                "--enable_collector",
-                "--metrics_project=telemetry-project",
-            ],
-            "depot_tools/siso.py: %s\n"
-            % shlex.join(["-gflag_tel", "ninja", "-sflag_tel", "-C", "out/Default"]),
-            id="with_sisorc_global_and_subcmd_flags_and_telemetry"
-        ),
+                    pytest.param(
+                        ["-gflag_tel"],
+                        {"ninja": ["-sflag_tel"]},
+                        ["ninja", "-C", "out/Default"],
+                        "ninja",
+                        True,
+                        {"SISO_PROJECT": "telemetry-project"},
+                        [
+                            "-gflag_tel",
+                            "ninja",
+                            "-sflag_tel",
+                            "-C",
+                            "out/Default",
+                            "--metrics_labels",
+                            f"type=developer,tool=siso,host_os={siso._SYSTEM_DICT.get(sys.platform, sys.platform)}",
+                            "--enable_cloud_monitoring",
+                            "--enable_cloud_profiler",
+                            "--enable_cloud_trace",
+                            "--enable_cloud_logging",
+                            "--metrics_project=telemetry-project",
+                        ],
+                        "depot_tools/siso.py: %s\n"
+                        % shlex.join(["-gflag_tel", "ninja", "-sflag_tel", "-C", "out/Default"]),
+                        id="with_sisorc_global_and_subcmd_flags_and_telemetry"
+                    ),
         pytest.param(
             ["-gflag_non_ninja"],
             {"other_subcmd": ["-sflag_non_ninja"]},
@@ -877,14 +869,12 @@ def test_start_collector_dead_then_healthy(platform: str, creationflags: int,
     result = siso._start_collector(siso_path, None, project)
 
     assert result
-    m["subprocess_popen"].assert_called_once_with([
-        siso_path, "collector", "--project", project, "--collector_address",
-        siso._OTLP_DEFAULT_TCP_ENDPOINT
-    ],
-                                                  stdout=subprocess.DEVNULL,
-                                                  stderr=subprocess.DEVNULL,
-                                                  start_new_session=True,
-                                                  creationflags=creationflags)
+    m["subprocess_popen"].assert_called_once_with(
+        [siso_path, "collector", "--project", project],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+        start_new_session=True,
+        creationflags=creationflags)
     m["kill_collector"].assert_not_called()
 
 
@@ -926,14 +916,12 @@ def test_start_collector_unhealthy_then_healthy(
     result = siso._start_collector(siso_path, None, project)
 
     assert result
-    m["subprocess_popen"].assert_called_once_with([
-        siso_path, "collector", "--project", project, "--collector_address",
-        siso._OTLP_DEFAULT_TCP_ENDPOINT
-    ],
-                                                  stdout=subprocess.DEVNULL,
-                                                  stderr=subprocess.DEVNULL,
-                                                  start_new_session=True,
-                                                  creationflags=0)
+    m["subprocess_popen"].assert_called_once_with(
+        [siso_path, "collector", "--project", project],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+        start_new_session=True,
+        creationflags=0)
     m["kill_collector"].assert_called_once()
 
 
@@ -988,14 +976,12 @@ def test_start_collector_never_healthy(start_collector_mocks: Dict[str, Any],
 
     siso._start_collector(siso_path, None, project)
 
-    m["subprocess_popen"].assert_called_once_with([
-        siso_path, "collector", "--project", project, "--collector_address",
-        siso._OTLP_DEFAULT_TCP_ENDPOINT
-    ],
-                                                  stdout=subprocess.DEVNULL,
-                                                  stderr=subprocess.DEVNULL,
-                                                  start_new_session=True,
-                                                  creationflags=0)
+    m["subprocess_popen"].assert_called_once_with(
+        [siso_path, "collector", "--project", project],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+        start_new_session=True,
+        creationflags=0)
     m["kill_collector"].assert_not_called()
 
 
@@ -1037,14 +1023,12 @@ def test_start_collector_healthy_after_retries(start_collector_mocks: Dict[str,
     result = siso._start_collector(siso_path, None, project)
 
     assert result
-    m["subprocess_popen"].assert_called_once_with([
-        siso_path, "collector", "--project", project, "--collector_address",
-        siso._OTLP_DEFAULT_TCP_ENDPOINT
-    ],
-                                                  stdout=subprocess.DEVNULL,
-                                                  stderr=subprocess.DEVNULL,
-                                                  start_new_session=True,
-                                                  creationflags=0)
+    m["subprocess_popen"].assert_called_once_with(
+        [siso_path, "collector", "--project", project],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+        start_new_session=True,
+        creationflags=0)
     m["kill_collector"].assert_not_called()
 
 
@@ -1107,14 +1091,12 @@ def test_start_collector_with_sockets_file(
     result = siso._start_collector(siso_path, sockets_file, project)
 
     assert result == expected_result
-    m["subprocess_popen"].assert_called_once_with([
-        siso_path, "collector", "--project", project, "--collector_address",
-        f"unix://{sockets_file}"
-    ],
-                                                  stdout=subprocess.DEVNULL,
-                                                  stderr=subprocess.DEVNULL,
-                                                  start_new_session=True,
-                                                  creationflags=0)
+    m["subprocess_popen"].assert_called_once_with(
+        [siso_path, "collector", "--project", project],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+        start_new_session=True,
+        creationflags=0)
     m["kill_collector"].assert_not_called()
     assert mock_os_exists.call_count == expected_os_exists_calls
 
