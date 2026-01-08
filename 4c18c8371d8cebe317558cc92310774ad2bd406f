@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7ae6cca1_90eb5b04",
+        "filename": "siso.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2026-01-08T05:22:12Z",
+      "side": 1,
+      "message": "Is this not used anymore?",
+      "range": {
+        "startLine": 48,
+        "startChar": 0,
+        "endLine": 53,
+        "endChar": 43
+      },
+      "revId": "4c18c8371d8cebe317558cc92310774ad2bd406f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7c4cc3d9_1d64b719",
+        "filename": "siso.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 183,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2026-01-08T05:22:12Z",
+      "side": 1,
+      "message": "Are there any check that `siso collector` subcommand exists? or is it fine to let it fail if Siso is an old version?",
+      "range": {
+        "startLine": 183,
+        "startChar": 0,
+        "endLine": 183,
+        "endChar": 60
+      },
+      "revId": "4c18c8371d8cebe317558cc92310774ad2bd406f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
