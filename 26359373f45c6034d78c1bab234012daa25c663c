@@ -22,6 +22,30 @@
       },
       "revId": "26359373f45c6034d78c1bab234012daa25c663c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "879e8b24_39753fae",
+        "filename": "siso.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-01-08T05:58:06Z",
+      "side": 1,
+      "message": "We actually still need env as we need creds to start the collector. So I guess we must go with path 2.",
+      "parentUuid": "bbd831d6_02e1eb87",
+      "range": {
+        "startLine": 124,
+        "startChar": 21,
+        "endLine": 124,
+        "endChar": 50
+      },
+      "revId": "26359373f45c6034d78c1bab234012daa25c663c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
