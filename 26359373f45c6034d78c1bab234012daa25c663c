@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "bbd831d6_02e1eb87",
+        "filename": "siso.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2026-01-08T05:57:05Z",
+      "side": 1,
+      "message": "Chatted offline: this function can return collector address if collector started.\nThis way it doesn\u0027t need to take \"env\" and modify it and clean it up later.\n\nOr \n\nYou can drop env[\u0027SISO_COLLECTOR_ADDRESS\u0027] in this function before returning False.",
+      "range": {
+        "startLine": 124,
+        "startChar": 21,
+        "endLine": 124,
+        "endChar": 50
+      },
+      "revId": "26359373f45c6034d78c1bab234012daa25c663c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
