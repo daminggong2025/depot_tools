@@ -20,6 +20,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "78831e34_418bbb0d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1450817
+      },
+      "writtenOn": "2026-01-08T01:13:01Z",
+      "side": 1,
+      "message": "I did refactor the common parts of `git_cl`, but there were some issues with just using the  `Run*Format` functions directly:\n* They call `DieWithError` if they can\u0027t find the formatter. We want to fallback to  skipping formatting\n* Those functions pass the filename so that they read from said file. JJ requires the file to be read from stdin (since jj is designed to format files in commits that aren\u0027t on disk).\n* Those functions write the output back to the file. JJ requires them to write it to stdout (since again, JJ may format files that aren\u0027t on disk).\n\nThe `DieWithError` could be worked around, but it\u0027s a rather fundamental change to change it to use stdin / stdout instead of passing a file path.\n\nAlso, it turns out that almost all of the complexity of the formatters (with the exception of the python formatter) comes from `git cl format` trying to handle options, which `jj fix` has no intention of supporting. Our command to run the formatters usually just boils down to `run_formatter([FindTool()])`",
+      "parentUuid": "ff987cad_f4e7bc5e",
+      "revId": "622ee23b86b073429f903968312c3f92757913ea",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "a37879e2_d30d992f",
         "filename": "format.py",
         "patchSetId": 6
