@@ -96,6 +96,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "bbe4b8d6_744bc6e8",
+        "filename": "siso.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 148,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-01-09T03:39:58Z",
+      "side": 1,
+      "message": "The alternative option is that we submit path without unix://, but then we will need to add it in 1) and have discretion code in both 1) and 2). So overall prepending looked like a better option.",
+      "parentUuid": "bdeacf33_ab920635",
+      "range": {
+        "startLine": 148,
+        "startChar": 33,
+        "endLine": 148,
+        "endChar": 41
+      },
+      "revId": "4df74cb1fa83ec5ba7d4f633a01f767b26e92986",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "7de6e547_bebf3d8c",
