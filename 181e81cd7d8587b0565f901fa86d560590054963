@@ -51,6 +51,24 @@
       "message": "Changed description to reflect what exactly changed.",
       "revId": "181e81cd7d8587b0565f901fa86d560590054963",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3530933f_d4f3ca2f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2026-01-09T03:27:21Z",
+      "side": 1,
+      "message": "\u003e 1) line 187\n\nActually, there were two different bugs. https://crrev.com/c/7373289 was missing env[\"SISO_COLLECTOR_ADDRESS\"]. https://crrev.com/c/7408697 is about the wrong path for removing socket file? \n\n\u003e 2) because of reland discussion. If you want healthy autoninja cl - here it is.\n\nMerging them looks better.",
+      "parentUuid": "9b8801df_7ea036d8",
+      "revId": "181e81cd7d8587b0565f901fa86d560590054963",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
