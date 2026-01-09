@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "0544f707_330e1aab",
+        "filename": "siso.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 148,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-01-09T03:27:06Z",
+      "side": 1,
+      "message": "Unfortunately it won\u0027t work this way, there is an annoying discrepancy where gRPC demands that unix:/// is present, but collector will fail with it. So I either add it in o11y.go, or remove it in collector. I went with the second path.",
+      "parentUuid": "2865d3b7_f531c20a",
+      "range": {
+        "startLine": 148,
+        "startChar": 33,
+        "endLine": 148,
+        "endChar": 41
+      },
+      "revId": "4df74cb1fa83ec5ba7d4f633a01f767b26e92986",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "7de6e547_bebf3d8c",
@@ -47,6 +71,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "e6858500_ac40c723",
+        "filename": "siso.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 328,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-01-09T03:27:06Z",
+      "side": 1,
+      "message": "Good point, it\u0027s mostly a remainder of when I was mutating os values directly. Done.",
+      "parentUuid": "7de6e547_bebf3d8c",
+      "range": {
+        "startLine": 328,
+        "startChar": 0,
+        "endLine": 328,
+        "endChar": 48
+      },
+      "revId": "4df74cb1fa83ec5ba7d4f633a01f767b26e92986",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "2fe799e7_3984813e",
@@ -60,6 +108,30 @@
       "writtenOn": "2026-01-09T03:10:06Z",
       "side": 1,
       "message": "`start_collector` doesn\u0027t have a side effect of mutating env var anymore. I think it doesn\u0027t have a good values to separate unit tests for start_collector/handle_collector. How about merging them?",
+      "range": {
+        "startLine": 383,
+        "startChar": 0,
+        "endLine": 385,
+        "endChar": 19
+      },
+      "revId": "4df74cb1fa83ec5ba7d4f633a01f767b26e92986",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "51bfff07_5b36e18a",
+        "filename": "tests/siso_test.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 385,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-01-09T03:27:06Z",
+      "side": 1,
+      "message": "Agreed, it makes more sense to have only handle_collector tests now.",
+      "parentUuid": "2fe799e7_3984813e",
       "range": {
         "startLine": 383,
         "startChar": 0,
