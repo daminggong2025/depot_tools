@@ -69,6 +69,24 @@
       "parentUuid": "9b8801df_7ea036d8",
       "revId": "181e81cd7d8587b0565f901fa86d560590054963",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "85173309_3e1e8f35",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-01-09T03:32:49Z",
+      "side": 1,
+      "message": "Right, the second cl fixed the first bug but introduced its own as I got overzealous moving things out of the function.",
+      "parentUuid": "3530933f_d4f3ca2f",
+      "revId": "181e81cd7d8587b0565f901fa86d560590054963",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
