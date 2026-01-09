@@ -41,6 +41,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "d096eb1a_607b8aa0",
+        "filename": "fetch_configs/xnnpack.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 3972246
+      },
+      "writtenOn": "2026-01-09T01:13:22Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "eb0bb369_d1410cc3",
+      "range": {
+        "startLine": 16,
+        "startChar": 41,
+        "endLine": 16,
+        "endChar": 48
+      },
+      "revId": "98f35d6a813da5ded418af6a48cea365674032f9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "3281bcaa_7166c886",
@@ -54,6 +78,30 @@
       "writtenOn": "2026-01-09T00:51:39Z",
       "side": 1,
       "message": "usually this matches the name (ie `XNNPACK`), but this might be worth verifying",
+      "range": {
+        "startLine": 34,
+        "startChar": 16,
+        "endLine": 34,
+        "endChar": 23
+      },
+      "revId": "98f35d6a813da5ded418af6a48cea365674032f9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e052c820_de912578",
+        "filename": "fetch_configs/xnnpack.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 3972246
+      },
+      "writtenOn": "2026-01-09T01:13:22Z",
+      "side": 1,
+      "message": "Ah-hah! This might have worked for me because MacOS\u0027 default file system is case-insensitive.",
+      "parentUuid": "3281bcaa_7166c886",
       "range": {
         "startLine": 34,
         "startChar": 16,
