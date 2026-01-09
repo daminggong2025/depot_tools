@@ -142,6 +142,23 @@
       "parentUuid": "7b0e2d54_d5338c74",
       "revId": "9ae32b24c3d9a0cc2e47cd0b0385cd822108b5ce",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3e2f2bf1_53857eb5",
+        "filename": "siso.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 154,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2026-01-09T02:39:50Z",
+      "side": 1,
+      "message": "I noticed that it is missing to set `env[\"SISO_COLLECTOR_ADDRESS\"]` here.",
+      "revId": "9ae32b24c3d9a0cc2e47cd0b0385cd822108b5ce",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ],
   "submitRequirementResults": [
