@@ -34,6 +34,24 @@
       "parentUuid": "8f2cdabf_cf2f789b",
       "revId": "9ae32b24c3d9a0cc2e47cd0b0385cd822108b5ce",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "23289bc6_dcfce00b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2026-01-09T01:31:24Z",
+      "side": 1,
+      "message": "With this reland, I see 1s of shutdown overhead.\n\n```\n❯ autoninja -C out/default base\nninja: Entering directory `out/default\u0027\nhttps://console.cloud.google.com/logs/viewer?project\u003drbe-chrome-untrusted\u0026resource\u003dgeneric_task/task_id/c0982804-5cf7-4fc6-8090-30592371fa59\nuse RBE instance \"projects/rbe-chrome-untrusted/instances/default_instance\"\nninja: no work to do.\n 1.11s shutdown cloud logging/monitoring\n3.98s Build Succeeded: 0 steps - 0.00/s\n```",
+      "parentUuid": "8f2cdabf_cf2f789b",
+      "revId": "9ae32b24c3d9a0cc2e47cd0b0385cd822108b5ce",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
