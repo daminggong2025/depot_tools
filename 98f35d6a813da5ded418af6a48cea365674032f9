@@ -16,6 +16,52 @@
       "message": "Hi Brian, could you PTAL at this additional depot_tools fetch config?\n\nBest\nRichard",
       "revId": "98f35d6a813da5ded418af6a48cea365674032f9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "eb0bb369_d1410cc3",
+        "filename": "fetch_configs/xnnpack.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-01-09T00:51:39Z",
+      "side": 1,
+      "message": "nit: add `.git` to match standard fetch_configs URLs",
+      "range": {
+        "startLine": 16,
+        "startChar": 41,
+        "endLine": 16,
+        "endChar": 48
+      },
+      "revId": "98f35d6a813da5ded418af6a48cea365674032f9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3281bcaa_7166c886",
+        "filename": "fetch_configs/xnnpack.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-01-09T00:51:39Z",
+      "side": 1,
+      "message": "usually this matches the name (ie `XNNPACK`), but this might be worth verifying",
+      "range": {
+        "startLine": 34,
+        "startChar": 16,
+        "endLine": 34,
+        "endChar": 23
+      },
+      "revId": "98f35d6a813da5ded418af6a48cea365674032f9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
