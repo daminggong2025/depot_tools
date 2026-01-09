@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4c2305fd_d43849e8",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2026-01-09T01:54:19Z",
+      "side": 1,
+      "message": "Can you point me out the fix for https://crrev.com/c/7409936? and Why do you need to merge two CLs?",
+      "revId": "181e81cd7d8587b0565f901fa86d560590054963",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
