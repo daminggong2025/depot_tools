@@ -48,6 +48,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "de14eb4e_353e4d44",
+        "filename": "siso.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 148,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2026-01-09T03:35:09Z",
+      "side": 1,
+      "message": "\u003e o11y.go, or remove it in collector\n\nI\u0027m not sure which collector code you mention. But the /health/config doesn\u0027t seem our extension. So, it doesn\u0027t seem possible to change it easily.",
+      "parentUuid": "0544f707_330e1aab",
+      "range": {
+        "startLine": 148,
+        "startChar": 33,
+        "endLine": 148,
+        "endChar": 41
+      },
+      "revId": "4df74cb1fa83ec5ba7d4f633a01f767b26e92986",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "7de6e547_bebf3d8c",
