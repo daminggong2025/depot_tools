@@ -120,6 +120,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "5bd2c5c9_a4d8fec4",
+        "filename": "siso.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 148,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2026-01-09T03:48:20Z",
+      "side": 1,
+      "message": "Thank you for sharing that. I\u0027m fine with the current Siso code. What I was suggesting is to change the response from /health/config endpoint to prepend unix://. But, it doesn\u0027t seem on our hand.\n\n```\n\u003e curl -s localhost:13133/health/config | jq \u0027.receivers.otlp.protocols.grpc.endpoint\u0027\n\"/run/user/711960/jwata/siso/rbe-chrome-untrusted.sock\"\n```",
+      "parentUuid": "bbe4b8d6_744bc6e8",
+      "range": {
+        "startLine": 148,
+        "startChar": 33,
+        "endLine": 148,
+        "endChar": 41
+      },
+      "revId": "4df74cb1fa83ec5ba7d4f633a01f767b26e92986",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "7de6e547_bebf3d8c",
