@@ -206,6 +206,30 @@
       },
       "revId": "9ae32b24c3d9a0cc2e47cd0b0385cd822108b5ce",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5e6ce069_4669dc80",
+        "filename": "tests/siso_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 274,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2026-01-09T03:11:17Z",
+      "side": 1,
+      "message": "Yeah, I already left comment there. The comments on this CL is a retrospective why it doesn\u0027t catch the bug.",
+      "parentUuid": "d80ed60e_8438b8b7",
+      "range": {
+        "startLine": 272,
+        "startChar": 0,
+        "endLine": 274,
+        "endChar": 19
+      },
+      "revId": "9ae32b24c3d9a0cc2e47cd0b0385cd822108b5ce",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ],
   "submitRequirementResults": [
