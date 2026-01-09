@@ -72,6 +72,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "bdeacf33_ab920635",
+        "filename": "siso.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 148,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-01-09T03:38:21Z",
+      "side": 1,
+      "message": "I mean these 2 points:\n\n1) https://source.corp.google.com/h/chromium/build/+/main:siso/subcmd/collector/receiver.go;drc\u003d74388365bb4dfcf54da57e140b8556482519a8fc;l\u003d28\n2) https://source.corp.google.com/h/chromium/build/+/main:siso/subcmd/ninja/o11y.go;drc\u003d5092824a6a0b5ce06cd8e772bd2a89bd93d6c449;l\u003d193\n\nFirst expects path without unix://, and the second expects unix:// to be present.",
+      "parentUuid": "de14eb4e_353e4d44",
+      "range": {
+        "startLine": 148,
+        "startChar": 33,
+        "endLine": 148,
+        "endChar": 41
+      },
+      "revId": "4df74cb1fa83ec5ba7d4f633a01f767b26e92986",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "7de6e547_bebf3d8c",
