@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "83d65a7c_1578fe23",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3972246
+      },
+      "writtenOn": "2026-01-10T02:47:01Z",
+      "side": 1,
+      "message": "Presubmit looks good, so sending to CQ. Thanks for the review Gavin!\n\nBest\nRichrad",
+      "revId": "b456679f871937d47023a436c76f41bf1e93491e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
