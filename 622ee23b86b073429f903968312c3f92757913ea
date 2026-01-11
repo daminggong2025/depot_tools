@@ -157,6 +157,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "5500cd6d_2279f7b2",
+        "filename": "format.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1000768
+      },
+      "writtenOn": "2026-01-11T04:55:17Z",
+      "side": 1,
+      "message": "tbh, google internal tools don\u0027t always have the best CLI as they\u0027re often expected to be integrated with larger tooling, so modeling on them should be done with care\n\nif you want to internalize format.py such that users would never execute it directly, i think you don\u0027t have to worry as much about it\n\nChromium devs, generally, aren\u0027t running jj.  they\u0027re certainly not running hg.  they might run tools directly out of depot_tools, especially because it\u0027s expected to be in $PATH.  so if you have a file named generally `format.py` in $PATH, it really should have a good interface.\n\nthis is why i\u0027m recommending you at least try to 1 page it even if it feels a bit bikeshedding.",
+      "parentUuid": "e279dd2f_1ce11a03",
+      "range": {
+        "startLine": 13,
+        "startChar": 0,
+        "endLine": 15,
+        "endChar": 54
+      },
+      "revId": "622ee23b86b073429f903968312c3f92757913ea",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "fc874cbf_52a817f6",
         "filename": "format.py",
         "patchSetId": 6
