@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d00c6b83_1adc6e46",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1289182
+      },
+      "writtenOn": "2026-01-12T17:00:48Z",
+      "side": 1,
+      "message": "Nit: This bug isn\u0027t in the Chromium tracker. Please move it to the Chromium tracker or use `b:`",
+      "range": {
+        "startLine": 14,
+        "startChar": 5,
+        "endLine": 14,
+        "endChar": 13
+      },
+      "revId": "074abb6e16d18dfedf1bd0fb290a635f8a03a0b9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "14958363_42b9eb9d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1289182
+      },
+      "writtenOn": "2026-01-12T17:00:48Z",
+      "side": 1,
+      "message": "I don\u0027t have committers in depot_tools, but LGTM!",
+      "revId": "074abb6e16d18dfedf1bd0fb290a635f8a03a0b9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
