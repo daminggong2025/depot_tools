@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a92b4d6c_dfe36d72",
+        "filename": "metadata/scan.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1553262
+      },
+      "writtenOn": "2026-01-12T21:15:12Z",
+      "side": 1,
+      "message": "Did you test this? It should be `config.is_open_source_project` `not args. is_open_source_project`. Maybe a test would be good.",
+      "revId": "24f6f135d117eee444d7a41b03a17019c59ebcf0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
