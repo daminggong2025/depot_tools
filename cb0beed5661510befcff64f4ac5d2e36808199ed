@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3705fbbb_a1af8c6d",
+        "filename": "gclient_scm.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 987,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-01-12T23:53:55Z",
+      "side": 1,
+      "message": "if revision is a branch name `IsValidRevision` will return True, and if we skip `self._Fetch` when `no_history` is true, we won\u0027t know if the branch has moved. can we instead do something like:\n```\nif not scm.GIT.IsValidRevision(self.checkout_path, revision, sha_only\u003dTrue):\n    depth \u003d 1 if no_history else None\n    self._Fetch(options, prune\u003doptions.force, depth\u003ddepth)\n```",
+      "range": {
+        "startLine": 986,
+        "startChar": 11,
+        "endLine": 987,
+        "endChar": 80
+      },
+      "revId": "cb0beed5661510befcff64f4ac5d2e36808199ed",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
