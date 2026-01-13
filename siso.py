@@ -262,7 +262,7 @@ def apply_telemetry_flags(args: list[str], env: dict[str, str],
     # gets set the same as project by default.
     # TODO: remove this code after we make sure all clients are using new siso versions.
 
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(add_help=False)
 
     parser.add_argument("-metrics_project", "--metrics_project")
     parser.add_argument("-project", "--project")
@@ -284,7 +284,7 @@ def apply_telemetry_flags(args: list[str], env: dict[str, str],
 
 
 def _fetch_metrics_project(args: list[str], env: dict[str, str]) -> str:
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(add_help=False)
     parser.add_argument("-metrics_project", "--metrics_project")
     parser.add_argument("-project", "--project")
     metrics_env_var = "RBE_metrics_project"
@@ -446,6 +446,10 @@ def main(args: list[str],
     # real limitation.
     if sys.platform == "win32" and len(args) == 2:
         args = args[:1] + args[1].split()
+
+    # Forward -h/--help to siso binary as "help" command to show siso's help.
+    if len(args) > 1 and args[1] in ("-h", "--help"):
+        args[1] = "help"
 
     # macOS's python sets CPATH, LIBRARY_PATH, SDKROOT implicitly.
     # https://openradar.appspot.com/radar?id=5608755232243712
