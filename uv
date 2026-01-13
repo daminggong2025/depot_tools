@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+# Copyright (c) 2024 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# This wrapper shadows 'uv' to automatically maintain the hermetic environment.
+# It runs setup_uv_env.py (which fast-exits if up-to-date), then execs the real uv.
+
+set -e
+
+# Define paths
+REPO_ROOT="$(dirname "${BASH_SOURCE[0]}")"
+SETUP_SCRIPT="$REPO_ROOT/setup_uv.py"
+
+# Search for .vpython3 or .vpython up the directory tree
+VPYTHON_SPEC=""
+cur="$PWD"
+while true; do
+    if [ -f "$cur/.vpython3" ]; then
+        VPYTHON_SPEC="$cur/.vpython3"
+        break
+    fi
+    if [ -f "$cur/.vpython" ]; then
+        VPYTHON_SPEC="$cur/.vpython"
+        break
+    fi
+    if [ "$cur" = "/" ]; then
+        break
+    fi
+    cur=$(dirname "$cur")
+done
+
+# Run setup script only if a spec file is found
+if [ -n "$VPYTHON_SPEC" ]; then
+    python3 "$SETUP_SCRIPT" "$VPYTHON_SPEC"
+fi
+
+# Find the real 'uv' executable.
+# We iterate through PATH, skipping this script itself.
+THIS_INODE=$(ls -i "$0" | awk '{print $1}')
+
+REAL_UV=""
+IFS=':' read -ra ADDR <<< "$PATH"
+for dir in "${ADDR[@]}"; do
+    if [ -z "$dir" ]; then continue; fi
+    
+    CANDIDATE="$dir/uv"
+    if [ -x "$CANDIDATE" ] && [ -f "$CANDIDATE" ]; then
+        CAND_INODE=$(ls -i "$CANDIDATE" 2>/dev/null | awk '{print $1}' || echo "")
+        if [ "$CAND_INODE" != "$THIS_INODE" ]; then
+            REAL_UV="$CANDIDATE"
+            break
+        fi
+    fi
+done
+
+if [ -z "$REAL_UV" ]; then
+    # Fallback search
+    if command -v ~/.cargo/bin/uv >/dev/null 2>&1; then
+        REAL_UV=~/.cargo/bin/uv
+    elif command -v ~/.local/bin/uv >/dev/null 2>&1; then
+        REAL_UV=~/.local/bin/uv
+    else
+        echo "Error: Could not find the system 'uv' executable in PATH."
+        echo "Please ensure uv is installed and in your PATH (after depot_tools)."
+        exit 127
+    fi
+fi
+
+exec "$REAL_UV" "$@"

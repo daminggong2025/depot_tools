@@ -1,7 +1,54 @@
-[tool.pyright]
-venvPath = 'recipes/.recipe_deps/_venv'
-venv = 'normal'
-extraPaths = ['recipes/.recipe_deps/_path']
+[project]
+name = "depot_tools_env"
+version = "0.1.0"
+requires-python = "==3.11.8"
+dependencies = [
+  "httplib2",
+  "six",
+  "requests",
+  "charset_normalizer",
+  "urllib3",
+  "idna",
+  "brotli",
+  "tzdata",
+  "python-dateutil",
+  "certifi",
+  "parameterized",
+  "pytest",
+  "pytest-mock",
+  "pytest-cov",
+  "iniconfig",
+  "packaging",
+  "pluggy",
+  "pygments",
+  "colorama",
+  "hjson",
+  "sqlparse",
+  "lxml",
+  "coverage",
+]
 
-[tool.coverage.run]
-disable_warnings = ["no-ctracer"]
+[tool.uv.sources]
+httplib2 = { path = ".uv_bridge/httplib2-0.13.1-py3-none-any.whl" }
+six = { path = ".uv_bridge/six-1.10.0-py2.py3-none-any.whl" }
+requests = { path = ".uv_bridge/requests-2.31.0-py3-none-any.whl" }
+charset_normalizer = { path = ".uv_bridge/charset_normalizer-2.0.4-py3-none-any.whl" }
+urllib3 = { path = ".uv_bridge/urllib3-1.26.6-py2.py3-none-any.whl" }
+idna = { path = ".uv_bridge/idna-2.8-py2.py3-none-any.whl" }
+brotli = { path = ".uv_bridge/Brotli-1.0.9-py2.py3-none-any.whl" }
+tzdata = { path = ".uv_bridge/tzdata-2023.4-py2.py3-none-any.whl" }
+python-dateutil = { path = ".uv_bridge/python_dateutil-2.7.3-py2.py3-none-any.whl" }
+certifi = { path = ".uv_bridge/certifi-2021.5.30-py2.py3-none-any.whl" }
+parameterized = { path = ".uv_bridge/parameterized-0.8.1-py2.py3-none-any.whl" }
+pytest = { path = ".uv_bridge/pytest-9.0.2-py3-none-any.whl" }
+pytest-mock = { path = ".uv_bridge/pytest_mock-3.10.0-py3-none-any.whl" }
+pytest-cov = { path = ".uv_bridge/pytest_cov-6.2.1-py2.py3-none-any.whl" }
+iniconfig = { path = ".uv_bridge/iniconfig-2.1.0-py3-none-any.whl" }
+packaging = { path = ".uv_bridge/packaging-25.0-py3-none-any.whl" }
+pluggy = { path = ".uv_bridge/pluggy-1.6.0-py3-none-any.whl" }
+pygments = { path = ".uv_bridge/pygments-2.19.2-py3-none-any.whl" }
+colorama = { path = ".uv_bridge/colorama-0.4.6-py2.py3-none-any.whl" }
+hjson = { path = ".uv_bridge/hjson-3.1.0-py2.py3-none-any.whl" }
+sqlparse = { path = ".uv_bridge/sqlparse-0.4.4-py3-none-any.whl" }
+lxml = { path = ".uv_bridge/lxml-4.9.3-py3-none-any.whl" }
+coverage = { path = ".uv_bridge/coverage-7.13.0-py3-none-any.whl" }
