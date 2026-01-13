@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9f81b42e_d154a8e2",
+        "filename": "yapf_config.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000768
+      },
+      "writtenOn": "2026-01-13T15:46:51Z",
+      "side": 1,
+      "message": "why is the file +x if it doesn\u0027t have a main() or shebang ?",
+      "revId": "1304623d0e82ee19a9033686313c46a2ca0c6943",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3c544f59_fd3b53a4",
+        "filename": "yapf_config.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000768
+      },
+      "writtenOn": "2026-01-13T15:46:51Z",
+      "side": 1,
+      "message": "missing proper file header",
+      "revId": "1304623d0e82ee19a9033686313c46a2ca0c6943",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "41bb409f_96ac86ee",
+        "filename": "yapf_config.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1000768
+      },
+      "writtenOn": "2026-01-13T15:46:51Z",
+      "side": 1,
+      "message": "new code really should have typing from the start",
+      "revId": "1304623d0e82ee19a9033686313c46a2ca0c6943",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b745a7bc_35deded1",
+        "filename": "yapf_config.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1000768
+      },
+      "writtenOn": "2026-01-13T15:46:51Z",
+      "side": 1,
+      "message": "lines randomly too long",
+      "revId": "1304623d0e82ee19a9033686313c46a2ca0c6943",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

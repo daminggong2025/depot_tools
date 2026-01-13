@@ -205,6 +205,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "ecac6417_87f8cce9",
+        "filename": "format.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1000768
+      },
+      "writtenOn": "2026-01-13T15:46:51Z",
+      "side": 1,
+      "message": "i won\u0027t care nearly as much if it\u0027s an internal implementation detail :)",
+      "parentUuid": "caaa90a9_eefa0d12",
+      "range": {
+        "startLine": 13,
+        "startChar": 0,
+        "endLine": 15,
+        "endChar": 54
+      },
+      "revId": "622ee23b86b073429f903968312c3f92757913ea",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "fc874cbf_52a817f6",
         "filename": "format.py",
         "patchSetId": 6
