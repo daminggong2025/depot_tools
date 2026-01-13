@@ -16,6 +16,24 @@
       "message": "need this?\n\n```\n % ~/go/bin/siso -h   \n\nUsage: siso [flags] [command] [arguments]\n\ne.g.\n $ siso ninja -C out/Default\n\nimportant flags of /usr/local/google/home/ukai/go/bin/siso:\n  -credential_helper path\n    path to a credential helper.\n    see https://github.com/EngFlow/credential-helper-spec/blob/main/spec.md\n    \"luci-auth\" uses luci-auth.\n    \"gcloud\" uses gcloud.\n    \"google-application-default\" or \"\" uses Google Application Default Credentials.\n    \"mTLS\" disables per RPC credentials.\n    environment variable SISO_CREDENTIAL_HELPER sets default value.\n    (default \"/google/src/head/depot/google3/devtools/blaze/bazel/credhelper/credhelper\")\n  -version\n   print version\n\nUse \"siso help\" to display commands.\nUse \"siso help [command]\" for more information about a command.\nUse \"siso flags\" to display all flags.\n```\n\n```\n % ~/go/bin/siso help\nUsage: siso \u003cflags\u003e \u003csubcommand\u003e \u003csubcommand args\u003e\n\nSubcommands:\n        collector        OTEL collector daemon\n        ninja            build the requests targets as ninja\n\nSubcommands for auth:\n        auth-check       prints current auth status\n        login            login to siso system\n        logout           logout from siso system\n\nSubcommands for command-help:\n        flags            describe all known top-level flags\n        help             describe subcommands and their syntax\n        version          prints the executable version\n\nSubcommands for debugging:\n        ninjafrontend    ninjafrontend reader\n        scandeps         run scandeps\n\nSubcommands for internal-helper:\n        install-helper   helper tool to install executable\n\nSubcommands for investigation:\n        fs               command group to access siso hashfs data\n        metrics          command group to analyze siso_metrics.json\n        ps               display running steps of ninja build\n        query            command group to query ninja build graph\n        report           report siso logs\n        webui            starts the experimental webui\n\nSubcommands for reapi:\n        fetch            fetch contents\n        isolate          isolate uploads and computes tree digests\n        proxy            proxy RE-API service\n        recall           recall action\n\n\nUse \"siso flags\" for a list of top-level flags\n```",
       "revId": "85b876d330bdc08a6f654526edf14aac570a8e3c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "54eca71d_da2ec278",
+        "filename": "siso.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 450,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2026-01-13T02:19:53Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f41ae3f8_f663bc26",
+      "revId": "85b876d330bdc08a6f654526edf14aac570a8e3c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
