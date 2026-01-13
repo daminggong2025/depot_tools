@@ -103,3 +103,9 @@ testing_support/google_appengine
 # Ignore coverage results file and htlp folder.
 .coverage
 htmlcov/
+
+# uv bridge artifacts
+/.uv_bridge/
+/.venv/
+/pyproject.toml
+/uv.lock
