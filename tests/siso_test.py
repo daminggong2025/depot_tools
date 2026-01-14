@@ -370,7 +370,7 @@ def test_handle_collector_args_disabled(start_collector_mocks: Dict[str, Any],
     mock_fetch = mocker.patch("siso._fetch_metrics_project", return_value="")
     m = start_collector_mocks
     mocker.patch("sys.platform", new="linux")
-    siso_path = "path/to/siso"
+    siso_path = "siso_path"
     out_dir = "out/Default"
     env = {"SISO_PROJECT": "test-project"}
     args = ["ninja", "-C", out_dir]
@@ -396,6 +396,10 @@ def start_collector_mocks(mocker: Any) -> Dict[str, Any]:
         mocker.patch("siso.http.client.HTTPConnection"),
         "subprocess_popen":
         mocker.patch("siso.subprocess.Popen"),
+        "os_path_exists":
+        mocker.patch("os.path.exists", return_value=True),
+        "os_remove":
+        mocker.patch("os.remove"),
     }
     mock_conn = mocker.Mock()
     mocks["http_connection"].return_value = mock_conn
@@ -429,10 +433,10 @@ def _configure_http_responses(
         if path == "/health/config":
             if not config_responses:
                 return mocker.Mock(status=200,
-                                   read=mocker.Mock(return_value=b"{}"))
+                                   read=mocker.Mock(return_value=b"{{}}"))
             status_code, _ = config_responses.pop(0)
             return mocker.Mock(status=status_code,
-                               read=mocker.Mock(return_value=b""))
+                               read=mocker.Mock(return_value=b"{{}}"))
         return mocker.Mock(status=404)
 
     mock_conn.request.side_effect = request_side_effect
@@ -1151,6 +1155,115 @@ def test_handle_collector_lifecycle(
 
     if not expected_result:
         m["kill_collector"].assert_not_called()
+
+
+@pytest.mark.skipif(sys.platform == "win32", reason="Not applicable on Windows")
+def test_handle_collector_missing_sockets_file_appears_later(
+    siso_test_fixture: Any,
+    start_collector_mocks: Dict[str, Any],
+    mocker: Any,
+) -> None:
+    mocker.patch("sys.platform", new="linux")
+
+    socket_exists_vals = iter([False, False, True])
+
+    def socket_file_sideeff(path: str) -> bool:
+        if path.endswith(".sock"):
+            return next(socket_exists_vals)
+        return True
+
+    mocker.patch("os.path.exists", side_effect=socket_file_sideeff)
+
+    m = start_collector_mocks
+    siso_path = "siso_path"
+    project = "test-project"
+    endpoint = os.path.join("/tmp", "testuser", "siso", f"{project}.sock")
+
+    # Status: DEAD -> (Start) -> Loop 1 (200) -> Loop 2 (200)
+    _configure_http_responses(
+        mocker,
+        m["mock_conn"],
+        status_responses=[(404, None), (200, None), (200, None)],
+        config_responses=[(200, None), (200, None)],
+    )
+
+    status_healthy = {"healthy": True, "status": "StatusOK"}
+    config_with_socket = {
+        "receivers": {
+            "otlp": {
+                "protocols": {
+                    "grpc": {
+                        "endpoint": endpoint
+                    }
+                }
+            }
+        }
+    }
+
+    mock_json_loads = mocker.patch("siso.json.loads")
+    mock_json_loads.side_effect = [
+        status_healthy, config_with_socket, status_healthy, config_with_socket
+    ]
+
+    env = {}
+    args = ["--project", project]
+
+    res_env = siso._handle_collector(siso_path, args, env)
+
+    assert res_env.get("SISO_COLLECTOR_ADDRESS") == f"unix://{endpoint}"
+    # call count check is brittle with side_effect and wraps, rely on logic success
+
+
+@pytest.mark.skipif(sys.platform == "win32", reason="Not applicable on Windows")
+def test_handle_collector_missing_sockets_file_never_appears(
+    siso_test_fixture: Any,
+    start_collector_mocks: Dict[str, Any],
+    mocker: Any,
+) -> None:
+    mocker.patch("sys.platform", new="linux")
+
+    mocker.patch("os.path.exists", return_value=False)
+
+    m = start_collector_mocks
+    siso_path = "siso_path"
+    project = "test-project"
+    endpoint = os.path.join("/tmp", "testuser", "siso", f"{project}.sock")
+
+    # Status: DEAD -> (Start) -> Loop 1..N (200)
+    status_responses = [(404, None)] + [(200, None)] * 20
+    config_responses = [(200, None)] * 20
+
+    _configure_http_responses(
+        mocker,
+        m["mock_conn"],
+        status_responses=status_responses,
+        config_responses=config_responses,
+    )
+
+    status_healthy = {"healthy": True, "status": "StatusOK"}
+    config_with_socket = {
+        "receivers": {
+            "otlp": {
+                "protocols": {
+                    "grpc": {
+                        "endpoint": endpoint
+                    }
+                }
+            }
+        }
+    }
+
+    mock_json_loads = mocker.patch("siso.json.loads")
+    mock_json_loads.side_effect = itertools.cycle(
+        [status_healthy, config_with_socket])
+
+    env = {}
+    args = ["--project", project]
+
+    res_env = siso._handle_collector(siso_path, args, env)
+
+    # Should fail to find socket file, so no address in env.
+    assert "SISO_COLLECTOR_ADDRESS" not in res_env
 
 
 # Stanza to have pytest be executed.
