@@ -532,7 +532,9 @@ def main(args: list[str],
                                                args[1:], subcmd,
                                                should_collect_logs, siso_path,
                                                env)
-                if should_collect_logs:
+                if should_collect_logs and not any(
+                        arg in processed_args
+                        for arg in ["-h", "--help", "-help"]):
                     env = _handle_collector(siso_path, processed_args, env)
                 check_outdir(out_dir)
                 return caffeinate.call([siso_path] + processed_args, env=env)
