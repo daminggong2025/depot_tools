@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5b860984_61a7cb9b",
+        "filename": "siso.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 542,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2026-01-14T07:28:07Z",
+      "side": 1,
+      "message": "As suggested in https://chromium-review.googlesource.com/c/chromium/tools/depot_tools/+/7459645/comment/ecb81f0b_ce41ed6c/, `should_collect_logs` should be True only when sub command  is ninja.",
+      "range": {
+        "startLine": 542,
+        "startChar": 19,
+        "endLine": 542,
+        "endChar": 38
+      },
+      "revId": "2b6d846a8ba3b8ffe50174b5144d848dfff2f145",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
