@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ecb81f0b_ce41ed6c",
+        "filename": "siso.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 468,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2026-01-14T03:11:07Z",
+      "side": 1,
+      "message": "can\u0027t we make should_collect_logs to false if subcmd is not ninja here?",
+      "revId": "b7ea78f27f3e400398d8b122826d6ae0bd15b17b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
