@@ -51,6 +51,24 @@
       "parentUuid": "4ea2babc_464fce51",
       "revId": "5658d02675d4dbc794411e98e688af4f05e8ae9f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9e610e50_09e0be77",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1381059
+      },
+      "writtenOn": "2026-01-14T19:55:44Z",
+      "side": 1,
+      "message": "I\u0027d say something like\n\n```\nif issue :\u003d input_api.change.issue:\n  info \u003d input_api.gerrit.GetChangeInfo(issue)\n  created_time \u003d info.created # in the format of https://gerrit-review.googlesource.com/Documentation/rest-api.html#timestamp\n  # convert to python date and check whether it\u0027s from last year.\n```",
+      "parentUuid": "32012b1a_8eef448d",
+      "revId": "5658d02675d4dbc794411e98e688af4f05e8ae9f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
