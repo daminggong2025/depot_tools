@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "97041afc_9e52b0bd",
+        "filename": "siso.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 468,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2026-01-14T03:24:25Z",
+      "side": 1,
+      "message": "Yeah, considered that, too. Will refactor the code in a follow up CL. Let me submit this to fix the issue for now.",
+      "parentUuid": "ecb81f0b_ce41ed6c",
+      "revId": "b7ea78f27f3e400398d8b122826d6ae0bd15b17b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "1a1269b8_161317b9",
