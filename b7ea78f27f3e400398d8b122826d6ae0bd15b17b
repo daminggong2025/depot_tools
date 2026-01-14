@@ -57,6 +57,30 @@
       },
       "revId": "b7ea78f27f3e400398d8b122826d6ae0bd15b17b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8d53956d_b88f4603",
+        "filename": "siso.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 536,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2026-01-14T04:20:14Z",
+      "side": 1,
+      "message": "Which tests do you think should have caught this bug?",
+      "parentUuid": "1a1269b8_161317b9",
+      "range": {
+        "startLine": 535,
+        "startChar": 17,
+        "endLine": 536,
+        "endChar": 73
+      },
+      "revId": "b7ea78f27f3e400398d8b122826d6ae0bd15b17b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
