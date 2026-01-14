@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "269d5141_076dd09c",
+        "filename": "siso.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 339,
+      "author": {
+        "id": 1577257
+      },
+      "writtenOn": "2026-01-14T05:59:04Z",
+      "side": 1,
+      "message": "maybe \"failed to start\"?\n```suggestion\n            \"OpenTelemetry Collector failed to start, uploading build metrics directly.\",\n```",
+      "range": {
+        "startLine": 339,
+        "startChar": 37,
+        "endLine": 339,
+        "endChar": 55
+      },
+      "revId": "033e84c2751edbfd2e8a3a061d3ada4cd3b0939c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
