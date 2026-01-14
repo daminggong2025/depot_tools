@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6e6b00f8_dd18bd66",
+        "filename": "siso.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 338,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2026-01-14T01:27:45Z",
+      "side": 1,
+      "message": "nit: From a user\u0027s perspective, it\u0027s not clear what \"Collector\" means.\nHow about making it more explicit? e.g.\n\n\"OpenTelemetry Collector never came to life, uploading build metrics directly.\"",
+      "range": {
+        "startLine": 338,
+        "startChar": 15,
+        "endLine": 338,
+        "endChar": 78
+      },
+      "revId": "6e609de5a9684c2f966d19326abe94b6d3f08a47",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
