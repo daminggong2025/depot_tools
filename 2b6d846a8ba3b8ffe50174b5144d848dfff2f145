@@ -22,6 +22,30 @@
       },
       "revId": "2b6d846a8ba3b8ffe50174b5144d848dfff2f145",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c962c814_fe5718a6",
+        "filename": "siso.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 542,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-01-14T07:35:10Z",
+      "side": 1,
+      "message": "I got you. Let me fix this in another CL then, I will make a followup.",
+      "parentUuid": "5b860984_61a7cb9b",
+      "range": {
+        "startLine": 542,
+        "startChar": 19,
+        "endLine": 542,
+        "endChar": 38
+      },
+      "revId": "2b6d846a8ba3b8ffe50174b5144d848dfff2f145",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
