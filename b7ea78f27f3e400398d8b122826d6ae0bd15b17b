@@ -16,6 +16,29 @@
       "message": "can\u0027t we make should_collect_logs to false if subcmd is not ninja here?",
       "revId": "b7ea78f27f3e400398d8b122826d6ae0bd15b17b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1a1269b8_161317b9",
+        "filename": "siso.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 536,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-01-14T03:23:16Z",
+      "side": 1,
+      "message": "Please cover this in unit tests.",
+      "range": {
+        "startLine": 535,
+        "startChar": 17,
+        "endLine": 536,
+        "endChar": 73
+      },
+      "revId": "b7ea78f27f3e400398d8b122826d6ae0bd15b17b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
