@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7e96feab_283bf279",
+        "filename": "siso.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 416,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2026-01-14T07:54:14Z",
+      "side": 1,
+      "message": "You can also change this condition now becuase should_collect_logs implies `subcmd \u003d\u003d \"ninja\"` now. Also, `apply_metrics_labels` is a part of `apply_telemetry_flags`, IMO.",
+      "range": {
+        "startLine": 413,
+        "startChar": 0,
+        "endLine": 416,
+        "endChar": 70
+      },
+      "revId": "227ae4653dc2e056ddcf08c4de7d89526209a244",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
