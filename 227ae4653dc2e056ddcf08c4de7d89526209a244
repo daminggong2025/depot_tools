@@ -22,6 +22,30 @@
       },
       "revId": "227ae4653dc2e056ddcf08c4de7d89526209a244",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "101ae4b4_7872527d",
+        "filename": "siso.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 416,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-01-14T07:56:45Z",
+      "side": 1,
+      "message": "In this case both of these should be put under should_collect_logs. Makes me think why we haven\u0027t done it before.. I can merge these 2 in one function that runs only when should_collect_logs is true, that should be correct, but let me make another CL for that so that we can roll back easily if we misjudge what we did.",
+      "parentUuid": "7e96feab_283bf279",
+      "range": {
+        "startLine": 413,
+        "startChar": 0,
+        "endLine": 416,
+        "endChar": 70
+      },
+      "revId": "227ae4653dc2e056ddcf08c4de7d89526209a244",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
