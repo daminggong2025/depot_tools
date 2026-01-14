@@ -93,6 +93,30 @@
       },
       "revId": "8e75c8915e97073ef95232a61070f677fe9f0581",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b53a9385_778f244c",
+        "filename": "gn.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-01-14T19:10:55Z",
+      "side": 1,
+      "message": "I\u0027m concerned that using `os.execv` on windows will cause `gn.bat` to exit immediately: https://bugs.python.org/issue9148#msg109179. For better error handling you could consider using depot_tools\u0027 `subprocess2`",
+      "parentUuid": "026d49c4_57b30ada",
+      "range": {
+        "startLine": 87,
+        "startChar": 4,
+        "endLine": 87,
+        "endChar": 28
+      },
+      "revId": "8e75c8915e97073ef95232a61070f677fe9f0581",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

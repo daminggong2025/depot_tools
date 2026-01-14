@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "da7753e0_90735717",
+        "filename": "gn.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-01-14T19:10:55Z",
+      "side": 1,
+      "message": "let\u0027s print to `sys.stderr` for consistency",
+      "range": {
+        "startLine": 52,
+        "startChar": 26,
+        "endLine": 54,
+        "endChar": 62
+      },
+      "revId": "3256e818da0528b2a3fa81035880b4f0b0c9da84",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
