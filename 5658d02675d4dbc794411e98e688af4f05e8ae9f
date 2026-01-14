@@ -16,6 +16,23 @@
       "message": "PTAL",
       "revId": "5658d02675d4dbc794411e98e688af4f05e8ae9f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4ea2babc_464fce51",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1381059
+      },
+      "writtenOn": "2026-01-14T19:23:05Z",
+      "side": 1,
+      "message": "I\u0027m afraid this might be too board and wondering if there\u0027s better alternative, I can think of 2\n\n1. Ask user to use `Bypass-Check-License` footer if they are hitting this scenario, we could enhance the message every January.\n2. Do the skipping like you did in this CL only if the CL creation date is from last year.\n\nWDYT?",
+      "revId": "5658d02675d4dbc794411e98e688af4f05e8ae9f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
