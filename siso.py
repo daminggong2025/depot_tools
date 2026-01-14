@@ -335,7 +335,8 @@ def _handle_collector(siso_path: str, args: list[str],
     lenv["SISO_COLLECTOR_ADDRESS"] = expected_endpoint
     started = _start_collector(siso_path, expected_endpoint, project, lenv)
     if not started:
-        print("Collector never came to life", file=sys.stderr)
+        print("Collector never came to life, backing off to the direct upload.",
+              file=sys.stderr)
         lenv.pop("SISO_COLLECTOR_ADDRESS", None)
     return lenv
 
