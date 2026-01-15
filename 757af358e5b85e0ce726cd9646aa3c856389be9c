@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1c1f2d17_97f64fcc",
+        "filename": "BUILD_OWNERS",
+        "patchSetId": 1
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2026-01-15T03:06:29Z",
+      "side": 1,
+      "message": "can we add new members?\n@philwo@google.com",
+      "revId": "757af358e5b85e0ce726cd9646aa3c856389be9c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
