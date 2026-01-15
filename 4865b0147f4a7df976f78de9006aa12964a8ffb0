@@ -22,6 +22,30 @@
       },
       "revId": "4865b0147f4a7df976f78de9006aa12964a8ffb0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c8cb85e5_2b709c14",
+        "filename": "siso.py",
+        "patchSetId": 10
+      },
+      "lineNbr": 460,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-01-15T05:33:39Z",
+      "side": 1,
+      "message": "Great find, merged fix up the chain.",
+      "parentUuid": "78096dea_56b73597",
+      "range": {
+        "startLine": 460,
+        "startChar": 8,
+        "endLine": 460,
+        "endChar": 19
+      },
+      "revId": "4865b0147f4a7df976f78de9006aa12964a8ffb0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
