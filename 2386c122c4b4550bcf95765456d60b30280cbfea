@@ -39,6 +39,30 @@
       },
       "revId": "2386c122c4b4550bcf95765456d60b30280cbfea",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ed709cb1_33953a51",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 628,
+      "author": {
+        "id": 4367541
+      },
+      "writtenOn": "2026-01-15T21:59:19Z",
+      "side": 1,
+      "message": "I think its already covered by \u0027import \u0027? I tried a long line with `import type` and no warnings were seen.\n\nUsing `export {` and `export type {` here is to avoid generating warnings for examples like `export const LONGLONGLONGLONGLONGSTRING \u003d veryverylonglonglonglonglonglongstring`",
+      "parentUuid": "7a444ed5_c77702fa",
+      "range": {
+        "startLine": 628,
+        "startChar": 0,
+        "endLine": 628,
+        "endChar": 59
+      },
+      "revId": "2386c122c4b4550bcf95765456d60b30280cbfea",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
