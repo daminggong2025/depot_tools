@@ -89,6 +89,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "7624c784_f7dce659",
+        "filename": "tests/siso_test.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-01-15T05:22:00Z",
+      "side": 1,
+      "message": "Ah, loud and clear. Done.",
+      "parentUuid": "f492718b_776481fa",
+      "revId": "36f6cf5ddee48d5d1e23688598b103619fe4cff7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "ea80162f_cd6039d6",
