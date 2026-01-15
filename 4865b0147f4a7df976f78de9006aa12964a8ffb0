@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "78096dea_56b73597",
+        "filename": "siso.py",
+        "patchSetId": 10
+      },
+      "lineNbr": 460,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2026-01-15T05:11:54Z",
+      "side": 1,
+      "message": "nit: Is this more like \"not_help_req\" or \"no_help_flag\"?",
+      "range": {
+        "startLine": 460,
+        "startChar": 8,
+        "endLine": 460,
+        "endChar": 19
+      },
+      "revId": "4865b0147f4a7df976f78de9006aa12964a8ffb0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
