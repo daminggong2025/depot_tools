@@ -16,6 +16,29 @@
       "message": "Hey @yiwzhang@google.com I came across the issue while working on some TypeScript changes. can you take a look at the CL? would appreciate your opinions",
       "revId": "2386c122c4b4550bcf95765456d60b30280cbfea",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7a444ed5_c77702fa",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 628,
+      "author": {
+        "id": 1115893
+      },
+      "writtenOn": "2026-01-15T21:45:38Z",
+      "side": 1,
+      "message": "Should we also add `import type` to this list?",
+      "range": {
+        "startLine": 628,
+        "startChar": 0,
+        "endLine": 628,
+        "endChar": 59
+      },
+      "revId": "2386c122c4b4550bcf95765456d60b30280cbfea",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
