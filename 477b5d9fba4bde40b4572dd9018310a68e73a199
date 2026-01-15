@@ -22,6 +22,30 @@
       },
       "revId": "477b5d9fba4bde40b4572dd9018310a68e73a199",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1b48f5fc_9f6594c7",
+        "filename": "tests/siso_test.py",
+        "patchSetId": 11
+      },
+      "lineNbr": 727,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-01-15T05:32:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "bbd12ef0_bf83218f",
+      "range": {
+        "startLine": 726,
+        "startChar": 0,
+        "endLine": 727,
+        "endChar": 39
+      },
+      "revId": "477b5d9fba4bde40b4572dd9018310a68e73a199",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
