@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8684e41c_f8074a3b",
+        "filename": "tests/siso_test.py",
+        "patchSetId": 12
+      },
+      "lineNbr": 1498,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2026-01-15T05:28:32Z",
+      "side": 1,
+      "message": "This can be skipped on Linux so that you don\u0027t need to simulate the Windows platform below.",
+      "range": {
+        "startLine": 1498,
+        "startChar": 4,
+        "endLine": 1498,
+        "endChar": 35
+      },
+      "revId": "9291f3633f622caab6e028a1383188b98f0b5fc9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
