@@ -16,6 +16,29 @@
       "message": "can we add new members?\n@philwo@google.com",
       "revId": "757af358e5b85e0ce726cd9646aa3c856389be9c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c095dcff_b1b089ff",
+        "filename": "BUILD_OWNERS",
+        "patchSetId": 1
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1577257
+      },
+      "writtenOn": "2026-01-15T06:21:29Z",
+      "side": 1,
+      "message": "Yes, let\u0027s sync against the latest version of the file. I copied it over into the suggested edit.\n\n```suggestion\njmarc@google.com\njwata@google.com\nliaoyuke@chromium.org\nmsta@google.com\nnerima@google.com\nnicolede@google.com\novsienko@google.com\nphilwo@google.com\nrichardwa@google.com\ntikuta@chromium.org\nukai@google.com\n```",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 10,
+        "endChar": 0
+      },
+      "revId": "757af358e5b85e0ce726cd9646aa3c856389be9c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
