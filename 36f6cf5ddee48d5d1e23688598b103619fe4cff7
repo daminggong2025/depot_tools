@@ -1,0 +1,106 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c9db11b8_8709cf6a",
+        "filename": "tests/siso_test.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2026-01-15T04:46:43Z",
+      "side": 1,
+      "message": "third_party/siso/cipd ?",
+      "revId": "36f6cf5ddee48d5d1e23688598b103619fe4cff7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cd6ea624_de22e3c0",
+        "filename": "tests/siso_test.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2026-01-15T04:46:43Z",
+      "side": 1,
+      "message": "entries \u003d {\u0027src\u0027: \u0027...\u0027}\n?",
+      "revId": "36f6cf5ddee48d5d1e23688598b103619fe4cff7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ea80162f_cd6039d6",
+        "filename": "tests/siso_test.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 428,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2026-01-15T04:46:43Z",
+      "side": 1,
+      "message": "third_party/siso/cipd/siso ?\n\nno need to mkdir parente path in this test?",
+      "revId": "36f6cf5ddee48d5d1e23688598b103619fe4cff7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "545993ba_bbb5683d",
+        "filename": "tests/siso_test.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 740,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2026-01-15T04:46:43Z",
+      "side": 1,
+      "message": "third_paty/siso/cipd/siso ?",
+      "revId": "36f6cf5ddee48d5d1e23688598b103619fe4cff7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7f0ec6ac_372934b1",
+        "filename": "tests/siso_test.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 1392,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2026-01-15T04:46:43Z",
+      "side": 1,
+      "message": "third_party/siso/cipd/siso ?",
+      "revId": "36f6cf5ddee48d5d1e23688598b103619fe4cff7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e77e9e6b_724f963b",
+        "filename": "tests/siso_test.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 1527,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2026-01-15T04:46:43Z",
+      "side": 1,
+      "message": "third_party/siso/cipd/siso ?",
+      "revId": "36f6cf5ddee48d5d1e23688598b103619fe4cff7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
