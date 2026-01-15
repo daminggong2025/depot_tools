@@ -16,6 +16,29 @@
       "message": "Thanks, PTAL",
       "revId": "bc85572214c10ebfbe01251472056288dc4dd828",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "997d7ddf_b948ca36",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 859,
+      "author": {
+        "id": 1381059
+      },
+      "writtenOn": "2026-01-15T17:10:45Z",
+      "side": 1,
+      "message": "I believe this is just a string in [this format](https://gerrit-review.googlesource.com/Documentation/rest-api.html#timestamp), you\u0027ll need to parse it to datatime object.",
+      "range": {
+        "startLine": 859,
+        "startChar": 35,
+        "endLine": 859,
+        "endChar": 47
+      },
+      "revId": "bc85572214c10ebfbe01251472056288dc4dd828",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
