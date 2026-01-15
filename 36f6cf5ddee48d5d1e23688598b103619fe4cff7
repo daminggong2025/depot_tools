@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "e31666bf_7e0f20df",
+        "filename": "tests/siso_test.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-01-15T05:04:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c9db11b8_8709cf6a",
+      "revId": "36f6cf5ddee48d5d1e23688598b103619fe4cff7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "cd6ea624_de22e3c0",
@@ -31,6 +49,24 @@
       "writtenOn": "2026-01-15T04:46:43Z",
       "side": 1,
       "message": "entries \u003d {\u0027src\u0027: \u0027...\u0027}\n?",
+      "revId": "36f6cf5ddee48d5d1e23688598b103619fe4cff7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6fb41b5c_7ce6582e",
+        "filename": "tests/siso_test.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-01-15T05:04:24Z",
+      "side": 1,
+      "message": "Why is that?",
+      "parentUuid": "cd6ea624_de22e3c0",
       "revId": "36f6cf5ddee48d5d1e23688598b103619fe4cff7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -52,6 +88,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "02ae1608_afc9ef88",
+        "filename": "tests/siso_test.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 428,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-01-15T05:04:24Z",
+      "side": 1,
+      "message": "Already done in the fixture. And done.",
+      "parentUuid": "ea80162f_cd6039d6",
+      "revId": "36f6cf5ddee48d5d1e23688598b103619fe4cff7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "545993ba_bbb5683d",
@@ -65,6 +119,24 @@
       "writtenOn": "2026-01-15T04:46:43Z",
       "side": 1,
       "message": "third_paty/siso/cipd/siso ?",
+      "revId": "36f6cf5ddee48d5d1e23688598b103619fe4cff7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "135bb203_5a57b0f4",
+        "filename": "tests/siso_test.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 740,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-01-15T05:04:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "545993ba_bbb5683d",
       "revId": "36f6cf5ddee48d5d1e23688598b103619fe4cff7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -86,6 +158,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "1048fbe9_2a23fbe7",
+        "filename": "tests/siso_test.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 1392,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-01-15T05:04:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7f0ec6ac_372934b1",
+      "revId": "36f6cf5ddee48d5d1e23688598b103619fe4cff7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e77e9e6b_724f963b",
@@ -99,6 +189,24 @@
       "writtenOn": "2026-01-15T04:46:43Z",
       "side": 1,
       "message": "third_party/siso/cipd/siso ?",
+      "revId": "36f6cf5ddee48d5d1e23688598b103619fe4cff7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0c34646f_8c699879",
+        "filename": "tests/siso_test.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 1527,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-01-15T05:04:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e77e9e6b_724f963b",
       "revId": "36f6cf5ddee48d5d1e23688598b103619fe4cff7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
