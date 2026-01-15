@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "633dc3c9_21587b53",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 10
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2026-01-15T02:42:47Z",
+      "side": 1,
+      "message": "always exit\u003d2...\nhttps://b.corp.google.com/issues/475958730",
+      "revId": "656a3095d47a739afbd540bd52d30ea1e7b56bf2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
