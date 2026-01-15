@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "a7b14ff4_a1b2d73c",
+        "filename": "tests/siso_test.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 407,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-01-15T03:15:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5513013c_b10be1be",
+      "range": {
+        "startLine": 405,
+        "startChar": 0,
+        "endLine": 407,
+        "endChar": 77
+      },
+      "revId": "42e7c97538cf92e10e8499718e031d3a45fec0e0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "76782bd5_b961679d",
@@ -37,6 +61,30 @@
       "writtenOn": "2026-01-15T02:39:04Z",
       "side": 1,
       "message": "This mock also can be avoided?",
+      "range": {
+        "startLine": 408,
+        "startChar": 0,
+        "endLine": 408,
+        "endChar": 37
+      },
+      "revId": "42e7c97538cf92e10e8499718e031d3a45fec0e0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b750238c_fbfb2382",
+        "filename": "tests/siso_test.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 408,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-01-15T03:15:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "76782bd5_b961679d",
       "range": {
         "startLine": 408,
         "startChar": 0,
@@ -70,6 +118,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "60a61e8d_cbf90cdf",
+        "filename": "tests/siso_test.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 409,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-01-15T03:15:51Z",
+      "side": 1,
+      "message": "We make it outselves now.",
+      "parentUuid": "076c5b93_642ec26c",
+      "range": {
+        "startLine": 409,
+        "startChar": 0,
+        "endLine": 409,
+        "endChar": 73
+      },
+      "revId": "42e7c97538cf92e10e8499718e031d3a45fec0e0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "59af7225_b499ee98",
@@ -83,6 +155,30 @@
       "writtenOn": "2026-01-15T02:39:04Z",
       "side": 1,
       "message": "At the end of the logic, `subprocess.call` is called. Is it a sufficient to mock it?",
+      "range": {
+        "startLine": 411,
+        "startChar": 0,
+        "endLine": 411,
+        "endChar": 40
+      },
+      "revId": "42e7c97538cf92e10e8499718e031d3a45fec0e0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "42a7fa83_b92d406e",
+        "filename": "tests/siso_test.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 411,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-01-15T03:15:51Z",
+      "side": 1,
+      "message": "We do dependency injection, and in the real code caffeinate.call gets called. Another options is to mock caffeinate.call, but you know what comes out of that.",
+      "parentUuid": "59af7225_b499ee98",
       "range": {
         "startLine": 411,
         "startChar": 0,
