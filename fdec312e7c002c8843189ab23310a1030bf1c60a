@@ -16,6 +16,24 @@
       "message": "hmm, better to fix just gn.py?",
       "revId": "fdec312e7c002c8843189ab23310a1030bf1c60a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4938a984_241245a2",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2026-01-15T02:50:44Z",
+      "side": 1,
+      "message": "https://chromium-review.googlesource.com/c/chromium/tools/depot_tools/+/7479815",
+      "parentUuid": "97625024_3e27c48e",
+      "revId": "fdec312e7c002c8843189ab23310a1030bf1c60a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
