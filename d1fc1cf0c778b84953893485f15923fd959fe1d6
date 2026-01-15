@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ce4311f7_3ce26294",
+        "filename": "siso.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 530,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2026-01-15T01:54:58Z",
+      "side": 1,
+      "message": "Btw, should this condition also be a part of should_collect_log?",
+      "range": {
+        "startLine": 529,
+        "startChar": 42,
+        "endLine": 530,
+        "endChar": 62
+      },
+      "revId": "d1fc1cf0c778b84953893485f15923fd959fe1d6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
