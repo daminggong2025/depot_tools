@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bbd12ef0_bf83218f",
+        "filename": "tests/siso_test.py",
+        "patchSetId": 11
+      },
+      "lineNbr": 727,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2026-01-15T05:25:33Z",
+      "side": 1,
+      "message": "This can be \"sisorc_content\". And the real sisorc file can be generated instead of mocking siso.load_sisorc.",
+      "range": {
+        "startLine": 726,
+        "startChar": 0,
+        "endLine": 727,
+        "endChar": 39
+      },
+      "revId": "477b5d9fba4bde40b4572dd9018310a68e73a199",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
