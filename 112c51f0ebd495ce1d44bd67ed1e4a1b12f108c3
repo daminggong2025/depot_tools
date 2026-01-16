@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e5027c9c_5a891bb1",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1577257
+      },
+      "writtenOn": "2026-01-16T00:15:15Z",
+      "side": 1,
+      "message": "I\u0027m not very familiar with the feature to \"include\" OWNERS across repos, but deduplicating the list of team members seems like an improvement to me. Let\u0027s try if it works.",
+      "revId": "112c51f0ebd495ce1d44bd67ed1e4a1b12f108c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
