@@ -44,8 +44,9 @@ def main(args):
     if google_java_format is None:
         # Fail silently. It could be we are on an old chromium revision,
         # or that it is a non-chromium project. https://crbug.com/1491627.
-        print('google-java-format not found, skipping java formatting.')
-        return 0
+        print('google-java-format not found, skipping java formatting.',
+              file=sys.stderr)
+        return 2
 
     # Add some visibility to --help showing where the tool lives, since this
     # redirection can be a little opaque.
