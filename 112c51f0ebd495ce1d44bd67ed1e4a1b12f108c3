@@ -51,6 +51,24 @@
       "parentUuid": "699db2f6_4dd28d2e",
       "revId": "112c51f0ebd495ce1d44bd67ed1e4a1b12f108c3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b226fe9a_1ec153df",
+        "filename": "BUILD_OWNERS",
+        "patchSetId": 2
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2026-01-16T01:38:43Z",
+      "side": 1,
+      "message": "hmm, is `build` a gerrit project?",
+      "parentUuid": "6c710faf_3d58397c",
+      "revId": "112c51f0ebd495ce1d44bd67ed1e4a1b12f108c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ],
   "submitRequirementResults": [
