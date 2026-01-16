@@ -1,0 +1,113 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "17aeb471_9e2459ef",
+        "filename": "metadata/scan.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2026-01-16T05:06:13Z",
+      "side": 1,
+      "message": "Is this the right styling?",
+      "range": {
+        "startLine": 102,
+        "startChar": 20,
+        "endLine": 109,
+        "endChar": 38
+      },
+      "revId": "67f219118614d401f344e8c975519600020d71d7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e11bf027_2086c2d2",
+        "filename": "metadata/tests/validate_test.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2026-01-16T05:06:13Z",
+      "side": 1,
+      "message": "python is cursed",
+      "range": {
+        "startLine": 99,
+        "startChar": 0,
+        "endLine": 100,
+        "endChar": 79
+      },
+      "revId": "67f219118614d401f344e8c975519600020d71d7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9afbf4d7_490e07e6",
+        "filename": "metadata/tests/validate_test.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2026-01-16T05:06:13Z",
+      "side": 1,
+      "message": "import at the top",
+      "revId": "67f219118614d401f344e8c975519600020d71d7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "97e11edf_42789613",
+        "filename": "metadata/tests/validate_test.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2026-01-16T05:06:13Z",
+      "side": 1,
+      "message": "line wrap at 80 char pls",
+      "range": {
+        "startLine": 107,
+        "startChar": 16,
+        "endLine": 107,
+        "endChar": 112
+      },
+      "revId": "67f219118614d401f344e8c975519600020d71d7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "452ffd3d_b5115959",
+        "filename": "metadata/tests/validate_test.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2026-01-16T05:06:13Z",
+      "side": 1,
+      "message": "assertDictEqual ?",
+      "range": {
+        "startLine": 108,
+        "startChar": 16,
+        "endLine": 116,
+        "endChar": 80
+      },
+      "revId": "67f219118614d401f344e8c975519600020d71d7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
