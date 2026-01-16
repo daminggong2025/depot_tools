@@ -70,6 +70,30 @@
       },
       "revId": "cb0beed5661510befcff64f4ac5d2e36808199ed",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a94210bf_68b0bbbb",
+        "filename": "gclient_scm.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 987,
+      "author": {
+        "id": 3637389
+      },
+      "writtenOn": "2026-01-16T06:04:11Z",
+      "side": 1,
+      "message": "ha? I don\u0027t quite understand what you\u0027re saying, because `_AutoFetchRef` and `if not scm.GIT.IsValidRevision(...)` are at the same level, so why aren\u0027t they executed?\n```\nif not scm.GIT.IsValidRevision(\n                self.checkout_path, revision, sha_only\u003dTrue) {\n   // do somothing, but now i skip it.\n   // Furthermore, it does not include early exit,\n   // so the code outside the if statement will continue to execute.\n}\n\nrevision \u003d self._AutoFetchRef(options, revision)  \u003c\u003d\u003d\u003d\u003d\u003d \n```",
+      "parentUuid": "8d80ed73_b562ae8c",
+      "range": {
+        "startLine": 986,
+        "startChar": 11,
+        "endLine": 987,
+        "endChar": 80
+      },
+      "revId": "cb0beed5661510befcff64f4ac5d2e36808199ed",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
