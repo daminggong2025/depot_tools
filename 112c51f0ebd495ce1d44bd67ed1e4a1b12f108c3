@@ -33,6 +33,24 @@
       "message": "is it supported to refer other repo\u0027s file?\nhttps://chromium.googlesource.com/chromium/src/+/HEAD/docs/code_reviews.md#owners-file-details",
       "revId": "112c51f0ebd495ce1d44bd67ed1e4a1b12f108c3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6c710faf_3d58397c",
+        "filename": "BUILD_OWNERS",
+        "patchSetId": 2
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1450817
+      },
+      "writtenOn": "2026-01-16T01:24:55Z",
+      "side": 1,
+      "message": "Yes. Chromium hasn\u0027t started using it yet, so chromium\u0027s documentation won\u0027t show that feature. It\u0027s a gerrit feature.\n\nhttps://gerrit.googlesource.com/plugins/find-owners/+/master/src/main/resources/Documentation/syntax.md\n\nThis is currently in use by ChromeOS (http://go/cros-shared-owners:design)",
+      "parentUuid": "699db2f6_4dd28d2e",
+      "revId": "112c51f0ebd495ce1d44bd67ed1e4a1b12f108c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
