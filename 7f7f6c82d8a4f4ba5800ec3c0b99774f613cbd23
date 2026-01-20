@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8a6743dc_470f7b7e",
+        "filename": "google_java_format.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1403564
+      },
+      "writtenOn": "2026-01-20T09:49:06Z",
+      "side": 1,
+      "message": "This comment should be updated if the script no longer fails silently in this case",
+      "range": {
+        "startLine": 45,
+        "startChar": 0,
+        "endLine": 46,
+        "endChar": 74
+      },
+      "revId": "7f7f6c82d8a4f4ba5800ec3c0b99774f613cbd23",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
