@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fdc92dc1_9dbc28e3",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2026-01-20T17:59:11Z",
+      "side": 1,
+      "message": "Whoops, thanks for rolling this back. The jj module needs to be added to `.vpython3` in depot_tools. I\u0027m confused why presubmits didn\u0027t catch this though.",
+      "revId": "1f27506fad60f037320654f1d913250e6bbf3661",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
