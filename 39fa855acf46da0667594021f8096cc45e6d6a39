@@ -34,6 +34,24 @@
       "parentUuid": "37cf5801_a583d421",
       "revId": "39fa855acf46da0667594021f8096cc45e6d6a39",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6a5c5702_f5b48018",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 10
+      },
+      "lineNbr": 859,
+      "author": {
+        "id": 1381059
+      },
+      "writtenOn": "2026-01-21T16:59:19Z",
+      "side": 1,
+      "message": "yeah, I missed it. It\u0027s a key in the dict not an attribute. Thanks for the fix.",
+      "parentUuid": "752d05a1_ce9a3947",
+      "revId": "39fa855acf46da0667594021f8096cc45e6d6a39",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
