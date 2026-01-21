@@ -16,6 +16,24 @@
       "message": "Would you check whether `info.created` is available or not before using it?\nI hit the following failure:\n```\n** Presubmit ERRORS: 1 **\nEvaluation of ChecksCommon failed: \u0027dict\u0027 object has no attribute \u0027created\u0027, Tra\nceback (most recent call last):\n  File \"/usr/local/google/home/tasak/Workspace/chromium/depot_tools/presubmit_su\npport.py\", line 2021, in _run_check_function\n    result \u003d eval(function_name + \u0027(*__args)\u0027, context)   \n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^   \n  File \"\u003cstring\u003e\", line 1, in \u003cmodule\u003e\n  File \"/usr/local/google/home/tasak/Workspace/chromium/local/workspace1/src/PRE\nSUBMIT.py\", line 6121, in ChecksCommon\n    input_api.canned_checks.PanProjectChecks(\n  File \"/usr/local/google/home/tasak/Workspace/chromium/depot_tools/presubmit_ca\nnned_checks.py\", line 1815, in PanProjectChecks\n    input_api.canned_checks.CheckLicense(input_api,\n  File \"/usr/local/google/home/tasak/Workspace/chromium/depot_tools/presubmit_ca\nnned_checks.py\", line 859, in CheckLicense\n    created_time \u003d datetime.datetime.fromisoformat(info.created + \u0027Z\u0027)\n                                                   ^^^^^^^^^^^^\nAttributeError: \u0027dict\u0027 object has no attribute \u0027created\u0027  \n```",
       "revId": "39fa855acf46da0667594021f8096cc45e6d6a39",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "752d05a1_ce9a3947",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 10
+      },
+      "lineNbr": 859,
+      "author": {
+        "id": 1396747
+      },
+      "writtenOn": "2026-01-21T09:02:01Z",
+      "side": 1,
+      "message": "Strange! Looking at https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#change-info and https://source.corp.google.com/piper///depot/google3/wireless/android/pixel/modem/release/backend/gerrit/grest.py;l\u003d137;cl\u003d853964723 \u0027created\u0027 is required.\n\nyiwzhang@ any idea what;s going on? Do we need to access it like info[\"created\"]? I\u0027ve created https://chromium-review.googlesource.com/c/chromium/tools/depot_tools/+/7499838",
+      "parentUuid": "37cf5801_a583d421",
+      "revId": "39fa855acf46da0667594021f8096cc45e6d6a39",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
