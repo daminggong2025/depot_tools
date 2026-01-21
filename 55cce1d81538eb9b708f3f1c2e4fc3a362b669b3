@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "62f700a1_77fc7e1d",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2026-01-21T05:21:14Z",
+      "side": 1,
+      "message": "does `git maintenance` after `git fetch` helps for hang in `git fetch` ?",
+      "revId": "55cce1d81538eb9b708f3f1c2e4fc3a362b669b3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
