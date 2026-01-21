@@ -52,6 +52,24 @@
       "parentUuid": "752d05a1_ce9a3947",
       "revId": "39fa855acf46da0667594021f8096cc45e6d6a39",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3b4f64ba_99689b70",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 10
+      },
+      "lineNbr": 859,
+      "author": {
+        "id": 1396747
+      },
+      "writtenOn": "2026-01-21T17:27:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6a5c5702_f5b48018",
+      "revId": "39fa855acf46da0667594021f8096cc45e6d6a39",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
