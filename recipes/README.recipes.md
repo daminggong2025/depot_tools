@@ -457,7 +457,7 @@ Returns:
 
 Returns a git command step.
 
-&mdash; **def [bundle\_create](/recipes/recipe_modules/git/api.py#395)(self, bundle_path, rev_list_args=None, \*\*kwargs):**
+&mdash; **def [bundle\_create](/recipes/recipe_modules/git/api.py#405)(self, bundle_path, rev_list_args=None, \*\*kwargs):**
 
 Runs 'git bundle create' on a Git repository.
 
@@ -471,7 +471,7 @@ Args:
 
 Outputs the contents of a file at a given revision.
 
-&mdash; **def [checkout](/recipes/recipe_modules/git/api.py#106)(self, url, ref=None, dir_path=None, recursive=False, submodules=True, submodule_update_force=False, keep_paths=None, step_suffix=None, curl_trace_file=None, raise_on_failure=True, set_got_revision=False, remote_name=None, display_fetch_size=None, file_name=None, submodule_update_recursive=True, use_git_cache=False, progress=True, tags=False, depth=None, no_auto_gc=False):**
+&mdash; **def [checkout](/recipes/recipe_modules/git/api.py#106)(self, url, ref=None, dir_path=None, recursive=False, submodules=True, submodule_update_force=False, keep_paths=None, step_suffix=None, curl_trace_file=None, raise_on_failure=True, set_got_revision=False, remote_name=None, display_fetch_size=None, file_name=None, submodule_update_recursive=True, use_git_cache=False, progress=True, tags=False, depth=None, no_auto_gc=False, run_maintenance=False):**
 
 Performs a full git checkout and returns sha1 of checked out revision.
 
@@ -513,7 +513,7 @@ Args:
 Returns: If the checkout was successful, this returns the commit hash of
   the checked-out-repo. Otherwise this returns None.
 
-&mdash; **def [config\_get](/recipes/recipe_modules/git/api.py#364)(self, prop_name, \*\*kwargs):**
+&mdash; **def [config\_get](/recipes/recipe_modules/git/api.py#374)(self, prop_name, \*\*kwargs):**
 
 Returns git config output.
 
@@ -540,7 +540,7 @@ Returns:
 
 Fetches all tags from the remote.
 
-&mdash; **def [get\_remote\_url](/recipes/recipe_modules/git/api.py#383)(self, remote_name=None, \*\*kwargs):**
+&mdash; **def [get\_remote\_url](/recipes/recipe_modules/git/api.py#393)(self, remote_name=None, \*\*kwargs):**
 
 Returns the remote Git repository URL, or None.
 
@@ -550,11 +550,11 @@ Args:
 
 Returns: (str) The URL of the remote Git repository, or None.
 
-&mdash; **def [get\_timestamp](/recipes/recipe_modules/git/api.py#335)(self, commit='HEAD', test_data=None, \*\*kwargs):**
+&mdash; **def [get\_timestamp](/recipes/recipe_modules/git/api.py#345)(self, commit='HEAD', test_data=None, \*\*kwargs):**
 
 Find and return the timestamp of the given commit.
 
-&mdash; **def [ls\_remote](/recipes/recipe_modules/git/api.py#476)(self, url, ref, name=None, \*\*kwargs):**
+&mdash; **def [ls\_remote](/recipes/recipe_modules/git/api.py#486)(self, url, ref, name=None, \*\*kwargs):**
 
 Request the head revision for a given ref using ls-remote. Raise a
 StepFailure if the ref does not exist, or more than one ref was found.
@@ -566,7 +566,7 @@ Args:
 
 Returns: A git revision.
 
-&mdash; **def [new\_branch](/recipes/recipe_modules/git/api.py#408)(self, branch, name=None, upstream=None, upstream_current=False, \*\*kwargs):**
+&mdash; **def [new\_branch](/recipes/recipe_modules/git/api.py#418)(self, branch, name=None, upstream=None, upstream_current=False, \*\*kwargs):**
 
 Runs git new-branch on a Git repository, to be used before git cl
 upload.
@@ -578,7 +578,7 @@ Args:
   * upstream_current (bool): whether to use '--upstream_current'.
   * kwargs: Forwarded to '__call__'.
 
-&mdash; **def [number](/recipes/recipe_modules/git/api.py#439)(self, commitrefs=None, test_values=None):**
+&mdash; **def [number](/recipes/recipe_modules/git/api.py#449)(self, commitrefs=None, test_values=None):**
 
 Computes the generation number of some commits.
 
@@ -595,7 +595,7 @@ A list of strings containing the generation numbers of the commits.
 If non-empty commitrefs was provided, the order of the returned
 numbers will correspond to the order of the provided commitrefs.
 
-&mdash; **def [rebase](/recipes/recipe_modules/git/api.py#344)(self, name_prefix, branch, dir_path, remote_name=None, \*\*kwargs):**
+&mdash; **def [rebase](/recipes/recipe_modules/git/api.py#354)(self, name_prefix, branch, dir_path, remote_name=None, \*\*kwargs):**
 
 Runs rebase HEAD onto branch
 
