@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2914d9ed_2ba0da92",
+        "filename": "recipes/recipe_modules/git/api.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 297,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-01-21T19:14:16Z",
+      "side": 1,
+      "message": "```\n❯ git maintenance --task gc --task commit-graph\nerror: unknown option `task\u0027\nusage: git maintenance \u003csubcommand\u003e [\u003coptions\u003e]\n```\n\nI think you want `git maintenance run --task gc --task commit-graph`?",
+      "range": {
+        "startLine": 292,
+        "startChar": 0,
+        "endLine": 297,
+        "endChar": 52
+      },
+      "revId": "39eff3fdb04f1f8378cc453c198d2a40966d34be",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
