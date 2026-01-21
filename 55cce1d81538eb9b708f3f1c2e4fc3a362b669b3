@@ -16,6 +16,24 @@
       "message": "does `git maintenance` after `git fetch` helps for hang in `git fetch` ?",
       "revId": "55cce1d81538eb9b708f3f1c2e4fc3a362b669b3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a7720f72_836bb53b",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 4282079
+      },
+      "writtenOn": "2026-01-21T05:23:59Z",
+      "side": 1,
+      "message": "git fetch hangs on mac once per several times, because it\u0027s running gc due to loose_object accumulated during previous builds.\n\nBy forcing running git maintenance every time, we do small work about gc every time, so git fetch won\u0027t even trigger gc.\n\nRegarding should we run this before fetch or after fetch, gemini told me to run after git fetch :))) ...",
+      "parentUuid": "62f700a1_77fc7e1d",
+      "revId": "55cce1d81538eb9b708f3f1c2e4fc3a362b669b3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
