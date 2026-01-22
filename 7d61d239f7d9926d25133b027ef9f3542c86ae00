@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8ffa50e7_1e28829c",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 853,
+      "author": {
+        "id": 1381059
+      },
+      "writtenOn": "2026-01-22T17:00:56Z",
+      "side": 1,
+      "message": "nit: `match.groups()[0] not in (str(current_year), str(last_year) `",
+      "range": {
+        "startLine": 852,
+        "startChar": 21,
+        "endLine": 853,
+        "endChar": 55
+      },
+      "revId": "7d61d239f7d9926d25133b027ef9f3542c86ae00",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
