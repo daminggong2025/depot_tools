@@ -22,6 +22,30 @@
       },
       "revId": "7d61d239f7d9926d25133b027ef9f3542c86ae00",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cac5c123_1e467022",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 853,
+      "author": {
+        "id": 1381059
+      },
+      "writtenOn": "2026-01-22T17:29:10Z",
+      "side": 1,
+      "message": "This also doesn\u0027t look correct. It is essentially saying all license from last year will be bypassed.",
+      "parentUuid": "8ffa50e7_1e28829c",
+      "range": {
+        "startLine": 852,
+        "startChar": 21,
+        "endLine": 853,
+        "endChar": 55
+      },
+      "revId": "7d61d239f7d9926d25133b027ef9f3542c86ae00",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
