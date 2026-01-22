@@ -848,8 +848,10 @@ def CheckLicense(input_api,
             if not match:
                 # License is totally wrong.
                 bad_new_files.append(f.LocalPath())
-            elif not license_re_param and match.groups()[0] != str(
-                    current_year):
+            elif not license_re_param and
+                    (match.groups()[0] != str(current_year) OR
+                    match.groups()[0] != str(last_year)
+                    ):
                 # If we're using the built-in license_re on a new file then make
                 # sure the year is correct.
                 # skip the new year check in January to give some slag
