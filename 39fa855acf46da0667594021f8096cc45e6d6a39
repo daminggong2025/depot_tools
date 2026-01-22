@@ -88,6 +88,24 @@
       "parentUuid": "3b4f64ba_99689b70",
       "revId": "39fa855acf46da0667594021f8096cc45e6d6a39",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "54f6679c_53615518",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 10
+      },
+      "lineNbr": 859,
+      "author": {
+        "id": 1396747
+      },
+      "writtenOn": "2026-01-22T09:37:06Z",
+      "side": 1,
+      "message": "No  need to revert, the bot is working again. Some of your newly added files need an update. https://ci.chromium.org/ui/p/chromium/builders/try/win-presubmit/1576047/overview",
+      "parentUuid": "eeaf457b_f0e885e2",
+      "revId": "39fa855acf46da0667594021f8096cc45e6d6a39",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
