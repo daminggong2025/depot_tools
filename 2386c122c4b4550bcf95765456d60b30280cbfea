@@ -87,6 +87,30 @@
       },
       "revId": "2386c122c4b4550bcf95765456d60b30280cbfea",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "858c8b62_4817a382",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 628,
+      "author": {
+        "id": 4367541
+      },
+      "writtenOn": "2026-01-23T01:25:10Z",
+      "side": 1,
+      "message": "Oops sorry, didn\u0027t realize there was a mistake in my wording.\nWe want to suppress the presubmit length warnings for the following cases because they will not be auto-formatted by `git cl format`:\n- export {somehandler} from \u0027longlonglonglonglonglonglonglongpath.js\u0027\n- export type {SomeType} from \u0027longlonglonglonglonglonglonglongpath.js\u0027. \n\nFor other export use cases, we don\u0027t skip the length check as they will be auto-formatted by `git cl format`. For example:\n- export class someElement extends someElementBase {}\n- export const superlonglonglongstring \u003d \u0027longlonglonglong\u0027\n\nTL;DR: Have the presubmit check aligned with clang-format, but I agree the suppression here is limited.",
+      "parentUuid": "f87e49a6_bb26d037",
+      "range": {
+        "startLine": 628,
+        "startChar": 0,
+        "endLine": 628,
+        "endChar": 59
+      },
+      "revId": "2386c122c4b4550bcf95765456d60b30280cbfea",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
