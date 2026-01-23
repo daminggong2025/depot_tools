@@ -111,6 +111,30 @@
       },
       "revId": "2386c122c4b4550bcf95765456d60b30280cbfea",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0769eddc_bc9b3a62",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 628,
+      "author": {
+        "id": 4367541
+      },
+      "writtenOn": "2026-01-23T21:20:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "858c8b62_4817a382",
+      "range": {
+        "startLine": 628,
+        "startChar": 0,
+        "endLine": 628,
+        "endChar": 59
+      },
+      "revId": "2386c122c4b4550bcf95765456d60b30280cbfea",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
