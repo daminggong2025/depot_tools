@@ -4832,7 +4832,7 @@ def _create_commit_message(orig_message, bug=None):
     """Returns a commit message for the cherry picked CL."""
     orig_message_lines = orig_message.splitlines()
     subj_line = orig_message_lines[0]
-    new_message = (f'Cherry pick "{subj_line}"\n\n'
+    new_message = (f'[145] "{subj_line}"\n\n'
                    "Original change's description:\n")
     for line in orig_message_lines:
         new_message += f'> {line}\n'
@@ -4842,6 +4842,45 @@ def _create_commit_message(orig_message, bug=None):
     if change_id := git_footers.get_footer_change_id(orig_message):
         new_message += f'Change-Id: {change_id[0]}\n'
     return new_message
+
+
+def _GetChangeFromArg(host, arg):
+    """Retrieves the change details from Gerrit based on the argument.
+
+    Args:
+        host: The Gerrit host.
+        arg: A commit hash, Change ID, Change Number, or Gerrit URL.
+
+    Returns:
+        The change dictionary from Gerrit.
+    """
+    params = []
+    if re.match(r'^[0-9a-fA-F]{40}$', arg):
+        params = [('commit', arg)]
+    elif arg.isdigit():
+        params = [('change', arg)]
+    elif arg.startswith('I') and len(arg) > 10:
+        params = [('change', arg)]
+    else:
+        parsed = urllib.parse.urlparse(arg)
+        if parsed.scheme and parsed.netloc:
+            match = re.search(r'/(\d+)(?:/|$)', parsed.path)
+            if match:
+                params = [('change', match.group(1))]
+
+    if not params:
+        params = [('change', arg)]
+
+    changes = gerrit_util.QueryChanges(
+        host=host,
+        params=params,
+        o_params=['CURRENT_REVISION', 'CURRENT_COMMIT'],
+    )
+    if not changes:
+        raise RuntimeError(f'No changes found for {arg}.')
+    if len(changes) > 1:
+        raise RuntimeError(f'Multiple changes found for {arg}.')
+    return changes[0]
 
 
 # TODO(b/341792235): Add metrics.
@@ -4868,6 +4907,9 @@ def CMDcherry_pick(parser, args):
                       default=False,
                       help='If true, the cherry-pick will be created even if '
                       'there are conflicts.')
+    parser.add_option('--cq-dry-run',
+                      action='store_true',
+                      help='Trigger a CQ dry run on the cherry-picked CLs.')
     options, args = parser.parse_args(args)
 
     host = None
@@ -4898,22 +4940,14 @@ def CMDcherry_pick(parser, args):
     change_ids_to_commit = {}
 
     # Gerrit needs a change ID for each commit we cherry pick.
-    for commit in args:
-        # Don't use the ChangeId in the commit message since it may not be
-        # unique. Gerrit will error with "Multiple changes found" if we use a
-        # non-unique ID. Instead, query Gerrit with the hash and verify it
-        # corresponds to a unique CL.
-        changes = gerrit_util.QueryChanges(
-            host=host,
-            params=[('commit', commit)],
-            o_params=['CURRENT_REVISION', 'CURRENT_COMMIT'],
-        )
-        if not changes:
-            raise RuntimeError(f'No changes found for {commit}.')
-        if len(changes) > 1:
-            raise RuntimeError(f'Multiple changes found for {commit}.')
+    for arg in args:
+        change = _GetChangeFromArg(host, arg)
 
-        change = changes[0]
+        if re.match(r'^[0-9a-fA-F]{40}$', arg):
+            commit = arg
+        else:
+            commit = change['current_revision']
+
         change_id = change['id']
         message = change['revisions'][commit]['commit']['message']
         change_ids_to_commit[change_id] = commit
@@ -4970,6 +5004,14 @@ def CMDcherry_pick(parser, args):
         new_change_num = new_change_info['_number']
         new_change_url = gerrit_util.GetChangePageUrl(host, new_change_num)
         print(f'Created cherry pick of "{orig_subj_line}": {new_change_url}')
+        gerrit_util.AddReviewers(
+            host,
+            new_change_num,
+            reviewers=['rubber-stamper@appspot.gserviceaccount.com'])
+        if options.cq_dry_run:
+            gerrit_util.SetReview(host,
+                                  new_change_num,
+                                  labels={'Commit-Queue': 1})
         if new_change_info.get('contains_git_conflicts'):
             print(f'Warning: Change {new_change_url} contains merge conflicts')
         parent_change_num = new_change_num
