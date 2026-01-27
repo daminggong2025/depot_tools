@@ -1831,6 +1831,9 @@ class Changelist(object):
             upstream,
         ]
 
+        if self.GetBranch():
+            args.extend(['--name', self.GetBranch()])
+
         args.extend(['--verbose'] * verbose)
 
         remote, remote_branch = self.GetRemoteBranch()
