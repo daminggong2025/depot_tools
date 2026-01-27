@@ -1914,7 +1914,7 @@ def CheckPatchFormatted(input_api,
         input_api.PresubmitLocalPath(), input_api.change.RepositoryRoot())
     if presubmit_subdir.startswith('..') or presubmit_subdir == '.':
         presubmit_subdir = ''
-    code, _ = git_cl.RunGitWithCode(cmd, suppress_stderr=bypass_warnings)
+    code, output = git_cl.RunGitWithCode(cmd, suppress_stderr=bypass_warnings)
     # bypass_warnings? Only fail with code 2.
     # As this is just a warning, ignore all other errors if the user
     # happens to have a broken clang-format, doesn't use git, etc etc.
@@ -1925,11 +1925,15 @@ def CheckPatchFormatted(input_api,
             short_path = input_api.basename(input_api.change.RepositoryRoot())
         display_args.append(presubmit_subdir)
         msg = (
-            'The %s directory requires source formatting. '
-            'Please run: git cl format %s. Or, if you are in CiderG, '
-            'please use the "Format Modified Lines in All Files '
-            '(git cl format)" functionality in the command palette.' % (
-                short_path, ' '.join(display_args)))
+            'The %s directory requires source formatting.\n'
+            'The following command may be able to fix some errors, while '
+            'others may need to be fixed manually:\n'
+            '  git cl format %s\n'
+            'Alternatively, if you are in Cider G, please use the "Format '
+            'Modified Lines in All Files (git cl format)" functionality in the '
+            'command palette.' % (short_path, ' '.join(display_args)))
+        if output:
+            msg += '\n\n' + output
         return [result_factory(msg)]
     return []
 
