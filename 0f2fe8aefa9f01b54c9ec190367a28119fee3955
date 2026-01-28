@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c9a04f84_4a27bc5f",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-01-28T18:25:37Z",
+      "side": 1,
+      "message": "nit: this commit msg doesn\u0027t provide much useful extra info since these args are already visible in the diff. can you instead provide a rationale for the change? ie why not use `gc`, why switch to `incremental-repack`, etc",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 10,
+        "endChar": 30
+      },
+      "revId": "0f2fe8aefa9f01b54c9ec190367a28119fee3955",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
