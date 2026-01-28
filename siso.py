@@ -31,18 +31,46 @@ _OTLP_DEFAULT_TCP_ENDPOINT = "127.0.0.1:4317"
 _OTLP_HEALTH_PORT = 13133
 
 
-def parse_args(args: list[str]) -> tuple[str, str]:
-    subcmd = ''
+def fetch_subcommand(args: list[str], siso_path: str) -> str:
+    subcmds = _get_siso_subcmds(siso_path)
+    if not subcmds:
+        print("Unable to get the current list of siso subcommands.")
+        sys.exit(1)
+    for arg in args:
+        if arg in subcmds:
+            return arg
+    return ""
+
+
+def fetch_out_dir(args: list[str]) -> str:
     out_dir = "."
     for i, arg in enumerate(args):
-        if not arg.startswith("-") and not subcmd:
-            subcmd = arg
-            continue
         if arg == "-C":
-            out_dir = args[i + 1]
+            if i + 1 < len(args):
+                out_dir = args[i + 1]
         elif arg.startswith("-C"):
             out_dir = arg[2:]
-    return subcmd, out_dir
+    return out_dir
+
+
+def _get_siso_subcmds(siso_path: str) -> set[str]:
+    try:
+        res = subprocess.run([siso_path, "help"],
+                             capture_output=True,
+                             text=True,
+                             check=False)
+        if res.returncode != 0:
+            return set()
+        subcmds = set()
+        for line in res.stdout.splitlines():
+            # Subcommands are indented with whitespace or tab.
+            if line.startswith((" ", "\t")):
+                parts = line.split()
+                if parts:
+                    subcmds.add(parts[0])
+        return subcmds
+    except Exception:
+        return set()
 
 
 # Fetch PID platform independently of possibly running collector
@@ -224,12 +252,17 @@ def check_outdir(out_dir: str) -> None:
         sys.exit(1)
 
 
-def apply_telemetry_flags(args: list[str], env: dict[str, str]) -> list[str]:
+def apply_telemetry_flags(args: list[str], subcmd: str,
+                          env: dict[str, str]) -> list[str]:
     user_system = _SYSTEM_DICT.get(sys.platform, sys.platform)
+
+    subcmd_args = args
+    if subcmd in args:
+        subcmd_args = args[args.index(subcmd) + 1:]
 
     user_provided_labels_present = False
     # TODO(ovsienko) - add targets to the processing. For this, the Siso needs to understand lists.
-    for arg in args[1:]:
+    for arg in subcmd_args:
         # Respect user provided labels, abort.
         if arg.startswith("--metrics_labels") or arg.startswith(
                 "-metrics_labels"):
@@ -254,7 +287,7 @@ def apply_telemetry_flags(args: list[str], env: dict[str, str]) -> list[str]:
     flags_to_add = []
     for flag in telemetry_flags:
         found = False
-        for arg in args:
+        for arg in subcmd_args:
             if (arg == f"-{flag}" or arg == f"--{flag}"
                     or arg.startswith(f"-{flag}=")
                     or arg.startswith(f"--{flag}=")):
@@ -277,7 +310,7 @@ def apply_telemetry_flags(args: list[str], env: dict[str, str]) -> list[str]:
     if metrics_env_var in env:
         return args + flags_to_add
     # Check if metrics project is set. If so, then add flags and return.
-    known_args, _ = parser.parse_known_args(args)
+    known_args, _ = parser.parse_known_args(subcmd_args)
     if known_args.metrics_project:
         return args + flags_to_add
     if known_args.project:
@@ -288,13 +321,16 @@ def apply_telemetry_flags(args: list[str], env: dict[str, str]) -> list[str]:
     return args
 
 
-def _fetch_metrics_project(args: list[str], env: dict[str, str]) -> str:
+def _fetch_metrics_project(args: list[str], env: dict[str, str],
+                           subcmd: str) -> str:
+    subcmd_args = args[args.index(subcmd) + 1:]
+
     parser = argparse.ArgumentParser(add_help=False)
     parser.add_argument("-metrics_project", "--metrics_project")
     parser.add_argument("-project", "--project")
     metrics_env_var = "RBE_metrics_project"
     project_env_var = "SISO_PROJECT"
-    known_args, _ = parser.parse_known_args(args)
+    known_args, _ = parser.parse_known_args(subcmd_args)
     if known_args.metrics_project:
         return known_args.metrics_project
     if known_args.project:
@@ -325,9 +361,11 @@ def _resolve_sockets_folder(env: dict[str, str]) -> tuple[str, int]:
     return path, allowed_length
 
 
-def _handle_collector(siso_path: str, args: list[str],
-                      env: dict[str, str]) -> dict[str, str]:
-    project = _fetch_metrics_project(args, env)
+def _handle_collector(siso_path: str,
+                      args: list[str],
+                      env: dict[str, str],
+                      subcmd: str = "") -> dict[str, str]:
+    project = _fetch_metrics_project(args, env, subcmd=subcmd)
     lenv = env.copy()
     if not project:
         return lenv
@@ -369,15 +407,13 @@ def load_sisorc(rcfile: str) -> tuple[list[str], dict[str, list[str]]]:
 
 def apply_sisorc(global_flags: list[str], subcmd_flags: dict[str, list[str]],
                  args: list[str], subcmd: str) -> list[str]:
-    new_args = []
+    new_args = list(global_flags)
+    subcmd_found = False
     for arg in args:
-        if not new_args:
-            new_args.extend(global_flags)
-        if arg == subcmd:
-            new_args.append(arg)
-            new_args.extend(subcmd_flags.get(arg, []))
-            continue
         new_args.append(arg)
+        if arg == subcmd and not subcmd_found:
+            new_args.extend(subcmd_flags.get(arg, []))
+            subcmd_found = True
     return new_args
 
 
@@ -458,13 +494,10 @@ def main(args: list[str],
 
     if not telemetry_cfg:
         telemetry_cfg = build_telemetry.load_config()
-    subcmd, out_dir = parse_args(args[1:])
+    out_dir = fetch_out_dir(args[1:])
 
     def no_help_flag(args: list[str]) -> bool:
         return {"-h", "--help", "-help"}.isdisjoint(args)
-
-    should_collect_logs = all(
-        (telemetry_cfg.enabled(), subcmd == "ninja", no_help_flag(args)))
 
     # Get gclient root + src.
     primary_solution_path = gclient_paths.GetPrimarySolutionPath(out_dir)
@@ -528,15 +561,26 @@ def main(args: list[str],
         ]
         for siso_path in siso_paths:
             if siso_path and os.path.isfile(siso_path):
+                subcmd = fetch_subcommand(args[1:], siso_path)
+                if not subcmd:
+                    print("Unable to get the supplied subcommand.")
+                    sys.exit(1)
+
                 new_args = apply_sisorc(global_flags, subcmd_flags, args[1:],
                                         subcmd)
                 if args[1:] != new_args:
                     print('depot_tools/siso.py: %s' % shlex.join(new_args),
                           file=sys.stderr)
                 # Add ninja specific flags.
+                should_collect_logs = all(
+                    (telemetry_cfg.enabled(), subcmd == "ninja",
+                     no_help_flag(args)))
                 if should_collect_logs:
-                    new_args = apply_telemetry_flags(new_args, env)
-                    env = _handle_collector(siso_path, new_args, env)
+                    new_args = apply_telemetry_flags(new_args, subcmd, env)
+                    env = _handle_collector(siso_path,
+                                            new_args,
+                                            env,
+                                            subcmd=subcmd)
                 check_outdir(out_dir)
                 return runner([siso_path] + new_args, env=env)
         print(
