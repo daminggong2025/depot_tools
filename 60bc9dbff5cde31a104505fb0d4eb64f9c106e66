@@ -34,6 +34,24 @@
       "parentUuid": "19c75200_b34c2cba",
       "revId": "60bc9dbff5cde31a104505fb0d4eb64f9c106e66",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2f9a63f1_f417d3c9",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-01-28T05:17:20Z",
+      "side": 1,
+      "message": "Yeah I don\u0027t know why ping might be failing, I can reproduce it as well though. Collector however works. With the current CL you will be able to use your multiplex command and upload logs with Collector. You will have to run it though autoninja however.",
+      "parentUuid": "c389a684_413163d7",
+      "revId": "60bc9dbff5cde31a104505fb0d4eb64f9c106e66",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
