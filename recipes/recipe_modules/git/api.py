@@ -292,7 +292,7 @@ class GitApi(recipe_api.RecipeApi):
         self('maintenance',
              'run',
              '--task',
-             'gc',
+             'incremental-repack',
              '--task',
              'commit-graph',
              name='git maintenance%s' % step_suffix,

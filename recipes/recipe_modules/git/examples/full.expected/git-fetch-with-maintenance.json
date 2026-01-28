@@ -33,7 +33,7 @@
       "maintenance",
       "run",
       "--task",
-      "gc",
+      "incremental-repack",
       "--task",
       "commit-graph"
     ],
