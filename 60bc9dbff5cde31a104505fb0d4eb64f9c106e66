@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "19c75200_b34c2cba",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2026-01-28T05:00:37Z",
+      "side": 1,
+      "message": "I got this error even if I run siso binary directly, so I don\u0027t think siso.py is related to the issue.",
+      "revId": "60bc9dbff5cde31a104505fb0d4eb64f9c106e66",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
