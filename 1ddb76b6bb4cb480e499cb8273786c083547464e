@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "10ebddc0_b3b41355",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 4594737
+      },
+      "writtenOn": "2026-01-28T18:21:39Z",
+      "side": 1,
+      "message": "Hi Gavin,\n\nThis CL removes the deprecated `$directory` substitution logic from `split_cl.py` as requested in Bug 389069356.\n\nI have also updated `tests/split_cl_test.py` to remove the expectation of a warning and verify that the text remains unchanged.\n\nThanks!",
+      "revId": "1ddb76b6bb4cb480e499cb8273786c083547464e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
