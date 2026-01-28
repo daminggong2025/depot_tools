@@ -208,13 +208,11 @@ def FormatDirectoriesForPrinting(directories: List[str],
 
 def FormatDescriptionOrComment(txt, desc):
     """Replaces $description with |desc| in |txt|."""
-    # TODO(389069356): Remove support for $directory entirely once it's been
-    # deprecated for a while.
-    replaced_txt = txt.replace('$directory', desc)
-    if txt != replaced_txt:
-        EmitWarning('Usage of $directory is deprecated and will be removed '
-                    'in a future update. Please use $description instead, '
-                    'which has the same behavior by default.\n\n')
+    # Logic for $directory has been removed as per TODO(389069356).
+    # We no longer replace $directory, so we just pass the text through.
+    replaced_txt = txt 
+
+    # Still support $description (the new standard)
     replaced_txt = replaced_txt.replace('$description', desc)
     return replaced_txt
 

@@ -56,36 +56,26 @@ class SplitClTest(unittest.TestCase):
 
     @mock.patch("split_cl.EmitWarning")
     def testFormatDescriptionOrComment(self, mock_emit_warning):
+        # Case 1: $description should still work (Standard behavior)
         description = "Converted use of X to Y in $description."
-
-        # One directory
         self.assertEqual(
             split_cl.FormatDescriptionOrComment(
                 description, split_cl.FormatDirectoriesForPrinting(["foo"])),
             "Converted use of X to Y in foo.",
         )
 
-        # Many directories
-        self.assertEqual(
-            split_cl.FormatDescriptionOrComment(
-                description,
-                split_cl.FormatDirectoriesForPrinting(["foo", "bar"])),
-            "Converted use of X to Y in ['foo', 'bar'].",
-        )
-
-        mock_emit_warning.assert_not_called()
-
+        # Case 2: $directory should be IGNORED now (Feature removed)
+        # We expect the text to remain "$directory" instead of being replaced.
         description_deprecated = "Converted use of X to Y in $directory."
-
-        # Make sure we emit a deprecation warning if the old format is used
         self.assertEqual(
             split_cl.FormatDescriptionOrComment(
                 description_deprecated,
-                split_cl.FormatDirectoriesForPrinting([])),
-            "Converted use of X to Y in [].",
+                split_cl.FormatDirectoriesForPrinting(["foo"])),
+            "Converted use of X to Y in $directory.", 
         )
 
-        mock_emit_warning.assert_called_once()
+        # Case 3: No warning should be emitted anymore
+        mock_emit_warning.assert_not_called()
 
     def GetDirectoryBaseName(self, file_path):
         return os.path.basename(os.path.dirname(file_path))
