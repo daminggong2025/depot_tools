@@ -38,6 +38,23 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "57f4789c_fdca17b0",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1429892
+      },
+      "writtenOn": "2026-01-29T06:03:32Z",
+      "side": 1,
+      "message": "Does this... run `siso help` every time so we know what the subcommands are?\n\nIf so is there no better heuristic for guessing the requested subcommand like `-foo bar` then ignore `bar`, and why is this an issue now and not before?\n\nIf not... nvm",
+      "revId": "745f35763cbda57b12531ca688c45f31cbac363c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "fa1f0d5f_606596b4",
         "filename": "tests/siso_test.py",
         "patchSetId": 3
