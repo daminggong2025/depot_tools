@@ -73,6 +73,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "e24ae962_eb991980",
+        "filename": "tests/siso_test.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 204,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2026-01-29T05:31:49Z",
+      "side": 1,
+      "message": "can\u0027t we pass subcmd_args to parse_args, so this kind of inputs would not be used?",
+      "parentUuid": "3e80c840_c0cdef23",
+      "revId": "745f35763cbda57b12531ca688c45f31cbac363c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "7a89b385_aec3a19a",
         "filename": "tests/siso_test.py",
         "patchSetId": 3
