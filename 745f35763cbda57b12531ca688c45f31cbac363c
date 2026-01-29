@@ -1,0 +1,106 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4caaa880_8508d19a",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2026-01-29T05:22:52Z",
+      "side": 1,
+      "message": "no need to set Bug: b/479105535\n?",
+      "revId": "745f35763cbda57b12531ca688c45f31cbac363c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fa1f0d5f_606596b4",
+        "filename": "tests/siso_test.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 204,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2026-01-29T05:22:52Z",
+      "side": 1,
+      "message": "ok to capture out/Debug before ninja?",
+      "revId": "745f35763cbda57b12531ca688c45f31cbac363c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7a89b385_aec3a19a",
+        "filename": "tests/siso_test.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 209,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2026-01-29T05:22:52Z",
+      "side": 1,
+      "message": "ok to capture out/Release before ninja?",
+      "revId": "745f35763cbda57b12531ca688c45f31cbac363c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "64089e84_c55fc12e",
+        "filename": "tests/siso_test.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 213,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2026-01-29T05:22:52Z",
+      "side": 1,
+      "message": "also test \"ninja\". \"-Cout/Release\"\n?",
+      "revId": "745f35763cbda57b12531ca688c45f31cbac363c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3f7bc26e_880221dd",
+        "filename": "tests/siso_test.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 408,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2026-01-29T05:22:52Z",
+      "side": 1,
+      "message": "test case wit global flags?",
+      "revId": "745f35763cbda57b12531ca688c45f31cbac363c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2bf732c5_45c04e85",
+        "filename": "tests/siso_test.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 496,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2026-01-29T05:22:52Z",
+      "side": 1,
+      "message": "test case with global flags?",
+      "revId": "745f35763cbda57b12531ca688c45f31cbac363c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
