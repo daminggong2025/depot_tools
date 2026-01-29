@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "dffdc717_ed55f7eb",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-01-29T19:09:17Z",
+      "side": 1,
+      "message": "please add tests",
+      "revId": "242764df5f7493a1199496d36da61c06e6147816",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "86875bb0_96ec4d40",
+        "filename": "gclient.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 2890,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-01-29T19:09:17Z",
+      "side": 1,
+      "message": "this sets the executable bit on the tar/zip itself, is this intentional?",
+      "range": {
+        "startLine": 2889,
+        "startChar": 24,
+        "endLine": 2890,
+        "endChar": 41
+      },
+      "revId": "242764df5f7493a1199496d36da61c06e6147816",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
