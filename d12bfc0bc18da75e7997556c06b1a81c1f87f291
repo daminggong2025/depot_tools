@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "43a8f607_16a43217",
+        "filename": "siso.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2026-01-29T05:31:49Z",
+      "side": 1,
+      "message": "Better to raise exception if that happens instead of ignoring that here?",
+      "range": {
+        "startLine": 72,
+        "startChar": 0,
+        "endLine": 73,
+        "endChar": 20
+      },
+      "revId": "d12bfc0bc18da75e7997556c06b1a81c1f87f291",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
