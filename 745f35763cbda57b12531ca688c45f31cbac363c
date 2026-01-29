@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "b69b84d4_1bf89bfa",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-01-29T05:26:33Z",
+      "side": 1,
+      "message": "Fixed",
+      "parentUuid": "4caaa880_8508d19a",
+      "revId": "745f35763cbda57b12531ca688c45f31cbac363c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "fa1f0d5f_606596b4",
@@ -31,6 +49,24 @@
       "writtenOn": "2026-01-29T05:22:52Z",
       "side": 1,
       "message": "ok to capture out/Debug before ninja?",
+      "revId": "745f35763cbda57b12531ca688c45f31cbac363c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3e80c840_c0cdef23",
+        "filename": "tests/siso_test.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 204,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-01-29T05:26:33Z",
+      "side": 1,
+      "message": "The code gets a bit easier if I don\u0027t search for -C only in cases if the subcommand is siso. Or would we prefer to enforce -C and ninja order?",
+      "parentUuid": "fa1f0d5f_606596b4",
       "revId": "745f35763cbda57b12531ca688c45f31cbac363c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
