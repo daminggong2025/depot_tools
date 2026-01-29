@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c9108246_d1ceee0f",
+        "filename": "git_cl.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 1835,
+      "author": {
+        "id": 1381059
+      },
+      "writtenOn": "2026-01-29T18:37:41Z",
+      "side": 1,
+      "message": "nit-nit: can use walrus operator here to avoid 2 GetBranch call\n\n```\nif branch :\u003d self.GetBranch():\n  args.extend([\u0027--name\u0027, branch])\n```",
+      "range": {
+        "startLine": 1834,
+        "startChar": 0,
+        "endLine": 1835,
+        "endChar": 53
+      },
+      "revId": "8fa1c0b314c5504c6ef5d3d9cdc20fbc9b1bf96c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
