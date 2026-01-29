@@ -53,6 +53,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "fd85c579_aed9d63a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-01-29T06:06:47Z",
+      "side": 1,
+      "message": "It does, and some flags actually take no values. If we go with this heuristic then we just throw the water out with the baby here. I was also thinking about hardcoding the subcommands list but that\u0027s just a landmine in waiting.",
+      "parentUuid": "57f4789c_fdca17b0",
+      "revId": "745f35763cbda57b12531ca688c45f31cbac363c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "fa1f0d5f_606596b4",
@@ -138,6 +156,24 @@
       "side": 1,
       "message": "Sorry, hold off a sec, i\u0027ve introduced some regressions, fixing",
       "parentUuid": "b7c63e44_3468fbf2",
+      "revId": "745f35763cbda57b12531ca688c45f31cbac363c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4e34abaa_17c1e315",
+        "filename": "tests/siso_test.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 204,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-01-29T06:06:47Z",
+      "side": 1,
+      "message": "Done, please go ahead with re-review.",
+      "parentUuid": "12ebc485_bf4519d7",
       "revId": "745f35763cbda57b12531ca688c45f31cbac363c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
