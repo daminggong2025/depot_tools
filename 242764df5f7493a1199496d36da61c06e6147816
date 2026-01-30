@@ -20,6 +20,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "d7d64554_9ff210d2",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1368998
+      },
+      "writtenOn": "2026-01-30T08:58:15Z",
+      "side": 1,
+      "message": "Where can I find the tests for tar.gz pls?",
+      "parentUuid": "dffdc717_ed55f7eb",
+      "revId": "242764df5f7493a1199496d36da61c06e6147816",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "86875bb0_96ec4d40",
         "filename": "gclient.py",
         "patchSetId": 5
@@ -31,6 +49,30 @@
       "writtenOn": "2026-01-29T19:09:17Z",
       "side": 1,
       "message": "this sets the executable bit on the tar/zip itself, is this intentional?",
+      "range": {
+        "startLine": 2889,
+        "startChar": 24,
+        "endLine": 2890,
+        "endChar": 41
+      },
+      "revId": "242764df5f7493a1199496d36da61c06e6147816",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e76ff380_5fab9de9",
+        "filename": "gclient.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 2890,
+      "author": {
+        "id": 1368998
+      },
+      "writtenOn": "2026-01-30T08:58:15Z",
+      "side": 1,
+      "message": "This is not my addition. The diff report is a bit distorted.",
+      "parentUuid": "86875bb0_96ec4d40",
       "range": {
         "startLine": 2889,
         "startChar": 24,
