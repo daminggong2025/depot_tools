@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7bfacc6b_644fc7b3",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1001168
+      },
+      "writtenOn": "2026-01-30T00:13:06Z",
+      "side": 1,
+      "message": "This was already reverted, but also broke presubmits for me on a branch with 6 CLs (I use no-squash). It complained about things like missing include guards in files I didn\u0027t touch (see https://chromium.slack.com/archives/CGGJARJNQ/p1769731817163349 for an example)",
+      "revId": "ceaff317ab0801ab0099422739fae0f4be704e44",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
