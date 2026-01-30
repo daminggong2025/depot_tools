@@ -38,6 +38,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "be357a65_9cc96b74",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-01-30T18:58:40Z",
+      "side": 1,
+      "message": "there\u0027s some here: https://crsrc.org/d/tests/gclient_gcs_smoketest.py",
+      "parentUuid": "d7d64554_9ff210d2",
+      "revId": "242764df5f7493a1199496d36da61c06e6147816",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "86875bb0_96ec4d40",
         "filename": "gclient.py",
         "patchSetId": 5
@@ -96,6 +114,30 @@
       "writtenOn": "2026-01-30T09:08:40Z",
       "side": 1,
       "message": "Apart from the method extraction, this is all that this CL adds.",
+      "range": {
+        "startLine": 2929,
+        "startChar": 8,
+        "endLine": 2935,
+        "endChar": 57
+      },
+      "revId": "242764df5f7493a1199496d36da61c06e6147816",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e45cc031_ebd7e844",
+        "filename": "gclient.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 2935,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-01-30T18:58:40Z",
+      "side": 1,
+      "message": "Acknowledged",
+      "parentUuid": "ec187e63_f33cd83a",
       "range": {
         "startLine": 2929,
         "startChar": 8,
