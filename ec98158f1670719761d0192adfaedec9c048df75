@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0ef47967_522810ea",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-01-30T20:34:41Z",
+      "side": 1,
+      "message": "before:\n```\n❯ git cl upload\nFound change with 1 commit...\nRunning presubmit upload checks on branch test-bad-swift-formatting ...\n  checking owners took a long time: 0.9s\n** Presubmit Warnings: 1 **\nThe src directory requires source formatting. Please run: git cl format . Or, if you are in CiderG, please use the \"Format Modified Lines in All Files (git cl format)\" functionality in the command palette.\n\nPresubmit checks took 2.8s to calculate.\nThere were presubmit warnings. Are you sure you wish to continue? (y/N):\n```\n\nafter:\n```\n❯ git cl upload\nFound change with 1 commit...\nRunning presubmit upload checks on branch test-bad-swift-formatting ...\n** Presubmit Warnings: 1 **\nThe src directory requires source formatting.\n/Users/gavinmak/chromium/src/ios/chrome/widget_kit_extension/shortcuts_widget.swift:331:9: warning: [AlwaysUseLowerCamelCase]: rename constant \u0027query_url\u0027 using lower-camel-case\n/Users/gavinmak/chromium/src/ios/chrome/widget_kit_extension/shortcuts_widget.swift:339:11: warning: [AlwaysUseLowerCamelCase]: rename constant \u0027query_gaia\u0027 using lower-camel-case\n/Users/gavinmak/chromium/src/ios/chrome/widget_kit_extension/shortcuts_widget.swift:89:1: warning: [LineLength]: line is too long\n\nThe following command may be able to fix some errors, while others may need to be fixed manually:\n  git cl format\nAlternatively, if you are in Cider G, please use the \"Format Modified Lines in All Files (git cl format)\" functionality in the command palette.\n\nThere were presubmit warnings. Are you sure you wish to continue? (y/N):\n```",
+      "revId": "ec98158f1670719761d0192adfaedec9c048df75",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
