@@ -16,6 +16,70 @@
       "message": "Hi Gavin,\n\nThis CL removes the deprecated `$directory` substitution logic from `split_cl.py` as requested in Bug 389069356.\n\nI have also updated `tests/split_cl_test.py` to remove the expectation of a warning and verify that the text remains unchanged.\n\nThanks!",
       "revId": "1ddb76b6bb4cb480e499cb8273786c083547464e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "63f01202_3ed8f338",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-01-30T20:42:06Z",
+      "side": 1,
+      "message": "I don\u0027t think you intended to add `infra/config/` and `recipes/` to this change?",
+      "parentUuid": "10ebddc0_b3b41355",
+      "revId": "1ddb76b6bb4cb480e499cb8273786c083547464e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "feb149eb_2a6b49a1",
+        "filename": "split_cl.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 217,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-01-30T20:42:06Z",
+      "side": 1,
+      "message": "this feels like we can just replace the entire function body (including comments) with:\n```\nreturn txt.replace(\u0027$description\u0027, desc)\n```",
+      "range": {
+        "startLine": 211,
+        "startChar": 3,
+        "endLine": 217,
+        "endChar": 23
+      },
+      "revId": "1ddb76b6bb4cb480e499cb8273786c083547464e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "70d5834f_e58a0fd5",
+        "filename": "tests/split_cl_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-01-30T20:42:06Z",
+      "side": 1,
+      "message": "Please fix this WARNING reported by Trailing Whitespace: Please remove the trailing whitespace.\n\nPlease remove the trailing whitespace.",
+      "range": {
+        "startLine": 74,
+        "startChar": 53,
+        "endLine": 74,
+        "endChar": 54
+      },
+      "revId": "1ddb76b6bb4cb480e499cb8273786c083547464e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
