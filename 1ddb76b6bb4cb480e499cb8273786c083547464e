@@ -36,6 +36,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "2f440416_e8ad5b8a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 4594737
+      },
+      "writtenOn": "2026-01-31T06:57:16Z",
+      "side": 1,
+      "message": "Good catch! Those files were accidentally included. I\u0027ll remove them in the next patchset.",
+      "parentUuid": "63f01202_3ed8f338",
+      "revId": "1ddb76b6bb4cb480e499cb8273786c083547464e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "feb149eb_2a6b49a1",
@@ -59,6 +77,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ef389231_02e6f81f",
+        "filename": "split_cl.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 217,
+      "author": {
+        "id": 4594737
+      },
+      "writtenOn": "2026-01-31T06:57:16Z",
+      "side": 1,
+      "message": "Done. Simplified to a single line as suggested.",
+      "parentUuid": "feb149eb_2a6b49a1",
+      "range": {
+        "startLine": 211,
+        "startChar": 3,
+        "endLine": 217,
+        "endChar": 23
+      },
+      "revId": "1ddb76b6bb4cb480e499cb8273786c083547464e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "70d5834f_e58a0fd5",
@@ -72,6 +114,30 @@
       "writtenOn": "2026-01-30T20:42:06Z",
       "side": 1,
       "message": "Please fix this WARNING reported by Trailing Whitespace: Please remove the trailing whitespace.\n\nPlease remove the trailing whitespace.",
+      "range": {
+        "startLine": 74,
+        "startChar": 53,
+        "endLine": 74,
+        "endChar": 54
+      },
+      "revId": "1ddb76b6bb4cb480e499cb8273786c083547464e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b8f5de3e_9b70891e",
+        "filename": "tests/split_cl_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 4594737
+      },
+      "writtenOn": "2026-01-31T06:57:16Z",
+      "side": 1,
+      "message": "Done. Removed the trailing whitespace.",
+      "parentUuid": "70d5834f_e58a0fd5",
       "range": {
         "startLine": 74,
         "startChar": 53,
