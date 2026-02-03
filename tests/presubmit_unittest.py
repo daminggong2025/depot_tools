@@ -2280,6 +2280,12 @@ class CannedChecksUnittest(PresubmitTestsBase):
         self.ContentTest(presubmit_canned_checks.CheckChangeTodoHasOwner,
                          "TODO(foo): bar", None, "TODO: bar", None,
                          presubmit.OutputApi.PresubmitPromptWarning)
+        self.ContentTest(presubmit_canned_checks.CheckChangeTodoHasOwner,
+                         "MACRO_TODO", None, "TODO: bar", None,
+                         presubmit.OutputApi.PresubmitPromptWarning)
+        self.ContentTest(presubmit_canned_checks.CheckChangeTodoHasOwner,
+                         "TODO_MACRO", None, "TODO: bar", None,
+                         presubmit.OutputApi.PresubmitPromptWarning)
 
     @mock.patch('git_cl.Changelist')
     @mock.patch('auth.Authenticator')
