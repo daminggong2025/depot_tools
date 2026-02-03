@@ -16,6 +16,24 @@
       "message": "Thanks! Addressed all comments in PS2.",
       "revId": "0933c6409bf2149f5cd5ccd82c9788593a16e794",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b67a7b02_502eb1a9",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-02-03T02:27:03Z",
+      "side": 1,
+      "message": "PS2 looks weird, why is it showing diffs across whole files? gerrit usually only shows the diffs for changed lines, but it\u0027s showing that 1000s of lines have changed?",
+      "parentUuid": "45f0b0af_3991c523",
+      "revId": "0933c6409bf2149f5cd5ccd82c9788593a16e794",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
