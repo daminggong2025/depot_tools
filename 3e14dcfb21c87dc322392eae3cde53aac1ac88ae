@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e4bd1112_1dac2cb9",
+        "filename": "gerrit_client.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 475,
+      "author": {
+        "id": 1378662
+      },
+      "writtenOn": "2026-02-05T05:49:40Z",
+      "side": 1,
+      "message": "not familiar with the code but seems like other parts are using write_result(...)?",
+      "revId": "3e14dcfb21c87dc322392eae3cde53aac1ac88ae",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
