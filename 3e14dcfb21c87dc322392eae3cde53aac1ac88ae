@@ -16,6 +16,24 @@
       "message": "not familiar with the code but seems like other parts are using write_result(...)?",
       "revId": "3e14dcfb21c87dc322392eae3cde53aac1ac88ae",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5d50eccc_400e7e06",
+        "filename": "gerrit_client.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 475,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2026-02-05T05:52:32Z",
+      "side": 1,
+      "message": "This is actually intentional, write_result assumes json output `json_file.write(json.dumps(result))`",
+      "parentUuid": "e4bd1112_1dac2cb9",
+      "revId": "3e14dcfb21c87dc322392eae3cde53aac1ac88ae",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
