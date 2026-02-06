@@ -68,6 +68,41 @@
       "message": "Could you add bsheedy@chromium.org as well?",
       "revId": "5da33a7ac49506ebd33d36fd439190c7323af9ad",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b4cbc4c3_fed0f3bd",
+        "filename": "agents/OWNERS",
+        "patchSetId": 7
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1163549
+      },
+      "writtenOn": "2026-02-06T23:24:00Z",
+      "side": 1,
+      "message": "It\u0027s whatever the person uses for code reviews. Some people don\u0027t have @chromium.org accounts, while others have them but have since switched to using their @google.com accounts.",
+      "parentUuid": "d387b823_120fa1d5",
+      "revId": "5da33a7ac49506ebd33d36fd439190c7323af9ad",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c32fa544_4e9ae034",
+        "filename": "agents/skills/luci-test-results/scripts/luci_triage.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1163549
+      },
+      "writtenOn": "2026-02-06T23:24:00Z",
+      "side": 1,
+      "message": "How do skills interact with extensions? At a glance, a lot of the functionality here feels like it belongs in an extension (since it could be applicable outside of this skill), but I have no idea if skills will properly use extensions or if there\u0027s a way to mark a dependency on an extension so we can guarantee that it\u0027s available when using the skill.",
+      "revId": "5da33a7ac49506ebd33d36fd439190c7323af9ad",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
