@@ -6,6 +6,7 @@
 DEPS = [
     'gerrit',
     'recipe_engine/json',
+    'recipe_engine/raw_io',
     'recipe_engine/step',
 ]
 
@@ -106,6 +107,9 @@ def RunSteps(api):
   api.gerrit.abandon_change(host, 123, 'bad roll', verbose=True)
   api.gerrit.restore_change(host, 123, 'nevermind', verbose=True)
 
+  api.gerrit.get_file_content(
+      host, change='123', path='path/to/file.txt', verbose=True)
+
   api.gerrit.get_change_description(
       host,
       change=122,
@@ -135,4 +139,7 @@ def GenTests(api):
          + api.step_data('gerrit relatedchanges',
                          api.gerrit.get_related_changes_response_data()) +
          api.step_data('gerrit changes empty query',
-                       api.gerrit.get_empty_changes_response_data()))
+                       api.gerrit.get_empty_changes_response_data()) +
+         api.step_data('gerrit get file content',
+                       api.gerrit.get_file_content_response_data(
+                           'file content')))
