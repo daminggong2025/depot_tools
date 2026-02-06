@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "98ecd3ff_3d6b5602",
+        "filename": "infra_lib/telemetry/__init__.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1513262
+      },
+      "writtenOn": "2026-02-06T23:00:16Z",
+      "side": 1,
+      "message": "I\u0027m not sure why I formatted this dict this way, but can you fix it while you\u0027re here?",
+      "revId": "97e4894265f878fddd99757c70e96efd4a34c71e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
