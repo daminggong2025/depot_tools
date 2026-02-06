@@ -1,6 +1,23 @@
 {
   "comments": [
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "3a5448d1_1ec7904a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1128941
+      },
+      "writtenOn": "2026-02-06T23:16:19Z",
+      "side": 1,
+      "message": "Thanks! This looks pretty good.\n\n@gavinmak@google.com for depot_tools ownership",
+      "revId": "5da33a7ac49506ebd33d36fd439190c7323af9ad",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "4c96af8a_d12c845a",
@@ -14,6 +31,41 @@
       "writtenOn": "2026-02-06T21:57:47Z",
       "side": 1,
       "message": "Should we be using google.com or chromium.org here? I uploaded from my depot_tools repo synced from chromium.",
+      "revId": "5da33a7ac49506ebd33d36fd439190c7323af9ad",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d387b823_120fa1d5",
+        "filename": "agents/OWNERS",
+        "patchSetId": 7
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1128941
+      },
+      "writtenOn": "2026-02-06T23:16:19Z",
+      "side": 1,
+      "message": "`chromium.org` is good since it\u0027s still a public repo. Although I see I\u0027ll need to fix mcp/OWNERS after this.",
+      "parentUuid": "4c96af8a_d12c845a",
+      "revId": "5da33a7ac49506ebd33d36fd439190c7323af9ad",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7368aab7_82c11d6e",
+        "filename": "agents/OWNERS",
+        "patchSetId": 7
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1128941
+      },
+      "writtenOn": "2026-02-06T23:16:19Z",
+      "side": 1,
+      "message": "Could you add bsheedy@chromium.org as well?",
       "revId": "5da33a7ac49506ebd33d36fd439190c7323af9ad",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
