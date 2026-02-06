@@ -5080,6 +5080,28 @@ class CMDFormatTestCase(unittest.TestCase):
             git_cl._FilterYapfIgnoredFiles(
                 files, git_cl._GetYapfIgnorePatterns(self._top_dir)))
 
+    def _make_markdown_config(self, path):
+        self._make_temp_file(os.path.join(path, '.style.mdformat'), [])
+
+    @mock.patch('git_cl.subprocess2.call')
+    def testMarkdownFormat(self, mock_call):
+        mock_call.return_value = 0
+        self._make_markdown_config('agents')
+        files = [
+            os.path.join(self._top_dir, 'agents/foo.md'),
+            os.path.join(self._top_dir, 'other/bar.md'),
+        ]
+        mock_opts = mock.Mock(dry_run=False, diff=False)
+        # Only agents/foo.md should be formatted because of the config file.
+        git_cl._RunMarkdownFormat(mock_opts, files, self._top_dir, None)
+
+        expected_cmd = [
+            'vpython3',
+            os.path.join(git_cl.DEPOT_TOOLS, 'markdown_format.py'),
+            os.path.join(self._top_dir, 'agents/foo.md'),
+        ]
+        mock_call.assert_called_once_with(expected_cmd)
+
     def _run_command_mock(self, return_value):
         def f(*args, **kwargs):
             if 'stdin' in kwargs:
