@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "582ea4a0_cee02f5e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 8
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1241393
+      },
+      "writtenOn": "2026-02-09T20:55:34Z",
+      "side": 1,
+      "message": "I\u0027m getting some warnings using the @chromium.org owners. Not sure why it considers our emails \"cannot be resolved\". I am uploading from the @chromium.org accounts, after all, which is what I use for the chromium repo.\n\n\nremote: WARNING: commit fe79880: [code-owners] invalid code owner config files (see https://chromium-review.googlesource.com/plugins/code-owners/Documentation/validation.html#validation-checks-for-code-owner-config-files for help)\nremote: WARNING: commit fe79880: [code-owners] code owner email \u0027hnakashima@chromium.com\u0027 in \u0027/agents/skills/luci-test-results/OWNERS\u0027 cannot be resolved for hnakashima@chromium.org\nremote: WARNING: commit fe79880: [code-owners] code owner email \u0027wnwen@chromium.com\u0027 in \u0027/agents/skills/luci-test-results/OWNERS\u0027 cannot be resolved for hnakashima@chromium.org",
+      "revId": "fe79880812a7845383b993a8fdcf2f1993fa206d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

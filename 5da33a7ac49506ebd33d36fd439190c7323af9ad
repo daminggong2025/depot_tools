@@ -105,6 +105,42 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "21776ec0_4659ce33",
+        "filename": "agents/OWNERS",
+        "patchSetId": 7
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1241393
+      },
+      "writtenOn": "2026-02-09T20:55:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b4cbc4c3_fed0f3bd",
+      "revId": "5da33a7ac49506ebd33d36fd439190c7323af9ad",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3c060a35_512ff064",
+        "filename": "agents/OWNERS",
+        "patchSetId": 7
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1241393
+      },
+      "writtenOn": "2026-02-09T20:55:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7368aab7_82c11d6e",
+      "revId": "5da33a7ac49506ebd33d36fd439190c7323af9ad",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "22bdd638_ebad8f4b",
@@ -118,6 +154,30 @@
       "writtenOn": "2026-02-09T16:50:00Z",
       "side": 1,
       "message": "Opps, just noticed, I use my chromium.org in this repo (since it is public). Would you mind replacing this? Thanks!\n```suggestion\nwnwen@chromium.org\n```",
+      "range": {
+        "startLine": 2,
+        "startChar": 6,
+        "endLine": 2,
+        "endChar": 12
+      },
+      "revId": "5da33a7ac49506ebd33d36fd439190c7323af9ad",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1e6016c7_8c2ade1a",
+        "filename": "agents/skills/luci-test-results/OWNERS",
+        "patchSetId": 7
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1241393
+      },
+      "writtenOn": "2026-02-09T20:55:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "22bdd638_ebad8f4b",
       "range": {
         "startLine": 2,
         "startChar": 6,
