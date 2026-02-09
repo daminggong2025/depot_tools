@@ -151,6 +151,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "cc499cea_93d574b4",
+        "filename": "agents/skills/luci-test-results/SKILL.md",
+        "patchSetId": 7
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1241393
+      },
+      "writtenOn": "2026-02-09T20:44:26Z",
+      "side": 1,
+      "message": "I think this reads clearer in separate lines (one param per line consistently across all commands).",
+      "parentUuid": "d387ff9c_8d834148",
+      "range": {
+        "startLine": 35,
+        "startChar": 4,
+        "endLine": 35,
+        "endChar": 9
+      },
+      "revId": "5da33a7ac49506ebd33d36fd439190c7323af9ad",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "c32fa544_4e9ae034",
@@ -182,6 +206,24 @@
       "side": 1,
       "message": "I think this is orthogonal to extensions. As far as I understand extensions can *contain* skills and/or MCP servers, and/or subagents, and/or hooks and its own GEMINI.md file. This skill would only show up in the system prompt as\n\n```xml\n\u003cskill\u003e\n  \u003cname\u003eluci-test-results\u003c/name\u003e\n  \u003cdescription\u003eTriage LUCI test failures and retrieve stack traces using prpc.\u003c/description\u003e\n  \u003clocation\u003e/path/to/depot_tools/agents/skills/luci-test-results/\u003c/location\u003e\n\u003c/skill\u003e\n```\n\nTaking somewhere around 60 tokens. Then if the agent decides to use this skill, it will call the activate_skill tool then the full SKILL.md gets read in, and gemini may or may not call this luci_triage.py script with the path it already knows.\n\nOf course, this assumes that depot_tools/agents/skills is on gemini\u0027s radar already via settings or something else.\n\nSo if someone wants later on to package this in an extension, that works too, but that shouldn\u0027t affect landing skills like this directly in the repo (IMO).",
       "parentUuid": "c32fa544_4e9ae034",
+      "revId": "5da33a7ac49506ebd33d36fd439190c7323af9ad",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9db6aa8b_3b2f9929",
+        "filename": "agents/skills/luci-test-results/scripts/luci_triage.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1241393
+      },
+      "writtenOn": "2026-02-09T20:44:26Z",
+      "side": 1,
+      "message": "That\u0027s my understanding, we\u0027d need to add this to an extension to be automatically loaded. For now you have to `/skills link \u003cpath\u003e`",
+      "parentUuid": "88553a58_3f195bcd",
       "revId": "5da33a7ac49506ebd33d36fd439190c7323af9ad",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
