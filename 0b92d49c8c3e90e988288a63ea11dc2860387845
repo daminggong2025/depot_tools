@@ -135,6 +135,23 @@
       "message": "commit-queue.cfg",
       "revId": "0b92d49c8c3e90e988288a63ea11dc2860387845",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c0b633c8_b41e0a82",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 4478765
+      },
+      "writtenOn": "2026-02-10T23:03:43Z",
+      "side": 1,
+      "message": "1489476: Restore project.cfg. | https://chromium-review.googlesource.com/c/chromium/tools/depot_tools/+/1489476",
+      "revId": "0b92d49c8c3e90e988288a63ea11dc2860387845",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
