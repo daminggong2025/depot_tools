@@ -16,6 +16,24 @@
       "message": "@bryner@google.com Your comment on the original revert CL said it needed to be added to `.vpython3`. We were under the impression that the bug was actually that it wasn\u0027t added to the .gitattributes file so it wasn\u0027t bundled in. I\u0027ve fixed the gitattributes problem, but haven\u0027t touched .vpython3 because it didn\u0027t look relevant after reading it. If that\u0027s not the case, are you able to tell me what change needs to be made to it?",
       "revId": "32e40ab3f6733415987fc659f4e133c95a2e85cb",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f6d8258d_3e2197bc",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2026-02-11T02:30:36Z",
+      "side": 1,
+      "message": "yes, my mistake, I thought this was looking for some system-installed jj module, but it looks like it was just depot_tools/jj . So, your gitattributes change should fix it.",
+      "parentUuid": "e6183b94_9e3e98c2",
+      "revId": "32e40ab3f6733415987fc659f4e133c95a2e85cb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
