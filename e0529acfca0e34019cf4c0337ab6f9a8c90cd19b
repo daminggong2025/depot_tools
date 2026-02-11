@@ -1,0 +1,113 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8155be57_a368dfcd",
+        "filename": "git_cl.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 763,
+      "author": {
+        "id": 1381059
+      },
+      "writtenOn": "2026-02-11T20:11:42Z",
+      "side": 1,
+      "message": "nit-nit: this can be shortened to \n\n```\nif fpath not in markdown_config_cache:\n  markdown_config_cache[fpath] \u003d markdown_format.find_config_file(fpath, top_dir)\nreturn markdown_config_cache[fpath]\n```",
+      "range": {
+        "startLine": 758,
+        "startChar": 1,
+        "endLine": 763,
+        "endChar": 14
+      },
+      "revId": "e0529acfca0e34019cf4c0337ab6f9a8c90cd19b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "83caa829_d7d184bb",
+        "filename": "git_cl.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 7300,
+      "author": {
+        "id": 1381059
+      },
+      "writtenOn": "2026-02-11T20:11:42Z",
+      "side": 1,
+      "message": "This seems to be a type change, is it compatible with all the existing formatter?",
+      "range": {
+        "startLine": 7300,
+        "startChar": 38,
+        "endLine": 7300,
+        "endChar": 65
+      },
+      "revId": "e0529acfca0e34019cf4c0337ab6f9a8c90cd19b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d15ba823_f47920ec",
+        "filename": "markdown_format.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1381059
+      },
+      "writtenOn": "2026-02-11T20:11:42Z",
+      "side": 1,
+      "message": "what are those wheels for? Are they dependency of mdformat?",
+      "range": {
+        "startLine": 4,
+        "startChar": 0,
+        "endLine": 11,
+        "endChar": 3
+      },
+      "revId": "e0529acfca0e34019cf4c0337ab6f9a8c90cd19b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7bec4cfd_a27f043a",
+        "filename": "markdown_format.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1381059
+      },
+      "writtenOn": "2026-02-11T20:11:42Z",
+      "side": 1,
+      "message": "Can\u0027t we directly use mdformat api instead of using subprocess which may incur additional overhead?",
+      "range": {
+        "startLine": 58,
+        "startChar": 0,
+        "endLine": 64,
+        "endChar": 38
+      },
+      "revId": "e0529acfca0e34019cf4c0337ab6f9a8c90cd19b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "09cad1f9_cf979db3",
+        "filename": "tests/git_cl_test.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 5103,
+      "author": {
+        "id": 1381059
+      },
+      "writtenOn": "2026-02-11T20:11:42Z",
+      "side": 1,
+      "message": "Instead of simply asserting the command is called, can we add some contents in `agents/foo.md` to verify that the formatting actually works? Would be great if the behavior of `--check` and `--diff` are also tested.",
+      "revId": "e0529acfca0e34019cf4c0337ab6f9a8c90cd19b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
