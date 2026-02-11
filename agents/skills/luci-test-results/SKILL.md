@@ -1,11 +1,10 @@
----
-name: luci-test-results
-description: Triage LUCI test failures and retrieve stack traces using prpc.
----
+# LUCI Results Analysis
 
-# LUCI Triage Cheat Sheet
+Triage and analyze any LUCI build results (including tests and compile). Supports finding builds by CL number or URL, metadata retrieval, failure listing, and log fetching.
 
-## 1. Resolve Build ID
+## LUCI Triage Cheat Sheet
+
+### 1. Resolve Build ID
 
 If you have a builder + build number, get the long `<BUILD_ID>`:
 
@@ -15,17 +14,26 @@ scripts/luci_triage.py resolve-build-id \
   --build-number <NUMBER>
 ```
 
-## 2. Find Builds for Gerrit CL
+### 2. Get Build Details
 
-Find failed builds for a specific CL and patchset:
+Get status, summary markdown, and output properties of a build:
+
+```bash
+scripts/luci_triage.py get-build \
+  --build-id <BUILD_ID>
+```
+
+### 3. Find Builds for Gerrit CL
+
+Find failed builds for a specific CL (number or URL):
 
 ```bash
 scripts/luci_triage.py find-cl-builds \
-  --cl <CL_NUMBER> \
+  --cl <CL_NUMBER_OR_URL> \
   [--patchset <PATCHSET>]
 ```
 
-## 3. List Unexpected Failures
+### 4. List Unexpected Failures
 
 Get a clean list of tests that failed unexpectedly, deduplicated by test ID and
 grouped by Swarming task:
@@ -35,20 +43,17 @@ scripts/luci_triage.py list-failures \
   --build-id <BUILD_ID>
 ```
 
-- **Triage Priority:** If multiple tests share a `task` ID, triage **one**
-  result first.
-
-## 4. Fetch Log Snippet
+### 5. Fetch Log Snippet
 
 Retrieve a filtered failure log snippet using the result name (`res`) from step
-3:
+4:
 
 ```bash
 scripts/luci_triage.py fetch-log \
   --res "<RES_NAME>"
 ```
 
-## 5. Implementation Notes
+## Implementation Notes
 
 1. **Task-Based Triage:** A shard crash often manifests as
    `CascadingFailureException`. Triage the root failure in that shard first by
