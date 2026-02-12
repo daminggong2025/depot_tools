@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "06b5a449_b6f9f1ab",
+        "filename": "git_cl.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 763,
+      "author": {
+        "id": 4346629
+      },
+      "writtenOn": "2026-02-12T04:19:37Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8155be57_a368dfcd",
+      "range": {
+        "startLine": 758,
+        "startChar": 1,
+        "endLine": 763,
+        "endChar": 14
+      },
+      "revId": "e0529acfca0e34019cf4c0337ab6f9a8c90cd19b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "83caa829_d7d184bb",
@@ -37,6 +61,30 @@
       "writtenOn": "2026-02-11T20:11:42Z",
       "side": 1,
       "message": "This seems to be a type change, is it compatible with all the existing formatter?",
+      "range": {
+        "startLine": 7300,
+        "startChar": 38,
+        "endLine": 7300,
+        "endChar": 65
+      },
+      "revId": "e0529acfca0e34019cf4c0337ab6f9a8c90cd19b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ec7fac6b_454934e1",
+        "filename": "git_cl.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 7300,
+      "author": {
+        "id": 4346629
+      },
+      "writtenOn": "2026-02-12T04:19:37Z",
+      "side": 1,
+      "message": "All the formatters, as far as I investigated, are called in [a for loop with the same arguments](https://source.chromium.org/chromium/chromium/tools/depot_tools/+/main:git_cl.py;l\u003d7461-7466;drc\u003d6332e0fb2f483c823d87925061624b2f331f91b2), so they should have the same type, and their argument types can be inferred from what are passed.\n\nSince the first argument is the result of `optparse.OptionParser`, its type is [`optparse.Values`](https://docs.python.org/3/library/optparse.html#optparse.Values). \n\nThe fourth argument is `diffs`, coming from the second return value of [`_FindFilesToFormat`](https://source.chromium.org/chromium/chromium/tools/depot_tools/+/main:git_cl.py;l\u003d7284-7304;drc\u003d6332e0fb2f483c823d87925061624b2f331f91b2). This value in turn is either the return value of `_SplitDiffsByFile` (`Dict[str, str]`) or `None`.",
+      "parentUuid": "83caa829_d7d184bb",
       "range": {
         "startLine": 7300,
         "startChar": 38,
@@ -70,6 +118,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "99f41802_b925b9bf",
+        "filename": "markdown_format.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 4346629
+      },
+      "writtenOn": "2026-02-12T04:19:37Z",
+      "side": 1,
+      "message": "Yes, they are the dependencies of mdformat. The relation is `mdformat \u003e markdown-it-py \u003e mdurl`.",
+      "parentUuid": "d15ba823_f47920ec",
+      "range": {
+        "startLine": 4,
+        "startChar": 0,
+        "endLine": 11,
+        "endChar": 3
+      },
+      "revId": "e0529acfca0e34019cf4c0337ab6f9a8c90cd19b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "7bec4cfd_a27f043a",
@@ -93,6 +165,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ea178b20_939c1d47",
+        "filename": "markdown_format.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 4346629
+      },
+      "writtenOn": "2026-02-12T04:19:37Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7bec4cfd_a27f043a",
+      "range": {
+        "startLine": 58,
+        "startChar": 0,
+        "endLine": 64,
+        "endChar": 38
+      },
+      "revId": "e0529acfca0e34019cf4c0337ab6f9a8c90cd19b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "09cad1f9_cf979db3",
@@ -106,6 +202,24 @@
       "writtenOn": "2026-02-11T20:11:42Z",
       "side": 1,
       "message": "Instead of simply asserting the command is called, can we add some contents in `agents/foo.md` to verify that the formatting actually works? Would be great if the behavior of `--check` and `--diff` are also tested.",
+      "revId": "e0529acfca0e34019cf4c0337ab6f9a8c90cd19b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a30992d7_a44d5dd5",
+        "filename": "tests/git_cl_test.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 5103,
+      "author": {
+        "id": 4346629
+      },
+      "writtenOn": "2026-02-12T04:19:37Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "09cad1f9_cf979db3",
       "revId": "e0529acfca0e34019cf4c0337ab6f9a8c90cd19b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
