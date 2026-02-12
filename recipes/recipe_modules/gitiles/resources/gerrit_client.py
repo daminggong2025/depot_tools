@@ -44,6 +44,7 @@ def gitiles_get(parsed_url, handler, attempts):
   if parsed_url.query:
     path += '?%s' % (parsed_url.query, )
 
+  path = urllib.parse.quote(path)
   retry_delay_seconds = 1
   attempt = 1
   while True:
