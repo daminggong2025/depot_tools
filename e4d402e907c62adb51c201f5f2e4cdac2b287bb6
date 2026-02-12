@@ -22,6 +22,30 @@
       },
       "revId": "e4d402e907c62adb51c201f5f2e4cdac2b287bb6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "64f8a5b4_9d805178",
+        "filename": "markdown_format.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 197,
+      "author": {
+        "id": 4346629
+      },
+      "writtenOn": "2026-02-12T19:20:04Z",
+      "side": 1,
+      "message": "Thanks for the suggestion! I tested moving import mdformat to the top of the file, but it unfortunately breaks git cl:\n\n```\n$ git cl\nTraceback (most recent call last):\n  File \".../depot_tools/git_cl.py\", line 52, in \u003cmodule\u003e\n    import markdown_format\n  File \".../depot_tools/markdown_format.py\", line 32, in \u003cmodule\u003e\n    import mdformat\nModuleNotFoundError: No module named \u0027mdformat\u0027\n```\n\nBecause `git_cl.py` globally imports markdown_format early on, putting `import mdformat` at the top causes a crash. The `mdformat` wheels only exist in \n`markdown_format.py`\u0027s local [VPYTHON] block, so the global git cl environment doesn\u0027t have them.\n\nWe could add these wheels to the top-level depot_tools/.vpython3 file, but that would force vpython3 to resolve and verify those heavy dependencies every time any developer runs any `git cl` command. If this is the preferred option, I would be happy to make a change!",
+      "parentUuid": "8afe1efd_25984430",
+      "range": {
+        "startLine": 195,
+        "startChar": 0,
+        "endLine": 197,
+        "endChar": 0
+      },
+      "revId": "e4d402e907c62adb51c201f5f2e4cdac2b287bb6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
