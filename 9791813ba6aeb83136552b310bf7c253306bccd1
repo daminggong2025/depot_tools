@@ -22,6 +22,30 @@
       },
       "revId": "9791813ba6aeb83136552b310bf7c253306bccd1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a80a3668_0618631c",
+        "filename": "recipes/recipe_modules/gitiles/resources/gerrit_client.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2026-02-12T23:53:07Z",
+      "side": 1,
+      "message": "I think it would be invalid to call this with a path that isn\u0027t encoded and a query that is, so it makes sense to quote after contacting them.",
+      "parentUuid": "a54017bd_aa51c008",
+      "range": {
+        "startLine": 47,
+        "startChar": 0,
+        "endLine": 49,
+        "endChar": 35
+      },
+      "revId": "9791813ba6aeb83136552b310bf7c253306bccd1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
