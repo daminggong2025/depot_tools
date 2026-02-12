@@ -46,6 +46,30 @@
       },
       "revId": "e4d402e907c62adb51c201f5f2e4cdac2b287bb6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "92f03180_b79649a8",
+        "filename": "markdown_format.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 197,
+      "author": {
+        "id": 1381059
+      },
+      "writtenOn": "2026-02-12T21:14:06Z",
+      "side": 1,
+      "message": "Oh I see. Since all `git_cl` need is `find_config_file` method, I\u0027m wondering if we should make it generic and push it to a lower-level module (for example: https://chromium.googlesource.com/chromium/tools/depot_tools/+/refs/heads/main/utils.py) and only calling `markdown_format.py` using subprocess from `git_cl`.",
+      "parentUuid": "64f8a5b4_9d805178",
+      "range": {
+        "startLine": 195,
+        "startChar": 0,
+        "endLine": 197,
+        "endChar": 0
+      },
+      "revId": "e4d402e907c62adb51c201f5f2e4cdac2b287bb6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
