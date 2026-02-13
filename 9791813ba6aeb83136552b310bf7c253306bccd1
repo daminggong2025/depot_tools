@@ -46,6 +46,30 @@
       },
       "revId": "9791813ba6aeb83136552b310bf7c253306bccd1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e0b79def_914e5523",
+        "filename": "recipes/recipe_modules/gitiles/resources/gerrit_client.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2026-02-13T04:12:41Z",
+      "side": 1,
+      "message": "I thought about it some more and you were right it should go before because otherwise it will escape the \u0027?\u0027 character.",
+      "parentUuid": "a80a3668_0618631c",
+      "range": {
+        "startLine": 47,
+        "startChar": 0,
+        "endLine": 49,
+        "endChar": 35
+      },
+      "revId": "9791813ba6aeb83136552b310bf7c253306bccd1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
