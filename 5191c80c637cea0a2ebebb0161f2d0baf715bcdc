@@ -22,6 +22,30 @@
       },
       "revId": "5191c80c637cea0a2ebebb0161f2d0baf715bcdc",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "220cc2c9_38b53582",
+        "filename": "recipes/recipe_modules/gitiles/resources/gerrit_client.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2026-02-16T00:45:54Z",
+      "side": 1,
+      "message": "Agreed, I tried to understand how this library is tested and found that all the existing tests for this module don\u0027t cover this code, they simply mock the output of running this script. Given the cross timezone situation and how unfamiliar I am with this codebase, perhaps we should skip landing this until someone with more context and familiarity can address this bug and provide proper test coverage wdyt? \n\nIn the meantime, I can just not query file paths that include spaces like so:\n```\n   # TODO(b/483862822): Remove this once url paths are properly encoded.\n    if \" \" in file_path:\n      self.m.step.empty(\n          f\u0027Not fetching {file_path} because it contains spaces, see b/483862822\u0027\n      )\n      return None\n```",
+      "parentUuid": "f91fb3e4_95eededd",
+      "range": {
+        "startLine": 46,
+        "startChar": 0,
+        "endLine": 46,
+        "endChar": 40
+      },
+      "revId": "5191c80c637cea0a2ebebb0161f2d0baf715bcdc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
