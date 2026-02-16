@@ -132,6 +132,13 @@ def log_retry_and_sleep(seconds, attempt, try_limit):
     return seconds * random.uniform(MIN_BACKOFF, MAX_BACKOFF)
 
 
+def ValidateIssue(issue):
+    if not issue.isdigit() and not (issue.startswith('I') and len(issue) == 41):
+        DieWithError(
+            'An issue ID is expected to be either a CL number or a gerrit change ID.'
+        )
+    return issue
+
 class GerritError(Exception):
     """Exception class for errors commuicating with the gerrit-on-borg service."""
     def __init__(self, http_status, message, *args, **kwargs):
@@ -2217,12 +2224,15 @@ def tempdir():
             gclient_utils.rmtree(tdir)
 
 
-def ChangeIdentifier(project, change_number):
+def ChangeIdentifier(project, change_number_or_id):
     """Returns change identifier "project~number" suitable for |change| arg of
     this module API.
 
     Such format is allows for more efficient Gerrit routing of HTTP requests,
     comparing to specifying just change_number.
     """
-    assert int(change_number)
-    return '%s~%s' % (urllib.parse.quote(project, ''), change_number)
+    # It's a gerrit change ID. They are unique across projects, so the REST API
+    # specifies to not use the project name.
+    if change_number_or_id.startswith('I'):
+        return change_number_or_id
+    return '%s~%s' % (urllib.parse.quote(project, ''), change_number_or_id)
