@@ -94,6 +94,30 @@
       },
       "revId": "5191c80c637cea0a2ebebb0161f2d0baf715bcdc",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c59f60a0_121fadb9",
+        "filename": "recipes/recipe_modules/gitiles/resources/gerrit_client.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2026-02-16T01:04:58Z",
+      "side": 1,
+      "message": "Thank you!",
+      "parentUuid": "7ed4d93f_e82edaa7",
+      "range": {
+        "startLine": 46,
+        "startChar": 0,
+        "endLine": 46,
+        "endChar": 40
+      },
+      "revId": "5191c80c637cea0a2ebebb0161f2d0baf715bcdc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
