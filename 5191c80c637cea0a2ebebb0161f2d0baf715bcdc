@@ -46,6 +46,30 @@
       },
       "revId": "5191c80c637cea0a2ebebb0161f2d0baf715bcdc",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7ed4d93f_e82edaa7",
+        "filename": "recipes/recipe_modules/gitiles/resources/gerrit_client.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1136044
+      },
+      "writtenOn": "2026-02-16T00:59:20Z",
+      "side": 1,
+      "message": "```patch\n+++ b/recipes/recipe_modules/gitiles/resources/gerrit_client_test.py\n@@ -0,0 +1,62 @@\n+import sys\n+import os\n+import unittest\n+from unittest import mock\n+import urllib.parse\n+import importlib.util\n+\n+# Setup depot_tools path\n+# This test is assumed to be run from the root of depot_tools or with PYTHONPATH set.\n+# For this script, we\u0027ll try to find it relative to the script location.\n+DEPOT_TOOLS \u003d os.path.abspath(os.path.join(os.path.dirname(__file__), \u0027..\u0027, \u0027..\u0027, \u0027..\u0027, \u0027..\u0027))\n+sys.path.insert(0, DEPOT_TOOLS)\n+\n+# Load gerrit_client\n+# Since it\u0027s a resource, we load it manually to avoid package issues\n+def load_gerrit_client():\n+    resource_path \u003d os.path.join(os.path.dirname(__file__), \u0027gerrit_client.py\u0027)\n+    spec \u003d importlib.util.spec_from_file_location(\"gerrit_client\", resource_path)\n+    module \u003d importlib.util.module_from_spec(spec)\n+    # Mock gerrit_util to avoid network/auth\n+    sys.modules[\u0027gerrit_util\u0027] \u003d mock.MagicMock()\n+    spec.loader.exec_module(module)\n+    return module\n+\n+class GerritClientTest(unittest.TestCase):\n+    @classmethod\n+    def setUpClass(cls):\n+        cls.gerrit_client \u003d load_gerrit_client()\n+        cls.gerrit_util \u003d sys.modules[\u0027gerrit_util\u0027]\n+\n+    def setUp(self):\n+        self.gerrit_util.CreateHttpConn.reset_mock()\n+\n+    def test_gitiles_get_simple(self):\n+        parsed \u003d urllib.parse.urlparse(\u0027https://host/p/ref\u0027)\n+        self.gerrit_client.gitiles_get(parsed, mock.MagicMock(), attempts\u003d1)\n+        self.gerrit_util.CreateHttpConn.assert_called_with(\u0027host\u0027, \u0027/p/ref\u0027)\n+\n+    def test_gitiles_get_quoting_space(self):\n+        # Verify that spaces in path are quoted.\n+        parsed \u003d urllib.parse.urlparse(\u0027https://host/p/path with spaces\u0027)\n+        self.gerrit_client.gitiles_get(parsed, mock.MagicMock(), attempts\u003d1)\n+        self.gerrit_util.CreateHttpConn.assert_called_with(\u0027host\u0027, \u0027/p/path%20with%20spaces\u0027)\n+\n+    def test_gitiles_get_quoting_plus(self):\n+        # Verify that + (special for Gitiles) is quoted in the path.\n+        parsed \u003d urllib.parse.urlparse(\u0027https://host/repo/+log/master\u0027)\n+        self.gerrit_client.gitiles_get(parsed, mock.MagicMock(), attempts\u003d1)\n+        self.gerrit_util.CreateHttpConn.assert_called_with(\u0027host\u0027, \u0027/repo/%2Blog/master\u0027)\n+\n+    def test_gitiles_get_with_query(self):\n+        # Verify that query parameters are NOT broken by over-quoting.\n+        # This currently fails due to the bug in gerrit_client.py\n+        url \u003d \u0027https://host/repo/+log/master?format\u003djson\u0026s\u003ddeadbeef\u0027\n+        parsed \u003d urllib.parse.urlparse(url)\n+        self.gerrit_client.gitiles_get(parsed, mock.MagicMock(), attempts\u003d1)\n+        \n+        args, _ \u003d self.gerrit_util.CreateHttpConn.call_args\n+        self.assertEqual(args[1], \u0027/repo/%2Blog/master?format\u003djson\u0026s\u003ddeadbeef\u0027)\n+\n+if __name__ \u003d\u003d \u0027__main__\u0027:\n+    unittest.main()\n```",
+      "parentUuid": "220cc2c9_38b53582",
+      "range": {
+        "startLine": 46,
+        "startChar": 0,
+        "endLine": 46,
+        "endChar": 40
+      },
+      "revId": "5191c80c637cea0a2ebebb0161f2d0baf715bcdc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
