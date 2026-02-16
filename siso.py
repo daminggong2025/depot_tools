@@ -544,6 +544,21 @@ def main(args: list[str],
                 # Sisorc global flags are actually pre-subcommand flags.
                 pre_args = global_flags + pre_args
 
+                # Ensure SISO_CREDENTIAL_HELPER env var is passed as an
+                # explicit flag if set and not already specified. This
+                # works around siso binaries that auto-detect a credential
+                # helper in PATH and ignore the env var.
+                cred_helper = env.get("SISO_CREDENTIAL_HELPER")
+                if cred_helper:
+                    has_cred_flag = any(
+                        a == "-credential_helper" or a == "--credential_helper"
+                        or a.startswith("-credential_helper=")
+                        or a.startswith("--credential_helper=")
+                        for a in pre_args)
+                    if not has_cred_flag:
+                        pre_args = ["-credential_helper", cred_helper
+                                    ] + pre_args
+
                 if subcmd:
                     # Apply subcommand-specific flags from .sisorc
                     subcmd_args = subcmd_flags.get(subcmd, []) + subcmd_args

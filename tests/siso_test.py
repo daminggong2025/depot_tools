@@ -1652,8 +1652,8 @@ def test_main_e2e(siso_project_setup: None, tmp_path: Path,
 
     args = ["siso.py", "ninja", "-C", str(tmp_path)]
 
-    # run
-    exit_code = siso.main(args, runner=runner)
+    # Use explicit env to avoid host environment leaking into test.
+    exit_code = siso.main(args, env={}, runner=runner)
 
     assert exit_code == 0
     # Verify runner was called with siso binary and processed args.
@@ -1677,7 +1677,8 @@ def test_main_dynamic_subcmds_e2e(siso_project_setup: None, tmp_path: Path,
 
     args = ["siso.py", "-mutexprofile", "prof", "custom_subcmd", "-flag"]
 
-    exit_code = siso.main(args, runner=runner)
+    # Use explicit env to avoid host environment leaking into test.
+    exit_code = siso.main(args, env={}, runner=runner)
 
     assert exit_code == 0
     called_args, _ = runner.call_args
@@ -1705,7 +1706,8 @@ def test_main_complex_args_e2e(siso_project_setup: None, tmp_path: Path,
         str(tmp_path / "src" / "out" / "Default")
     ]
 
-    exit_code = siso.main(args, runner=runner)
+    # Use explicit env to avoid host environment leaking into test.
+    exit_code = siso.main(args, env={}, runner=runner)
 
     assert exit_code == 0
     called_args, _ = runner.call_args
@@ -1724,6 +1726,112 @@ def test_main_complex_args_e2e(siso_project_setup: None, tmp_path: Path,
     assert any(
         arg.startswith("--metrics_project=rbe-chrome-untrusted")
         for arg in cmd[ninja_idx:])
+
+
+def test_main_credential_helper_env_passed_as_flag(siso_project_setup: None,
+                                                   tmp_path: Path,
+                                                   mocker: Any) -> None:
+    """SISO_CREDENTIAL_HELPER env var should be passed as explicit flag."""
+    _get_sisoenv_path(tmp_path).write_text("")
+    siso_bin_path = _get_siso_bin_path(tmp_path)
+
+    runner = mocker.Mock(return_value=0)
+    mock_stderr = mocker.patch("sys.stderr", new_callable=io.StringIO)
+    create_telemetry_cfg(tmp_path, mocker, enabled=False)
+
+    env = {
+        "SISO_PATH": str(siso_bin_path),
+        "SISO_CREDENTIAL_HELPER": "gcloud",
+    }
+
+    siso.main(["siso.py", "ninja", "-C", "out/Default"], env=env, runner=runner)
+
+    assert runner.call_count == 1
+    cmd = runner.call_args[0][0]
+    # -credential_helper gcloud should appear before the subcommand
+    ninja_idx = cmd.index("ninja")
+    pre_subcmd = cmd[1:ninja_idx]
+    assert "-credential_helper" in pre_subcmd
+    ch_idx = pre_subcmd.index("-credential_helper")
+    assert pre_subcmd[ch_idx + 1] == "gcloud"
+
+
+def test_main_credential_helper_env_not_duplicated_with_sisorc(
+        siso_project_setup: None, tmp_path: Path, mocker: Any) -> None:
+    """Don't add -credential_helper if already set via .sisorc."""
+    _get_sisoenv_path(tmp_path).write_text("")
+    siso_bin_path = _get_siso_bin_path(tmp_path)
+
+    # Write .sisorc with -credential_helper already set
+    sisorc_path = _get_siso_config_dir(tmp_path) / ".sisorc"
+    sisorc_path.write_text("-credential_helper gcloud\n")
+
+    runner = mocker.Mock(return_value=0)
+    create_telemetry_cfg(tmp_path, mocker, enabled=False)
+
+    env = {
+        "SISO_PATH": str(siso_bin_path),
+        "SISO_CREDENTIAL_HELPER": "gcloud",
+    }
+
+    siso.main(["siso.py", "ninja", "-C", "out/Default"], env=env, runner=runner)
+
+    assert runner.call_count == 1
+    cmd = runner.call_args[0][0]
+    # -credential_helper should appear exactly once
+    count = sum(1 for a in cmd if a == "-credential_helper")
+    assert count == 1
+
+
+def test_main_credential_helper_env_not_duplicated_with_equals_form(
+        siso_project_setup: None, tmp_path: Path, mocker: Any) -> None:
+    """Don't add -credential_helper if already set via .sisorc (= form)."""
+    _get_sisoenv_path(tmp_path).write_text("")
+    siso_bin_path = _get_siso_bin_path(tmp_path)
+
+    # Write .sisorc with -credential_helper=gcloud form
+    sisorc_path = _get_siso_config_dir(tmp_path) / ".sisorc"
+    sisorc_path.write_text("-credential_helper=gcloud\n")
+
+    runner = mocker.Mock(return_value=0)
+    create_telemetry_cfg(tmp_path, mocker, enabled=False)
+
+    env = {
+        "SISO_PATH": str(siso_bin_path),
+        "SISO_CREDENTIAL_HELPER": "gcloud",
+    }
+
+    siso.main(["siso.py", "ninja", "-C", "out/Default"], env=env, runner=runner)
+
+    assert runner.call_count == 1
+    cmd = runner.call_args[0][0]
+    # -credential_helper should appear exactly once (from .sisorc)
+    count = sum(
+        1 for a in cmd
+        if a == "-credential_helper" or a.startswith("-credential_helper="))
+    assert count == 1
+
+
+def test_main_no_credential_helper_without_env(siso_project_setup: None,
+                                               tmp_path: Path,
+                                               mocker: Any) -> None:
+    """No -credential_helper flag added when env var is not set."""
+    _get_sisoenv_path(tmp_path).write_text("")
+    siso_bin_path = _get_siso_bin_path(tmp_path)
+
+    runner = mocker.Mock(return_value=0)
+    create_telemetry_cfg(tmp_path, mocker, enabled=False)
+
+    env = {
+        "SISO_PATH": str(siso_bin_path),
+    }
+
+    siso.main(["siso.py", "ninja", "-C", "out/Default"], env=env, runner=runner)
+
+    assert runner.call_count == 1
+    cmd = runner.call_args[0][0]
+    assert "-credential_helper" not in cmd
+    assert not any(a.startswith("-credential_helper=") for a in cmd)
 
 
 # Stanza to have pytest be executed.
