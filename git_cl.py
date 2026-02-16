@@ -1110,7 +1110,7 @@ def ParseIssueNumberArgument(arg):
     """Parses the issue argument and returns _ParsedIssueNumberArgument."""
     fail_result = _ParsedIssueNumberArgument()
 
-    if isinstance(arg, int):
+    if isinstance(arg, int) or arg.startswith('I'):
         return _ParsedIssueNumberArgument(issue=arg)
     if not isinstance(arg, str):
         return fail_result
@@ -1468,6 +1468,8 @@ class Changelist(object):
         self.upstream_branch = None
         self.lookedup_issue = False
         self.issue = issue or None
+        if isinstance(self.issue, str) and self.issue.isdigit():
+            self.issue = int(self.issue)
         self.description = None
         self.lookedup_patchset = False
         self.patchset = None
@@ -1698,7 +1700,7 @@ class Changelist(object):
         return change.get('_number')
 
     def GetIssue(self):
-        """Returns the issue number as a int or None if not set."""
+        """Returns the issue number (int), Change ID (string), or None."""
         if self.issue is None and not self.lookedup_issue:
             if self.GetBranch():
                 self.issue = self._GitGetBranchConfigValue(ISSUE_CONFIG_KEY)
@@ -1706,7 +1708,7 @@ class Changelist(object):
             if not settings.GetSquashGerritUploads() and self.issue is None:
                 self.issue = self._GetIssueFromTripletId()
 
-            if self.issue is not None:
+            if self.issue is not None and self.issue.isdigit():
                 self.issue = int(self.issue)
             self.lookedup_issue = True
         return self.issue
@@ -1766,7 +1768,8 @@ class Changelist(object):
         """Set this branch's issue. If issue isn't given, clears the issue."""
         assert self.GetBranch()
         if issue:
-            issue = int(issue)
+            if isinstance(issue, str) and issue.isdigit():
+                issue = int(issue)
             self._GitSetBranchConfigValue(ISSUE_CONFIG_KEY, str(issue))
             self.issue = issue
             codereview_server = self.GetCodereviewServer()
@@ -4613,7 +4616,6 @@ def CMDstatus(parser, args):
     parser.add_option(
         '-i',
         '--issue',
-        type=int,
         help='Operate on this issue instead of the current branch\'s implicit '
         'issue. Requires --field to be set.')
     parser.add_option('-d',
@@ -4628,7 +4630,7 @@ def CMDstatus(parser, args):
         parser.error('--field must be given when --issue is set.')
 
     if options.field:
-        cl = Changelist(issue=options.issue)
+        cl = Changelist(issue=gerrit_util.ValidateIssue(options.issue))
         if options.field.startswith('desc'):
             if cl.GetIssue():
                 print(cl.FetchDescription())
@@ -5031,14 +5033,7 @@ def CMDcomments(parser, args):
                       help='File to write JSON summary to, or "-" for stdout')
     options, args = parser.parse_args(args)
 
-    issue = None
-    if options.issue:
-        try:
-            issue = int(options.issue)
-        except ValueError:
-            DieWithError('A review issue ID is expected to be a number.')
-
-    cl = Changelist(issue=issue)
+    cl = Changelist(issue=gerrit_util.ValidateIssue(options.issue))
 
     if not cl.GetIssue():
         sys.stderr.write(
@@ -6440,7 +6435,6 @@ def CMDtry(parser, args):
     parser.add_option(
         '-i',
         '--issue',
-        type=int,
         help='Operate on this issue instead of the current branch\'s implicit '
         'issue.')
     options, args = parser.parse_args(args)
@@ -6453,7 +6447,7 @@ def CMDtry(parser, args):
     if args:
         parser.error('Unknown arguments: %s' % args)
 
-    cl = Changelist(issue=options.issue)
+    cl = Changelist(issue=gerrit_util.ValidateIssue(options.issue))
     if not cl.GetIssue():
         parser.error('Need to upload first.')
 
@@ -6547,14 +6541,13 @@ def CMDtry_results(parser, args):
     parser.add_option(
         '-i',
         '--issue',
-        type=int,
         help='Operate on this issue instead of the current branch\'s implicit '
         'issue.')
     options, args = parser.parse_args(args)
     if args:
         parser.error('Unrecognized args: %s' % ' '.join(args))
 
-    cl = Changelist(issue=options.issue)
+    cl = Changelist(issue=gerrit_util.ValidateIssue(options.issue))
     if not cl.GetIssue():
         parser.error('Need to upload first.')
 
@@ -6673,7 +6666,6 @@ def CMDset_commit(parser, args):
     parser.add_option(
         '-i',
         '--issue',
-        type=int,
         help='Operate on this issue instead of the current branch\'s implicit '
         'issue.')
     options, args = parser.parse_args(args)
@@ -6682,7 +6674,7 @@ def CMDset_commit(parser, args):
     if [options.dry_run, options.clear].count(True) > 1:
         parser.error('Only one of --dry-run, and --clear are allowed.')
 
-    cl = Changelist(issue=options.issue)
+    cl = Changelist(issue=gerrit_util.ValidateIssue(options.issue))
     if not cl.GetIssue():
         parser.error('Must upload the issue first.')
 
@@ -6709,13 +6701,12 @@ def CMDset_close(parser, args):
     parser.add_option(
         '-i',
         '--issue',
-        type=int,
         help='Operate on this issue instead of the current branch\'s implicit '
         'issue.')
     options, args = parser.parse_args(args)
     if args:
         parser.error('Unrecognized args: %s' % ' '.join(args))
-    cl = Changelist(issue=options.issue)
+    cl = Changelist(issue=gerrit_util.ValidateIssue(options.issue))
     # Ensure there actually is an issue to close.
     if not cl.GetIssue():
         DieWithError('ERROR: No issue to close.')
