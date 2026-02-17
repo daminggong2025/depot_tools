@@ -280,13 +280,21 @@ def _check_reclient_cfgs(output_dir):
 def _main_inner(input_args,
                 build_id,
                 telemetry_cfg: Optional[build_telemetry.Config] = None):
-    # If running in the Gemini CLI, automatically add --quiet if it's not
-    # already present to avoid filling the context window.
-    if os.environ.get('GEMINI_CLI') == '1':
+    # Siso defaults fast_nop, fast_local, fast_last_failure,
+    # fast_exit to false when stdout is not a TTY (see
+    # subcmd/ninja/config.go). This makes no-op and dirty builds
+    # slower. -batch=false re-enables all four flags so non-TTY
+    # callers get the same performance as interactive terminals.
+    # --quiet avoids filling the AI agent context window.
+    is_ai_agent = any(
+        os.environ.get(v) for v in ('GEMINI_CLI', 'CLAUDECODE', 'CODEX_SANDBOX',
+                                    'CURSOR_AGENT', 'AI_AGENT'))
+    if is_ai_agent:
+        print('Adding --quiet -batch=false for AI agent')
         if not any(arg in ('--quiet', '-q') for arg in input_args):
-            print('Adding --quiet because we\'re running under gemini-cli ('
-                  'GEMINI_CLI=1)')
             input_args.append('--quiet')
+        if not any('batch' in arg for arg in input_args):
+            input_args.append('-batch=false')
 
     # if user doesn't set PYTHONPYCACHEPREFIX and PYTHONDONTWRITEBYTECODE
     # set PYTHONDONTWRITEBYTECODE=1 not to create many *.pyc in workspace
