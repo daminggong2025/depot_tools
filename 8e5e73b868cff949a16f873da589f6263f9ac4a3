@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "11667136_51bfca53",
+        "filename": "autoninja.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 294,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2026-02-17T23:56:53Z",
+      "side": 1,
+      "message": "prepent `--quiet` `--batch\u003dfalse` rather than checking args and append?\nlatest flag is effective on command line.\n\nbtw, better to handle this in siso.py?",
+      "revId": "8e5e73b868cff949a16f873da589f6263f9ac4a3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
