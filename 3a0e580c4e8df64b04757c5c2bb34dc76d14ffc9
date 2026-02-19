@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "40e56124_1c324601",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1381059
+      },
+      "writtenOn": "2026-02-19T16:29:34Z",
+      "side": 1,
+      "message": "Thank you for contributing. I think this is essentially the same as CMDaddMessage (except for having the ability to set the resolved bit). I\u0027m curious what prevents you from reusing CMDaddMessage.",
+      "revId": "3a0e580c4e8df64b04757c5c2bb34dc76d14ffc9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
