@@ -16,6 +16,24 @@
       "message": "Thank you for contributing. I think this is essentially the same as CMDaddMessage (except for having the ability to set the resolved bit). I\u0027m curious what prevents you from reusing CMDaddMessage.",
       "revId": "3a0e580c4e8df64b04757c5c2bb34dc76d14ffc9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2331147f_d0a003ad",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1557773
+      },
+      "writtenOn": "2026-02-19T16:33:26Z",
+      "side": 1,
+      "message": "I could probably re-use `CMDaddMessage` but according to gerrit, there\u0027s a difference between a message and a comment. That\u0027s why I\u0027ve created a different function so each maps to a different gerrit concept.\n\nIf you want, I can merge the logic. Please let me know",
+      "parentUuid": "40e56124_1c324601",
+      "revId": "3a0e580c4e8df64b04757c5c2bb34dc76d14ffc9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
