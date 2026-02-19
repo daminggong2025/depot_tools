@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1ad6b87f_0a60beeb",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1381059
+      },
+      "writtenOn": "2026-02-19T17:54:40Z",
+      "side": 1,
+      "message": "This solution honestly feels a bit hacky to me and I\u0027m not sure if that\u0027s gonna cause any unintended side effect. I think a better solution would be not passing the file that has diff to the clang format script if the file is considered ignored. But I understand that would take some work to make it happen. I feel like it\u0027s okay to just acknowledge this caveat given that `git cl format` is still doing the right thing. But I\u0027ll stamp the CL and let you decide what\u0027s the best way moving forward given I\u0027m not longer the official owner.",
+      "revId": "cdbf20876b2219a72af02a4534e7e56b6c4139a1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
