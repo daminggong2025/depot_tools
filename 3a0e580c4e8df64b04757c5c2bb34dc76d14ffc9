@@ -34,6 +34,24 @@
       "parentUuid": "40e56124_1c324601",
       "revId": "3a0e580c4e8df64b04757c5c2bb34dc76d14ffc9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b9ff2803_2bb37644",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1557773
+      },
+      "writtenOn": "2026-02-20T12:29:32Z",
+      "side": 1,
+      "message": "Unresolving this as I\u0027m awaiting a response.",
+      "parentUuid": "2331147f_d0a003ad",
+      "revId": "3a0e580c4e8df64b04757c5c2bb34dc76d14ffc9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
