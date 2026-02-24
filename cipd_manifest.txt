@@ -69,6 +69,11 @@ infra/tools/dirmd/${platform} git_revision:6b4aa314771569029ce32f5bcb2924120bd06
 # Pinpoint CLI
 infra/chromeperf/pinpoint/${platform} git_revision:6b4aa314771569029ce32f5bcb2924120bd06b86
 
+# Chrome's Copybara
+# We use Bazel's JRE to run Chrome's Copybara.
+infra/3pp/tools/bazel_bootstrap/${platform=linux-amd64} version:3@9.0.0.chromium.1
+infra/3pp/tools/copybara version:3@2450737ba36adafb13b5794da8948edfcb78afe3.cr1
+
 @Subdir reclient
 # reclient, currently this is only for ChromeOS build.
 # TODO(http://b/242680623): we may change how to distribute reclient.

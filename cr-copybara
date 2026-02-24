@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+# Copyright 2026 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# See revert instructions in cipd_manifest.txt
+
+# In git bash on Windows, invoke the batch file.
+if [ "$(expr "$(uname -s)" : "^MINGW64_NT")" == "10" ]; then
+    git-credential-luci.bat "$@"
+    exit
+fi
+
+MYPATH=$(dirname "${BASH_SOURCE[0]}")
+
+source "$MYPATH/cipd_bin_setup.sh"
+CIPD_ROOT=$(cipd_bin_setup) &> /dev/null
+
+# The following should probably be done in 3pp build step.
+LOCAL_BAZEL_EXTRACTION=/tmp/chromium_depot_tool
+"$CIPD_ROOT/bazel" --output_user_root=$LOCAL_BAZEL_EXTRACTION version > /dev/null 2>&1
+LOCAL_JAVA_PATH=$( find "$LOCAL_BAZEL_EXTRACTION" -executable -path "*/bin/*" -name java )
+
+exec "$LOCAL_JAVA_PATH" -jar "$CIPD_ROOT/copybara/copybara_deploy.jar" "$@"
