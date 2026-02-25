@@ -74,6 +74,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "00e9f820_aed0e094",
+        "filename": "siso.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 570,
+      "author": {
+        "id": 4645051
+      },
+      "writtenOn": "2026-02-25T21:16:31Z",
+      "side": 1,
+      "message": "Agents will usually 2\u003e\u00261 anyway, and I think it\u0027s a good idea to make it visible to them to avoid hallucinations like \"I don\u0027t see any output, something must be wrong\", and to explain/allow the agent to override these params if needed (hence the \"User-supplied flags take precedence\" log)",
+      "parentUuid": "7141063b_733fe6d0",
+      "range": {
+        "startLine": 570,
+        "startChar": 33,
+        "endLine": 570,
+        "endChar": 48
+      },
+      "revId": "76c2f56ecd201e6fcd2f91a2d8e41472621ce944",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "269f1a58_0fbd9480",
         "filename": "tests/siso_test.py",
         "patchSetId": 4
