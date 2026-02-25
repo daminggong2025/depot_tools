@@ -34,6 +34,8 @@ import gclient_paths
 import gclient_utils
 import gn_helper
 import ninja
+import metrics_utils
+import ninja
 import ninjalog_uploader
 import reclient_helper
 import siso
@@ -622,8 +624,12 @@ def _upload_ninjalog(args, exit_code, build_duration):
         str(exit_code),
         "--build_duration",
         str(int(build_duration)),
-        "--cmdline",
-    ] + args[1:]
+    ]
+    if metrics_utils.get_edit_monitor_state():
+        cmd.extend(
+            ["--edit_monitor_state",
+             metrics_utils.get_edit_monitor_state()])
+    cmd.extend(["--cmdline"] + args[1:])
     subprocess.Popen(
         cmd,
         stdout=subprocess.DEVNULL,
@@ -633,11 +639,27 @@ def _upload_ninjalog(args, exit_code, build_duration):
     )
 
 
+def _update_siso_metadata(out_dir: str):
+    try:
+        siso_metadata_file = os.path.join(out_dir, "siso_metadata.json")
+        if os.path.exists(siso_metadata_file):
+            import json
+            with open(siso_metadata_file, "r") as f:
+                metadata = json.load(f)
+            metadata[
+                "edit_monitor_state"] = metrics_utils.get_edit_monitor_state()
+            with open(siso_metadata_file, "w") as f:
+                json.dump(metadata, f)
+    except Exception as e:
+        print(f"Failed to update siso_metadata.json: {e}", file=sys.stderr)
+
+
 def _upload_sisolog(input_args: list[str], build_id: str):
     timestamp = time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())
     datetime = time.strftime("%Y_%m_%d", time.gmtime())
     top_dir = time.strftime("%Y/%m/%d/siso/", time.gmtime())
     _, out_dir = ninja.parse_args(input_args)
+    _update_siso_metadata(out_dir)
     for file in _SISO_FILES_TO_UPLOAD:
         # This folder structure mimics the recipe used by the RBE workers
         # https://source.chromium.org/chromium/infra/infra_superproject/+/main:build/recipes/recipe_modules/siso/api.py
