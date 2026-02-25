@@ -63,6 +63,8 @@ class MetricsCollectorTest(unittest.TestCase):
         mock.patch('metrics.gclient_utils.GetOperatingSystem',
                    lambda: 'linux').start()
         mock.patch('metrics.detect_host_arch.HostArch', lambda: 'x86').start()
+        mock.patch('metrics.metrics_utils.get_edit_monitor_state',
+                   lambda: 'control').start()
         mock.patch('metrics_utils.get_repo_timestamp', lambda _: 1234).start()
         mock.patch('metrics_utils.get_git_version', lambda: '2.18.1').start()
 
