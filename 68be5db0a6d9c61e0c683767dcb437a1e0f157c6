@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cd3c7b21_b88a0050",
+        "filename": "autoninja.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1539957
+      },
+      "writtenOn": "2026-02-25T22:37:00Z",
+      "side": 1,
+      "message": "Nit: `ninja` is imported here and also on line 36.",
+      "range": {
+        "startLine": 38,
+        "startChar": 0,
+        "endLine": 38,
+        "endChar": 0
+      },
+      "revId": "68be5db0a6d9c61e0c683767dcb437a1e0f157c6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "297003ac_6375c6ec",
+        "filename": "autoninja.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 628,
+      "author": {
+        "id": 1539957
+      },
+      "writtenOn": "2026-02-25T22:37:00Z",
+      "side": 1,
+      "message": "This conditional will always be true because `get_edit_monitor_state()` returns `\"control\"` when the environment variable is not set, and `\"control\"` is truthy. This results in `get_edit_monitor_state()` being called twice.\n\nYou can simplify this block by removing the conditional and calling the function only once:\n\n```suggestion\n    state \u003d metrics_utils.get_edit_monitor_state()\n    cmd.extend(\n        [\"--edit_monitor_state\",\n         state])\n```",
+      "range": {
+        "startLine": 628,
+        "startChar": 0,
+        "endLine": 628,
+        "endChar": 0
+      },
+      "revId": "68be5db0a6d9c61e0c683767dcb437a1e0f157c6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7e4a044f_64b46525",
+        "filename": "metrics_utils.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 160,
+      "author": {
+        "id": 1539957
+      },
+      "writtenOn": "2026-02-25T22:37:00Z",
+      "side": 1,
+      "message": "The docstring indicates that this function can return `\"\"`, but the implementation will always return `\"control\"` if the environment variable is not set or is an empty string.",
+      "range": {
+        "startLine": 160,
+        "startChar": 0,
+        "endLine": 160,
+        "endChar": 0
+      },
+      "revId": "68be5db0a6d9c61e0c683767dcb437a1e0f157c6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
