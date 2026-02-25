@@ -48,6 +48,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "dfa7c7a8_d3a81ce1",
+        "filename": "siso.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 570,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-02-25T07:48:29Z",
+      "side": 1,
+      "message": "Ah good point.",
+      "parentUuid": "18cb5fc9_048f1d6d",
+      "range": {
+        "startLine": 570,
+        "startChar": 33,
+        "endLine": 570,
+        "endChar": 48
+      },
+      "revId": "76c2f56ecd201e6fcd2f91a2d8e41472621ce944",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "269f1a58_0fbd9480",
@@ -61,6 +85,30 @@
       "writtenOn": "2026-02-24T00:01:19Z",
       "side": 1,
       "message": "That\u0027s a bit too strict, let\u0027s just check if these 2 are in the before the ninja flag half.",
+      "range": {
+        "startLine": 1756,
+        "startChar": 8,
+        "endLine": 1756,
+        "endChar": 62
+      },
+      "revId": "76c2f56ecd201e6fcd2f91a2d8e41472621ce944",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "93479140_ec6efd2f",
+        "filename": "tests/siso_test.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 1756,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-02-25T07:48:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "269f1a58_0fbd9480",
       "range": {
         "startLine": 1756,
         "startChar": 8,
