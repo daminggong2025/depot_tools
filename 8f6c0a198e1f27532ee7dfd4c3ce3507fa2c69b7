@@ -16,6 +16,24 @@
       "message": "Do you have recommendations for testing this?",
       "revId": "8f6c0a198e1f27532ee7dfd4c3ce3507fa2c69b7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "93d60ccc_8ae70e31",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 4346629
+      },
+      "writtenOn": "2026-02-25T22:41:57Z",
+      "side": 1,
+      "message": "I would add a new test case or update an existing one in [tests/git_cl_test.py](https://source.chromium.org/chromium/chromium/tools/depot_tools/+/main:tests/git_cl_test.py;l\u003d5086-5158;drc\u003d6d153ac3a600dea6c2ec320c9eb4df06aa3dca04).",
+      "parentUuid": "9e360e33_0f0c1357",
+      "revId": "8f6c0a198e1f27532ee7dfd4c3ce3507fa2c69b7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
