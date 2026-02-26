@@ -49,6 +49,76 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "eff75fae_b775e34a",
+        "filename": "autoninja.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 628,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2026-02-26T01:17:56Z",
+      "side": 1,
+      "message": "I think it\u0027s fine to make it unconditional.",
+      "parentUuid": "297003ac_6375c6ec",
+      "range": {
+        "startLine": 628,
+        "startChar": 0,
+        "endLine": 628,
+        "endChar": 0
+      },
+      "revId": "68be5db0a6d9c61e0c683767dcb437a1e0f157c6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b0b4b220_4a40538c",
+        "filename": "autoninja.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 642,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2026-02-26T01:17:56Z",
+      "side": 1,
+      "message": "Hmm, technically it\u0027s not siso metadata... How do you want to consume this metric?",
+      "range": {
+        "startLine": 642,
+        "startChar": 0,
+        "endLine": 642,
+        "endChar": 40
+      },
+      "revId": "68be5db0a6d9c61e0c683767dcb437a1e0f157c6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e2469315_1327b844",
+        "filename": "metrics.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 242,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2026-02-26T01:17:56Z",
+      "side": 1,
+      "message": "What\u0027s wrong with adding the metric unconditionally?",
+      "range": {
+        "startLine": 242,
+        "startChar": 0,
+        "endLine": 242,
+        "endChar": 40
+      },
+      "revId": "68be5db0a6d9c61e0c683767dcb437a1e0f157c6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "7e4a044f_64b46525",
         "filename": "metrics_utils.py",
         "patchSetId": 2
@@ -65,6 +135,53 @@
         "startChar": 0,
         "endLine": 160,
         "endChar": 0
+      },
+      "revId": "68be5db0a6d9c61e0c683767dcb437a1e0f157c6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "66180480_bb73e21d",
+        "filename": "metrics_utils.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 160,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2026-02-26T01:17:56Z",
+      "side": 1,
+      "message": "Why not return None if EDIT_MONITOR_STATE is empty? or change the document?",
+      "parentUuid": "7e4a044f_64b46525",
+      "range": {
+        "startLine": 160,
+        "startChar": 0,
+        "endLine": 160,
+        "endChar": 0
+      },
+      "revId": "68be5db0a6d9c61e0c683767dcb437a1e0f157c6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a0185b3a_e72461d6",
+        "filename": "ninjalog_uploader.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 162,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2026-02-26T01:17:56Z",
+      "side": 1,
+      "message": "IIRC, you need to change the schema of the metrics pipeline. \nBtw, how are you going to use this metric?",
+      "range": {
+        "startLine": 162,
+        "startChar": 4,
+        "endLine": 162,
+        "endChar": 12
       },
       "revId": "68be5db0a6d9c61e0c683767dcb437a1e0f157c6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
