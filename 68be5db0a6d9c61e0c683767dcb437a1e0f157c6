@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "6b30cdc7_111edba5",
+        "filename": "autoninja.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1539957
+      },
+      "writtenOn": "2026-02-26T20:19:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "cd3c7b21_b88a0050",
+      "range": {
+        "startLine": 38,
+        "startChar": 0,
+        "endLine": 38,
+        "endChar": 0
+      },
+      "revId": "68be5db0a6d9c61e0c683767dcb437a1e0f157c6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "297003ac_6375c6ec",
@@ -71,6 +95,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "f1c93e07_d1a17d01",
+        "filename": "autoninja.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 628,
+      "author": {
+        "id": 1539957
+      },
+      "writtenOn": "2026-02-26T20:19:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "eff75fae_b775e34a",
+      "range": {
+        "startLine": 628,
+        "startChar": 0,
+        "endLine": 628,
+        "endChar": 0
+      },
+      "revId": "68be5db0a6d9c61e0c683767dcb437a1e0f157c6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "b0b4b220_4a40538c",
@@ -84,6 +132,30 @@
       "writtenOn": "2026-02-26T01:17:56Z",
       "side": 1,
       "message": "Hmm, technically it\u0027s not siso metadata... How do you want to consume this metric?",
+      "range": {
+        "startLine": 642,
+        "startChar": 0,
+        "endLine": 642,
+        "endChar": 40
+      },
+      "revId": "68be5db0a6d9c61e0c683767dcb437a1e0f157c6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b2bcb8f3_cee9fc28",
+        "filename": "autoninja.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 642,
+      "author": {
+        "id": 1539957
+      },
+      "writtenOn": "2026-02-26T20:19:13Z",
+      "side": 1,
+      "message": "Ok, I think I can just rely on ninjalog metadata to show edit monitor state.",
+      "parentUuid": "b0b4b220_4a40538c",
       "range": {
         "startLine": 642,
         "startChar": 0,
@@ -117,6 +189,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "b4540231_dd821f66",
+        "filename": "autoninja.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 644,
+      "author": {
+        "id": 1539957
+      },
+      "writtenOn": "2026-02-26T20:19:13Z",
+      "side": 1,
+      "message": "Removed this function",
+      "parentUuid": "ce9d1979_cdc7756d",
+      "range": {
+        "startLine": 644,
+        "startChar": 51,
+        "endLine": 644,
+        "endChar": 72
+      },
+      "revId": "68be5db0a6d9c61e0c683767dcb437a1e0f157c6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e2469315_1327b844",
@@ -130,6 +226,30 @@
       "writtenOn": "2026-02-26T01:17:56Z",
       "side": 1,
       "message": "What\u0027s wrong with adding the metric unconditionally?",
+      "range": {
+        "startLine": 242,
+        "startChar": 0,
+        "endLine": 242,
+        "endChar": 40
+      },
+      "revId": "68be5db0a6d9c61e0c683767dcb437a1e0f157c6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "90ec50f6_95ef9de8",
+        "filename": "metrics.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 242,
+      "author": {
+        "id": 1539957
+      },
+      "writtenOn": "2026-02-26T20:19:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e2469315_1327b844",
       "range": {
         "startLine": 242,
         "startChar": 0,
@@ -201,6 +321,30 @@
       "side": 1,
       "message": "\u003e Why not return None if EDIT_MONITOR_STATE is empty?\n\nI think this is better so that you can distinguish metrics between after/before this CL. As you made the field of the schema nullable in the other CL, I recommend to propagate the value of EDIT_MONITOR_STATE directly without hardcoding the default in this file.",
       "parentUuid": "66180480_bb73e21d",
+      "range": {
+        "startLine": 160,
+        "startChar": 0,
+        "endLine": 160,
+        "endChar": 0
+      },
+      "revId": "68be5db0a6d9c61e0c683767dcb437a1e0f157c6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b977603c_a251b046",
+        "filename": "metrics_utils.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 160,
+      "author": {
+        "id": 1539957
+      },
+      "writtenOn": "2026-02-26T20:19:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "642b647a_6bd0f6f9",
       "range": {
         "startLine": 160,
         "startChar": 0,
