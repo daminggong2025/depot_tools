@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "67ff2ed4_0b35f9de",
+        "filename": "ninjalog_uploader.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 283,
+      "author": {
+        "id": 1163549
+      },
+      "writtenOn": "2026-02-26T20:28:38Z",
+      "side": 1,
+      "message": "Nit: If you want this to be enforced, use `choices` https://docs.python.org/3/library/argparse.html#choices",
+      "range": {
+        "startLine": 283,
+        "startChar": 40,
+        "endLine": 283,
+        "endChar": 64
+      },
+      "revId": "b2f2d7168075ae95a014c0ed576c7eb656c55a7f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
