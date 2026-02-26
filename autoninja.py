@@ -33,11 +33,10 @@ import build_telemetry
 import gclient_paths
 import gclient_utils
 import gn_helper
+import metrics_utils
 import ninja
-import ninjalog_uploader
 import reclient_helper
 import siso
-
 
 _SISO_SUGGESTION = """You're still using Ninja.
 Please run 'gn clean {output_dir}' when convenient to
@@ -623,6 +622,8 @@ def _upload_ninjalog(args, exit_code, build_duration):
         "--build_duration",
         str(int(build_duration)),
         "--cmdline",
+        "--edit_monitor_state",
+        metrics_utils.get_edit_monitor_state(),
     ] + args[1:]
     subprocess.Popen(
         cmd,
