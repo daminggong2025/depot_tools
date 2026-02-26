@@ -96,6 +96,29 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "ce9d1979_cdc7756d",
+        "filename": "autoninja.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 644,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-02-26T02:22:04Z",
+      "side": 1,
+      "message": "I would prefer that all siso_metadata operations are done in siso itself and not hacked in from outside, at least the file structure will be more trackable.",
+      "range": {
+        "startLine": 644,
+        "startChar": 51,
+        "endLine": 644,
+        "endChar": 72
+      },
+      "revId": "68be5db0a6d9c61e0c683767dcb437a1e0f157c6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "e2469315_1327b844",
         "filename": "metrics.py",
         "patchSetId": 2
