@@ -1018,9 +1018,11 @@ class GitCredsAuthenticator(_Authenticator):
                 if not self._is_usehttppath_set(f'https://{git_host}'):
                     return (
                         False,
-                        'You have not set credential.useHttpPath in your Git config.'
+                        'You have not set credential.useHttpPath in your Git config. This may affect the trust of your uploaded CLs.\n'
                         ' You can set this by running:\n'
-                        '  git config credential.useHttpPath true')
+                        '  git config credential.useHttpPath true\n'
+                        ' or:\n'
+                        '  git cl creds-check\n')
             return (True, '')
         except (auth.GitLoginRequiredError, auth.GitReAuthRequiredError,
                 auth.GitUnknownError) as e:
