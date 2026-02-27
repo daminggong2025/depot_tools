@@ -3,17 +3,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import glob
+import contextlib
+import io
 import multiprocessing
 import os
 import os.path
-import io
 import sys
 import unittest
-import contextlib
 from unittest import mock
-
-from parameterized import parameterized
 
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT_DIR)
@@ -41,6 +38,32 @@ class AutoninjaTest(trial_dir.TestCase):
     def tearDown(self):
         os.chdir(self.previous_dir)
         super(AutoninjaTest, self).tearDown()
+
+    @mock.patch('subprocess.Popen')
+    @mock.patch('metrics_utils.get_edit_monitor_state')
+    def test_upload_ninjalog(self, mock_get_state, mock_popen):
+        mock_get_state.return_value = None
+        autoninja._upload_ninjalog(['autoninja.py', 'arg1', 'arg2'], 0, 10)
+        mock_popen.assert_called_once()
+        cmd = mock_popen.call_args[0][0]
+        self.assertIn('--cmdline', cmd)
+        self.assertEqual(cmd[cmd.index('--cmdline') + 1:], ['arg1', 'arg2'])
+        self.assertNotIn('--edit_monitor_state', cmd)
+
+    @mock.patch('subprocess.Popen')
+    @mock.patch('metrics_utils.get_edit_monitor_state')
+    def test_upload_ninjalog_with_edit_monitor(self, mock_get_state,
+                                               mock_popen):
+        mock_get_state.return_value = 'enabled'
+        autoninja._upload_ninjalog(['autoninja.py', 'arg1', 'arg2'], 0, 10)
+        mock_popen.assert_called_once()
+        cmd = mock_popen.call_args[0][0]
+        self.assertIn('--edit_monitor_state', cmd)
+        self.assertEqual(cmd[cmd.index('--edit_monitor_state') + 1], 'enabled')
+        self.assertIn('--cmdline', cmd)
+        self.assertLess(cmd.index('--edit_monitor_state'),
+                        cmd.index('--cmdline'))
+        self.assertEqual(cmd[cmd.index('--cmdline') + 1:], ['arg1', 'arg2'])
 
     def test_autoninja(self):
         """Test that by default (= no GN args) autoninja delegates to ninja."""
