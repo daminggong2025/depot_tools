@@ -3,17 +3,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import glob
+import contextlib
+import io
 import multiprocessing
 import os
 import os.path
-import io
 import sys
 import unittest
-import contextlib
 from unittest import mock
-
-from parameterized import parameterized
 
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT_DIR)
