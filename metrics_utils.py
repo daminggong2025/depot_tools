@@ -156,6 +156,10 @@ KNOWN_SUBCOMMAND_ARGS = {
 }
 
 
+def get_edit_monitor_state():
+    """Returns the state of the Edit Monitor."""
+    return os.environ.get("EDIT_MONITOR_STATE")
+
 def get_python_version():
     """Return the python version in the major.minor.micro format."""
     return '{v.major}.{v.minor}.{v.micro}'.format(v=sys.version_info)
