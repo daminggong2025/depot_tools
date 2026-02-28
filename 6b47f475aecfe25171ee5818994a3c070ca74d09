@@ -16,6 +16,24 @@
       "message": "@yiwzhang@google.com I could use some help figuring out why presubmit works on linux but not windows. Is some process not getting cleaned up in the windows autoninja_test?",
       "revId": "6b47f475aecfe25171ee5818994a3c070ca74d09",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0680463a_fb2a2a96",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 15
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1163549
+      },
+      "writtenOn": "2026-02-28T00:41:42Z",
+      "side": 1,
+      "message": "I confirmed that this is an issue that exists on ToT and is unrelated to James\u0027 CL. Making a no-op change to `tests/autoninja_test.py` and then running `git cl presubmit --verbose --verbose` runs into the same hang. Running the test file directly does not run into this issue. I suspect it\u0027s somehow related to actually running autoninja (`subprocess` is not mocked out) and the way that presubmit runs tests.",
+      "parentUuid": "0c17d3be_f4ee7c85",
+      "revId": "6b47f475aecfe25171ee5818994a3c070ca74d09",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
