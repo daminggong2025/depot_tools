@@ -225,6 +225,7 @@ class FieldValidationTest(unittest.TestCase):
                 "http://www.example.com/b",
                 "ftp://www.example.com/c,git://www.example.com/d",
                 "https://www.example.com/a\n  https://example.com/b",
+                "rpc://project.googlesource.com/project",
                 "This is the canonical public repository",
                 "internal",
                 "Internal.",
@@ -238,6 +239,7 @@ class FieldValidationTest(unittest.TestCase):
             error_values=[
                 "",
                 "\n",
+                "rpc://project/project",
                 "ghttps://www.example.com/e",
                 "https://www.example.com/ f",
                 "This is an unrecognized message for the URL",
