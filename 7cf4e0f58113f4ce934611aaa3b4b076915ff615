@@ -20,6 +20,24 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "f750ad83_0fa4f41c",
+        "filename": "metadata/fields/custom/url.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2026-03-02T05:13:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "84012daa_74ad84c1",
+      "revId": "7cf4e0f58113f4ce934611aaa3b4b076915ff615",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "c7a1356d_7d1ac8cf",
         "filename": "metadata/fields/custom/url.py",
         "patchSetId": 5
@@ -31,6 +49,24 @@
       "writtenOn": "2026-03-02T03:41:44Z",
       "side": 1,
       "message": "(optional) Is this documented anywhere? Would be good to have the README.chromium template or `adding_to_third_party.md` doc reflect this.",
+      "revId": "7cf4e0f58113f4ce934611aaa3b4b076915ff615",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "46f0e8e9_4235ccbe",
+        "filename": "metadata/fields/custom/url.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2026-03-02T05:13:43Z",
+      "side": 1,
+      "message": "I\u0027ve removed the rpc component of this change in favour of fixing it upstream in the autorollers.",
+      "parentUuid": "c7a1356d_7d1ac8cf",
       "revId": "7cf4e0f58113f4ce934611aaa3b4b076915ff615",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -52,6 +88,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "096259b4_aec8868b",
+        "filename": "metadata/fields/custom/url.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2026-03-02T05:13:43Z",
+      "side": 1,
+      "message": "I\u0027ve removed the rpc component of this change in favour of fixing it upstream in the autorollers.",
+      "parentUuid": "093258d6_7dea62dd",
+      "revId": "7cf4e0f58113f4ce934611aaa3b4b076915ff615",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "f37a8a28_40cd5b7d",
@@ -65,6 +119,24 @@
       "writtenOn": "2026-03-02T03:41:44Z",
       "side": 1,
       "message": "nit: not a fan of `validation_errors` not actually being `ValidationError`s. Maybe `error_messages`?",
+      "revId": "7cf4e0f58113f4ce934611aaa3b4b076915ff615",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d931a9c4_c58cc5e7",
+        "filename": "metadata/fields/custom/url.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2026-03-02T05:13:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f37a8a28_40cd5b7d",
       "revId": "7cf4e0f58113f4ce934611aaa3b4b076915ff615",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -86,6 +158,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "96ae78c1_198db7da",
+        "filename": "metadata/fields/custom/url.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2026-03-02T05:13:43Z",
+      "side": 1,
+      "message": "That would return the original values, this needs to return the mapped error values. I just rewrote it to use a for loop so it\u0027s clearer.",
+      "parentUuid": "4885656c_25a0e771",
+      "revId": "7cf4e0f58113f4ce934611aaa3b4b076915ff615",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "9fd14369_0d153c21",
@@ -99,6 +189,24 @@
       "writtenOn": "2026-03-02T03:41:44Z",
       "side": 1,
       "message": "IIRC you should be able to pass a set into `sorted`.",
+      "revId": "7cf4e0f58113f4ce934611aaa3b4b076915ff615",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9460011f_d07096dd",
+        "filename": "metadata/fields/custom/url.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 106,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2026-03-02T05:13:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9fd14369_0d153c21",
       "revId": "7cf4e0f58113f4ce934611aaa3b4b076915ff615",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
