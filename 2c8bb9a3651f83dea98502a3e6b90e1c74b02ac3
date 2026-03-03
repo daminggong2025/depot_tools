@@ -35,6 +35,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ba3e720a_6353b898",
+        "filename": "metadata/fields/custom/url.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2026-03-03T05:28:35Z",
+      "side": 1,
+      "message": "It\u0027s best practice so that logs are easily searchable. E.g. If you have a lot of errors you can `| sort| uniq -c` to see the unique counts of each error. This breaks when you have differences that are not related to the actual error.\n\nAlso the list is so short performance is negligible.",
+      "parentUuid": "f9bbee45_5c1c4808",
+      "revId": "2c8bb9a3651f83dea98502a3e6b90e1c74b02ac3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "8b02c1c5_068a80d4",
@@ -48,6 +66,24 @@
       "writtenOn": "2026-03-02T05:31:49Z",
       "side": 1,
       "message": "On more reflection, I think it\u0027s weird to name a function `_url_error`; later on, `_url_error(url)` reads like you are converting a url to an error. Strongly suggest to rename this to what the function aims to do.",
+      "revId": "2c8bb9a3651f83dea98502a3e6b90e1c74b02ac3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "230c5eb4_e1c1bdf1",
+        "filename": "metadata/fields/custom/url.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2026-03-03T05:28:35Z",
+      "side": 1,
+      "message": "well we are getting the error for a url. I could call it _error_for(url) ?",
+      "parentUuid": "8b02c1c5_068a80d4",
       "revId": "2c8bb9a3651f83dea98502a3e6b90e1c74b02ac3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
