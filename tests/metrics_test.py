@@ -842,23 +842,14 @@ class MetricsUtilsTest(unittest.TestCase):
             ['foo=bar', 'another_unkwnon_arg'])
         self.assertEqual([], result)
 
-    def test_get_edit_monitor_state(self):
-        """Tests that we can get the edit monitor state from the environment."""
-        with mock.patch.dict(os.environ, {"EDIT_MONITOR_STATE": "enabled"}):
-            self.assertEqual("enabled", metrics_utils.get_edit_monitor_state())
-
-        with mock.patch.dict(os.environ, {"EDIT_MONITOR_STATE": "control"}):
-            self.assertEqual("control", metrics_utils.get_edit_monitor_state())
-
-        with mock.patch.dict(os.environ, {"EDIT_MONITOR_STATE": "running"}):
-            self.assertIsNone(metrics_utils.get_edit_monitor_state())
-
-        with mock.patch.dict(os.environ, {"EDIT_MONITOR_STATE": "enbabled"}):
-            self.assertIsNone(metrics_utils.get_edit_monitor_state())
-
-        with mock.patch.dict(os.environ, clear=True):
-            self.assertIsNone(metrics_utils.get_edit_monitor_state())
-
+    @mock.patch("metrics_utils.sys.platform", "linux")
+    @mock.patch("subprocess2.call")
+    def test_get_edit_monitor_state(self, mock_call):
+        """Tests that we can get the edit monitor state."""
+        mock_call.return_value = 1
+        self.assertEqual("control", metrics_utils.get_edit_monitor_state())
+        mock_call.return_value = 0
+        self.assertEqual("enabled", metrics_utils.get_edit_monitor_state())
 
 if __name__ == '__main__':
     unittest.main()
