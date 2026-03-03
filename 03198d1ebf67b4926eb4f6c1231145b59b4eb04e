@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c6825c6d_e8ee6cba",
+        "filename": "metrics_utils.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 178,
+      "author": {
+        "id": 1163549
+      },
+      "writtenOn": "2026-03-03T22:48:03Z",
+      "side": 1,
+      "message": "Nit: Store in a StrEnum instead of individual strings.",
+      "range": {
+        "startLine": 178,
+        "startChar": 24,
+        "endLine": 178,
+        "endChar": 31
+      },
+      "revId": "03198d1ebf67b4926eb4f6c1231145b59b4eb04e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "89087a3c_e38091af",
+        "filename": "tests/autoninja_test.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 172,
+      "author": {
+        "id": 1163549
+      },
+      "writtenOn": "2026-03-03T22:48:03Z",
+      "side": 1,
+      "message": "Why not either include `--quiet` in the expected command or match portions of the command?",
+      "range": {
+        "startLine": 171,
+        "startChar": 16,
+        "endLine": 172,
+        "endChar": 67
+      },
+      "revId": "03198d1ebf67b4926eb4f6c1231145b59b4eb04e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5e1c000a_3120cf00",
+        "filename": "tests/metrics_test.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 847,
+      "author": {
+        "id": 1163549
+      },
+      "writtenOn": "2026-03-03T22:48:03Z",
+      "side": 1,
+      "message": "Add a test for Mac as well?",
+      "range": {
+        "startLine": 847,
+        "startChar": 8,
+        "endLine": 847,
+        "endChar": 41
+      },
+      "revId": "03198d1ebf67b4926eb4f6c1231145b59b4eb04e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
