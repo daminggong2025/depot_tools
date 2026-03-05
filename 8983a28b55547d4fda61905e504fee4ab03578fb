@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e6038648_9890c5e2",
+        "filename": "tests/siso_test.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 1762,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2026-03-05T00:35:24Z",
+      "side": 1,
+      "message": "no need to test Success won\u0027t appear for non-zero exit?",
+      "revId": "8983a28b55547d4fda61905e504fee4ab03578fb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
