@@ -678,29 +678,61 @@ def CheckCallAndFilter(args,
             line_start = None
             while True:
                 try:
-                    in_byte = os.read(pipe_reader, 1)
+                    in_bytes = os.read(pipe_reader, 4096)
                 except (IOError, OSError) as e:
                     if e.errno == errno.EIO:
                         # An errno.EIO means EOF?
-                        in_byte = None
+                        in_bytes = b''
                     else:
                         raise e
-                is_newline = in_byte in (b'\n', b'\r')
-                if not in_byte:
+                if not in_bytes:
                     break
 
                 show_header_if_necessary(needs_header, attempt)
 
-                if is_newline:
-                    filter_line(command_output, line_start)
-                    line_start = None
-                elif line_start is None:
-                    line_start = command_output.tell()
+                idx = 0
+                while idx < len(in_bytes):
+                    nl_idx = in_bytes.find(b'\n', idx)
+                    cr_idx = in_bytes.find(b'\r', idx)
+                    
+                    if nl_idx == -1 and cr_idx == -1:
+                        next_newline = -1
+                    elif nl_idx == -1:
+                        next_newline = cr_idx
+                    elif cr_idx == -1:
+                        next_newline = nl_idx
+                    else:
+                        next_newline = min(nl_idx, cr_idx)
 
-                stdout_write(in_byte)
-                if print_stdout and is_newline:
+                    if next_newline == -1:
+                        slice_bytes = in_bytes[idx:]
+                        if line_start is None:
+                            line_start = command_output.tell()
+                        
+                        stdout_write(slice_bytes)
+                        command_output.write(slice_bytes)
+                        break
+                    else:
+                        slice_bytes = in_bytes[idx:next_newline]
+                        if slice_bytes:
+                            if line_start is None:
+                                line_start = command_output.tell()
+                            stdout_write(slice_bytes)
+                            command_output.write(slice_bytes)
+
+                        filter_line(command_output, line_start)
+                        line_start = None
+
+                        newline_byte = in_bytes[next_newline:next_newline+1]
+                        stdout_write(newline_byte)
+                        if print_stdout:
+                            sys.stdout.flush()
+                        command_output.write(newline_byte)
+
+                        idx = next_newline + 1
+
+                if print_stdout:
                     sys.stdout.flush()
-                command_output.write(in_byte)
 
             # Flush the rest of buffered output.
             sys.stdout.flush()
