@@ -415,6 +415,36 @@ class GitRebaseUpdateTest(git_test_utils.GitRepoReadWriteTestBase):
         self.assertIn('Unable to determine nerp@{upstream}', err)
 
 
+    def testSkipOtherWorktrees(self):
+        # Create a worktree branch
+        self.repo.git('branch', 'worktree_branch', 'branch_K')
+        self.repo.git('branch', '--set-upstream-to', 'origin/main',
+                      'worktree_branch')
+
+        # Add a new worktree checked out to the new branch
+        worktree_path = os.path.join(self.repo.repo_path, '..',
+                                     'other_worktree')
+        self.repo.git('worktree', 'add', worktree_path, 'worktree_branch')
+
+        # Advance upstream to create something to rebase over
+        self.origin.git('checkout', 'main')
+        with self.origin.open('W', 'w') as f:
+            f.write('W')
+        self.origin.git('add', 'W')
+        self.origin.git_commit('W')
+        self.repo.git('fetch', 'origin')
+        self.repo.git('update-ref', 'refs/remotes/origin/main', 'origin/main')
+
+        # Run rebase-update
+        out, _ = self.repo.capture_stdio(self.reup.main, [])
+        self.assertIn(
+            "Skipping branch 'worktree_branch': checked out in another worktree",
+            out)
+
+        # Cleanup worktree so teardown doesn't fail
+        self.repo.git('worktree', 'remove', '-f', worktree_path)
+
+
 if __name__ == '__main__':
     sys.exit(
         coverage_utils.covered_main(
