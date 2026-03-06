@@ -415,6 +415,8 @@ class GitRebaseUpdateTest(git_test_utils.GitRepoReadWriteTestBase):
         self.assertIn('Unable to determine nerp@{upstream}', err)
 
 
+
+
 if __name__ == '__main__':
     sys.exit(
         coverage_utils.covered_main(
