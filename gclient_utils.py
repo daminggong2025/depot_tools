@@ -678,29 +678,36 @@ def CheckCallAndFilter(args,
             line_start = None
             while True:
                 try:
-                    in_byte = os.read(pipe_reader, 1)
+                    in_bytes = os.read(pipe_reader, 4096)
                 except (IOError, OSError) as e:
                     if e.errno == errno.EIO:
                         # An errno.EIO means EOF?
-                        in_byte = None
+                        in_bytes = b''
                     else:
                         raise e
-                is_newline = in_byte in (b'\n', b'\r')
-                if not in_byte:
+                if not in_bytes:
                     break
 
                 show_header_if_necessary(needs_header, attempt)
 
-                if is_newline:
-                    filter_line(command_output, line_start)
-                    line_start = None
-                elif line_start is None:
-                    line_start = command_output.tell()
+                for line in in_bytes.splitlines(keepends=True):
+                    is_newline = line.endswith(b'\n') or line.endswith(b'\r')
 
-                stdout_write(in_byte)
-                if print_stdout and is_newline:
-                    sys.stdout.flush()
-                command_output.write(in_byte)
+                    if is_newline:
+                        if line_start is None:
+                            line_start = command_output.tell()
+                        stdout_write(line)
+                        command_output.write(line)
+
+                        filter_line(command_output, line_start)
+                        line_start = None
+                        if print_stdout:
+                            sys.stdout.flush()
+                    else:
+                        if line_start is None:
+                            line_start = command_output.tell()
+                        stdout_write(line)
+                        command_output.write(line)
 
             # Flush the rest of buffered output.
             sys.stdout.flush()
