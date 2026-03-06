@@ -91,12 +91,13 @@ def fetch_remotes(branch_tree):
 def remove_empty_branches(branch_tree):
     tag_set = git.tags()
     ensure_root_checkout = git.once(lambda: git.run('checkout', git.root()))
+    other_worktrees = get_other_worktrees_branches()
 
     deletions = {}
     reparents = {}
     downstreams = collections.defaultdict(list)
     for branch, parent in git.topo_iter(branch_tree, top_down=False):
-        if git.is_dormant(branch):
+        if git.is_dormant(branch) or branch in other_worktrees:
             continue
 
         downstreams[parent].append(branch)
@@ -254,6 +255,27 @@ def with_downstream_branches(base_branches, branch_tree):
     return downstream_branches.union(base_branches)
 
 
+def get_other_worktrees_branches():
+    """Returns a dict of branch names to their worktree paths, excluding the current worktree."""
+    worktrees = {}
+    try:
+        out = git.run('worktree', 'list', '--porcelain')
+        current_worktree = os.path.realpath(
+            git.run('rev-parse', '--show-toplevel'))
+    except Exception:
+        return worktrees
+
+    current_path = None
+    for line in out.splitlines():
+        if line.startswith('worktree '):
+            current_path = os.path.realpath(line[9:])
+        elif line.startswith('branch refs/heads/'):
+            if current_path and current_path != current_worktree:
+                branch = line[18:]
+                worktrees[branch] = current_path
+    return worktrees
+
+
 def main(args=None):
     if gclient_utils.IsEnvCog():
         print(
@@ -349,6 +371,7 @@ def main(args=None):
 
     retcode = 0
     unrebased_branches = []
+    other_worktrees = get_other_worktrees_branches()
     # Rebase each branch starting with the root-most branches and working
     # towards the leaves.
     for branch, parent in git.topo_iter(branch_tree):
@@ -357,6 +380,9 @@ def main(args=None):
             continue
         if git.is_dormant(branch):
             print('Skipping dormant branch', format_branch_name(branch))
+        elif branch in other_worktrees:
+            print("Skipping branch '%s': checked out in another worktree (%s)" %
+                  (branch, other_worktrees[branch]))
         else:
             ret = rebase_branch(branch, parent, merge_base[branch],
                                 opts.no_squash)
