@@ -91,12 +91,13 @@ def fetch_remotes(branch_tree):
 def remove_empty_branches(branch_tree):
     tag_set = git.tags()
     ensure_root_checkout = git.once(lambda: git.run('checkout', git.root()))
+    other_worktrees = get_other_worktrees_branches()
 
     deletions = {}
     reparents = {}
     downstreams = collections.defaultdict(list)
     for branch, parent in git.topo_iter(branch_tree, top_down=False):
-        if git.is_dormant(branch):
+        if git.is_dormant(branch) or branch in other_worktrees:
             continue
 
         downstreams[parent].append(branch)
@@ -254,6 +255,44 @@ def with_downstream_branches(base_branches, branch_tree):
     return downstream_branches.union(base_branches)
 
 
+def get_other_worktrees_branches():
+    """Returns a dict of branch names to their worktree paths, excluding the current worktree."""
+    worktrees = {}
+
+    try:
+        current_worktree = os.path.realpath(
+            git.run("rev-parse", "--show-toplevel"))
+
+        objects_dir = os.path.join(current_worktree, ".git", "objects")
+        if os.path.exists(objects_dir):
+            real_objects_dir = os.path.realpath(objects_dir)
+
+            parent_dir = os.path.dirname(os.path.dirname(current_worktree))
+            for sibling in os.listdir(parent_dir):
+                potential_git_dir = os.path.join(parent_dir, sibling, "src",
+                                                 ".git")
+                if not os.path.isdir(potential_git_dir):
+                    continue
+
+                pot_objects = os.path.join(potential_git_dir, "objects")
+                if not os.path.exists(pot_objects):
+                    continue
+
+                if os.path.realpath(pot_objects) == real_objects_dir:
+                    workdir_path = os.path.dirname(potential_git_dir)
+                    if os.path.realpath(workdir_path) != current_worktree:
+                        head_file = os.path.join(potential_git_dir, "HEAD")
+                        if os.path.exists(head_file):
+                            with open(head_file, "r") as f:
+                                head_content = f.read().strip()
+                                if head_content.startswith("ref: refs/heads/"):
+                                    branch = head_content[16:]
+                                    worktrees[branch] = workdir_path
+    except Exception:
+        pass
+
+    return worktrees
+
 def main(args=None):
     if gclient_utils.IsEnvCog():
         print(
@@ -349,6 +388,7 @@ def main(args=None):
 
     retcode = 0
     unrebased_branches = []
+    other_worktrees = get_other_worktrees_branches()
     # Rebase each branch starting with the root-most branches and working
     # towards the leaves.
     for branch, parent in git.topo_iter(branch_tree):
@@ -357,6 +397,9 @@ def main(args=None):
             continue
         if git.is_dormant(branch):
             print('Skipping dormant branch', format_branch_name(branch))
+        elif branch in other_worktrees:
+            print("Skipping branch '%s': checked out in another worktree (%s)" %
+                  (branch, other_worktrees[branch]))
         else:
             ret = rebase_branch(branch, parent, merge_base[branch],
                                 opts.no_squash)
