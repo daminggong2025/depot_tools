@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c8e25a0f_eb166a40",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 4323820
+      },
+      "writtenOn": "2026-03-10T22:46:49Z",
+      "side": 1,
+      "message": "Does this affect gclient sync -D runs? I am less informed on how sub-repos work. \n\nThis sounds like a really nice change, I\u0027m just not sure if I understand the consequences fully.",
+      "range": {
+        "startLine": 14,
+        "startChar": 26,
+        "endLine": 14,
+        "endChar": 42
+      },
+      "revId": "307235d8aa201a0908e5aec4fc46340f1647da4c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
