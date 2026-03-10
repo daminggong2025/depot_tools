@@ -63,6 +63,24 @@
       "message": "Maybe we can turn on --shallow here as well since we\u0027re sure it\u0027s btrfs at this point?",
       "revId": "307235d8aa201a0908e5aec4fc46340f1647da4c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "006f728e_a0daa4b6",
+        "filename": "gclient-new-workdir.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 4323820
+      },
+      "writtenOn": "2026-03-10T22:56:35Z",
+      "side": 1,
+      "message": "we might want --no-shallow for cases where people explicitly don\u0027t want it, but I\u0027m not sure why people wouldn\u0027t want a more efficient copy.",
+      "parentUuid": "f89be925_c445fb99",
+      "revId": "307235d8aa201a0908e5aec4fc46340f1647da4c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
