@@ -48,6 +48,17 @@ def parse_options():
         dest='reflink',
         help='''force not to use a copy-on-write flag even on a supported
                               FS like btrfs, ZFS, or APFS.''')
+    parser.add_argument(
+        '--shallow',
+        action='store_true',
+        default=None,
+        help='''Copy only the root repository e.g. chromium/src''')
+    parser.add_argument(
+        '--no-shallow',
+        action='store_false',
+        dest='shallow',
+        help='''Force copying all sub-repositories'''
+    )
     args = parser.parse_args()
 
     if not os.path.exists(args.repository):
@@ -82,7 +93,7 @@ def support_copy_on_write(src, dest):
     return True
 
 
-def try_vol_snapshot(src, dest):
+def try_btrfs_subvol_snapshot(src, dest):
     try:
         subprocess.check_call(['btrfs', 'subvol', 'snapshot', src, dest],
                               stderr=subprocess.STDOUT)
@@ -99,8 +110,15 @@ def main():
         gclient = os.path.realpath(gclient)
     new_gclient = os.path.join(args.new_workdir, '.gclient')
 
-    if try_vol_snapshot(args.repository, args.new_workdir):
-        args.reflink = True
+    if try_btrfs_subvol_snapshot(args.repository, args.new_workdir):
+        # If btrfs is being used, reflink support is always present.
+        if args.reflink is None:
+            args.reflink = True
+        # Since we're doing a subvolume snapshot, the sub-repositories will
+        # already be present in the snapshot, and we only need to deal with
+        # linking the .git folder for the root repository.
+        if args.shallow is None:
+            args.shallow = True
     else:
         os.makedirs(args.new_workdir)
         if args.reflink is None:
@@ -134,6 +152,9 @@ def main():
                 ])
             else:
                 subprocess.check_call(['git', 'checkout', '-f'], cwd=workdir)
+
+            if args.shallow:
+                break
 
     if args.reflink:
         print(
