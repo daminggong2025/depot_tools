@@ -286,6 +286,7 @@ def _main_inner(input_args,
             print('Adding --quiet because we\'re running under gemini-cli ('
                   'GEMINI_CLI=1)')
             input_args.append('--quiet')
+            input_args.append('--heartbeat_period=30s')
 
     # if user doesn't set PYTHONPYCACHEPREFIX and PYTHONDONTWRITEBYTECODE
     # set PYTHONDONTWRITEBYTECODE=1 not to create many *.pyc in workspace
