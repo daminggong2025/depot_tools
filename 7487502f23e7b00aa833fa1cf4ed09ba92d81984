@@ -16,6 +16,46 @@
       "message": "+yiwzhang, mind reviewing this change?",
       "revId": "7487502f23e7b00aa833fa1cf4ed09ba92d81984",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b6c74d17_b022e056",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000675
+      },
+      "writtenOn": "2026-03-10T21:14:44Z",
+      "side": 1,
+      "message": "patch LGTM, but the wording was more general about \"COW\" before and changes to be more specific about \"reflink\" and I dont know if this is an improvement given the platform compat.\n\nBut I appreciate the feature addition!!",
+      "revId": "7487502f23e7b00aa833fa1cf4ed09ba92d81984",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "174bd2d1_9a242916",
+        "filename": "gclient-new-workdir.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1000675
+      },
+      "writtenOn": "2026-03-10T21:14:44Z",
+      "side": 1,
+      "message": "Nit: is \"reflink\" an industry term or should this say \"copy on write\"\n\nI actually done know!",
+      "range": {
+        "startLine": 41,
+        "startChar": 47,
+        "endLine": 41,
+        "endChar": 59
+      },
+      "revId": "7487502f23e7b00aa833fa1cf4ed09ba92d81984",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
