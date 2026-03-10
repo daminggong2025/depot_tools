@@ -134,6 +134,24 @@
       "parentUuid": "8edfd6dd_bf427e96",
       "revId": "307235d8aa201a0908e5aec4fc46340f1647da4c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8c6ed16b_8cdf8ed7",
+        "filename": "gclient-new-workdir.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 134,
+      "author": {
+        "id": 4323820
+      },
+      "writtenOn": "2026-03-10T23:18:44Z",
+      "side": 1,
+      "message": "ohhh I see, I thought the for was nexted within the else above. You\u0027re right, ty for explaining!",
+      "parentUuid": "19951be6_4813bd96",
+      "revId": "307235d8aa201a0908e5aec4fc46340f1647da4c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
