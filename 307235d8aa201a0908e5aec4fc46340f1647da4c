@@ -81,6 +81,24 @@
       "parentUuid": "f89be925_c445fb99",
       "revId": "307235d8aa201a0908e5aec4fc46340f1647da4c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e8cc6188_9f7f11c4",
+        "filename": "gclient-new-workdir.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 4323820
+      },
+      "writtenOn": "2026-03-10T22:58:43Z",
+      "side": 1,
+      "message": "oh actually, this just triggers the message at the end... I think I misunderstood the code.",
+      "parentUuid": "006f728e_a0daa4b6",
+      "revId": "307235d8aa201a0908e5aec4fc46340f1647da4c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
