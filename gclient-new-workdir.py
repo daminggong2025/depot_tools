@@ -46,6 +46,11 @@ def parse_options():
         dest='reflink',
         help='''force not to use "cp --reflink" even on supported
                               FS like btrfs or ZFS.''')
+    parser.add_argument(
+        '--shallow',
+        action='store_true',
+        default=None,
+        help='''Copy only the root repository e.g. chromium/src''')
     args = parser.parse_args()
 
     if not os.path.exists(args.repository):
@@ -124,6 +129,9 @@ def main():
                 ])
             else:
                 subprocess.check_call(['git', 'checkout', '-f'], cwd=workdir)
+
+            if args.shallow:
+                break
 
     if args.reflink:
         print(
