@@ -99,6 +99,23 @@
       "parentUuid": "006f728e_a0daa4b6",
       "revId": "307235d8aa201a0908e5aec4fc46340f1647da4c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8edfd6dd_bf427e96",
+        "filename": "gclient-new-workdir.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 134,
+      "author": {
+        "id": 4323820
+      },
+      "writtenOn": "2026-03-10T23:00:55Z",
+      "side": 1,
+      "message": "now that I\u0027ve read the code more completely... it looks like shallow only matters in cases where you\u0027re not snapshotting a subvolume? I suppose there might be cases where people are using btrfs and not subvolumes, tho I don\u0027t know why they aren\u0027t.\n\nThis change seems totally fine for this specific case. I defer to @yiwzhang for +1, tho, given my familiarity with this code is low.",
+      "revId": "307235d8aa201a0908e5aec4fc46340f1647da4c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
