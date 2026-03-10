@@ -22,6 +22,30 @@
       },
       "revId": "307235d8aa201a0908e5aec4fc46340f1647da4c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e53a78ba_e3f6d966",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1128437
+      },
+      "writtenOn": "2026-03-10T22:53:50Z",
+      "side": 1,
+      "message": "For btrfs snapshots, it should just work - your sub-repositories just act like independent checkouts rather than being linked to the canonical location. But that won\u0027t affect `gclient sync` per se.\n\nObviously, if you don\u0027t have a btrfs snapshot, `gclient sync` will just download the sub-repositories over again. Which is why I haven\u0027t made this flag the default behavior in this CL - you have to opt-in to it explicitly.",
+      "parentUuid": "c8e25a0f_eb166a40",
+      "range": {
+        "startLine": 14,
+        "startChar": 26,
+        "endLine": 14,
+        "endChar": 42
+      },
+      "revId": "307235d8aa201a0908e5aec4fc46340f1647da4c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
