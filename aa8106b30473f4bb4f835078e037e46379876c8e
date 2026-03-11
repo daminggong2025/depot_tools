@@ -43,6 +43,30 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "fd05349b_0429b6d2",
+        "filename": "agents/skills/luci-test-results/SKILL.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1444807
+      },
+      "writtenOn": "2026-03-11T14:56:55Z",
+      "side": 1,
+      "message": "Done. When I tested locally, the LLM didn\u0027t even notice it was missing \u003dD",
+      "parentUuid": "ff254233_fd44fe84",
+      "range": {
+        "startLine": 15,
+        "startChar": 24,
+        "endLine": 15,
+        "endChar": 25
+      },
+      "revId": "aa8106b30473f4bb4f835078e037e46379876c8e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "c38ed7c0_ada25544",
         "filename": "agents/skills/luci-test-results/scripts/luci_triage.py",
         "patchSetId": 1
