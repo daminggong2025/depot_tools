@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ed9128ea_487045e9",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002869
+      },
+      "writtenOn": "2026-03-11T14:42:15Z",
+      "side": 1,
+      "message": "lgtm % comment, thanks for improving this!",
+      "revId": "aa8106b30473f4bb4f835078e037e46379876c8e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ff254233_fd44fe84",
+        "filename": "agents/skills/luci-test-results/SKILL.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1002869
+      },
+      "writtenOn": "2026-03-11T14:42:15Z",
+      "side": 1,
+      "message": "nit: missing \\ at end",
+      "range": {
+        "startLine": 15,
+        "startChar": 24,
+        "endLine": 15,
+        "endChar": 25
+      },
+      "revId": "aa8106b30473f4bb4f835078e037e46379876c8e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
