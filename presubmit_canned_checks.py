@@ -748,7 +748,7 @@ def CheckLongLines(input_api, output_api, maxlen, source_file_filter=None):
         errors += check_python_long_lines(py_file_list,
                                           error_formatter=format_error)
     if errors:
-        msg = 'Found %d lines longer than %s characters (first 5 shown).' % (
+        msg = 'Found %d lines longer than the maximum allowed length (first 5 shown).\nMaxlens are INSERT MAXLENS' % (
             len(errors), maxlen)
         return [output_api.PresubmitPromptWarning(msg, items=errors[:5])]
 
