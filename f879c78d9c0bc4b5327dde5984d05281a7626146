@@ -16,6 +16,29 @@
       "message": "gavinmak@google.com ptal - also please check my formatting!",
       "revId": "f879c78d9c0bc4b5327dde5984d05281a7626146",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9a03ef89_fe96f47d",
+        "filename": "gerrit_util.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 1021,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-03-12T20:21:47Z",
+      "side": 1,
+      "message": "nit: break this long line up",
+      "range": {
+        "startLine": 1021,
+        "startChar": 24,
+        "endLine": 1021,
+        "endChar": 135
+      },
+      "revId": "f879c78d9c0bc4b5327dde5984d05281a7626146",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
