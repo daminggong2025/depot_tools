@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0501c472_72feccf2",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1128437
+      },
+      "writtenOn": "2026-03-12T20:32:26Z",
+      "side": 1,
+      "message": "I took Josiah\u0027s feedback about making this the default behavior when `--reflink` or btrfs subvolume snapshots are used since it\u0027s strictly better than the old behavior if you\u0027re not interested in sharing git commits for any sub-repositories. I added a `--link-all-git-sub-repos` flag too so that users (count likely ~0) who prefer the old behavior can still get it back.\n\nAlso, made some of the flag help strings and names a bit more clear (IMO).",
+      "revId": "2f96a764dbb33882fd9164cc5208892f5c295db6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

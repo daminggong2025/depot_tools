@@ -22,6 +22,30 @@
       },
       "revId": "7e789094435bcc90fd8124c9ed2e43db838cc840",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b44cb35e_a81cd2e1",
+        "filename": "gclient-new-workdir.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1128437
+      },
+      "writtenOn": "2026-03-12T20:32:26Z",
+      "side": 1,
+      "message": "Changed the flag to `--link-root-git-repo-only` - let me know if you prefer another name though.",
+      "parentUuid": "edd63510_75590afc",
+      "range": {
+        "startLine": 52,
+        "startChar": 11,
+        "endLine": 52,
+        "endChar": 18
+      },
+      "revId": "7e789094435bcc90fd8124c9ed2e43db838cc840",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
