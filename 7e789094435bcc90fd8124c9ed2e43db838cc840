@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "edd63510_75590afc",
+        "filename": "gclient-new-workdir.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1381059
+      },
+      "writtenOn": "2026-03-12T16:54:20Z",
+      "side": 1,
+      "message": "shallow makes me feel this has something to do with git shallow clone. I wonder `root-only` would be a better name given what this new flag is doing?",
+      "range": {
+        "startLine": 52,
+        "startChar": 11,
+        "endLine": 52,
+        "endChar": 18
+      },
+      "revId": "7e789094435bcc90fd8124c9ed2e43db838cc840",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
