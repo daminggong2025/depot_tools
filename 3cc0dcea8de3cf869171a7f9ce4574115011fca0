@@ -16,6 +16,98 @@
       "message": "if this isn\u0027t urgent, I\u0027d like Gavin to review it",
       "revId": "3cc0dcea8de3cf869171a7f9ce4574115011fca0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3b7d9bf9_9f391e41",
+        "filename": "gerrit_util.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 2229,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-03-12T19:38:34Z",
+      "side": 1,
+      "message": "please update since this can now return a \"Ixxxx...\" change id",
+      "range": {
+        "startLine": 2228,
+        "startChar": 7,
+        "endLine": 2229,
+        "endChar": 20
+      },
+      "revId": "3cc0dcea8de3cf869171a7f9ce4574115011fca0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5c118f96_e43e7e31",
+        "filename": "git_cl.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 1116,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-03-12T19:38:34Z",
+      "side": 1,
+      "message": "does this need to be updated? ParseIssueNumberArgument is called by several `git cl` commands",
+      "range": {
+        "startLine": 1115,
+        "startChar": 4,
+        "endLine": 1116,
+        "endChar": 26
+      },
+      "revId": "3cc0dcea8de3cf869171a7f9ce4574115011fca0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "191a0cd0_221e850c",
+        "filename": "git_cl.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 1710,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-03-12T19:38:34Z",
+      "side": 1,
+      "message": "does this line/method also need to be updated?",
+      "range": {
+        "startLine": 1710,
+        "startChar": 16,
+        "endLine": 1710,
+        "endChar": 44
+      },
+      "revId": "3cc0dcea8de3cf869171a7f9ce4574115011fca0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "51e259fe_ffdbd4b8",
+        "filename": "git_cl.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 1769,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-03-12T19:38:34Z",
+      "side": 1,
+      "message": "same question about updating this line/method",
+      "range": {
+        "startLine": 1769,
+        "startChar": 12,
+        "endLine": 1769,
+        "endChar": 30
+      },
+      "revId": "3cc0dcea8de3cf869171a7f9ce4574115011fca0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
