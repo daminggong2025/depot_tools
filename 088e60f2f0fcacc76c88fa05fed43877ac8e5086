@@ -16,6 +16,29 @@
       "message": "Gavin, you were suggested by Gerrit, but feel free to reassign if someone else is better!",
       "revId": "088e60f2f0fcacc76c88fa05fed43877ac8e5086",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2983c032_cf49554a",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 758,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-03-13T17:59:11Z",
+      "side": 1,
+      "message": "are these changes necessary, or is the `(RUST_FILE_EXTS, RUST_EXCEPTIONS),` line sufficient to ignore rust? since `no_long_lines` skips over files in `LANGUAGE_EXCEPTIONS`",
+      "range": {
+        "startLine": 739,
+        "startChar": 4,
+        "endLine": 758,
+        "endChar": 53
+      },
+      "revId": "088e60f2f0fcacc76c88fa05fed43877ac8e5086",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
