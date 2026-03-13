@@ -39,6 +39,30 @@
       },
       "revId": "088e60f2f0fcacc76c88fa05fed43877ac8e5086",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4b1144c7_97eb02b6",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 758,
+      "author": {
+        "id": 1201744
+      },
+      "writtenOn": "2026-03-13T23:25:16Z",
+      "side": 1,
+      "message": "These changes are redundant; the RUST_FILE_EXTS/RUST_EXCEPTIONS changes are all that you *need*—I wasn\u0027t sure if one location was a more preferable place than the other to make changes :)  I\u0027ve reverted these changes in lieu of keeping just the RUST_FILE_EXTS changes; lmk if that works for you!",
+      "parentUuid": "2983c032_cf49554a",
+      "range": {
+        "startLine": 739,
+        "startChar": 4,
+        "endLine": 758,
+        "endChar": 53
+      },
+      "revId": "088e60f2f0fcacc76c88fa05fed43877ac8e5086",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
