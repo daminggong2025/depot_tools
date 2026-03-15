@@ -41,6 +41,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "a8e94930_44d85943",
+        "filename": "gerrit_util.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 2229,
+      "author": {
+        "id": 1450817
+      },
+      "writtenOn": "2026-03-15T23:35:45Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3b7d9bf9_9f391e41",
+      "range": {
+        "startLine": 2228,
+        "startChar": 7,
+        "endLine": 2229,
+        "endChar": 20
+      },
+      "revId": "3cc0dcea8de3cf869171a7f9ce4574115011fca0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "5c118f96_e43e7e31",
@@ -54,6 +78,30 @@
       "writtenOn": "2026-03-12T19:38:34Z",
       "side": 1,
       "message": "does this need to be updated? ParseIssueNumberArgument is called by several `git cl` commands",
+      "range": {
+        "startLine": 1115,
+        "startChar": 4,
+        "endLine": 1116,
+        "endChar": 26
+      },
+      "revId": "3cc0dcea8de3cf869171a7f9ce4574115011fca0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7791c54a_5cf75357",
+        "filename": "git_cl.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 1116,
+      "author": {
+        "id": 1450817
+      },
+      "writtenOn": "2026-03-15T23:35:45Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5c118f96_e43e7e31",
       "range": {
         "startLine": 1115,
         "startChar": 4,
@@ -87,6 +135,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "eebab2f3_1d9c6193",
+        "filename": "git_cl.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 1710,
+      "author": {
+        "id": 1450817
+      },
+      "writtenOn": "2026-03-15T23:35:45Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "191a0cd0_221e850c",
+      "range": {
+        "startLine": 1710,
+        "startChar": 16,
+        "endLine": 1710,
+        "endChar": 44
+      },
+      "revId": "3cc0dcea8de3cf869171a7f9ce4574115011fca0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "51e259fe_ffdbd4b8",
@@ -100,6 +172,30 @@
       "writtenOn": "2026-03-12T19:38:34Z",
       "side": 1,
       "message": "same question about updating this line/method",
+      "range": {
+        "startLine": 1769,
+        "startChar": 12,
+        "endLine": 1769,
+        "endChar": 30
+      },
+      "revId": "3cc0dcea8de3cf869171a7f9ce4574115011fca0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "74815dbf_d3b72e8a",
+        "filename": "git_cl.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 1769,
+      "author": {
+        "id": 1450817
+      },
+      "writtenOn": "2026-03-15T23:35:45Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "51e259fe_ffdbd4b8",
       "range": {
         "startLine": 1769,
         "startChar": 12,
