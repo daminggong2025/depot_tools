@@ -16,6 +16,63 @@
       "message": "PTAL\n\nSee discussion at https://chat.google.com/room/AAQA45T8nC8/-elpRFk8_BA/-elpRFk8_BA?cls\u003d10 (internal) for context",
       "revId": "a273ce2fefce47869829cba08f6760f3615e50ce",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1aba43ca_fdffa963",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 4323820
+      },
+      "writtenOn": "2026-03-17T22:57:10Z",
+      "side": 1,
+      "message": "tyvm for working on this change!",
+      "revId": "a273ce2fefce47869829cba08f6760f3615e50ce",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "69780bf2_8e39fdc9",
+        "filename": "gclient-new-workdir.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 155,
+      "author": {
+        "id": 4323820
+      },
+      "writtenOn": "2026-03-17T22:57:10Z",
+      "side": 1,
+      "message": "given the deep nesting, we may benefit from breaking out the logic for each type of copying into separate functions.",
+      "revId": "a273ce2fefce47869829cba08f6760f3615e50ce",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c61d3bae_1a6c48fd",
+        "filename": "gclient-new-workdir.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 191,
+      "author": {
+        "id": 4323820
+      },
+      "writtenOn": "2026-03-17T22:57:10Z",
+      "side": 1,
+      "message": "what happens if these commands fail? Will it stack trace and abort? Is there a chance a hiccup will leave the repo in a super weird state?",
+      "range": {
+        "startLine": 186,
+        "startChar": 0,
+        "endLine": 191,
+        "endChar": 51
+      },
+      "revId": "a273ce2fefce47869829cba08f6760f3615e50ce",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
