@@ -9,6 +9,7 @@
 
 import argparse
 import os
+import random
 import shutil
 import subprocess
 import sys
@@ -35,12 +36,25 @@ def parse_options():
                         help='should contain a .gclient file')
     parser.add_argument('new_workdir', help='must not exist')
     parser.add_argument(
+        '--use-git-worktree',
+        action='store_true',
+        default=True,
+        help='''Use git worktree instead of linking .git folders.''',
+    )
+    parser.add_argument(
+        '--no-use-git-worktree',
+        action='store_false',
+        dest='use_git_worktree',
+        help='''Force not to use git worktree and link .git folders instead.''',
+    )
+    parser.add_argument(
         '--reflink',
         action='store_true',
         default=None,
         help='''Force use of a copy-on-write flag when copying for better '''
         '''performance and disk utilization. This is the default behavior on '''
-        '''supported copy-on-write FS like btrfs, ZFS, or APFS.''')
+        '''supported copy-on-write FS like btrfs, ZFS, or APFS.''',
+    )
     parser.add_argument(
         '--no-reflink',
         action='store_false',
@@ -140,26 +154,97 @@ def main():
                     ])
                 shutil.rmtree(os.path.join(workdir, '.git'))
 
-            print('Linking: %s/.git' % workdir)
-            git_common.make_workdir(os.path.join(root, '.git'),
-                                    os.path.join(workdir, '.git'))
-            if args.reflink:
-                subprocess.check_call([
-                    'cp', '-a',
-                    get_cp_copy_on_write_flag(),
-                    os.path.join(root, '.git', 'index'),
-                    os.path.join(workdir, '.git', 'index')
-                ])
-                # Break out of the for loop if we're only linking the root git
-                # repository's .git folder and using copy-on-write since all the
-                # sub-directories will already be copied and we are done here.
-                # Otherwise, we can't avoid visiting all sub-repositories for
-                # copying over the .git folder and checkout using git.
-                if args.link_root_git_repo_only:
-                    break
+            if args.use_git_worktree:
+                if args.reflink:
+                    assert os.path.exists(workdir)
+                    # Move the existing directory to a temporary directory since
+                    # `git worktree add` won't work if the worktree directory
+                    # already exists even with the --force flag.
+                    tmp_workdir = os.path.join(
+                        os.path.dirname(workdir),
+                        'tmp-'
+                        + os.path.basename(workdir)
+                        + '-'
+                        + '%08x' % random.getrandbits(32),
+                    )
+                    os.rename(workdir, tmp_workdir)
+                    # Run `git worktree add` with --no-checkout to create the
+                    # worktree without touching any files in the worktree.
+                    print(
+                        'Running: git worktree add %s --no-checkout -d -f'
+                        % workdir
+                    )
+                    subprocess.check_call(
+                        [
+                            'git',
+                            'worktree',
+                            'add',
+                            workdir,
+                            '--no-checkout',
+                            '-d',
+                            '-f',
+                        ],
+                        cwd=root,
+                    )
+                    # Move the .git directory from the worktree to the temporary
+                    # directory and move the temporary directory back to the
+                    # worktree directory.
+                    shutil.move(os.path.join(workdir, '.git'), tmp_workdir)
+                    shutil.rmtree(workdir)
+                    os.rename(tmp_workdir, workdir)
+
+                    # Copy over the index so that the worktree is aware of the
+                    # files in the repository.
+                    worktree_git_dir = (
+                        subprocess.check_output(
+                            ['git', 'rev-parse', '--git-dir'], cwd=workdir
+                        )
+                        .decode()
+                        .strip()
+                    )
+                    subprocess.check_call(
+                        [
+                            'cp',
+                            '-a',
+                            get_cp_copy_on_write_flag(),
+                            os.path.join(root, '.git', 'index'),
+                            os.path.join(worktree_git_dir, 'index'),
+                        ]
+                    )
+                else:
+                    print('Running: git worktree add %s -d -f' % workdir)
+                    subprocess.check_call(
+                        ['git', 'worktree', 'add', workdir, '-d', '-f'],
+                        cwd=root,
+                    )
             else:
-                print('Running: git checkout -f %s' % workdir)
-                subprocess.check_call(['git', 'checkout', '-f'], cwd=workdir)
+                print('Linking: %s/.git' % workdir)
+                git_common.make_workdir(
+                    os.path.join(root, '.git'), os.path.join(workdir, '.git')
+                )
+                if args.reflink:
+                    subprocess.check_call(
+                        [
+                            'cp',
+                            '-a',
+                            get_cp_copy_on_write_flag(),
+                            os.path.join(root, '.git', 'index'),
+                            os.path.join(workdir, '.git', 'index'),
+                        ]
+                    )
+                else:
+                    print('Running: git checkout -f %s' % workdir)
+                    subprocess.check_call(
+                        ['git', 'checkout', '-f'], cwd=workdir
+                    )
+
+            # Break out of the for loop if we're only linking the root git
+            # repository's .git folder and using copy-on-write since all the
+            # sub-repositories will already be copied and we are done here.
+            # Otherwise, we can't avoid visiting all sub-repositories for
+            # checking out the files with git.
+            if args.reflink and args.link_root_git_repo_only:
+                break
 
     if args.reflink:
         print(
