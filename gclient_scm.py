@@ -182,15 +182,21 @@ class SCMWrapper(object):
     Args:
         force: bool; if True, delete the directory. Otherwise, just move it.
     """
+        checkout_path = os.path.normpath(self.checkout_path)
+        relpath = os.path.normpath(self.relpath)
+        if relpath == '.':
+            self.Print('_____ Skipping DeleteOrMove for relpath="."')
+            return
+
         if force and os.environ.get('CHROME_HEADLESS') == '1':
             self.Print('_____ Conflicting directory found in %s. Removing.' %
-                       self.checkout_path)
+                       checkout_path)
             gclient_utils.AddWarning('Conflicting directory %s deleted.' %
-                                     self.checkout_path)
-            gclient_utils.rmtree(self.checkout_path)
+                                     checkout_path)
+            gclient_utils.rmtree(checkout_path)
         else:
             bad_scm_dir = os.path.join(self._root_dir, '_bad_scm',
-                                       os.path.dirname(self.relpath))
+                                       os.path.dirname(relpath))
 
             try:
                 os.makedirs(bad_scm_dir)
@@ -198,14 +204,14 @@ class SCMWrapper(object):
                 if e.errno != errno.EEXIST:
                     raise
 
-            dest_path = tempfile.mkdtemp(prefix=os.path.basename(self.relpath),
+            dest_path = tempfile.mkdtemp(prefix=os.path.basename(relpath),
                                          dir=bad_scm_dir)
             self.Print(
                 '_____ Conflicting directory found in %s. Moving to %s.' %
-                (self.checkout_path, dest_path))
+                (checkout_path, dest_path))
             gclient_utils.AddWarning('Conflicting directory %s moved to %s.' %
-                                     (self.checkout_path, dest_path))
-            shutil.move(self.checkout_path, dest_path)
+                                     (checkout_path, dest_path))
+            shutil.move(checkout_path, dest_path)
 
 
 class GitWrapper(SCMWrapper):
