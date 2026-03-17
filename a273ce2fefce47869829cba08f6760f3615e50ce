@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "498c429c_8bfdfc6c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1128437
+      },
+      "writtenOn": "2026-03-17T22:34:56Z",
+      "side": 1,
+      "message": "PTAL\n\nSee discussion at https://chat.google.com/room/AAQA45T8nC8/-elpRFk8_BA/-elpRFk8_BA?cls\u003d10 (internal) for context",
+      "revId": "a273ce2fefce47869829cba08f6760f3615e50ce",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
