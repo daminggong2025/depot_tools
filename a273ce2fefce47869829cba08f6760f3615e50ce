@@ -52,6 +52,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "3bcf5563_94882495",
+        "filename": "gclient-new-workdir.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 155,
+      "author": {
+        "id": 1128437
+      },
+      "writtenOn": "2026-03-18T00:00:23Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "69780bf2_8e39fdc9",
+      "revId": "a273ce2fefce47869829cba08f6760f3615e50ce",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "c61d3bae_1a6c48fd",
@@ -65,6 +83,30 @@
       "writtenOn": "2026-03-17T22:57:10Z",
       "side": 1,
       "message": "what happens if these commands fail? Will it stack trace and abort? Is there a chance a hiccup will leave the repo in a super weird state?",
+      "range": {
+        "startLine": 186,
+        "startChar": 0,
+        "endLine": 191,
+        "endChar": 51
+      },
+      "revId": "a273ce2fefce47869829cba08f6760f3615e50ce",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3764f0f9_b3de91af",
+        "filename": "gclient-new-workdir.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 191,
+      "author": {
+        "id": 1128437
+      },
+      "writtenOn": "2026-03-18T00:00:23Z",
+      "side": 1,
+      "message": "I\u0027ve added a top-level try/except block to cleanup the destination workdir if that happens.",
+      "parentUuid": "c61d3bae_1a6c48fd",
       "range": {
         "startLine": 186,
         "startChar": 0,
