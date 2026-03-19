@@ -1,0 +1,136 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "455d4a21_31f20cf1",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-03-19T19:55:11Z",
+      "side": 1,
+      "message": "thinking about this a bit more, I agree with the goal but not sure if swapping out numeric change IDs with gerrit change-ids is the best approach. WDYT about translating I\u003cchange-ids\u003e to a numeric change ID by querying gerrit\u0027s query changes endpoint (https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#list-changes), then proceeding natively with a number? that could be done in the `Changelist` constructor or `SetIssue`",
+      "revId": "78abbbec9f187dfa179771675263a14ceb4414d8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3609f127_ed78db29",
+        "filename": "gerrit_util.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 137,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-03-19T19:55:11Z",
+      "side": 1,
+      "message": "do we want this to return `None` for ints?",
+      "range": {
+        "startLine": 136,
+        "startChar": 4,
+        "endLine": 137,
+        "endChar": 14
+      },
+      "revId": "78abbbec9f187dfa179771675263a14ceb4414d8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e1b02f59_49457e63",
+        "filename": "gerrit_util.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-03-19T19:55:11Z",
+      "side": 1,
+      "message": "`DieWithError` needs to be imported",
+      "range": {
+        "startLine": 139,
+        "startChar": 8,
+        "endLine": 139,
+        "endChar": 20
+      },
+      "revId": "78abbbec9f187dfa179771675263a14ceb4414d8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f839b615_0ec35391",
+        "filename": "gerrit_util.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 2241,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-03-19T19:55:11Z",
+      "side": 1,
+      "message": "a cherry-picked change will maintain its change ID across branches within a project so a \"change ID\" isn\u0027t actually unique",
+      "range": {
+        "startLine": 2241,
+        "startChar": 6,
+        "endLine": 2241,
+        "endChar": 62
+      },
+      "revId": "78abbbec9f187dfa179771675263a14ceb4414d8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3b2303bd_c654e31a",
+        "filename": "git_cl.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 1113,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-03-19T19:55:11Z",
+      "side": 1,
+      "message": "will `arg` ever be `None`? it\u0027ll get `AttributeError: \u0027NoneType\u0027 object has no attribute \u0027startswith\u0027` if it is",
+      "range": {
+        "startLine": 1113,
+        "startChar": 7,
+        "endLine": 1113,
+        "endChar": 51
+      },
+      "revId": "78abbbec9f187dfa179771675263a14ceb4414d8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a5c9d7c1_845910b3",
+        "filename": "git_cl.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 1711,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-03-19T19:55:11Z",
+      "side": 1,
+      "message": "will self.issue ever be an int here? I\u0027m concerned about it raising an AtributeError if self.issue is an int already",
+      "range": {
+        "startLine": 1711,
+        "startChar": 42,
+        "endLine": 1711,
+        "endChar": 60
+      },
+      "revId": "78abbbec9f187dfa179771675263a14ceb4414d8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
