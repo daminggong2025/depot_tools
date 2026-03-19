@@ -637,7 +637,7 @@ def _upload_sisolog(input_args: list[str], build_id: str):
         # https://source.chromium.org/chromium/infra/infra_superproject/+/main:build/recipes/recipe_modules/siso/api.py
         formatted_gcs_path = os.path.join(
             _LOGS_STORAGE_BUCKET, top_dir,
-            f"{datetime}_siso_reports.{timestamp}.{build_id}", file)
+            f"reports.{timestamp}.{build_id}", file)
         siso_logs_file = os.path.join(out_dir, file)
 
         # Run upload script without wait.
