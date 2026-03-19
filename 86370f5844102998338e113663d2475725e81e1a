@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0db6ce63_2b14fed3",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002869
+      },
+      "writtenOn": "2026-03-19T15:50:16Z",
+      "side": 1,
+      "message": "Thanks for improving this, Russ!",
+      "revId": "86370f5844102998338e113663d2475725e81e1a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8c55c3b8_5938a50e",
+        "filename": "agents/skills/luci-test-results/SKILL.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1002869
+      },
+      "writtenOn": "2026-03-19T15:50:16Z",
+      "side": 1,
+      "message": "Can these have uniform spacing like the commands below? i.e.\n\n```\nscripts/luci_triage.py find-cl-builds \\\n  --cl \u003cCL_NUMBER\u003e \\\n  [--patchset \u003cPATCHSET\u003e]\n```",
+      "range": {
+        "startLine": 16,
+        "startChar": 21,
+        "endLine": 16,
+        "endChar": 26
+      },
+      "revId": "86370f5844102998338e113663d2475725e81e1a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
