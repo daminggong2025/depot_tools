@@ -39,6 +39,30 @@
       },
       "revId": "86370f5844102998338e113663d2475725e81e1a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "102bbf24_11511f3b",
+        "filename": "agents/skills/luci-test-results/SKILL.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1444807
+      },
+      "writtenOn": "2026-03-19T16:01:36Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8c55c3b8_5938a50e",
+      "range": {
+        "startLine": 16,
+        "startChar": 21,
+        "endLine": 16,
+        "endChar": 26
+      },
+      "revId": "86370f5844102998338e113663d2475725e81e1a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
