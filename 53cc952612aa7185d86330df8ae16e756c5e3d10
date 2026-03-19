@@ -39,6 +39,30 @@
       },
       "revId": "53cc952612aa7185d86330df8ae16e756c5e3d10",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "360fde76_b19e150f",
+        "filename": "gclient.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 2933,
+      "author": {
+        "id": 1170419
+      },
+      "writtenOn": "2026-03-19T01:17:41Z",
+      "side": 1,
+      "message": "Yep, good catch. Added a unittest that fails with this diff as-is (see patchset 5), then passes with the fix to gclient.py (see patchset 7).",
+      "parentUuid": "9fc8ebcc_0b7bd8cc",
+      "range": {
+        "startLine": 2933,
+        "startChar": 22,
+        "endLine": 2933,
+        "endChar": 44
+      },
+      "revId": "53cc952612aa7185d86330df8ae16e756c5e3d10",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
