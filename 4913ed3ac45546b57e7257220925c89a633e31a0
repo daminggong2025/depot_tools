@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f7e6cd8d_f9ac712a",
+        "filename": "gclient.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 2970,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-03-19T19:11:55Z",
+      "side": 1,
+      "message": "maybe also add a .strip() for newlines in the version_file",
+      "range": {
+        "startLine": 2970,
+        "startChar": 77,
+        "endLine": 2970,
+        "endChar": 78
+      },
+      "revId": "4913ed3ac45546b57e7257220925c89a633e31a0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f1f88875_41341503",
+        "filename": "gclient.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 2970,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-03-19T19:11:55Z",
+      "side": 1,
+      "message": "I believe `parent.root.root_dir` is the dir containing the `.gclient` file. so you could either\n* have `\u0027version_file\u0027: \u0027src/some/version/file.txt\u0027,` in DEPS (probably not what you want), or\n* do a `os.path.join(parent.root.root_dir, parent.name, dep_value[\u0027version_file\u0027])`, which should get you the path relative to the dir containing the DEPS file. haven\u0027t tested this but it should also work for nested DEPS like https://source.chromium.org/chromium/chromium/src/+/main:third_party/angle/DEPS",
+      "range": {
+        "startLine": 2970,
+        "startChar": 29,
+        "endLine": 2970,
+        "endChar": 49
+      },
+      "revId": "4913ed3ac45546b57e7257220925c89a633e31a0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
