@@ -45,6 +45,54 @@
       },
       "revId": "4913ed3ac45546b57e7257220925c89a633e31a0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f7029f1b_76346aba",
+        "filename": "gclient.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 2970,
+      "author": {
+        "id": 1170419
+      },
+      "writtenOn": "2026-03-20T00:16:05Z",
+      "side": 1,
+      "message": "Ah thanks, that 2nd option is nice and works 👍",
+      "parentUuid": "f1f88875_41341503",
+      "range": {
+        "startLine": 2970,
+        "startChar": 29,
+        "endLine": 2970,
+        "endChar": 49
+      },
+      "revId": "4913ed3ac45546b57e7257220925c89a633e31a0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e03967b4_326466fd",
+        "filename": "gclient.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 2970,
+      "author": {
+        "id": 1170419
+      },
+      "writtenOn": "2026-03-20T00:16:05Z",
+      "side": 1,
+      "message": "Done (also added coverage of a newline in the unittest)",
+      "parentUuid": "f7e6cd8d_f9ac712a",
+      "range": {
+        "startLine": 2970,
+        "startChar": 77,
+        "endLine": 2970,
+        "endChar": 78
+      },
+      "revId": "4913ed3ac45546b57e7257220925c89a633e31a0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
