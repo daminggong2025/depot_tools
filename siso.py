@@ -562,11 +562,14 @@ def main(args: list[str],
                     if subcmd == "ninja" and is_ai_agent:
                         # Verbose printing the logic here to reduce
                         # hallucinations on slow/failed builds.
-                        print(
-                            'Detected AI agent env. Prepending'
-                            ' --quiet --batch=false to improve'
-                            ' latency and reduce context pollution.'
-                            ' User-supplied flags take precedence.')
+                        # --quiet can lead agent to think the build didn't
+                        # work, so provide path to siso_output.
+                        print('Detected AI agent env. Prepending'
+                              ' --quiet --batch=false to improve'
+                              ' latency and reduce context pollution.'
+                              ' User-supplied flags take precedence. '
+                              'stderr will be saved to: ' +
+                              os.path.join(out_dir, 'siso_output'))
                         subcmd_args = ['--quiet', '--batch=false'
                                        ] + subcmd_args
 
