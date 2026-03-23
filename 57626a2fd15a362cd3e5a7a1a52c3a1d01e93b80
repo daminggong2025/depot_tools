@@ -33,6 +33,109 @@
       "message": "mark@ on my m1 macbook gclient-new-workdir goes from taking over 10 minutes to less than 2 minutes.  I\u0027m curious if it\u0027s faster on newer macbooks.  Can you ptal?",
       "revId": "57626a2fd15a362cd3e5a7a1a52c3a1d01e93b80",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c4f70106_e4420949",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1174099
+      },
+      "writtenOn": "2026-03-23T18:38:01Z",
+      "side": 1,
+      "message": "Does this ever need to copy things across filesystems?",
+      "revId": "57626a2fd15a362cd3e5a7a1a52c3a1d01e93b80",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "10a1608b_b39a342c",
+        "filename": "gclient-new-workdir.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 1174099
+      },
+      "writtenOn": "2026-03-23T18:38:01Z",
+      "side": 1,
+      "message": "Can’t the `--reflink` be here now, in-line?",
+      "range": {
+        "startLine": 120,
+        "startChar": 29,
+        "endLine": 120,
+        "endChar": 52
+      },
+      "revId": "57626a2fd15a362cd3e5a7a1a52c3a1d01e93b80",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "58fc6aae_33459d9c",
+        "filename": "gclient-new-workdir.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 1174099
+      },
+      "writtenOn": "2026-03-23T18:38:01Z",
+      "side": 1,
+      "message": "I’d prefer to be explicit: the Apple one might raise an OSError, the subprocess one might raise a CalledProcessError, and there’s no overlap.",
+      "revId": "57626a2fd15a362cd3e5a7a1a52c3a1d01e93b80",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b4ad3088_a78620a9",
+        "filename": "gclient-new-workdir.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 168,
+      "author": {
+        "id": 1174099
+      },
+      "writtenOn": "2026-03-23T18:38:01Z",
+      "side": 1,
+      "message": "Now that I see this happening a second time: you should really refactor this into common logic. There should be a function that knows how to copy(src, dest), and let it figure out whether to dispatch to the Apple function or start a cp subprocess.\n\nI see a third and fourth follow, so, an even stronger justification.",
+      "range": {
+        "startLine": 157,
+        "startChar": 0,
+        "endLine": 168,
+        "endChar": 14
+      },
+      "revId": "57626a2fd15a362cd3e5a7a1a52c3a1d01e93b80",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4d1b3566_887eb432",
+        "filename": "gclient-new-workdir.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 293,
+      "author": {
+        "id": 1174099
+      },
+      "writtenOn": "2026-03-23T18:38:01Z",
+      "side": 1,
+      "message": "?",
+      "range": {
+        "startLine": 291,
+        "startChar": 0,
+        "endLine": 293,
+        "endChar": 66
+      },
+      "revId": "57626a2fd15a362cd3e5a7a1a52c3a1d01e93b80",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
