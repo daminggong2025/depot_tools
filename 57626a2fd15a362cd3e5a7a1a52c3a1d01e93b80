@@ -106,6 +106,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "a78a17e0_cc071a64",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1116294
+      },
+      "writtenOn": "2026-03-23T21:37:52Z",
+      "side": 1,
+      "message": "I think patchset 6 will fix this.  Can you try again?",
+      "parentUuid": "6d3e09c6_3471d65a",
+      "revId": "57626a2fd15a362cd3e5a7a1a52c3a1d01e93b80",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "10a1608b_b39a342c",
