@@ -72,6 +72,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "6d3e09c6_3471d65a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1174099
+      },
+      "writtenOn": "2026-03-23T21:01:05Z",
+      "side": 1,
+      "message": "\u003e I usually refer to /chrome, which is a symbolic link to /slash/chrome, but when I use /chrome/chrome.justin as the new_workdir, it totally messes up this script (both original and your modification): it detects copy-on write support, makes an empty directory at new_workdir, sticks a .gclient symbolic link in it, and then exits successfully with a cheerful message that it used copy-on-write. Total time 0.120s, but new_workdir doesn’t have anything other than .gclient in it.\n\nProbably due to the inconsistent application of `os.path.realpath` (ugh).",
+      "parentUuid": "99c3517c_b49b5c1e",
+      "revId": "57626a2fd15a362cd3e5a7a1a52c3a1d01e93b80",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "10a1608b_b39a342c",
         "filename": "gclient-new-workdir.py",
         "patchSetId": 2
