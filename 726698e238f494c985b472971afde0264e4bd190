@@ -41,6 +41,48 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "2612088b_9807541e",
+        "filename": "gclient-new-workdir.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 1116294
+      },
+      "writtenOn": "2026-03-23T18:20:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "886cbdba_1a2ef39a",
+      "revId": "726698e238f494c985b472971afde0264e4bd190",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e5a69118_b7d97157",
+        "filename": "gclient-new-workdir.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 1116294
+      },
+      "writtenOn": "2026-03-23T18:20:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "71a6ace6_3114f998",
+      "range": {
+        "startLine": 101,
+        "startChar": 10,
+        "endLine": 101,
+        "endChar": 48
+      },
+      "revId": "726698e238f494c985b472971afde0264e4bd190",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "b4fb967d_e0a3223c",
@@ -54,6 +96,30 @@
       "writtenOn": "2026-03-23T17:21:27Z",
       "side": 1,
       "message": "Should we catch the error and try to fallback to a regular copy? That\u0027s documented the behavior of `cp -c` on Mac.",
+      "range": {
+        "startLine": 272,
+        "startChar": 24,
+        "endLine": 272,
+        "endChar": 40
+      },
+      "revId": "726698e238f494c985b472971afde0264e4bd190",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "556a2dd7_ab167894",
+        "filename": "gclient-new-workdir.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 272,
+      "author": {
+        "id": 1116294
+      },
+      "writtenOn": "2026-03-23T18:20:34Z",
+      "side": 1,
+      "message": "Good idea.  I fell back to cp -a -c, not just -c.  Is that what you meant?",
+      "parentUuid": "b4fb967d_e0a3223c",
       "range": {
         "startLine": 272,
         "startChar": 24,
