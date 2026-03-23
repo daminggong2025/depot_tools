@@ -20,6 +20,23 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "6bc107c1_380411a4",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2026-03-23T17:27:33Z",
+      "side": 1,
+      "message": "This should be ok to proceed since we\u0027ve updated Cog to handle the external version files. @gavinmak@google.com could you please do the review as I think you\u0027re more familiar with gclient and depot tools?",
+      "revId": "53cc952612aa7185d86330df8ae16e756c5e3d10",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "9fc8ebcc_0b7bd8cc",
         "filename": "gclient.py",
         "patchSetId": 4
