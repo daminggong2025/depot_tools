@@ -54,6 +54,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "99c3517c_b49b5c1e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1174099
+      },
+      "writtenOn": "2026-03-23T19:09:14Z",
+      "side": 1,
+      "message": "\u003e mark@ on my m1 macbook gclient-new-workdir goes from taking over 10 minutes to less than 2 minutes.  I\u0027m curious if it\u0027s faster on newer macbooks.  Can you ptal?\n\nOriginal:\n\n```\n% time PYTHONPATH\u003d/chrome/depot_tools python3 /tmp/gclient-new-workdir_old-649c49853f28cbaec21bd80cf7df9cec.py /slash/chrome/chrome /slash/chrome/chrome.justin\n[…]\nPYTHONPATH\u003d/chrome/depot_tools python3  /slash/chrome/chrome   1.52s user 140.87s system 89% cpu 2:39.60 total\n```\n\nThis is actually worse than using `--no-reflink`:\n\n```\n% time PYTHONPATH\u003d/chrome/depot_tools python3 /tmp/gclient-new-workdir_old-649c49853f28cbaec21bd80cf7df9cec.py --no-reflink /slash/chrome/chrome /slash/chrome/chrome.justin\n[…]\n37.77s user 57.30s system 81% cpu 1:56.20 total\n\n```\n\nYours:\n\n```\n% time PYTHONPATH\u003d/chrome/depot_tools python3 /tmp/gclient-new-workdir_new-a199c80e238c2ef2fa9df7d7f54c31d3.py /slash/chrome/chrome /slash/chrome/chrome.justin\n[…]\n0.07s user 6.95s system 32% cpu 21.772 total\n```\n\nIt then takes 1m14s to `rm -r`.\n\nAdditional thoughts:\n\nI usually refer to /chrome, which is a symbolic link to /slash/chrome, but when I use /chrome/chrome.justin as the new_workdir, it totally messes up this script (both original and your modification): it detects copy-on write support, makes an empty directory at new_workdir, sticks a .gclient symbolic link in it, and then exits successfully with a cheerful message that it used copy-on-write. Total time 0.120s, but new_workdir doesn’t have anything other than .gclient in it.",
+      "parentUuid": "6fe1e03e_5ac00942",
+      "revId": "57626a2fd15a362cd3e5a7a1a52c3a1d01e93b80",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "10a1608b_b39a342c",
         "filename": "gclient-new-workdir.py",
         "patchSetId": 2
