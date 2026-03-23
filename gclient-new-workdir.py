@@ -8,6 +8,8 @@
 #
 
 import argparse
+import ctypes
+import ctypes.util
 import os
 import random
 import shutil
@@ -84,18 +86,49 @@ def parse_options():
     return args
 
 
-def cp_copy_on_write_flag():
-    return '-c' if sys.platform == 'darwin' else '--reflink'
+_libc = None
+
+
+def clonefile_darwin(src, dst):
+    global _libc
+    if _libc is None:
+        libc_path = ctypes.util.find_library("c")
+        _libc = ctypes.CDLL(libc_path, use_errno=True)
+        _libc.clonefile.argtypes = [
+            ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int
+        ]
+        _libc.clonefile.restype = ctypes.c_int
+    res = _libc.clonefile(os.fsencode(src), os.fsencode(dst), 0)
+    if res != 0:
+        err = ctypes.get_errno()
+        raise OSError(err, os.strerror(err), src)
+
+
+def copy_on_write(src, dest):
+    """Copies a file or directory using copy-on-write, if possible."""
+    if sys.platform == 'darwin':
+        try:
+            clonefile_darwin(src, dest)
+        except OSError:
+            subprocess.check_call(['cp', '-a', '-c', src, dest])
+    else:
+        subprocess.check_call(['cp', '-a', '--reflink', src, dest])
 
 
 def support_copy_on_write(src, dest):
     # Use of a copy-on-write flag always succeeds when 'src' is a symlink or a directory
     assert os.path.isfile(src) and not os.path.islink(src)
     try:
-        subprocess.check_output(
-            ['cp', '-a', cp_copy_on_write_flag(), src, dest],
-            stderr=subprocess.STDOUT)
+        if sys.platform == 'darwin':
+            clonefile_darwin(src, dest)
+        else:
+            subprocess.check_output(['cp', '-a', '--reflink', src, dest],
+                                    stderr=subprocess.STDOUT)
+    except OSError:
+        # clonefile_darwin failed
+        return False
     except subprocess.CalledProcessError:
+        # cp --reflink failed
         return False
     finally:
         if os.path.isfile(dest):
@@ -130,15 +163,9 @@ def link_git_repo(src, dest, reflink):
     dest_git_dir = os.path.join(dest, '.git')
     git_common.make_workdir(src_git_dir, dest_git_dir)
     if reflink:
-        subprocess.check_call(
-            [
-                'cp',
-                '-a',
-                cp_copy_on_write_flag(),
-                os.path.join(src_git_dir, 'index'),
-                os.path.join(dest_git_dir, 'index'),
-            ]
-        )
+        src_index = os.path.join(src_git_dir, 'index')
+        dest_index = os.path.join(dest_git_dir, 'index')
+        copy_on_write(src_index, dest_index)
         # Detach the HEAD ref without checking out files or updating the index.
         subprocess.check_call(
             ['git', 'update-ref', '--no-deref', 'HEAD', 'HEAD'], cwd=dest
@@ -170,15 +197,9 @@ def adopt_git_worktree(src, dest):
     shutil.rmtree(dest)
     os.rename(tmp_dest, dest)
     # Copy the index so that the worktree is aware of files in the repository.
-    subprocess.check_call(
-        [
-            'cp',
-            '-a',
-            cp_copy_on_write_flag(),
-            os.path.join(real_git_dir(src), 'index'),
-            os.path.join(real_git_dir(dest), 'index'),
-        ]
-    )
+    src_index = os.path.join(real_git_dir(src), 'index')
+    dest_index = os.path.join(real_git_dir(dest), 'index')
+    copy_on_write(src_index, dest_index)
 
 
 def create_git_worktree(src, workdir):
@@ -190,6 +211,9 @@ def create_git_worktree(src, workdir):
 
 def main():
     args = parse_options()
+
+    args.repository = os.path.realpath(args.repository)
+    args.new_workdir = os.path.realpath(args.new_workdir)
 
     used_btrfs_subvol_snapshot = False
     if try_btrfs_subvol_snapshot(args.repository, args.new_workdir):
@@ -250,14 +274,15 @@ def main():
             if not has_git:
                 continue
 
-            workdir = root.replace(args.repository, args.new_workdir, 1)
+            if rel_path == '.':
+                workdir = args.new_workdir
+            else:
+                workdir = os.path.join(args.new_workdir, rel_path)
 
             if args.reflink:
                 if not os.path.exists(workdir):
                     print('Copying: %s' % workdir)
-                    subprocess.check_call(
-                        ['cp', '-a', cp_copy_on_write_flag(), root, workdir]
-                    )
+                    copy_on_write(root, workdir)
                 shutil.rmtree(os.path.join(workdir, '.git'))
 
             if args.use_git_worktree:
