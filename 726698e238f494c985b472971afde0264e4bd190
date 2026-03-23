@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "886cbdba_1a2ef39a",
+        "filename": "gclient-new-workdir.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 1128941
+      },
+      "writtenOn": "2026-03-23T17:19:50Z",
+      "side": 1,
+      "message": "Note that there is a darwin check here to control the reflink flag. If we won\u0027t hit the darwin path here anymore maybe `--reflink` can be hardcoded on line 276.",
+      "revId": "726698e238f494c985b472971afde0264e4bd190",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
