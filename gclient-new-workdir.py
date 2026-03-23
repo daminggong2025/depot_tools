@@ -8,6 +8,8 @@
 #
 
 import argparse
+import ctypes
+import ctypes.util
 import os
 import random
 import shutil
@@ -82,6 +84,17 @@ def parse_options():
         parser.error('New workdir "%s" already exists.' % args.new_workdir)
 
     return args
+
+
+def clonefile_darwin(src, dst):
+    libc_path = ctypes.util.find_library("c")
+    libc = ctypes.CDLL(libc_path, use_errno=True)
+    libc.clonefile.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int]
+    libc.clonefile.restype = ctypes.c_int
+    res = libc.clonefile(os.fsencode(src), os.fsencode(dst), 0)
+    if res != 0:
+        err = ctypes.get_errno()
+        raise OSError(err, os.strerror(err))
 
 
 def cp_copy_on_write_flag():
@@ -255,9 +268,13 @@ def main():
             if args.reflink:
                 if not os.path.exists(workdir):
                     print('Copying: %s' % workdir)
-                    subprocess.check_call(
-                        ['cp', '-a', cp_copy_on_write_flag(), root, workdir]
-                    )
+                    if sys.platform == 'darwin':
+                        clonefile_darwin(root, workdir)
+                    else:
+                        subprocess.check_call([
+                            'cp', '-a',
+                            cp_copy_on_write_flag(), root, workdir
+                        ])
                 shutil.rmtree(os.path.join(workdir, '.git'))
 
             if args.use_git_worktree:
