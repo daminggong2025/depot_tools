@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "313ef71d_2604e76a",
+        "filename": "siso.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 197,
+      "author": {
+        "id": 1178124
+      },
+      "writtenOn": "2026-03-24T12:26:48Z",
+      "side": 1,
+      "message": "on second thought, i see a console window flash onscreen with this flag. `CREATE_NO_WINDOW` looks like it does the trick -- no flashing window and not preventing the cmd prompt from being closed.",
+      "range": {
+        "startLine": 197,
+        "startChar": 39,
+        "endLine": 197,
+        "endChar": 55
+      },
+      "revId": "3d2184456ff08c6e415f7a1e5556900d16c5ffc4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
