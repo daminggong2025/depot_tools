@@ -1,0 +1,153 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b18fa2c1_f9a64b2c",
+        "filename": "gclient-new-workdir.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 1174099
+      },
+      "writtenOn": "2026-03-24T14:02:24Z",
+      "side": 1,
+      "message": "This file seems to `\u0027single-quote\u0027` string literals. Stick with that for consistency.",
+      "range": {
+        "startLine": 95,
+        "startChar": 45,
+        "endLine": 95,
+        "endChar": 48
+      },
+      "revId": "f3087ef3b5c3c8002eaa2973c99f024436f375d8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f5663918_a2c26173",
+        "filename": "gclient-new-workdir.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 1174099
+      },
+      "writtenOn": "2026-03-24T14:02:24Z",
+      "side": 1,
+      "message": "For precise equivalence with `cp -a`, you would use `CLONE_NOFOLLOW | CLONE_ACL` here.",
+      "range": {
+        "startLine": 101,
+        "startChar": 62,
+        "endLine": 101,
+        "endChar": 63
+      },
+      "revId": "f3087ef3b5c3c8002eaa2973c99f024436f375d8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bb25d091_706b92aa",
+        "filename": "gclient-new-workdir.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 1174099
+      },
+      "writtenOn": "2026-03-24T14:02:24Z",
+      "side": 1,
+      "message": "You probably want `, None, dst` too (sets the `filename2` attribute). The `None` is `winerror`, but it’s safely ignored on non-Windows.",
+      "revId": "f3087ef3b5c3c8002eaa2973c99f024436f375d8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3b977740_2a6732e5",
+        "filename": "gclient-new-workdir.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 1174099
+      },
+      "writtenOn": "2026-03-24T14:02:24Z",
+      "side": 1,
+      "message": "I disagree with this fallback.\n\n`cp -ac` is so much worse than the direct `clonefile` call*, and probably doesn’t actually do anything different than the direct `clonefile` call is intended to**. All the fallback does is silently paper over problems calling `clonefile`.\n\n\\* why is `cp -c` so bad? does it clone each file individually, rather than cloning the entire directory hierarchy in a single call?\n\n\\** `cp -c` can fall back to a non-clone copy if the filesystem doesn’t support clones, but you shouldn’t care because you detect whether clones are supported before trying it. Also, my experience has been that `cp -c` still doesn’t work across filesystems.",
+      "range": {
+        "startLine": 112,
+        "startChar": 0,
+        "endLine": 113,
+        "endChar": 64
+      },
+      "revId": "f3087ef3b5c3c8002eaa2973c99f024436f375d8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "27dc948e_acca922e",
+        "filename": "gclient-new-workdir.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 215,
+      "author": {
+        "id": 1174099
+      },
+      "writtenOn": "2026-03-24T14:02:24Z",
+      "side": 1,
+      "message": "I didn’t re-test, but this will probably work.",
+      "revId": "f3087ef3b5c3c8002eaa2973c99f024436f375d8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "74854295_08506351",
+        "filename": "gclient-new-workdir.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 229,
+      "author": {
+        "id": 1174099
+      },
+      "writtenOn": "2026-03-24T14:02:24Z",
+      "side": 1,
+      "message": "You probably don’t need any other `realpath` now that you’re doing the big one above. Look elsewhere, too.",
+      "range": {
+        "startLine": 229,
+        "startChar": 18,
+        "endLine": 229,
+        "endChar": 34
+      },
+      "revId": "f3087ef3b5c3c8002eaa2973c99f024436f375d8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1fdceda0_1396072f",
+        "filename": "gclient-new-workdir.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 282,
+      "author": {
+        "id": 1174099
+      },
+      "writtenOn": "2026-03-24T14:02:24Z",
+      "side": 1,
+      "message": "This name is btrfs-specific. The name would ideally be made more generic, something about copy-on-write. You can hang on to `--reflink`/`--no-reflink` as deprecated options for compatibility, though.\n\n(If you want to take this up, save it for a follow-up change.)",
+      "range": {
+        "startLine": 282,
+        "startChar": 20,
+        "endLine": 282,
+        "endChar": 27
+      },
+      "revId": "f3087ef3b5c3c8002eaa2973c99f024436f375d8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
