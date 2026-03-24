@@ -16,6 +16,23 @@
       "message": "Hi, as discussed in cl https://chromium-review.googlesource.com/c/chromium/src/+/7692374, \nmoved the validator to depot_tools so that other paths and projects can reuse the check. Will update the chromium/src CL to call `canned_checks.CheckSkillFiles()` after this lands.\n\nPTAL, thanks",
       "revId": "5ec777701e1fdfd2c9ab3d16bb22f3b286f3e353",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cd07d772_73d86f80",
+        "filename": "agents/skills/skill-validator/scripts/skill_validator_test.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1126674
+      },
+      "writtenOn": "2026-03-24T13:33:24Z",
+      "side": 1,
+      "message": "Needs to be vpython3?",
+      "revId": "5ec777701e1fdfd2c9ab3d16bb22f3b286f3e353",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
