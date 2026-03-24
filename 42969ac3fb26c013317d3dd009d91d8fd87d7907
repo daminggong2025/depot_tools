@@ -16,6 +16,24 @@
       "message": "i haven\u0027t noticed a problem with this one. is there anything special i need to do to try this locally?",
       "revId": "42969ac3fb26c013317d3dd009d91d8fd87d7907",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8474fca6_590d3264",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-03-24T13:27:58Z",
+      "side": 1,
+      "message": "These commands are quick so I think no one notices them creating terminals, so this is more for consistency\u0027s sake.",
+      "parentUuid": "78267674_c88e53ec",
+      "revId": "42969ac3fb26c013317d3dd009d91d8fd87d7907",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
