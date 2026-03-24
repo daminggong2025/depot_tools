@@ -33,6 +33,24 @@
       "message": "Needs to be vpython3?",
       "revId": "5ec777701e1fdfd2c9ab3d16bb22f3b286f3e353",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f2bc1345_56bc44a4",
+        "filename": "agents/skills/skill-validator/scripts/skill_validator_test.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1598920
+      },
+      "writtenOn": "2026-03-24T14:29:54Z",
+      "side": 1,
+      "message": "good catch, updated : P",
+      "parentUuid": "cd07d772_73d86f80",
+      "revId": "5ec777701e1fdfd2c9ab3d16bb22f3b286f3e353",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
