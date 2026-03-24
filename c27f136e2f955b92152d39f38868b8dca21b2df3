@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "cb4b94d9_de24104c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1116294
+      },
+      "writtenOn": "2026-03-24T14:32:56Z",
+      "side": 1,
+      "message": "Per mark\u0027s comment on the parent CL. ptal!",
+      "revId": "c27f136e2f955b92152d39f38868b8dca21b2df3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
