@@ -300,3 +300,5 @@ def is_license_allowed(value: str,
     if is_open_source_project and is_open_source_license(value):
         return True
     return False
+
+# Modified by rop's automated tool
