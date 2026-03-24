@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8d1e0681_f6017bd4",
+        "filename": "siso.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 197,
+      "author": {
+        "id": 1178124
+      },
+      "writtenOn": "2026-03-24T12:13:29Z",
+      "side": 1,
+      "message": "maybe we want `DETACHED_PROCESS` here?\n\n\"For console processes, the new process does not inherit its parent\u0027s console (the default).\" (https://learn.microsoft.com/en-us/windows/win32/procthread/process-creation-flags)",
+      "revId": "f9faa2c182543f997f7817d06dd6506c71a536cf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d0f9ae41_ce6981af",
+        "filename": "siso.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 203,
+      "author": {
+        "id": 1178124
+      },
+      "writtenOn": "2026-03-24T12:13:29Z",
+      "side": 1,
+      "message": "`start_new_session` is ignored on windows, so this won\u0027t have any effect.\n\nhttps://github.com/python/cpython/blob/68c7fad757f3a99fca257d11ce61adb78128a66c/Lib/subprocess.py#L1512",
+      "revId": "f9faa2c182543f997f7817d06dd6506c71a536cf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
