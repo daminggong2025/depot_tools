@@ -100,6 +100,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "65b20d61_7aca02f4",
+        "filename": "gclient-new-workdir.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1116294
+      },
+      "writtenOn": "2026-03-24T19:11:24Z",
+      "side": 1,
+      "message": "Acknowledged",
+      "parentUuid": "1638c4d8_d9f173dc",
+      "revId": "c27f136e2f955b92152d39f38868b8dca21b2df3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "78c438bb_c51b3471",

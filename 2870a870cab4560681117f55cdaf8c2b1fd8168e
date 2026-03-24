@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "b7301113_cbe6181b",
+        "filename": "gclient-new-workdir.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 1116294
+      },
+      "writtenOn": "2026-03-24T19:11:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "23390921_4337f286",
+      "range": {
+        "startLine": 62,
+        "startChar": 29,
+        "endLine": 62,
+        "endChar": 71
+      },
+      "revId": "2870a870cab4560681117f55cdaf8c2b1fd8168e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d43f658a_a8a49a0c",
@@ -37,6 +61,30 @@
       "writtenOn": "2026-03-24T15:59:50Z",
       "side": 1,
       "message": "Since there\u0027s no deprecated in python 3.11, how about this?",
+      "range": {
+        "startLine": 74,
+        "startChar": 0,
+        "endLine": 79,
+        "endChar": 0
+      },
+      "revId": "2870a870cab4560681117f55cdaf8c2b1fd8168e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a8f6db19_fb7837ea",
+        "filename": "gclient-new-workdir.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 1116294
+      },
+      "writtenOn": "2026-03-24T19:11:24Z",
+      "side": 1,
+      "message": "Acknowledged",
+      "parentUuid": "d43f658a_a8a49a0c",
       "range": {
         "startLine": 74,
         "startChar": 0,
