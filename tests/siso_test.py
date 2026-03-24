@@ -1125,7 +1125,7 @@ def test_handle_collector_dead_then_healthy(
         [siso_path, "collector", "--project", project],
         stdout=subprocess.DEVNULL,
         stderr=subprocess.DEVNULL,
-        start_new_session=True,
+        start_new_session=(platform != "win32"),
         env=res_env,
         creationflags=creationflags,
     )

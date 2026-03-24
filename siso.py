@@ -200,7 +200,7 @@ def _start_collector(siso_path: str, expected_endpoint: str, project: str,
             cmd,
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
-            start_new_session=True,
+            start_new_session=(sys.platform != "win32"),
             env=env,
             creationflags=creationflags,
         )
