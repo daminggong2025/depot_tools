@@ -50,6 +50,24 @@
       "message": "This function only works in “reflink” mode now. You want to document that at least.",
       "revId": "d8bc4a7cc58ad9f88dea022ff3a17abf639307f4",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2a17efe4_89314ade",
+        "filename": "gclient-new-workdir.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 176,
+      "author": {
+        "id": 1116294
+      },
+      "writtenOn": "2026-03-24T15:31:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1a41d1ac_c6f5819d",
+      "revId": "d8bc4a7cc58ad9f88dea022ff3a17abf639307f4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
