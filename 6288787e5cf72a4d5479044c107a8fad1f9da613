@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "227db44e_853c39bd",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002869
+      },
+      "writtenOn": "2026-03-24T15:41:05Z",
+      "side": 1,
+      "message": "Does this need another agents/PRESUBMIT.py file with something like this to actually use the function?\n\n```\ndef CheckSkillFiles(input_api, output_api):\n    return input_api.canned_checks.CheckSkillFiles(input_api, output_api)\n\ndef CheckChangeOnUpload(input_api, output_api):\n    return CheckSkillFiles(input_api, output_api)\n\ndef CheckChangeOnCommit(input_api, output_api):\n    return CheckSkillFiles(input_api, output_api)\n```",
+      "revId": "6288787e5cf72a4d5479044c107a8fad1f9da613",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
