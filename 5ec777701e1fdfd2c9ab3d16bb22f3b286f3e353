@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b5dcdf0b_762183b8",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1598920
+      },
+      "writtenOn": "2026-03-24T02:50:31Z",
+      "side": 1,
+      "message": "Hi, as discussed in cl https://chromium-review.googlesource.com/c/chromium/src/+/7692374, \nmoved the validator to depot_tools so that other paths and projects can reuse the check. Will update the chromium/src CL to call `canned_checks.CheckSkillFiles()` after this lands.\n\nPTAL, thanks",
+      "revId": "5ec777701e1fdfd2c9ab3d16bb22f3b286f3e353",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
