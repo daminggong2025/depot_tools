@@ -16,6 +16,63 @@
       "message": "Per mark\u0027s comment on the parent CL. ptal!",
       "revId": "c27f136e2f955b92152d39f38868b8dca21b2df3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "90f73ad9_b4123630",
+        "filename": "gclient-new-workdir.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 1174099
+      },
+      "writtenOn": "2026-03-24T15:30:35Z",
+      "side": 1,
+      "message": "If Python 3.9 is assured, this can be a single `add_argument` with `action\u003dargparse.BooleanOptionalAction`.",
+      "range": {
+        "startLine": 52,
+        "startChar": 0,
+        "endLine": 60,
+        "endChar": 0
+      },
+      "revId": "c27f136e2f955b92152d39f38868b8dca21b2df3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a848d628_32c38677",
+        "filename": "gclient-new-workdir.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1174099
+      },
+      "writtenOn": "2026-03-24T15:30:35Z",
+      "side": 1,
+      "message": "`, deprecated\u003dTrue` along with a comment saying to use `--copy-on-write` instead?",
+      "revId": "c27f136e2f955b92152d39f38868b8dca21b2df3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "78c438bb_c51b3471",
+        "filename": "gclient-new-workdir.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1174099
+      },
+      "writtenOn": "2026-03-24T15:30:35Z",
+      "side": 1,
+      "message": "For this one also?",
+      "revId": "c27f136e2f955b92152d39f38868b8dca21b2df3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
