@@ -1071,7 +1071,7 @@ def test_kill_collector_windows(
     "platform, creationflags",
     [
         ("linux", 0),
-        ("win32", 512),  # subprocess.CREATE_NEW_PROCESS_GROUP
+        ("win32", 8),  # subprocess.DETACHED_PROCESS
     ],
 )
 def test_handle_collector_dead_then_healthy(
@@ -1082,7 +1082,7 @@ def test_handle_collector_dead_then_healthy(
     mocker: Any,
 ) -> None:
     mocker.patch("sys.platform", new=platform)
-    mocker.patch("subprocess.CREATE_NEW_PROCESS_GROUP",
+    mocker.patch("subprocess.DETACHED_PROCESS",
                  creationflags,
                  create=True)
     mock_json_loads = mocker.patch("siso.json.loads")
