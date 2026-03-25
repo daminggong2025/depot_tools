@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e2f53f88_14a87150",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 8
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1129009
+      },
+      "writtenOn": "2026-03-25T18:16:23Z",
+      "side": 1,
+      "message": "I\u0027m still not sure this actually needs to be a skill and if it should just be a presubmit check with an `agents/skills/validate.py` script. It\u0027s more code to maintain but not otherwise harmful, though.",
+      "revId": "ee23f44b0637eed44933ee807bc30b0a091f5fc6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c32af2b2_e477773b",
+        "filename": "agents/skills/skill-validator/scripts/skill_validator.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 148,
+      "author": {
+        "id": 1129009
+      },
+      "writtenOn": "2026-03-25T18:16:23Z",
+      "side": 1,
+      "message": "This check is caught by the regex also and can be removed, right?",
+      "revId": "ee23f44b0637eed44933ee807bc30b0a091f5fc6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "77401ef7_c1170766",
+        "filename": "agents/skills/skill-validator/scripts/skill_validator.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 190,
+      "author": {
+        "id": 1129009
+      },
+      "writtenOn": "2026-03-25T18:16:23Z",
+      "side": 1,
+      "message": "Since you\u0027re already extracting lines, we can get the `---` indexes with `indexes \u003d [i for i, v in enumerate(lines) if v \u003d\u003d \u0027---\u0027]` and then assert there are 2 items and then pass in `\u0027\\n\u0027.join(lines[indexes[0]+1:indexes[1]])` to _parse_frontmatter(). Or pass the lines list and do the simpler parsing there.\n\notherwise just do `content.count(\u0027\\n\u0027) \u003e 500` above instead of the splitlines.",
+      "revId": "ee23f44b0637eed44933ee807bc30b0a091f5fc6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ed65c846_bbe09740",
+        "filename": "agents/skills/skill-validator/scripts/skill_validator.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 258,
+      "author": {
+        "id": 1129009
+      },
+      "writtenOn": "2026-03-25T18:16:23Z",
+      "side": 1,
+      "message": "Can we remove this default? It will silently do something unexpected from chromium. If someone runs `./third_party/depot_tools/agents/skills/skill-validator/scripts/skill_validator.py --all` from chromium/src it will check third_party/depot_tools/agents/skills and not the more intuitive agents/skills.",
+      "revId": "ee23f44b0637eed44933ee807bc30b0a091f5fc6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
