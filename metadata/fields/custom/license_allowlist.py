@@ -218,7 +218,10 @@ _WITH_PERMISSION_ONLY = frozenset([
     # go/keep-sorted end
     # by_exception_only.
     # go/keep-sorted start case=no
+    "_needs/review_",
     "Commercial",
+    "GUST-Font-License",
+    "LPPL-1.3c",
     "MicrosoftEnterpriseWindowsDriverKit",
     "Opus-Patent-BSD-3-Clause",
     "Play-Core-SDK-TOS",
