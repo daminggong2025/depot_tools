@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e5facacb_37c75e08",
+        "filename": "siso.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 197,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2026-03-25T02:35:57Z",
+      "side": 0,
+      "message": "I guess we still want to keep this flag to avoid being killed by Ctrl-C?\nhttps://learn.microsoft.com/en-us/windows/win32/procthread/process-creation-flags\n\n\u003e If this flag is specified, CTRL+C signals will be disabled for all processes within the new process group.\n\n\nDoes this resolve the issue?\n```\ncreationflags \u003d subprocess.CREATE_NEW_PROCESS_GROUP | subprocess.CREATE_NO_WINDOW\n```",
+      "range": {
+        "startLine": 197,
+        "startChar": 0,
+        "endLine": 197,
+        "endChar": 63
+      },
+      "revId": "d5c8d9fb01eff58a78c69beffa1c6fc5d2f5b770",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
