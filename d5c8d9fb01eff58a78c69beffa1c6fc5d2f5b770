@@ -46,6 +46,30 @@
       },
       "revId": "d5c8d9fb01eff58a78c69beffa1c6fc5d2f5b770",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e2d17cfd_75a0ab37",
+        "filename": "siso.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 197,
+      "author": {
+        "id": 1178124
+      },
+      "writtenOn": "2026-03-25T13:00:15Z",
+      "side": 0,
+      "message": "that combination results in a flashing console window",
+      "parentUuid": "ba9856d5_5a29eb61",
+      "range": {
+        "startLine": 197,
+        "startChar": 0,
+        "endLine": 197,
+        "endChar": 63
+      },
+      "revId": "d5c8d9fb01eff58a78c69beffa1c6fc5d2f5b770",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
