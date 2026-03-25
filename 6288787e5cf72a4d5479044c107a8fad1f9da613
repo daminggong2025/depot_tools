@@ -20,6 +20,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "5f71cefa_77d1a433",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1598920
+      },
+      "writtenOn": "2026-03-25T10:04:02Z",
+      "side": 1,
+      "message": "Thanks Peter, good point, added.\nAnd I checked the presubmit behavior for PRESUBMIT_VERSION 2.0.0: it runs all functions starting with `Check*`, so CheckSkillFiles is already executed on both upload and commit.",
+      "parentUuid": "227db44e_853c39bd",
+      "revId": "6288787e5cf72a4d5479044c107a8fad1f9da613",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "b46117c3_45ae776b",
         "filename": "agents/skills/skill-validator/scripts/skill_validator.py",
         "patchSetId": 4
@@ -31,6 +49,24 @@
       "writtenOn": "2026-03-25T05:53:58Z",
       "side": 1,
       "message": "Since we\u0027re in depot_tools this will only look in agents/skills for depot_tools, correct? That\u0027s probably not what we want the `--all` behavior to do.\n\nMaybe this script should always take a list of SKILL.md files. Otherwise maybe the `--all` flag should take a path to a directory containing skills (e.g. agents/skills).",
+      "revId": "6288787e5cf72a4d5479044c107a8fad1f9da613",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "dc0ff94e_4ca9a899",
+        "filename": "agents/skills/skill-validator/scripts/skill_validator.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1598920
+      },
+      "writtenOn": "2026-03-25T10:04:02Z",
+      "side": 1,
+      "message": "Thanks for the feedback. I addressed all three points in the latest patchset:\nPTAL, thanks.",
+      "parentUuid": "b46117c3_45ae776b",
       "revId": "6288787e5cf72a4d5479044c107a8fad1f9da613",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -52,6 +88,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "3cabab6e_5b77f168",
+        "filename": "agents/skills/skill-validator/scripts/skill_validator.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 150,
+      "author": {
+        "id": 1598920
+      },
+      "writtenOn": "2026-03-25T10:04:02Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b9327b8c_4cbfabec",
+      "revId": "6288787e5cf72a4d5479044c107a8fad1f9da613",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "8c3486ee_819b8a9c",
@@ -65,6 +119,30 @@
       "writtenOn": "2026-03-25T05:53:58Z",
       "side": 1,
       "message": "When would this be needed? Can we just always look for files `SKILL.md`?",
+      "range": {
+        "startLine": 3044,
+        "startChar": 43,
+        "endLine": 3044,
+        "endChar": 66
+      },
+      "revId": "6288787e5cf72a4d5479044c107a8fad1f9da613",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fa3dbf8a_e59b6508",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 3044,
+      "author": {
+        "id": 1598920
+      },
+      "writtenOn": "2026-03-25T10:04:02Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8c3486ee_819b8a9c",
       "range": {
         "startLine": 3044,
         "startChar": 43,
