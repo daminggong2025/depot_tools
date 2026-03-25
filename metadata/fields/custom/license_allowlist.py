@@ -89,6 +89,7 @@ _ALLOWED_SPDX_LICENSES = frozenset([
     "CC-BY-3.0",
     "CC-BY-4.0",
     "CMU-Mach",
+    "curl",
     "dtoa",
     "FSFAP",
     "FSFULLR",
