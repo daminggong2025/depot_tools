@@ -39,6 +39,30 @@
       },
       "revId": "462d7faa353e587b9d38e05bc911b3b52b1b7432",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d51d1342_7fdce87d",
+        "filename": "agents/skills/skill-validator/SKILL.md",
+        "patchSetId": 7
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1598920
+      },
+      "writtenOn": "2026-03-25T12:54:51Z",
+      "side": 1,
+      "message": "thanks Peter, make sense 💯",
+      "parentUuid": "f482feae_476870ac",
+      "range": {
+        "startLine": 22,
+        "startChar": 0,
+        "endLine": 22,
+        "endChar": 7
+      },
+      "revId": "462d7faa353e587b9d38e05bc911b3b52b1b7432",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
