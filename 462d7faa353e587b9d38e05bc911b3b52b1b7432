@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a6ccce6f_0c57d01f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1598920
+      },
+      "writtenOn": "2026-03-25T10:08:22Z",
+      "side": 1,
+      "message": "Hi @gavinmak@google.com , PTAL for ownership requirements. Thanks.",
+      "revId": "462d7faa353e587b9d38e05bc911b3b52b1b7432",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
