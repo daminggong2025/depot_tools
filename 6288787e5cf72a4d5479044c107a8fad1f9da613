@@ -16,6 +16,63 @@
       "message": "Does this need another agents/PRESUBMIT.py file with something like this to actually use the function?\n\n```\ndef CheckSkillFiles(input_api, output_api):\n    return input_api.canned_checks.CheckSkillFiles(input_api, output_api)\n\ndef CheckChangeOnUpload(input_api, output_api):\n    return CheckSkillFiles(input_api, output_api)\n\ndef CheckChangeOnCommit(input_api, output_api):\n    return CheckSkillFiles(input_api, output_api)\n```",
       "revId": "6288787e5cf72a4d5479044c107a8fad1f9da613",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b46117c3_45ae776b",
+        "filename": "agents/skills/skill-validator/scripts/skill_validator.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1129009
+      },
+      "writtenOn": "2026-03-25T05:53:58Z",
+      "side": 1,
+      "message": "Since we\u0027re in depot_tools this will only look in agents/skills for depot_tools, correct? That\u0027s probably not what we want the `--all` behavior to do.\n\nMaybe this script should always take a list of SKILL.md files. Otherwise maybe the `--all` flag should take a path to a directory containing skills (e.g. agents/skills).",
+      "revId": "6288787e5cf72a4d5479044c107a8fad1f9da613",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b9327b8c_4cbfabec",
+        "filename": "agents/skills/skill-validator/scripts/skill_validator.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 150,
+      "author": {
+        "id": 1129009
+      },
+      "writtenOn": "2026-03-25T05:53:58Z",
+      "side": 1,
+      "message": "It looks like the regex will catch all of the conditions in this function. Can we just check this and tell the user to follow the spec (lowercase alphanumeric and single hyphens except at the end)?",
+      "revId": "6288787e5cf72a4d5479044c107a8fad1f9da613",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8c3486ee_819b8a9c",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 3044,
+      "author": {
+        "id": 1129009
+      },
+      "writtenOn": "2026-03-25T05:53:58Z",
+      "side": 1,
+      "message": "When would this be needed? Can we just always look for files `SKILL.md`?",
+      "range": {
+        "startLine": 3044,
+        "startChar": 43,
+        "endLine": 3044,
+        "endChar": 66
+      },
+      "revId": "6288787e5cf72a4d5479044c107a8fad1f9da613",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
