@@ -16,6 +16,29 @@
       "message": "Hi @gavinmak@google.com , PTAL for ownership requirements. Thanks.",
       "revId": "462d7faa353e587b9d38e05bc911b3b52b1b7432",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f482feae_476870ac",
+        "filename": "agents/skills/skill-validator/SKILL.md",
+        "patchSetId": 7
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1002869
+      },
+      "writtenOn": "2026-03-25T12:10:27Z",
+      "side": 1,
+      "message": "It may be better to have the full path here (i.e. from agent/skills/skill-validator/scripts/skill_validator.py as the agent is likely running from the root dir.",
+      "range": {
+        "startLine": 22,
+        "startChar": 0,
+        "endLine": 22,
+        "endChar": 7
+      },
+      "revId": "462d7faa353e587b9d38e05bc911b3b52b1b7432",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
