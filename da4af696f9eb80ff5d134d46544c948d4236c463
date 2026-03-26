@@ -91,6 +91,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "e88e08d2_d044a192",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 3044,
+      "author": {
+        "id": 1129009
+      },
+      "writtenOn": "2026-03-26T21:17:58Z",
+      "side": 1,
+      "message": "+1 to wnwen\u0027s comment for this repo. It seems we just want to call CheckSkillsFiles() from the PRESUBMIT.py file so there\u0027s no duplication.",
+      "parentUuid": "62797fe5_06ffcd44",
+      "range": {
+        "startLine": 3044,
+        "startChar": 4,
+        "endLine": 3044,
+        "endChar": 19
+      },
+      "revId": "da4af696f9eb80ff5d134d46544c948d4236c463",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "647e09da_552a8932",
         "filename": "tests/presubmit_canned_checks_test.py",
         "patchSetId": 9
