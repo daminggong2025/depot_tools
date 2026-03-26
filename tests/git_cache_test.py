@@ -223,6 +223,23 @@ class GitCacheTest(unittest.TestCase):
         mirror = git_cache.Mirror(self.origin_dir)
         mirror.populate(reset_fetch_config=True)
 
+    @mock.patch('gclient_utils.exponential_backoff_retry')
+    def testSetSymbolicRefIgnoreUnknown(self, mock_retry):
+        mock_retry.return_value = 'HEAD branch: (unknown)'
+        mirror = git_cache.Mirror(self.origin_dir)
+        with mock.patch.object(mirror, 'RunGit') as mock_rungit:
+            mirror._set_symbolic_ref()
+            mock_rungit.assert_not_called()
+
+    @mock.patch('gclient_utils.exponential_backoff_retry')
+    def testSetSymbolicRefKnown(self, mock_retry):
+        mock_retry.return_value = 'HEAD branch: main'
+        mirror = git_cache.Mirror(self.origin_dir)
+        with mock.patch.object(mirror, 'RunGit') as mock_rungit:
+            mirror._set_symbolic_ref()
+            mock_rungit.assert_called_once_with(
+                ['symbolic-ref', 'HEAD', 'refs/heads/main'])
+
 
 class GitCacheDirTest(unittest.TestCase):
     def setUp(self):
