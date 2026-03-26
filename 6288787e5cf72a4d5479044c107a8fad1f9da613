@@ -89,6 +89,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "860f7a71_7679aa74",
+        "filename": "agents/skills/skill-validator/scripts/skill_validator.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1598920
+      },
+      "writtenOn": "2026-03-26T07:01:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "dc0ff94e_4ca9a899",
+      "revId": "6288787e5cf72a4d5479044c107a8fad1f9da613",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "b9327b8c_4cbfabec",

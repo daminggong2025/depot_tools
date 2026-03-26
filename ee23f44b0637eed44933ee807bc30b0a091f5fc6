@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ca126597_4d23d730",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 8
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1598920
+      },
+      "writtenOn": "2026-03-26T07:01:11Z",
+      "side": 1,
+      "message": "I think we could keep this. The skill lets dev run `/skill-validator` interactively during development for faster feedback. It\u0027s a thin wrapper and maintenance cost is minimal.",
+      "parentUuid": "e2f53f88_14a87150",
+      "revId": "ee23f44b0637eed44933ee807bc30b0a091f5fc6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "c32af2b2_e477773b",
@@ -31,6 +49,24 @@
       "writtenOn": "2026-03-25T18:16:23Z",
       "side": 1,
       "message": "This check is caught by the regex also and can be removed, right?",
+      "revId": "ee23f44b0637eed44933ee807bc30b0a091f5fc6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1854779d_a5a11cd5",
+        "filename": "agents/skills/skill-validator/scripts/skill_validator.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 148,
+      "author": {
+        "id": 1598920
+      },
+      "writtenOn": "2026-03-26T07:01:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c32af2b2_e477773b",
       "revId": "ee23f44b0637eed44933ee807bc30b0a091f5fc6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -52,6 +88,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "bd75b30b_cc554219",
+        "filename": "agents/skills/skill-validator/scripts/skill_validator.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 190,
+      "author": {
+        "id": 1598920
+      },
+      "writtenOn": "2026-03-26T07:01:11Z",
+      "side": 1,
+      "message": "thanks, passing the lines — keeps delimiter detection and error handling self-contained in `_parse_frontmatter()`.",
+      "parentUuid": "77401ef7_c1170766",
+      "revId": "ee23f44b0637eed44933ee807bc30b0a091f5fc6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "ed65c846_bbe09740",
@@ -65,6 +119,24 @@
       "writtenOn": "2026-03-25T18:16:23Z",
       "side": 1,
       "message": "Can we remove this default? It will silently do something unexpected from chromium. If someone runs `./third_party/depot_tools/agents/skills/skill-validator/scripts/skill_validator.py --all` from chromium/src it will check third_party/depot_tools/agents/skills and not the more intuitive agents/skills.",
+      "revId": "ee23f44b0637eed44933ee807bc30b0a091f5fc6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4e6b7c3f_f003aaae",
+        "filename": "agents/skills/skill-validator/scripts/skill_validator.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 258,
+      "author": {
+        "id": 1598920
+      },
+      "writtenOn": "2026-03-26T07:01:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ed65c846_bbe09740",
       "revId": "ee23f44b0637eed44933ee807bc30b0a091f5fc6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
