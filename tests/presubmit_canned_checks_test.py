@@ -4,8 +4,10 @@
 # found in the LICENSE file.
 
 import os.path
+import shutil
 import subprocess
 import sys
+import tempfile
 import unittest
 from unittest import mock
 
@@ -756,6 +758,56 @@ class CheckAyeAyeTest(unittest.TestCase):
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0].type, 'error')
         self.assertIn("Failed to run.", results[0].message)
+
+
+class CheckSkillFilesTest(unittest.TestCase):
+
+    def setUp(self):
+        super(CheckSkillFilesTest, self).setUp()
+        self.addCleanup(mock.patch.stopall)
+        self.input_api = MockInputApi()
+        self.output_api = MockOutputApi()
+        self.tmpdir = tempfile.mkdtemp()
+
+    def tearDown(self):
+        shutil.rmtree(self.tmpdir)
+
+    def _write_skill(self, dir_name, content):
+        skill_dir = os.path.join(self.tmpdir, dir_name)
+        os.makedirs(skill_dir, exist_ok=True)
+        path = os.path.join(skill_dir, 'SKILL.md')
+        with open(path, 'w', encoding='utf-8') as f:
+            f.write(content)
+        return path
+
+    def test_skill_files_pass(self):
+        path = self._write_skill(
+            'my-skill', '---\nname: my-skill\n'
+            'description: A valid test skill for testing.\n---\n')
+        self.input_api.files = [
+            MockFile('agents/skills/my-skill/SKILL.md', []),
+        ]
+        mock.patch.object(self.input_api.files[0],
+                          'AbsoluteLocalPath',
+                          return_value=path).start()
+
+        results = presubmit_canned_checks.CheckSkillFiles(
+            self.input_api, self.output_api)
+        self.assertEqual(results, [])
+
+    def test_skill_files_fail(self):
+        path = self._write_skill('Bad_Skill', '---\nname: Bad_Skill\n---\n')
+        self.input_api.files = [
+            MockFile('agents/skills/Bad_Skill/SKILL.md', []),
+        ]
+        mock.patch.object(self.input_api.files[0],
+                          'AbsoluteLocalPath',
+                          return_value=path).start()
+
+        results = presubmit_canned_checks.CheckSkillFiles(
+            self.input_api, self.output_api)
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0].type, 'error')
 
 
 class CheckForCommitObjectsTest(unittest.TestCase):
