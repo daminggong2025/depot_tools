@@ -22,6 +22,30 @@
       },
       "revId": "8fcc3b48e2ba5b8ca6c4b667f7abf0cde7df345d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "db7e642a_d5c9a1b4",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 12
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-03-26T22:24:48Z",
+      "side": 1,
+      "message": "it\u0027s often mirrored repos like https://chromium.googlesource.com/chromiumos/platform/reporting and https://chromium.googlesource.com/aosp/platform/external/libavc",
+      "parentUuid": "487c87fc_6a1bb975",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 9,
+        "endChar": 28
+      },
+      "revId": "8fcc3b48e2ba5b8ca6c4b667f7abf0cde7df345d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
