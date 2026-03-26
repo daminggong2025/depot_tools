@@ -1,6 +1,23 @@
 {
   "comments": [
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ae5d05d0_682e7f41",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 9
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002869
+      },
+      "writtenOn": "2026-03-26T15:13:44Z",
+      "side": 1,
+      "message": "Also, would you mind running `git cl format` to fix these? https://logs.chromium.org/logs/infra/buildbucket/cr-buildbucket/8686256402532134449/+/u/presubmit/stdout\n\nThanks 😊",
+      "revId": "da4af696f9eb80ff5d134d46544c948d4236c463",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "76f2a1d2_6167e1b3",
