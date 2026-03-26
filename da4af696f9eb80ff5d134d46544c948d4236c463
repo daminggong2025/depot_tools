@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "76f2a1d2_6167e1b3",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 3044,
+      "author": {
+        "id": 1002869
+      },
+      "writtenOn": "2026-03-26T13:04:03Z",
+      "side": 1,
+      "message": "Seems like this is a duplicate implementation from agents/PRESUBMIT.py? Either this can stay and agents/PRESUBMIT.py can just call this or we can remove this?",
+      "range": {
+        "startLine": 3044,
+        "startChar": 4,
+        "endLine": 3044,
+        "endChar": 19
+      },
+      "revId": "da4af696f9eb80ff5d134d46544c948d4236c463",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "647e09da_552a8932",
+        "filename": "tests/presubmit_canned_checks_test.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 763,
+      "author": {
+        "id": 1002869
+      },
+      "writtenOn": "2026-03-26T13:04:03Z",
+      "side": 1,
+      "message": "Same with this, it should test either here or agents/PRESUBMIT.py",
+      "range": {
+        "startLine": 763,
+        "startChar": 6,
+        "endLine": 763,
+        "endChar": 25
+      },
+      "revId": "da4af696f9eb80ff5d134d46544c948d4236c463",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
