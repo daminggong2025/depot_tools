@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ad0a9d37_b6ca92cb",
+        "filename": "agents/skills/skill-validator/OWNERS",
+        "patchSetId": 12
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1129009
+      },
+      "writtenOn": "2026-03-27T03:33:54Z",
+      "side": 1,
+      "message": "depot_tools doesn\u0027t support external contributor owners yet (there won\u0027t be a code review + 1 button, I think) but I\u0027ll see if I can fix that.",
+      "revId": "7285b74f46b3d0aeef424a6297dd2002d0d88270",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

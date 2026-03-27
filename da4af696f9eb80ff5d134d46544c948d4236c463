@@ -230,6 +230,30 @@
       },
       "revId": "da4af696f9eb80ff5d134d46544c948d4236c463",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4ebc119c_b6a14731",
+        "filename": "tests/presubmit_canned_checks_test.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 763,
+      "author": {
+        "id": 1129009
+      },
+      "writtenOn": "2026-03-27T03:33:54Z",
+      "side": 1,
+      "message": "Acknowledged",
+      "parentUuid": "f48c71ed_d8ef0cd2",
+      "range": {
+        "startLine": 763,
+        "startChar": 6,
+        "endLine": 763,
+        "endChar": 25
+      },
+      "revId": "da4af696f9eb80ff5d134d46544c948d4236c463",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
