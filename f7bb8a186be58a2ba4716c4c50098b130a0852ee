@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7ca1f732_a2fad143",
+        "filename": "project.cfg",
+        "patchSetId": 2
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 3909368
+      },
+      "writtenOn": "2026-03-27T09:53:17Z",
+      "side": 1,
+      "message": "Marked as resolved.",
+      "revId": "f7bb8a186be58a2ba4716c4c50098b130a0852ee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
