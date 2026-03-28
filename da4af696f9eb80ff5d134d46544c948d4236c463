@@ -209,6 +209,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "62d10af5_5d22af4a",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 3044,
+      "author": {
+        "id": 1598920
+      },
+      "writtenOn": "2026-03-28T00:25:24Z",
+      "side": 1,
+      "message": "Same here, not sure if it\u0027s intended. I filed a bug here: https://issues.chromium.org/issues/496881254\n\nAnd after some investigation, I think the reason may be:\n\nThe presubmit recipe module uses repo_resource(\u0027presubmit_support.py\u0027) which resolves to the bundle path, not the checkout: https://chromium.googlesource.com/chromium/tools/depot_tools/+/refs/heads/main/recipes/recipe_modules/presubmit/api.py\n\nSo when a PRESUBMIT.py (from checkout) calls canned_checks.CheckSkillFiles(), it fails because presubmit_support.py (from bundle) imported the old presubmit_canned_checks.py which doesn\u0027t have that function.",
+      "parentUuid": "90488894_479cc13b",
+      "range": {
+        "startLine": 3044,
+        "startChar": 4,
+        "endLine": 3044,
+        "endChar": 19
+      },
+      "revId": "da4af696f9eb80ff5d134d46544c948d4236c463",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "647e09da_552a8932",

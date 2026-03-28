@@ -51,6 +51,24 @@
       "parentUuid": "ad0a9d37_b6ca92cb",
       "revId": "7285b74f46b3d0aeef424a6297dd2002d0d88270",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6c3dac45_00596d04",
+        "filename": "agents/skills/skill-validator/OWNERS",
+        "patchSetId": 12
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1598920
+      },
+      "writtenOn": "2026-03-28T00:25:24Z",
+      "side": 1,
+      "message": "Acknowledged",
+      "parentUuid": "300afd98_41a8ba8a",
+      "revId": "7285b74f46b3d0aeef424a6297dd2002d0d88270",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
