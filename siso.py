@@ -583,7 +583,7 @@ def main(args: list[str],
                 else:
                     new_args = pre_args
 
-                if args[1:] != new_args:
+                if not is_ai_agent and args[1:] != new_args:
                     print('depot_tools/siso.py: %s' % shlex.join(new_args),
                           file=sys.stderr)
                 check_outdir(out_dir)
