@@ -56,6 +56,30 @@
       },
       "revId": "95688b82251d7652ea4ab6b45fa98c57821e72f8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1f36740f_aac5d280",
+        "filename": "agents/PRESUBMIT.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1598920
+      },
+      "writtenOn": "2026-03-30T13:09:02Z",
+      "side": 1,
+      "message": "Thanks Peter, good suggestion. Before coding, I thnk there are two options:\n\n1. Hardcode test paths: Add each skill\u0027s test directory explicitly in CheckRunUnittests (e.g. skills/skill-validator/scripts). Simple but requires updating PRESUBMIT.py every time a new skill with tests is added.\n  \n2. Centralized `agents/testing/ directory`, put all test files there. `GetUnitTestsInDirectory` auto-discovers them without updating PRESUBMIT.py. Better for future extensibility.\n\nI\u0027m leaning towards option 2. WDYT?",
+      "parentUuid": "ee29a9cb_3ad6f1a2",
+      "range": {
+        "startLine": 14,
+        "startChar": 7,
+        "endLine": 14,
+        "endChar": 16
+      },
+      "revId": "95688b82251d7652ea4ab6b45fa98c57821e72f8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
