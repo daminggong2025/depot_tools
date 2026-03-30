@@ -104,6 +104,30 @@
       },
       "revId": "95688b82251d7652ea4ab6b45fa98c57821e72f8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7e9be355_bd68fc51",
+        "filename": "agents/PRESUBMIT.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1002869
+      },
+      "writtenOn": "2026-03-30T14:03:41Z",
+      "side": 1,
+      "message": "I think it\u0027s nice for each skill to be encapsulated with its own test (that way if this skill is symlinked somewhere and an agent tries to update it, the agent has ready access to the test without knowing about a separate unified test dir). Update PRESUBMIT.py each time shouldn\u0027t be too bad?\n\nI also agree that we can just avoid this new agents/PRESUBMIT.py and just update the root PRESUBMIT to call CheckSkillFiles",
+      "parentUuid": "436a886a_e48c078d",
+      "range": {
+        "startLine": 14,
+        "startChar": 7,
+        "endLine": 14,
+        "endChar": 16
+      },
+      "revId": "95688b82251d7652ea4ab6b45fa98c57821e72f8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
