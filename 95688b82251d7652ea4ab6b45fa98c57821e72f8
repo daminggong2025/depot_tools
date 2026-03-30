@@ -16,6 +16,46 @@
       "message": "PTAL, thanks.",
       "revId": "95688b82251d7652ea4ab6b45fa98c57821e72f8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "95b43647_b53e5b97",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002869
+      },
+      "writtenOn": "2026-03-30T11:24:21Z",
+      "side": 1,
+      "message": "lgtm!\n\nOne improvement later may be to run pylint for agent/* as well in addition to mcp/*: https://source.chromium.org/chromium/chromium/tools/depot_tools/+/main:PRESUBMIT.py;l\u003d68;drc\u003d276d76ecbd54e05ef902c23eb3a322bffcd9fa8f",
+      "revId": "95688b82251d7652ea4ab6b45fa98c57821e72f8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ee29a9cb_3ad6f1a2",
+        "filename": "agents/PRESUBMIT.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1002869
+      },
+      "writtenOn": "2026-03-30T11:24:21Z",
+      "side": 1,
+      "message": "Should we also add something like `mcp/PRESUBMIT.py` to run `agents/skills/skill-validator/scripts/skill_validator_test.py`?https://source.chromium.org/chromium/chromium/tools/depot_tools/+/main:mcp/PRESUBMIT.py;l\u003d15;drc\u003d526aace1778eef69b4efe2131ae69defd8dd545a\n\nAlthough it might be run by https://source.chromium.org/chromium/chromium/tools/depot_tools/+/main:PRESUBMIT.py;l\u003d124;drc\u003d276d76ecbd54e05ef902c23eb3a322bffcd9fa8f would you mind double checking whether tests like skill_validator_test.py is already run when related code in this skill is modified?",
+      "range": {
+        "startLine": 14,
+        "startChar": 7,
+        "endLine": 14,
+        "endChar": 16
+      },
+      "revId": "95688b82251d7652ea4ab6b45fa98c57821e72f8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
