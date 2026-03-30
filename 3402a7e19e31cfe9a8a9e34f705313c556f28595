@@ -16,6 +16,23 @@
       "message": "I vaguely remember ID token was required for the cloud run service at the time LUCI Config was developed. Maybe things have changed since then.",
       "revId": "3402a7e19e31cfe9a8a9e34f705313c556f28595",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b8d283c8_80b244da",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2026-03-30T16:26:19Z",
+      "side": 1,
+      "message": "lgtm if it works\n\nThis will need to be changed as well then https://chromium.googlesource.com/infra/luci/luci-go/+/refs/heads/main/lucicfg/cli/base/base.go#217",
+      "revId": "3402a7e19e31cfe9a8a9e34f705313c556f28595",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
