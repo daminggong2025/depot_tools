@@ -52,6 +52,24 @@
       "parentUuid": "f5466876_4ec45e12",
       "revId": "e8ad8382c5707238a2ad022a92ff8d113bb3e3fc",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6fc37b7f_ee6378af",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 4323820
+      },
+      "writtenOn": "2026-03-31T20:37:24Z",
+      "side": 1,
+      "message": "\u003e always require sudo unless you have sudoers configured\n\nI mean always require typing a password... it\u0027ll always require sudo, as far as I can tell, regardless of how it\u0027s configured.",
+      "parentUuid": "f1941658_66caaeca",
+      "revId": "e8ad8382c5707238a2ad022a92ff8d113bb3e3fc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
