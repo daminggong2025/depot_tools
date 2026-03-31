@@ -53,6 +53,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "d083b4f3_f1a2c9f9",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 4323820
+      },
+      "writtenOn": "2026-03-31T18:47:21Z",
+      "side": 1,
+      "message": "Ty for the CC, this is great for the btrfs flow. I don\u0027t see any good reason to continue using the older symlink style, and perhaps it makes sense to remove it altogether as it is mostly a footgun, leading to unsafe branch operations.",
+      "parentUuid": "e1a1b36d_be55f7ca",
+      "revId": "ddcb1b0f6aba5b717da475bb18513b19fbe9bc1f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "6ea2f09f_8d7e2e10",
