@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "14409cd8_af4291bf",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 5
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2026-03-31T02:57:50Z",
+      "side": 1,
+      "message": "What\u0027s wrong with printing this information for AI agent? It\u0027s just one line, and can be useful for AI agent to tweak \"siso ninja\" flags.",
+      "range": {
+        "startLine": 9,
+        "startChar": 4,
+        "endLine": 9,
+        "endChar": 57
+      },
+      "revId": "cf163f6846478e1f862c5a2b1358ee7498d0a2f1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
