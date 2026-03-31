@@ -16,6 +16,24 @@
       "message": "Is there an alternative other than running sudo that we should be guiding users towards? Like ensuring that they have the right permissions on the mount?",
       "revId": "e8ad8382c5707238a2ad022a92ff8d113bb3e3fc",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f5466876_4ec45e12",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1129009
+      },
+      "writtenOn": "2026-03-31T20:19:58Z",
+      "side": 1,
+      "message": "Yeah, I would say our tooling should require the passwordless sudo route for btrfs operations unless there is a reason people won\u0027t or shouldn\u0027t do that.",
+      "parentUuid": "7798dcd4_3206af40",
+      "revId": "e8ad8382c5707238a2ad022a92ff8d113bb3e3fc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
