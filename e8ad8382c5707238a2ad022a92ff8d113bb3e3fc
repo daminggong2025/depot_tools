@@ -34,6 +34,24 @@
       "parentUuid": "7798dcd4_3206af40",
       "revId": "e8ad8382c5707238a2ad022a92ff8d113bb3e3fc",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f1941658_66caaeca",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 4323820
+      },
+      "writtenOn": "2026-03-31T20:27:05Z",
+      "side": 1,
+      "message": "There\u0027s a mount option for removing subvolumes (`user_subvol_rm_allowed`), but I couldn\u0027t find an equivalent for creating subvolumes, which seems to always require sudo unless you have sudoers configured. I converted the instructions to use /etc/sudoers.d/btrfs to grant passwordless sudo. I can have it just error if passwordless is configured rather than have it prompt for a password.",
+      "parentUuid": "f5466876_4ec45e12",
+      "revId": "e8ad8382c5707238a2ad022a92ff8d113bb3e3fc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
