@@ -22,6 +22,30 @@
       },
       "revId": "cf163f6846478e1f862c5a2b1358ee7498d0a2f1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2777dd0e_43088eaf",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 5
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1493367
+      },
+      "writtenOn": "2026-03-31T06:19:08Z",
+      "side": 1,
+      "message": "The main problem: when `.sisorc` is filled with other args, this line becomes a bit overwhelming:\n```\ndepot_tools/siso.py: ninja --quiet --batch\u003dfalse --heartbeat_period\u003d30s -reapi_keep_exec_stream -fs_min_flush_timeout 300s -reapi_byte_stream_read_threshold 1024 -local_cache_enable -cache_dir \u0027D:\\sisocache\u0027 -reapi_priority 4 -C \u0027D:\\brave\\5\\src\\out\\Component\u0027 brave_components_unittests -k 1\n```\n\nThe agent shouldn\u0027t see and shouldn\u0027t touch these args IMHO. It already has the info for AI-specific set args as part of:\n```\nDetected AI agent env. Prepending --quiet --batch\u003dfalse --heartbeat_period\u003d30s to improve latency and reduce context pollution. User-supplied flags take precedence.\n```",
+      "parentUuid": "14409cd8_af4291bf",
+      "range": {
+        "startLine": 9,
+        "startChar": 4,
+        "endLine": 9,
+        "endChar": 57
+      },
+      "revId": "cf163f6846478e1f862c5a2b1358ee7498d0a2f1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
