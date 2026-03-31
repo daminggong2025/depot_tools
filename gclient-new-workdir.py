@@ -69,6 +69,11 @@ def parse_options():
         '''sub-directories of the workspace, and so on. A value of -1 means '''
         '''there is no limit. The default is 1 if copy-on-write is used, '''
         '''otherwise the default is -1.''')
+    parser.add_argument('--btrfs-use-sudo',
+                        action='store_true',
+                        default=False,
+                        help='''Use sudo for Btrfs operations.''')
+
     args = parser.parse_args()
 
     if '--reflink' in sys.argv or '--no-reflink' in sys.argv:
@@ -138,10 +143,12 @@ def support_copy_on_write(src, dest):
     return True
 
 
-def try_btrfs_subvol_snapshot(src, dest):
+def try_btrfs_subvol_snapshot(src, dest, use_sudo=False):
     try:
-        subprocess.check_call(['btrfs', 'subvol', 'snapshot', src, dest],
-                              stderr=subprocess.STDOUT)
+        cmd = ['btrfs', 'subvol', 'snapshot', src, dest]
+        if use_sudo:
+            cmd = ['sudo'] + cmd
+        subprocess.check_call(cmd, stderr=subprocess.STDOUT)
     except (subprocess.CalledProcessError, OSError):
         return False
     assert os.path.exists(dest)
@@ -222,12 +229,44 @@ def main():
     args.new_workdir = os.path.realpath(args.new_workdir)
 
     used_btrfs_subvol_snapshot = False
-    if try_btrfs_subvol_snapshot(args.repository, args.new_workdir):
+    if try_btrfs_subvol_snapshot(args.repository,
+                                 args.new_workdir,
+                                 use_sudo=args.btrfs_use_sudo):
         # If btrfs is being used, reflink support is always present, and there's
         # no benefit to not using it.
         args.copy_on_write = True
         used_btrfs_subvol_snapshot = True
     else:
+        if not args.btrfs_use_sudo:
+            is_subvolume = False
+            try:
+                res = subprocess.run(f"stat -c %i '{args.repository}'",
+                                     shell=True,
+                                     capture_output=True,
+                                     text=True,
+                                     executable='/bin/bash')
+                if res.returncode == 0 and res.stdout.strip() == "256":
+                    is_subvolume = True
+            except Exception:
+                pass
+
+            if is_subvolume:
+                print(
+                    f"Repository '{args.repository}' is a Btrfs subvolume, but snapshot failed."
+                )
+                print("This is often a permissions error. You can:")
+                user = os.environ.get('USER', 'YOUR_USER')
+                print(
+                    "  1. Configure passwordless sudo (run 'sudo visudo' and add):"
+                )
+                print(
+                    f"     {user} ALL=(ALL) NOPASSWD: /usr/bin/btrfs subvolume snapshot*"
+                )
+                print(
+                    "  2. Use 'gclient-new-workdir.py --btrfs-use-sudo' to prompt for password."
+                )
+                sys.exit(1)
+
         os.makedirs(args.new_workdir)
 
     # If any of the operations below fail, we want to clean up the new workdir.
@@ -316,9 +355,10 @@ def main():
         print(f'Error: {e}')
         print(f'Cleaning up {args.new_workdir}')
         if used_btrfs_subvol_snapshot:
-            subprocess.check_call(
-                ['btrfs', 'subvol', 'delete', args.new_workdir]
-            )
+            cmd = ['btrfs', 'subvol', 'delete', args.new_workdir]
+            if args.btrfs_use_sudo:
+                cmd = ['sudo'] + cmd
+            subprocess.check_call(cmd)
         else:
             shutil.rmtree(args.new_workdir, ignore_errors=True)
         return 1
