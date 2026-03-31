@@ -88,6 +88,24 @@
       "parentUuid": "6fc37b7f_ee6378af",
       "revId": "e8ad8382c5707238a2ad022a92ff8d113bb3e3fc",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bfea6663_24620061",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 4323820
+      },
+      "writtenOn": "2026-03-31T20:46:55Z",
+      "side": 1,
+      "message": "ooh, apparently the subvolume I was testing against was owned by root \u003e_\u003c... and I went down a rabbit hole trying to get it to work. Thanks for the prompt to figure that out. I do think we should early out and communicate clearly what\u0027s going wrong if we know btrfs is present and the subvolume creation failed, even so. I\u0027ll update this CL to do only that.",
+      "parentUuid": "fd246b1d_fd7fb291",
+      "revId": "e8ad8382c5707238a2ad022a92ff8d113bb3e3fc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
