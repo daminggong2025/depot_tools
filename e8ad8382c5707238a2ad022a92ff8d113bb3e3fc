@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7798dcd4_3206af40",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1128437
+      },
+      "writtenOn": "2026-03-31T01:31:18Z",
+      "side": 1,
+      "message": "Is there an alternative other than running sudo that we should be guiding users towards? Like ensuring that they have the right permissions on the mount?",
+      "revId": "e8ad8382c5707238a2ad022a92ff8d113bb3e3fc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
