@@ -26,6 +26,47 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "8e997267_a2dc910d",
+        "filename": "gclient-new-workdir.py",
+        "patchSetId": 10
+      },
+      "lineNbr": 163,
+      "author": {
+        "id": 1129009
+      },
+      "writtenOn": "2026-04-01T16:28:07Z",
+      "side": 1,
+      "message": "I like the btrfs call and catching more specific exception types so +1",
+      "parentUuid": "32fc3ceb_89d3e982",
+      "range": {
+        "startLine": 153,
+        "startChar": 0,
+        "endLine": 163,
+        "endChar": 16
+      },
+      "revId": "0f1218c18ce8cb5fd4babee93b5699907f79b1c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "242084fb_ec6600fc",
+        "filename": "gclient-new-workdir.py",
+        "patchSetId": 10
+      },
+      "lineNbr": 240,
+      "author": {
+        "id": 1129009
+      },
+      "writtenOn": "2026-04-01T16:28:07Z",
+      "side": 1,
+      "message": "This is a lot of logic for btrfs directly in main. Since errors in  `try_btrfs_subvol_snapshot` now cause the whole script to fail can we move all of this error printing directly into `try_btrfs_subvol_snapshot`? Also, since we don\u0027t proceed when it fails we should call it `btrfs_subvol_snapshot`",
+      "revId": "0f1218c18ce8cb5fd4babee93b5699907f79b1c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "11d99b57_e5508eff",
         "filename": "gclient-new-workdir.py",
         "patchSetId": 10
