@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "f736685d_50047f03",
+        "filename": "gclient-new-workdir.py",
+        "patchSetId": 12
+      },
+      "lineNbr": 267,
+      "author": {
+        "id": 4323820
+      },
+      "writtenOn": "2026-04-01T21:26:00Z",
+      "side": 1,
+      "message": "ah yeah, good point. done!",
+      "parentUuid": "3a2be7cc_379b53ab",
+      "revId": "0ba3d30dd9992649734d159b4043d189f757ff3f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "412304ac_6a121d59",
@@ -31,6 +49,24 @@
       "writtenOn": "2026-04-01T19:43:06Z",
       "side": 1,
       "message": "this can be `else`",
+      "revId": "0ba3d30dd9992649734d159b4043d189f757ff3f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "80280fb8_51fe80b1",
+        "filename": "gclient-new-workdir.py",
+        "patchSetId": 12
+      },
+      "lineNbr": 273,
+      "author": {
+        "id": 4323820
+      },
+      "writtenOn": "2026-04-01T21:26:00Z",
+      "side": 1,
+      "message": "Done, ty!",
+      "parentUuid": "412304ac_6a121d59",
       "revId": "0ba3d30dd9992649734d159b4043d189f757ff3f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }

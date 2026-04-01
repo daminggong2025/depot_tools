@@ -96,6 +96,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "f1d74770_8b521870",
+        "filename": "gclient-new-workdir.py",
+        "patchSetId": 10
+      },
+      "lineNbr": 163,
+      "author": {
+        "id": 4323820
+      },
+      "writtenOn": "2026-04-01T21:26:00Z",
+      "side": 1,
+      "message": "That sounds good. I added that bit.",
+      "parentUuid": "dba07d14_52c2dd1a",
+      "range": {
+        "startLine": 153,
+        "startChar": 0,
+        "endLine": 163,
+        "endChar": 16
+      },
+      "revId": "0f1218c18ce8cb5fd4babee93b5699907f79b1c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "242084fb_ec6600fc",
