@@ -1,0 +1,134 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "32fc3ceb_89d3e982",
+        "filename": "gclient-new-workdir.py",
+        "patchSetId": 10
+      },
+      "lineNbr": 163,
+      "author": {
+        "id": 1128437
+      },
+      "writtenOn": "2026-04-01T02:26:04Z",
+      "side": 1,
+      "message": "This might be a more robust alternative:\n\n```suggestion\n    try:\n        # btrfs subvolume show exits with 0 only if the path is a valid subvolume\n        subprocess.check_call(\n            [\u0027btrfs\u0027, \u0027subvolume\u0027, \u0027show\u0027, path],\n            stdout\u003dsubprocess.DEVNULL,\n            stderr\u003dsubprocess.DEVNULL\n        )\n        return True\n    except (subprocess.CalledProcessError, OSError):\n        return False\n```\n\nIf you still want to check the inode number, you can also do `os.stat(path).st_ino \u003d\u003d 256` instead of running `stat -c %i` in a shell.",
+      "range": {
+        "startLine": 153,
+        "startChar": 0,
+        "endLine": 163,
+        "endChar": 16
+      },
+      "revId": "0f1218c18ce8cb5fd4babee93b5699907f79b1c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "11d99b57_e5508eff",
+        "filename": "gclient-new-workdir.py",
+        "patchSetId": 10
+      },
+      "lineNbr": 263,
+      "author": {
+        "id": 1128437
+      },
+      "writtenOn": "2026-04-01T02:26:04Z",
+      "side": 1,
+      "message": "```suggestion\n                    f\"  [✗] Permission denied: Destination parent directory \u0027{parent_dest}\u0027 is not writable by you.\"\n```",
+      "range": {
+        "startLine": 263,
+        "startChar": 47,
+        "endLine": 263,
+        "endChar": 68
+      },
+      "revId": "0f1218c18ce8cb5fd4babee93b5699907f79b1c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d311e036_560c6bda",
+        "filename": "gclient-new-workdir.py",
+        "patchSetId": 10
+      },
+      "lineNbr": 266,
+      "author": {
+        "id": 1128437
+      },
+      "writtenOn": "2026-04-01T02:26:04Z",
+      "side": 1,
+      "message": "```suggestion\n                    \"      Please ensure you have write permissions to the destination parent directory.\"\n```",
+      "range": {
+        "startLine": 266,
+        "startChar": 75,
+        "endLine": 266,
+        "endChar": 91
+      },
+      "revId": "0f1218c18ce8cb5fd4babee93b5699907f79b1c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5387426b_24a307ee",
+        "filename": "gclient-new-workdir.py",
+        "patchSetId": 10
+      },
+      "lineNbr": 270,
+      "author": {
+        "id": 1128437
+      },
+      "writtenOn": "2026-04-01T02:26:04Z",
+      "side": 1,
+      "message": "Can we factor out these checks into variables since we use them above also?",
+      "range": {
+        "startLine": 269,
+        "startChar": 15,
+        "endLine": 270,
+        "endChar": 41
+      },
+      "fixSuggestions": [
+        {
+          "fixId": "62b6cff7_0ca66e9b",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "gclient-new-workdir.py",
+              "range": {
+                "startLine": 252,
+                "startChar": 0,
+                "endLine": 253,
+                "endChar": 0
+              },
+              "replacement": "            can_read_repo \u003d os.access(args.repository, os.R_OK)\n            if not can_read_repo:\n"
+            },
+            {
+              "path": "gclient-new-workdir.py",
+              "range": {
+                "startLine": 261,
+                "startChar": 0,
+                "endLine": 262,
+                "endChar": 0
+              },
+              "replacement": "            can_write_dest_parent \u003d os.access(parent_dest, os.W_OK)\n            if not can_write_dest_parent:\n"
+            },
+            {
+              "path": "gclient-new-workdir.py",
+              "range": {
+                "startLine": 269,
+                "startChar": 0,
+                "endLine": 271,
+                "endChar": 0
+              },
+              "replacement": "            if can_read_repo and can_write_dest_parent:\n"
+            }
+          ]
+        }
+      ],
+      "revId": "0f1218c18ce8cb5fd4babee93b5699907f79b1c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
