@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "d88cc960_b5ae38c3",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 4376280
+      },
+      "writtenOn": "2026-04-01T17:59:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0d46ffe8_7db4ff9e",
+      "revId": "25eba8cb71bdac91477b8ef86e9601aeaa025725",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "c5105234_bff5c8cb",
@@ -31,6 +49,30 @@
       "writtenOn": "2026-04-01T16:40:04Z",
       "side": 1,
       "message": "I think it\u0027d be better to use `self.is_gerrit \u003d bool(val) and val.lower() !\u003d \u0027false\u0027` instead to support legacy uses of this flag: https://crrev.com/e80778132001cf8563e13363f3ec3ce61cc4ac4d",
+      "range": {
+        "startLine": 1038,
+        "startChar": 13,
+        "endLine": 1038,
+        "endChar": 77
+      },
+      "revId": "25eba8cb71bdac91477b8ef86e9601aeaa025725",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1ac6f298_e617db28",
+        "filename": "git_cl.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 1038,
+      "author": {
+        "id": 4376280
+      },
+      "writtenOn": "2026-04-01T17:59:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c5105234_bff5c8cb",
       "range": {
         "startLine": 1038,
         "startChar": 13,
