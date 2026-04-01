@@ -69,6 +69,7 @@ def parse_options():
         '''sub-directories of the workspace, and so on. A value of -1 means '''
         '''there is no limit. The default is 1 if copy-on-write is used, '''
         '''otherwise the default is -1.''')
+
     args = parser.parse_args()
 
     if '--reflink' in sys.argv or '--no-reflink' in sys.argv:
@@ -228,6 +229,52 @@ def main():
         args.copy_on_write = True
         used_btrfs_subvol_snapshot = True
     else:
+        is_subvolume = False
+        try:
+            res = subprocess.run(f"stat -c %i '{args.repository}'",
+                                 shell=True,
+                                 capture_output=True,
+                                 text=True,
+                                 executable='/bin/bash')
+            if res.returncode == 0 and res.stdout.strip() == "256":
+                is_subvolume = True
+        except Exception:
+            pass
+
+        if is_subvolume:
+            print(
+                f"Error: Failed to create Btrfs snapshot of '{args.repository}'."
+            )
+
+            # Diagnostics
+            if not os.access(args.repository, os.R_OK):
+                print(
+                    f"  [✗] Permission denied: Source repository '{args.repository}' is not readable by you."
+                )
+                print(
+                    "      Please ensure you have read permissions to the source subvolume."
+                )
+
+            parent_dest = os.path.dirname(args.new_workdir)
+            if not os.access(parent_dest, os.W_OK):
+                print(
+                    f"  [✗] Permission denied: Destination directory '{parent_dest}' is not writable by you."
+                )
+                print(
+                    "      Please ensure you have write permissions to the parent directory."
+                )
+
+            if os.access(args.repository, os.R_OK) and os.access(
+                    parent_dest, os.W_OK):
+                print(
+                    "  [?] Permissions appear OK. The failure might be due to other Btrfs restrictions."
+                )
+                print(
+                    "      Consider checking if you have reached disk quota or if the filesystem is read-only."
+                )
+
+            sys.exit(1)
+
         os.makedirs(args.new_workdir)
 
     # If any of the operations below fail, we want to clean up the new workdir.
@@ -317,8 +364,7 @@ def main():
         print(f'Cleaning up {args.new_workdir}')
         if used_btrfs_subvol_snapshot:
             subprocess.check_call(
-                ['btrfs', 'subvol', 'delete', args.new_workdir]
-            )
+                ['btrfs', 'subvol', 'delete', args.new_workdir])
         else:
             shutil.rmtree(args.new_workdir, ignore_errors=True)
         return 1
