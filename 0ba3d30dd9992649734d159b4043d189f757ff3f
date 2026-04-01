@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3a2be7cc_379b53ab",
+        "filename": "gclient-new-workdir.py",
+        "patchSetId": 12
+      },
+      "lineNbr": 267,
+      "author": {
+        "id": 1128941
+      },
+      "writtenOn": "2026-04-01T19:43:06Z",
+      "side": 1,
+      "message": "Instead of having the function call `sys.exit(1)` directly I think this would be cleaner as \n```\nif not btrfs_subvol_snapshot(args.repository, args.new_workdir):\n    sys.exit(1)\n```\n\nIt would also make it clear that the next `if` block can be an `else`.",
+      "revId": "0ba3d30dd9992649734d159b4043d189f757ff3f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "412304ac_6a121d59",
+        "filename": "gclient-new-workdir.py",
+        "patchSetId": 12
+      },
+      "lineNbr": 273,
+      "author": {
+        "id": 1128941
+      },
+      "writtenOn": "2026-04-01T19:43:06Z",
+      "side": 1,
+      "message": "this can be `else`",
+      "revId": "0ba3d30dd9992649734d159b4043d189f757ff3f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
