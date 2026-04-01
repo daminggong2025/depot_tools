@@ -148,6 +148,21 @@ def try_btrfs_subvol_snapshot(src, dest):
     return True
 
 
+def is_btrfs_subvolume_root(path):
+    """Returns True if the path is the root of a Btrfs subvolume."""
+    try:
+        res = subprocess.run(f"stat -c %i '{path}'",
+                             shell=True,
+                             capture_output=True,
+                             text=True,
+                             executable='/bin/bash')
+        if res.returncode == 0 and res.stdout.strip() == "256":
+            return True
+    except Exception:
+        pass
+    return False
+
+
 def real_git_dir(repo_path):
     relative_git_dir = (
         subprocess.check_output(
@@ -222,12 +237,47 @@ def main():
     args.new_workdir = os.path.realpath(args.new_workdir)
 
     used_btrfs_subvol_snapshot = False
-    if try_btrfs_subvol_snapshot(args.repository, args.new_workdir):
-        # If btrfs is being used, reflink support is always present, and there's
-        # no benefit to not using it.
-        args.copy_on_write = True
-        used_btrfs_subvol_snapshot = True
-    else:
+    if is_btrfs_subvolume_root(args.repository):
+        if try_btrfs_subvol_snapshot(args.repository, args.new_workdir):
+            # If btrfs is being used, reflink support is always present, and there's
+            # no benefit to not using it.
+            args.copy_on_write = True
+            used_btrfs_subvol_snapshot = True
+        else:
+            print(
+                f"Error: Failed to create Btrfs snapshot of '{args.repository}'."
+            )
+
+            # Diagnostics
+            if not os.access(args.repository, os.R_OK):
+                print(
+                    f"  [✗] Permission denied: Source repository '{args.repository}' is not readable by you."
+                )
+                print(
+                    "      Please ensure you have read permissions to the source subvolume."
+                )
+
+            parent_dest = os.path.dirname(args.new_workdir)
+            if not os.access(parent_dest, os.W_OK):
+                print(
+                    f"  [✗] Permission denied: Destination directory '{parent_dest}' is not writable by you."
+                )
+                print(
+                    "      Please ensure you have write permissions to the parent directory."
+                )
+
+            if os.access(args.repository, os.R_OK) and os.access(
+                    parent_dest, os.W_OK):
+                print(
+                    "  [?] Permissions appear OK. The failure might be due to other Btrfs restrictions."
+                )
+                print(
+                    "      Consider checking if you have reached disk quota or if the filesystem is read-only."
+                )
+
+            sys.exit(1)
+
+    if not used_btrfs_subvol_snapshot:
         os.makedirs(args.new_workdir)
 
     # If any of the operations below fail, we want to clean up the new workdir.
