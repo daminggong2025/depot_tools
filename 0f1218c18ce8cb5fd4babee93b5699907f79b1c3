@@ -74,6 +74,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "dba07d14_52c2dd1a",
+        "filename": "gclient-new-workdir.py",
+        "patchSetId": 10
+      },
+      "lineNbr": 163,
+      "author": {
+        "id": 1128437
+      },
+      "writtenOn": "2026-04-01T19:26:35Z",
+      "side": 1,
+      "message": "Yeah, you\u0027re right that `btrfs subvolume show` doesn\u0027t seem to work without root/sudo. Neither does `btrfs subvolume list` so those are out of the picture.\n\nI guess you do have to check the inode number. One thing you could do is to first run `findmnt -no FSTYPE --target \u003cpath\u003e` and then check the inode number (via `os.stat` perhaps?) e.g.\n\n```\nsunnyps@cloudtop:~/btrfs [ findmn...romium ]\n$ findmnt -no FSTYPE --target chromium\nbtrfs\nsunnyps@cloudtop:~/btrfs [ findmn...romium ]\n$ stat -c %i chromium\n256\n```",
+      "parentUuid": "353128de_3e64c819",
+      "range": {
+        "startLine": 153,
+        "startChar": 0,
+        "endLine": 163,
+        "endChar": 16
+      },
+      "revId": "0f1218c18ce8cb5fd4babee93b5699907f79b1c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "242084fb_ec6600fc",
         "filename": "gclient-new-workdir.py",
         "patchSetId": 10
