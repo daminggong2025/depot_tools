@@ -50,6 +50,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "353128de_3e64c819",
+        "filename": "gclient-new-workdir.py",
+        "patchSetId": 10
+      },
+      "lineNbr": 163,
+      "author": {
+        "id": 4323820
+      },
+      "writtenOn": "2026-04-01T18:57:00Z",
+      "side": 1,
+      "message": "I also like the btrfs call, but I can\u0027t seem to run it without sudo (even though the subvolume is owned by my user). Are you able to? If so, I must have something different in my setup that prevents me from doing so, if so. I\u0027ve iterated so much on my setup, it might be time to set it up fresh to be sure I\u0027m testing against a known good.\n\n```\nkiehl@kiehlcloud1:/usr/local/google/btrfs_mount/source$ btrfs subvolume show chromium_base/\nERROR: Could not search B-tree: Operation not permitted\nkiehl@kiehlcloud1:/usr/local/google/btrfs_mount/source$ sudo btrfs subvolume show chromium_base/\nsource/chromium_base\n\tName: \t\t\tchromium_base\n\tUUID: \t\t\t41c5edc2-39de-de41-9327-fa0748254d31\n\tParent UUID: \t\t-\n```",
+      "parentUuid": "8e997267_a2dc910d",
+      "range": {
+        "startLine": 153,
+        "startChar": 0,
+        "endLine": 163,
+        "endChar": 16
+      },
+      "revId": "0f1218c18ce8cb5fd4babee93b5699907f79b1c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "242084fb_ec6600fc",
         "filename": "gclient-new-workdir.py",
         "patchSetId": 10
@@ -61,6 +85,24 @@
       "writtenOn": "2026-04-01T16:28:07Z",
       "side": 1,
       "message": "This is a lot of logic for btrfs directly in main. Since errors in  `try_btrfs_subvol_snapshot` now cause the whole script to fail can we move all of this error printing directly into `try_btrfs_subvol_snapshot`? Also, since we don\u0027t proceed when it fails we should call it `btrfs_subvol_snapshot`",
+      "revId": "0f1218c18ce8cb5fd4babee93b5699907f79b1c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ddd2e0e4_62070139",
+        "filename": "gclient-new-workdir.py",
+        "patchSetId": 10
+      },
+      "lineNbr": 240,
+      "author": {
+        "id": 4323820
+      },
+      "writtenOn": "2026-04-01T18:57:00Z",
+      "side": 1,
+      "message": "Good idea. Done!",
+      "parentUuid": "242084fb_ec6600fc",
       "revId": "0f1218c18ce8cb5fd4babee93b5699907f79b1c3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -88,6 +130,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "1d11e400_2759f7e3",
+        "filename": "gclient-new-workdir.py",
+        "patchSetId": 10
+      },
+      "lineNbr": 263,
+      "author": {
+        "id": 4323820
+      },
+      "writtenOn": "2026-04-01T18:57:00Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "11d99b57_e5508eff",
+      "range": {
+        "startLine": 263,
+        "startChar": 47,
+        "endLine": 263,
+        "endChar": 68
+      },
+      "revId": "0f1218c18ce8cb5fd4babee93b5699907f79b1c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d311e036_560c6bda",
@@ -101,6 +167,30 @@
       "writtenOn": "2026-04-01T02:26:04Z",
       "side": 1,
       "message": "```suggestion\n                    \"      Please ensure you have write permissions to the destination parent directory.\"\n```",
+      "range": {
+        "startLine": 266,
+        "startChar": 75,
+        "endLine": 266,
+        "endChar": 91
+      },
+      "revId": "0f1218c18ce8cb5fd4babee93b5699907f79b1c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6ddd96a9_c61c73e1",
+        "filename": "gclient-new-workdir.py",
+        "patchSetId": 10
+      },
+      "lineNbr": 266,
+      "author": {
+        "id": 4323820
+      },
+      "writtenOn": "2026-04-01T18:57:00Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d311e036_560c6bda",
       "range": {
         "startLine": 266,
         "startChar": 75,
@@ -168,6 +258,30 @@
           ]
         }
       ],
+      "revId": "0f1218c18ce8cb5fd4babee93b5699907f79b1c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7afdae7e_8f59d539",
+        "filename": "gclient-new-workdir.py",
+        "patchSetId": 10
+      },
+      "lineNbr": 270,
+      "author": {
+        "id": 4323820
+      },
+      "writtenOn": "2026-04-01T18:57:00Z",
+      "side": 1,
+      "message": "Sure, ty! This moved to the helper function.",
+      "parentUuid": "5387426b_24a307ee",
+      "range": {
+        "startLine": 269,
+        "startChar": 15,
+        "endLine": 270,
+        "endChar": 41
+      },
       "revId": "0f1218c18ce8cb5fd4babee93b5699907f79b1c3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
