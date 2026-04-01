@@ -138,14 +138,55 @@ def support_copy_on_write(src, dest):
     return True
 
 
-def try_btrfs_subvol_snapshot(src, dest):
+def btrfs_subvol_snapshot(src, dest):
+    """Creates a Btrfs snapshot of src at dest.
+    Fails hard with detailed diagnostics if it fails."""
     try:
         subprocess.check_call(['btrfs', 'subvol', 'snapshot', src, dest],
                               stderr=subprocess.STDOUT)
     except (subprocess.CalledProcessError, OSError):
-        return False
+        print(f"Error: Failed to create Btrfs snapshot of '{src}'.")
+
+        # Diagnostics
+        readable = os.access(src, os.R_OK)
+        parent_dest = os.path.dirname(dest)
+        writable = os.access(parent_dest, os.W_OK)
+
+        if not readable:
+            print(
+                f"  [✗] Permission denied: Source repository '{src}' is not readable by you."
+            )
+            print(
+                "      Please ensure you have read permissions to the source subvolume."
+            )
+
+        if not writable:
+            print(
+                f"  [✗] Permission denied: Destination parent directory '{parent_dest}' is not writable by you."
+            )
+            print(
+                "      Please ensure you have write permissions to the destination parent directory."
+            )
+
+        if readable and writable:
+            print(
+                "  [?] Permissions appear OK. The failure might be due to other Btrfs restrictions."
+            )
+            print(
+                "      Consider checking if you have reached disk quota or if the filesystem is read-only."
+            )
+
+        sys.exit(1)
     assert os.path.exists(dest)
     return True
+
+
+def is_btrfs_subvolume(path):
+    """Returns True if the path is a valid Btrfs subvolume (root)."""
+    try:
+        return os.stat(path).st_ino == 256
+    except OSError:
+        return False
 
 
 def real_git_dir(repo_path):
@@ -222,12 +263,14 @@ def main():
     args.new_workdir = os.path.realpath(args.new_workdir)
 
     used_btrfs_subvol_snapshot = False
-    if try_btrfs_subvol_snapshot(args.repository, args.new_workdir):
+    if is_btrfs_subvolume(args.repository):
+        btrfs_subvol_snapshot(args.repository, args.new_workdir)
         # If btrfs is being used, reflink support is always present, and there's
         # no benefit to not using it.
         args.copy_on_write = True
         used_btrfs_subvol_snapshot = True
-    else:
+
+    if not used_btrfs_subvol_snapshot:
         os.makedirs(args.new_workdir)
 
     # If any of the operations below fail, we want to clean up the new workdir.
