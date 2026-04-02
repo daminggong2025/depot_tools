@@ -16,6 +16,23 @@
       "message": "Tests added. Unfortunately on my machine some unrelated tests are failing (even on main branch). Is there a CI similar to the one from the main chromium repo?",
       "revId": "5332f27b3800c1e2b82b5c23903b599c3387f4d5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "406cee6e_1005753e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2026-04-02T15:23:47Z",
+      "side": 1,
+      "message": "I don\u0027t have much background on this code, but I\u0027m confused. It seems like this is meant to be a string value, not a boolean value (that is, \"this is the host\" not \"is there a host\"). Given that, it doesn\u0027t make sense to me to give a special meaning to the string \"false\". Is this a typical way these flags are \"unset\"?",
+      "revId": "5332f27b3800c1e2b82b5c23903b599c3387f4d5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
