@@ -33,6 +33,24 @@
       "message": "I don\u0027t have much background on this code, but I\u0027m confused. It seems like this is meant to be a string value, not a boolean value (that is, \"this is the host\" not \"is there a host\"). Given that, it doesn\u0027t make sense to me to give a special meaning to the string \"false\". Is this a typical way these flags are \"unset\"?",
       "revId": "5332f27b3800c1e2b82b5c23903b599c3387f4d5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bb1d40fb_60e72bca",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 4376280
+      },
+      "writtenOn": "2026-04-03T07:53:41Z",
+      "side": 1,
+      "message": "The reason for this CL is that I wanted to disable Gerrit-related logic in git_cl. To do so, I had to debug the script to find out how it works. A simple flag switch made no difference (if I had enabled the setting before, removing it wouldn\u0027t work either). \nIt seems that the configuration was used differently in the past. Currently, Chromium (and every subcomponent) has this option set to \"True\". `git_cl.py` automatically sets git configuration based on the content of `codereview.settings`. To disable it, it needs to be removed from two places: the git config and the `codereview.settings` file. Treating \u0027false\u0027 as a boolean value would make it easier to flip the setting.\nAn alternative option is to unset the git config if the configuration is not specified in the codereview.settings file.\n\nUnfortunately, I don\u0027t have much of an understanding of how `git_cl` is used in projects outside of Chromium. I would therefore appreciate if you could propose some extra reviews who may know how this settings is used outside chromium.",
+      "parentUuid": "406cee6e_1005753e",
+      "revId": "5332f27b3800c1e2b82b5c23903b599c3387f4d5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
