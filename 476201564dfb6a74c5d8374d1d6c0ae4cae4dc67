@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e6edc89c_36f13cf6",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 5
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2026-04-06T08:34:02Z",
+      "side": 1,
+      "message": "Hi @nicolede@google.com, @ovsienko@google.com, @philwo@google.com\n\nWhat do you think about putting different labels for developers/AI-agent/builders?\nWe don\u0027t want to change the labeling that often. Please give your feedback before submitting this CL.",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 15,
+        "endChar": 27
+      },
+      "revId": "476201564dfb6a74c5d8374d1d6c0ae4cae4dc67",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
