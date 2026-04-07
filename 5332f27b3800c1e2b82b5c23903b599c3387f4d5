@@ -51,6 +51,24 @@
       "parentUuid": "406cee6e_1005753e",
       "revId": "5332f27b3800c1e2b82b5c23903b599c3387f4d5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "953d4364_d9815829",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2026-04-07T15:50:09Z",
+      "side": 1,
+      "message": "I guess my question is mostly to @gavinmak@google.com -- I\u0027m not sure I understand the legacy use of the flag you mention. It looks like it was first added in the CL you linked, as a string value (the gerrit host). I don\u0027t see where it was previously a boolean?",
+      "parentUuid": "bb1d40fb_60e72bca",
+      "revId": "5332f27b3800c1e2b82b5c23903b599c3387f4d5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
