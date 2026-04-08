@@ -16,6 +16,46 @@
       "message": "+bsheedy, who will help with btrfs related changes",
       "revId": "98ab39a2e236bed657c946011fb6ad88bac48910",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f57f87c2_f136bbf9",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1128437
+      },
+      "writtenOn": "2026-04-08T20:09:10Z",
+      "side": 1,
+      "message": "lgtm % nit",
+      "revId": "98ab39a2e236bed657c946011fb6ad88bac48910",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "617d376f_0f9aec39",
+        "filename": "gclient-new-workdir.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 354,
+      "author": {
+        "id": 1128437
+      },
+      "writtenOn": "2026-04-08T20:09:10Z",
+      "side": 1,
+      "message": "```suggestion\n                workdir_git \u003d os.path.join(workdir, \u0027.git\u0027)\n                if os.path.exists(workdir_git):\n                    if os.path.isdir(workdir_git):\n                        shutil.rmtree(workdir_git)\n                    else:\n                        os.remove(workdir_git)\n```",
+      "range": {
+        "startLine": 349,
+        "startChar": 0,
+        "endLine": 354,
+        "endChar": 43
+      },
+      "revId": "98ab39a2e236bed657c946011fb6ad88bac48910",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
