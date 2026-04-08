@@ -95,7 +95,11 @@ def split_footers(message):
 
 def get_footer_change_id(message):
     """Returns a list of Gerrit's ChangeId from given commit message."""
-    return parse_footers(message).get(normalize_name('Change-Id'), [])
+    footers = parse_footers(message)
+    return footers.get(normalize_name('Change-Id'), []) + [
+        footer.rsplit('/', 1)[-1]
+        for footer in footers.get(normalize_name('Link'), [])
+    ]
 
 
 def add_footer_change_id(message, change_id):

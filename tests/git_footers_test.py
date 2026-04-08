@@ -133,6 +133,9 @@ My commit message is my best friend. It is my life.
         self.assertEqual(['Ixxx'],
                          git_footers.get_footer_change_id(
                              'desc\nBUG=not-a-valid-footer\n\nChange-Id: Ixxx'))
+        self.assertEqual(['Ideadbeaf', 'I123456'],
+                         git_footers.get_footer_change_id(
+                             'desc\n\nChange-Id: Ideadbeaf\nLink: https://crrev.com/id/I123456'))
 
     def testAddFooterChangeId(self):
         with self.assertRaises(AssertionError):
