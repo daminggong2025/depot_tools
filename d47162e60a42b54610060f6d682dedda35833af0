@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "94a5cb26_9398302a",
+        "filename": "siso.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1577257
+      },
+      "writtenOn": "2026-04-08T08:05:17Z",
+      "side": 1,
+      "message": "Doesn\u0027t that have to be \"-help\"? When I just tried it manually, I got this output:\n\n```\n$ cd ~/chromium/src\n$ siso ninja help\n0.00s Error: build.ninja not found in /home/philwo/chromium/src. need `-C \u003cdir\u003e`?\n```\n\nAlso, while I don\u0027t know a better method right now, it seems brittle to parse the human-readable help message.",
+      "range": {
+        "startLine": 73,
+        "startChar": 51,
+        "endLine": 73,
+        "endChar": 55
+      },
+      "revId": "d47162e60a42b54610060f6d682dedda35833af0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
