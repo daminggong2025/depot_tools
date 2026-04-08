@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d8159b14_d7f8569e",
+        "filename": "gclient_utils.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 1043,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-04-08T22:03:34Z",
+      "side": 1,
+      "message": "IIUC if a process outputs something then stalls, this won\u0027t detect it. should we change it to check the time elapsed since the last output? ie something like `and now - self.last_subproc_output \u003e datetime.timedelta(seconds\u003d300)`",
+      "range": {
+        "startLine": 1043,
+        "startChar": 32,
+        "endLine": 1043,
+        "endChar": 74
+      },
+      "revId": "0de8ccd2861b183bc5f97aa303496cb664731ae6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "033771d3_ddb46b1f",
+        "filename": "gclient_utils.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 1044,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-04-08T22:03:34Z",
+      "side": 1,
+      "message": "will elapsed always be defined here? we might want to move its definition outside the conditional in L1031",
+      "range": {
+        "startLine": 1044,
+        "startChar": 59,
+        "endLine": 1044,
+        "endChar": 66
+      },
+      "revId": "0de8ccd2861b183bc5f97aa303496cb664731ae6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
