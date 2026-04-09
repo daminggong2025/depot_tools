@@ -16,6 +16,23 @@
       "message": "Struan\u0027s the expert here, so I\u0027ll defer to him. Will stamp if it lg to him",
       "revId": "fc50e8436211f7ff12e50b269d70475958bd27b6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "78c1fa08_6f9138fc",
+        "filename": "infra_lib/telemetry/config.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 154,
+      "author": {
+        "id": 1513262
+      },
+      "writtenOn": "2026-04-09T18:31:57Z",
+      "side": 1,
+      "message": "Could be\n```\nshould_flush \u003d not self._path.exists\nif should_flush:\n  ...\n```",
+      "revId": "fc50e8436211f7ff12e50b269d70475958bd27b6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
