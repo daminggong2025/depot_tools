@@ -33,6 +33,29 @@
       "message": "PTAL",
       "revId": "3b697976bc784a40108648ae7d51087e29859194",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6db9b45a_2acc7566",
+        "filename": "siso.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 4733502
+      },
+      "writtenOn": "2026-04-09T08:29:07Z",
+      "side": 1,
+      "message": "Mhm, I still think this is fragile, but as said, I currently don\u0027t have a better idea, and I guess in the worst case we\u0027ll just update depot_tools again if it breaks.\n\nThat said, this is a plain substring search over the entire siso help ninja output. It would false-positive on a hypothetical future flag like --namespace-separator or even descriptive help text containing \"-namespace\".\n\nA more robust check could look for the flag as a distinct token, maybe this works?\n\n```\nreturn any(\n    part in [\"-namespace\"]\n    for line in res.stdout.splitlines()\n    for part in line.split()\n)\n```",
+      "range": {
+        "startLine": 77,
+        "startChar": 8,
+        "endLine": 77,
+        "endChar": 41
+      },
+      "revId": "3b697976bc784a40108648ae7d51087e29859194",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
