@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "941c578b_b95cfb38",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1289182
+      },
+      "writtenOn": "2026-04-09T18:36:15Z",
+      "side": 1,
+      "message": "Sorry, I lost the +1 attempting to fix Review-Enforcement. Can you re-LGTM?",
+      "revId": "abac3003b530b92195ba0859cdc1f12cfba4d46a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
