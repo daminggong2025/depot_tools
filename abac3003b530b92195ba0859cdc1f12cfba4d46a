@@ -34,6 +34,23 @@
       "parentUuid": "941c578b_b95cfb38",
       "revId": "abac3003b530b92195ba0859cdc1f12cfba4d46a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "df2931d1_02f0cc43",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1289182
+      },
+      "writtenOn": "2026-04-09T18:44:39Z",
+      "side": 1,
+      "message": "Ah, I\u0027m just not a committer in this repo. +bryner@ for the second committer approval",
+      "revId": "abac3003b530b92195ba0859cdc1f12cfba4d46a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
