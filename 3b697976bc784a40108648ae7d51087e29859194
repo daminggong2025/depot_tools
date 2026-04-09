@@ -56,6 +56,30 @@
       },
       "revId": "3b697976bc784a40108648ae7d51087e29859194",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f4a1ac11_1971bcda",
+        "filename": "siso.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2026-04-09T09:06:27Z",
+      "side": 1,
+      "message": "Yeah, it looks better. Thanks.",
+      "parentUuid": "6db9b45a_2acc7566",
+      "range": {
+        "startLine": 77,
+        "startChar": 8,
+        "endLine": 77,
+        "endChar": 41
+      },
+      "revId": "3b697976bc784a40108648ae7d51087e29859194",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

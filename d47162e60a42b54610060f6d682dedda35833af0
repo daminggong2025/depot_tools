@@ -70,6 +70,30 @@
       },
       "revId": "d47162e60a42b54610060f6d682dedda35833af0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "bde41b76_0c5762fd",
+        "filename": "siso.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2026-04-09T09:06:27Z",
+      "side": 1,
+      "message": "Same here, too 😊\n\nBut, `-help` is treaded differently somehow...?\n\n```\n\u003e siso ninja -foo 2\u003e\u00261| head -n 2\nflag provided but not defined: -foo\nbuild the requested targets as ninja.\n```\n\n```\n\u003e siso ninja -help 2\u003e\u00261| head -n 2\nbuild the requested targets as ninja.\n```",
+      "parentUuid": "c61ac647_dfda0d44",
+      "range": {
+        "startLine": 73,
+        "startChar": 51,
+        "endLine": 73,
+        "endChar": 55
+      },
+      "revId": "d47162e60a42b54610060f6d682dedda35833af0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
