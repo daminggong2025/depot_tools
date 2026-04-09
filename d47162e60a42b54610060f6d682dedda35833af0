@@ -46,6 +46,30 @@
       },
       "revId": "d47162e60a42b54610060f6d682dedda35833af0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c61ac647_dfda0d44",
+        "filename": "siso.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 4733502
+      },
+      "writtenOn": "2026-04-09T08:15:49Z",
+      "side": 1,
+      "message": "Oh no, I always use `siso ninja -help`! It seems that `-help` only works accidentally, because it prints the help on an unknown flag... I never knew! 🤣",
+      "parentUuid": "e975c1e7_b4a1f8c8",
+      "range": {
+        "startLine": 73,
+        "startChar": 51,
+        "endLine": 73,
+        "endChar": 55
+      },
+      "revId": "d47162e60a42b54610060f6d682dedda35833af0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
