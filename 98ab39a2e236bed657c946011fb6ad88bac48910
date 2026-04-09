@@ -52,6 +52,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "95be3e62_a9d0fd16",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 4323820
+      },
+      "writtenOn": "2026-04-09T01:10:15Z",
+      "side": 1,
+      "message": "ah, curious... I\u0027ll make that args check safer.",
+      "parentUuid": "15d5c2f3_d88551f7",
+      "revId": "98ab39a2e236bed657c946011fb6ad88bac48910",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "617d376f_0f9aec39",
@@ -65,6 +83,30 @@
       "writtenOn": "2026-04-08T20:09:10Z",
       "side": 1,
       "message": "```suggestion\n                workdir_git \u003d os.path.join(workdir, \u0027.git\u0027)\n                if os.path.exists(workdir_git):\n                    if os.path.isdir(workdir_git):\n                        shutil.rmtree(workdir_git)\n                    else:\n                        os.remove(workdir_git)\n```",
+      "range": {
+        "startLine": 349,
+        "startChar": 0,
+        "endLine": 354,
+        "endChar": 43
+      },
+      "revId": "98ab39a2e236bed657c946011fb6ad88bac48910",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "351257b3_1bfe6782",
+        "filename": "gclient-new-workdir.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 354,
+      "author": {
+        "id": 4323820
+      },
+      "writtenOn": "2026-04-09T01:10:15Z",
+      "side": 1,
+      "message": "sure, ty!",
+      "parentUuid": "617d376f_0f9aec39",
       "range": {
         "startLine": 349,
         "startChar": 0,
