@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e7cac641_40e4d746",
+        "filename": "git_footers.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-04-09T22:21:40Z",
+      "side": 1,
+      "message": "This needs some verification to check whether it follows the gerrit change ID format, since `Link: ` isn\u0027t restricted to change ids, like https://crrev.com/c/6764508. Also would be good to be less greedy with the match by checking `/id/` too",
+      "range": {
+        "startLine": 100,
+        "startChar": 8,
+        "endLine": 100,
+        "endChar": 33
+      },
+      "revId": "49a3856d7407616a295f5d3478705bc08e7a054e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
