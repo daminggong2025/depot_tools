@@ -51,6 +51,23 @@
       "message": "Ah, I\u0027m just not a committer in this repo. +bryner@ for the second committer approval",
       "revId": "abac3003b530b92195ba0859cdc1f12cfba4d46a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4c4e2488_efccdea4",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1289182
+      },
+      "writtenOn": "2026-04-09T18:45:14Z",
+      "side": 1,
+      "message": "Thanks!",
+      "revId": "abac3003b530b92195ba0859cdc1f12cfba4d46a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
