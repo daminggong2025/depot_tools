@@ -33,6 +33,24 @@
       "message": "Could be\n```\nshould_flush \u003d not self._path.exists\nif should_flush:\n  ...\n```",
       "revId": "fc50e8436211f7ff12e50b269d70475958bd27b6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bfe5c7c8_2557d014",
+        "filename": "infra_lib/telemetry/config.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 154,
+      "author": {
+        "id": 4376396
+      },
+      "writtenOn": "2026-04-09T22:45:24Z",
+      "side": 1,
+      "message": "That would look like\n\n```\nshould_flush \u003d not self._path.exists\nif not should_flush:\n  with self._path.open(\"r\", encoding\u003d\"utf-8\") as configfile:\n                self._config.read_file(configfile)\n```\n\nThat reads a bit more confusing, in my opinion.\n\nWe could do instead\n\n```\npath_exists \u003d self._path.exists()\nif path_exists:\n  with self._path.open(\"r\", encoding\u003d\"utf-8\") as configfile:\n                self._config.read_file(configfile)\n\nif not path_exists or self._trace_config.id_regenerated:\n            self.flush()\n```",
+      "parentUuid": "78c1fa08_6f9138fc",
+      "revId": "fc50e8436211f7ff12e50b269d70475958bd27b6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
