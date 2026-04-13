@@ -87,6 +87,24 @@
       "parentUuid": "953d4364_d9815829",
       "revId": "5332f27b3800c1e2b82b5c23903b599c3387f4d5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6371fad2_ff0c038a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2026-04-13T15:57:07Z",
+      "side": 1,
+      "message": "Ok given the history, it seems cleaner to me to unset the flag completely if you want to disable gerrit. However, having a special \"false\" value (especially the literal string \"false\") does seem excessively unlikely to break any current users, so Gavin I will leave it up to you as the owner of this code.",
+      "parentUuid": "eefa783a_a9ec0842",
+      "revId": "5332f27b3800c1e2b82b5c23903b599c3387f4d5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
