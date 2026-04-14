@@ -2073,7 +2073,8 @@ def CheckForCommitObjects(input_api, output_api):
 
     # If the number of affected files is small, we can avoid scanning the entire
     # tree.
-    affected_files = list(input_api.AffectedFiles())
+    affected_files = list(input_api.AffectedFiles()) + list(
+        input_api.change.AffectedSubmodules())
 
     # We must scan the full tree if DEPS is modified to ensure that any change
     # in DEPS is reflected in the gitlinks.
