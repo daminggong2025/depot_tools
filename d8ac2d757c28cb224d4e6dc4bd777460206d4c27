@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "412e1c7e_67c38413",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1163549
+      },
+      "writtenOn": "2026-04-14T21:13:08Z",
+      "side": 1,
+      "message": "+jwata to review since you reviewed a few of James\u0027 CLs that added these metrics in the first place",
+      "revId": "d8ac2d757c28cb224d4e6dc4bd777460206d4c27",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
