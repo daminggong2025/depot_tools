@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "db3cea7d_2a336d10",
+        "filename": "gclient_utils.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 1043,
+      "author": {
+        "id": 1103654
+      },
+      "writtenOn": "2026-04-15T15:26:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d8159b14_d7f8569e",
+      "range": {
+        "startLine": 1043,
+        "startChar": 32,
+        "endLine": 1043,
+        "endChar": 74
+      },
+      "revId": "0de8ccd2861b183bc5f97aa303496cb664731ae6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "033771d3_ddb46b1f",
@@ -37,6 +61,30 @@
       "writtenOn": "2026-04-08T22:03:34Z",
       "side": 1,
       "message": "will elapsed always be defined here? we might want to move its definition outside the conditional in L1031",
+      "range": {
+        "startLine": 1044,
+        "startChar": 59,
+        "endLine": 1044,
+        "endChar": 66
+      },
+      "revId": "0de8ccd2861b183bc5f97aa303496cb664731ae6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "185fe03c_117ead03",
+        "filename": "gclient_utils.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 1044,
+      "author": {
+        "id": 1103654
+      },
+      "writtenOn": "2026-04-15T15:26:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "033771d3_ddb46b1f",
       "range": {
         "startLine": 1044,
         "startChar": 59,
