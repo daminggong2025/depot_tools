@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "693717ca_03158133",
+        "filename": "gclient_utils.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 943,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-04-15T22:46:10Z",
+      "side": 1,
+      "message": "I think there could be a minor race condition, when a task is started in _run_one_task, it\u0027s appended to self.running before the thread runs/sets self.item.start. can we guard against this with something like: `if self.item.start else \"N/A\"`",
+      "range": {
+        "startLine": 943,
+        "startChar": 19,
+        "endLine": 943,
+        "endChar": 65
+      },
+      "revId": "6c23877b56bc4c657321a04f5c192b617951c6ad",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6bd47883_8e986383",
+        "filename": "gclient_utils.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 954,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-04-15T22:46:10Z",
+      "side": 1,
+      "message": "this is fine in chromium/src but won\u0027t work for other projects that use gclient. maybe it\u0027s better to just remove this?",
+      "range": {
+        "startLine": 954,
+        "startChar": 38,
+        "endLine": 954,
+        "endChar": 58
+      },
+      "revId": "6c23877b56bc4c657321a04f5c192b617951c6ad",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
