@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1bf09147_dc78611b",
+        "filename": "gclient_utils.py",
+        "patchSetId": 11
+      },
+      "lineNbr": 955,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-04-16T17:04:32Z",
+      "side": 1,
+      "message": "replace % with f-strings",
+      "range": {
+        "startLine": 936,
+        "startChar": 30,
+        "endLine": 955,
+        "endChar": 20
+      },
+      "revId": "1b386b8a17463010f5988ff76f99c9f1e0371259",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
