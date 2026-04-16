@@ -22,6 +22,30 @@
       },
       "revId": "2dff6dec828f97fe25323c48a016c6d321e78da9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "14166570_705e05d7",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 7
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 4323820
+      },
+      "writtenOn": "2026-04-16T16:21:25Z",
+      "side": 1,
+      "message": "If you use btrfs copies, which gclient-new-workdir.py supports, you don\u0027t need to copy the objects as the btrfs snapshot copies the objects with the out/Default directory when you create it. Btrfs is a copy on write filesystem, so such copies are essentially free. The problem is that the paths for the new snapshot don\u0027t match, so siso thinks the copied objects map to other source files and so it flags everything as new and requires a full re-download.",
+      "parentUuid": "d5e78190_aac4d7b7",
+      "range": {
+        "startLine": 17,
+        "startChar": 0,
+        "endLine": 17,
+        "endChar": 115
+      },
+      "revId": "2dff6dec828f97fe25323c48a016c6d321e78da9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
