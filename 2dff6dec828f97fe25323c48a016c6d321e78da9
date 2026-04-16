@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d5e78190_aac4d7b7",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 7
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2026-04-16T06:48:41Z",
+      "side": 1,
+      "message": "I need to try this CL locally. But, in a different workspace, you would still need to redownload object files from RBE to \"out/{subdir}\".\n\nIf this is about sharing RBE caches, it\u0027s true that normalizing workspace path may help. But majority of remote compiles don\u0027t include absolute paths in the cache key. So the compiles at /path/to/chromium2 can get cache hits from builds at /path/to/chromium1.",
+      "range": {
+        "startLine": 17,
+        "startChar": 0,
+        "endLine": 17,
+        "endChar": 115
+      },
+      "revId": "2dff6dec828f97fe25323c48a016c6d321e78da9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
