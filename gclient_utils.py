@@ -874,275 +874,326 @@ class WorkItem(object):
 
 
 class ExecutionQueue(object):
-    """Runs a set of WorkItem that have interdependencies and were WorkItem are
-    added as they are processed.
+  """Runs a set of WorkItem that have interdependencies and were WorkItem are
 
-    This class manages that all the required dependencies are run
-    before running each one.
+  added as they are processed.
 
-    Methods of this class are thread safe.
+  This class manages that all the required dependencies are run
+  before running each one.
+
+  Methods of this class are thread safe.
+  """
+
+  def __init__(self, jobs, progress, ignore_requirements, verbose=False):
+    """jobs specifies the number of concurrent tasks to allow.
+
+    progress is a Progress instance.
     """
-    def __init__(self, jobs, progress, ignore_requirements, verbose=False):
-        """jobs specifies the number of concurrent tasks to allow. progress is a
-        Progress instance."""
-        # Set when a thread is done or a new item is enqueued.
-        self.ready_cond = threading.Condition()
-        # Maximum number of concurrent tasks.
-        self.jobs = jobs
-        # List of WorkItem, for gclient, these are Dependency instances.
-        self.queued = []
-        # List of strings representing each Dependency.name that was run.
-        self.ran = []
-        # List of items currently running.
-        self.running = []
-        # Exceptions thrown if any.
-        self.exceptions = queue.Queue()
-        # Progress status
-        self.progress = progress
-        if self.progress:
-            self.progress.update(0)
+    # Set when a thread is done or a new item is enqueued.
+    self.ready_cond = threading.Condition()
+    # Maximum number of concurrent tasks.
+    self.jobs = jobs
+    # List of WorkItem, for gclient, these are Dependency instances.
+    self.queued = []
+    # List of strings representing each Dependency.name that was run.
+    self.ran = []
+    # List of items currently running.
+    self.running = []
+    # Exceptions thrown if any.
+    self.exceptions = queue.Queue()
+    # Progress status
+    self.progress = progress
+    if self.progress:
+      self.progress.update(0)
 
-        self.ignore_requirements = ignore_requirements
-        self.verbose = verbose
-        self.last_join = None
-        self.last_subproc_output = None
+    self.ignore_requirements = ignore_requirements
+    self.verbose = verbose
+    self.last_join = None
+    self.last_subproc_output = None
 
-    def enqueue(self, d):
-        """Enqueue one Dependency to be executed later once its requirements are
-        satisfied.
-        """
-        assert isinstance(d, WorkItem)
-        self.ready_cond.acquire()
-        try:
-            self.queued.append(d)
-            total = len(self.queued) + len(self.ran) + len(self.running)
-            if self.jobs == 1:
-                total += 1
-            logging.debug('enqueued(%s)' % d.name)
-            if self.progress:
-                self.progress._total = total
-                self.progress.update(0)
-            self.ready_cond.notifyAll()
-        finally:
-            self.ready_cond.release()
+  def enqueue(self, d):
+    """Enqueue one Dependency to be executed later once its requirements are
 
-    def out_cb(self, _):
-        self.last_subproc_output = datetime.datetime.now()
-        return True
+    satisfied.
+    """
+    assert isinstance(d, WorkItem)
+    self.ready_cond.acquire()
+    try:
+      self.queued.append(d)
+      total = len(self.queued) + len(self.ran) + len(self.running)
+      if self.jobs == 1:
+        total += 1
+      logging.debug('enqueued(%s)' % d.name)
+      if self.progress:
+        self.progress._total = total
+        self.progress.update(0)
+      self.ready_cond.notifyAll()
+    finally:
+      self.ready_cond.release()
 
-    @staticmethod
-    def format_task_output(task, comment=''):
-        if comment:
-            comment = ' (%s)' % comment
-        if task.start and task.finish:
-            elapsed = ' (Elapsed: %s)' % (str(task.finish -
-                                              task.start).partition('.')[0])
-        else:
-            elapsed = ''
-        return """
+  def out_cb(self, _):
+    self.last_subproc_output = datetime.datetime.now()
+    return True
+
+  def _print_stall_diagnostics(self, now, elapsed):
+    if self.progress:
+      print('')
+      sys.stdout.flush()
+
+    def _print(msg):
+      print(f'[{elapsed}] {msg}')
+
+    _print('STALL DETECTED: gclient has been silent for 5 minutes.')
+    _print('Currently active tasks:')
+    for task in self.running:
+      if task.item.start:
+        duration = str(now - task.item.start).partition('.')[0]
+      else:
+        duration = 'N/A'
+      _print(f'   {task.item.name} (Running for {duration})')
+    _print('Suggestions:')
+    _print('1. Authentication: Check for background prompts.')
+    _print('2. Network: Check your internet connection and proxies.')
+    _print('3. Locks: Check for other git processes holding a lock.')
+    _print('4. Verbose: Run gclient with --verbose to see more output.')
+    sys.stdout.flush()
+
+  @staticmethod
+  def format_task_output(task, comment=''):
+    if comment:
+      comment = ' (%s)' % comment
+    if task.start and task.finish:
+      elapsed = ' (Elapsed: %s)' % (
+          str(task.finish - task.start).partition('.')[0]
+      )
+    else:
+      elapsed = ''
+    return """
 %s%s%s
 ----------------------------------------
 %s
-----------------------------------------""" % (task.name, comment, elapsed,
-                                               task.outbuf.getvalue().strip())
+----------------------------------------""" % (
+        task.name,
+        comment,
+        elapsed,
+        task.outbuf.getvalue().strip(),
+    )
 
-    def _is_conflict(self, job):
-        """Checks to see if a job will conflict with another running job."""
-        for running_job in self.running:
-            for used_resource in running_job.item.resources:
-                logging.debug('Checking resource %s' % used_resource)
-                if used_resource in job.resources:
-                    return True
-        return False
+  def _is_conflict(self, job):
+    """Checks to see if a job will conflict with another running job."""
+    for running_job in self.running:
+      for used_resource in running_job.item.resources:
+        logging.debug('Checking resource %s' % used_resource)
+        if used_resource in job.resources:
+          return True
+    return False
 
-    def flush(self, *args, **kwargs):
-        """Runs all enqueued items until all are executed."""
-        kwargs['work_queue'] = self
-        self.last_subproc_output = self.last_join = datetime.datetime.now()
-        self.ready_cond.acquire()
+  def flush(self, *args, **kwargs):
+    """Runs all enqueued items until all are executed."""
+    kwargs['work_queue'] = self
+    self.last_subproc_output = self.last_join = datetime.datetime.now()
+    self.ready_cond.acquire()
+    try:
+      while True:
+        # Check for task to run first, then wait.
+        while True:
+          if not self.exceptions.empty():
+            # Systematically flush the queue when an exception
+            # logged.
+            self.queued = []
+          self._flush_terminated_threads()
+          if (
+              not self.queued
+              and not self.running
+              or self.jobs == len(self.running)
+          ):
+            logging.debug("No more worker threads or can't queue anything.")
+            break
+
+          # Check for new tasks to start.
+          for i in range(len(self.queued)):
+            # Verify its requirements.
+            if self.ignore_requirements or not (
+                set(self.queued[i].requirements) - set(self.ran)
+            ):
+              if not self._is_conflict(self.queued[i]):
+                # Start one work item: all its requirements are
+                # satisfied.
+                self._run_one_task(self.queued.pop(i), args, kwargs)
+                break
+          else:
+            # Couldn't find an item that could run. Break out the
+            # outher loop.
+            break
+
+        if not self.queued and not self.running:
+          # We're done.
+          break
+        # We need to poll here otherwise Ctrl-C isn't processed.
         try:
-            while True:
-                # Check for task to run first, then wait.
-                while True:
-                    if not self.exceptions.empty():
-                        # Systematically flush the queue when an exception
-                        # logged.
-                        self.queued = []
-                    self._flush_terminated_threads()
-                    if (not self.queued and not self.running
-                            or self.jobs == len(self.running)):
-                        logging.debug(
-                            'No more worker threads or can\'t queue anything.')
-                        break
-
-                    # Check for new tasks to start.
-                    for i in range(len(self.queued)):
-                        # Verify its requirements.
-                        if (self.ignore_requirements
-                                or not (set(self.queued[i].requirements) -
-                                        set(self.ran))):
-                            if not self._is_conflict(self.queued[i]):
-                                # Start one work item: all its requirements are
-                                # satisfied.
-                                self._run_one_task(self.queued.pop(i), args,
-                                                   kwargs)
-                                break
-                    else:
-                        # Couldn't find an item that could run. Break out the
-                        # outher loop.
-                        break
-
-                if not self.queued and not self.running:
-                    # We're done.
-                    break
-                # We need to poll here otherwise Ctrl-C isn't processed.
-                try:
-                    self.ready_cond.wait(10)
-                    # If we haven't printed to terminal for a while, but we have
-                    # received spew from a suprocess, let the user know we're
-                    # still progressing.
-                    now = datetime.datetime.now()
-                    if (now - self.last_join > datetime.timedelta(seconds=60)
-                            and self.last_subproc_output > self.last_join):
-                        if self.progress:
-                            print('')
-                            sys.stdout.flush()
-                        elapsed = Elapsed()
-                        print('[%s] Still working on:' % elapsed)
-                        sys.stdout.flush()
-                        for task in self.running:
-                            print('[%s]   %s' % (elapsed, task.item.name))
-                            sys.stdout.flush()
-                except KeyboardInterrupt:
-                    # Help debugging by printing some information:
-                    print(
-                        ('\nAllowed parallel jobs: %d\n# queued: %d\nRan: %s\n'
-                         'Running: %d') %
-                        (self.jobs, len(self.queued), ', '.join(
-                            self.ran), len(self.running)),
-                        file=sys.stderr)
-                    for i in self.queued:
-                        print('%s (not started): %s' %
-                              (i.name, ', '.join(i.requirements)),
-                              file=sys.stderr)
-                    for i in self.running:
-                        print(self.format_task_output(i.item, 'interrupted'),
-                              file=sys.stderr)
-                    raise
-                # Something happened: self.enqueue() or a thread terminated.
-                # Loop again.
-        finally:
-            self.ready_cond.release()
-
-        assert not self.running, 'Now guaranteed to be single-threaded'
-        if not self.exceptions.empty():
+          self.ready_cond.wait(10)
+          # If we haven't printed to terminal for a while, but we have
+          # received spew from a suprocess, let the user know we're
+          # still progressing.
+          now = datetime.datetime.now()
+          elapsed = Elapsed()
+          progress_timeout = datetime.timedelta(seconds=60)
+          stall_timeout = datetime.timedelta(seconds=300)
+          if (
+              now - self.last_join > progress_timeout
+              and self.last_subproc_output > self.last_join
+          ):
             if self.progress:
-                print('')
-            # To get back the stack location correctly, the raise a, b, c form
-            # must be used, passing a tuple as the first argument doesn't work.
-            e, task = self.exceptions.get()
-            print(self.format_task_output(task.item, 'ERROR'), file=sys.stderr)
-            reraise(e[0], e[1], e[2])
-        elif self.progress:
-            self.progress.end()
+              print('')
+              sys.stdout.flush()
+            print(f'[{elapsed}] Still working on:')
+            sys.stdout.flush()
+            for task in self.running:
+              print(f'[{elapsed}]   {task.item.name}')
+              sys.stdout.flush()
+          if (
+              now - self.last_join > stall_timeout
+              and now - self.last_subproc_output > stall_timeout
+          ):
+            self._print_stall_diagnostics(now, elapsed)
+            self.last_join = now
+        except KeyboardInterrupt:
+          # Help debugging by printing some information:
+          print(
+              '\nAllowed parallel jobs: %d\n# queued: %d\nRan: %s\nRunning: %d'
+              % (
+                  self.jobs,
+                  len(self.queued),
+                  ', '.join(self.ran),
+                  len(self.running),
+              ),
+              file=sys.stderr,
+          )
+          for i in self.queued:
+            print(
+                '%s (not started): %s' % (i.name, ', '.join(i.requirements)),
+                file=sys.stderr,
+            )
+          for i in self.running:
+            print(
+                self.format_task_output(i.item, 'interrupted'), file=sys.stderr
+            )
+          raise
+        # Something happened: self.enqueue() or a thread terminated.
+        # Loop again.
+    finally:
+      self.ready_cond.release()
 
-    def _flush_terminated_threads(self):
-        """Flush threads that have terminated."""
-        running = self.running
-        self.running = []
-        for t in running:
-            if t.is_alive():
-                self.running.append(t)
-            else:
-                t.join()
-                self.last_join = datetime.datetime.now()
-                sys.stdout.flush()
-                if self.verbose:
-                    print(self.format_task_output(t.item))
-                if self.progress:
-                    self.progress.update(1, t.item.name)
-                if t.item.name in self.ran:
-                    raise Error('gclient is confused, "%s" is already in "%s"' %
-                                (t.item.name, ', '.join(self.ran)))
-                if not t.item.name in self.ran:
-                    self.ran.append(t.item.name)
+    assert not self.running, 'Now guaranteed to be single-threaded'
+    if not self.exceptions.empty():
+      if self.progress:
+        print('')
+      # To get back the stack location correctly, the raise a, b, c form
+      # must be used, passing a tuple as the first argument doesn't work.
+      e, task = self.exceptions.get()
+      print(self.format_task_output(task.item, 'ERROR'), file=sys.stderr)
+      reraise(e[0], e[1], e[2])
+    elif self.progress:
+      self.progress.end()
 
-    def _run_one_task(self, task_item, args, kwargs):
-        if self.jobs > 1:
-            # Start the thread.
-            index = len(self.ran) + len(self.running) + 1
-            new_thread = self._Worker(task_item, index, args, kwargs)
-            self.running.append(new_thread)
-            new_thread.start()
-        else:
-            # Run the 'thread' inside the main thread. Don't try to catch any
-            # exception.
-            try:
-                task_item.start = datetime.datetime.now()
-                print('[%s] Started.' % Elapsed(task_item.start),
-                      file=task_item.outbuf)
-                task_item.run(*args, **kwargs)
-                task_item.finish = datetime.datetime.now()
-                print('[%s] Finished.' % Elapsed(task_item.finish),
-                      file=task_item.outbuf)
-                self.ran.append(task_item.name)
-                if self.verbose:
-                    if self.progress:
-                        print('')
-                    print(self.format_task_output(task_item))
-                if self.progress:
-                    self.progress.update(
-                        1, ', '.join(t.item.name for t in self.running))
-            except KeyboardInterrupt:
-                print(self.format_task_output(task_item, 'interrupted'),
-                      file=sys.stderr)
-                raise
-            except Exception:
-                print(self.format_task_output(task_item, 'ERROR'),
-                      file=sys.stderr)
-                raise
+  def _flush_terminated_threads(self):
+    """Flush threads that have terminated."""
+    running = self.running
+    self.running = []
+    for t in running:
+      if t.is_alive():
+        self.running.append(t)
+      else:
+        t.join()
+        self.last_join = datetime.datetime.now()
+        sys.stdout.flush()
+        if self.verbose:
+          print(self.format_task_output(t.item))
+        if self.progress:
+          self.progress.update(1, t.item.name)
+        if t.item.name in self.ran:
+          raise Error(
+              'gclient is confused, "%s" is already in "%s"'
+              % (t.item.name, ', '.join(self.ran))
+          )
+        if not t.item.name in self.ran:
+          self.ran.append(t.item.name)
 
-    class _Worker(threading.Thread):
-        """One thread to execute one WorkItem."""
-        def __init__(self, item, index, args, kwargs):
-            threading.Thread.__init__(self, name=item.name or 'Worker')
-            logging.info('_Worker(%s) reqs:%s' % (item.name, item.requirements))
-            self.item = item
-            self.index = index
-            self.args = args
-            self.kwargs = kwargs
-            self.daemon = True
+  def _run_one_task(self, task_item, args, kwargs):
+    if self.jobs > 1:
+      # Start the thread.
+      index = len(self.ran) + len(self.running) + 1
+      new_thread = self._Worker(task_item, index, args, kwargs)
+      self.running.append(new_thread)
+      new_thread.start()
+    else:
+      # Run the 'thread' inside the main thread. Don't try to catch any
+      # exception.
+      try:
+        task_item.start = datetime.datetime.now()
+        print('[%s] Started.' % Elapsed(task_item.start), file=task_item.outbuf)
+        task_item.run(*args, **kwargs)
+        task_item.finish = datetime.datetime.now()
+        print(
+            '[%s] Finished.' % Elapsed(task_item.finish), file=task_item.outbuf
+        )
+        self.ran.append(task_item.name)
+        if self.verbose:
+          if self.progress:
+            print('')
+          print(self.format_task_output(task_item))
+        if self.progress:
+          self.progress.update(1, ', '.join(t.item.name for t in self.running))
+      except KeyboardInterrupt:
+        print(
+            self.format_task_output(task_item, 'interrupted'), file=sys.stderr
+        )
+        raise
+      except Exception:
+        print(self.format_task_output(task_item, 'ERROR'), file=sys.stderr)
+        raise
 
-        def run(self):
-            """Runs in its own thread."""
-            logging.debug('_Worker.run(%s)' % self.item.name)
-            work_queue = self.kwargs['work_queue']
-            try:
-                self.item.start = datetime.datetime.now()
-                print('[%s] Started.' % Elapsed(self.item.start),
-                      file=self.item.outbuf)
-                self.item.run(*self.args, **self.kwargs)
-                self.item.finish = datetime.datetime.now()
-                print('[%s] Finished.' % Elapsed(self.item.finish),
-                      file=self.item.outbuf)
-            except KeyboardInterrupt:
-                logging.info('Caught KeyboardInterrupt in thread %s',
-                             self.item.name)
-                logging.info(str(sys.exc_info()))
-                work_queue.exceptions.put((sys.exc_info(), self))
-                raise
-            except Exception:
-                # Catch exception location.
-                logging.info('Caught exception in thread %s', self.item.name)
-                logging.info(str(sys.exc_info()))
-                work_queue.exceptions.put((sys.exc_info(), self))
-            finally:
-                logging.info('_Worker.run(%s) done', self.item.name)
-                work_queue.ready_cond.acquire()
-                try:
-                    work_queue.ready_cond.notifyAll()
-                finally:
-                    work_queue.ready_cond.release()
+  class _Worker(threading.Thread):
+    """One thread to execute one WorkItem."""
+
+    def __init__(self, item, index, args, kwargs):
+      threading.Thread.__init__(self, name=item.name or 'Worker')
+      logging.info('_Worker(%s) reqs:%s' % (item.name, item.requirements))
+      self.item = item
+      self.index = index
+      self.args = args
+      self.kwargs = kwargs
+      self.daemon = True
+
+    def run(self):
+      """Runs in its own thread."""
+      logging.debug('_Worker.run(%s)' % self.item.name)
+      work_queue = self.kwargs['work_queue']
+      try:
+        self.item.start = datetime.datetime.now()
+        print('[%s] Started.' % Elapsed(self.item.start), file=self.item.outbuf)
+        self.item.run(*self.args, **self.kwargs)
+        self.item.finish = datetime.datetime.now()
+        print(
+            '[%s] Finished.' % Elapsed(self.item.finish), file=self.item.outbuf
+        )
+      except KeyboardInterrupt:
+        logging.info('Caught KeyboardInterrupt in thread %s', self.item.name)
+        logging.info(str(sys.exc_info()))
+        work_queue.exceptions.put((sys.exc_info(), self))
+        raise
+      except Exception:
+        # Catch exception location.
+        logging.info('Caught exception in thread %s', self.item.name)
+        logging.info(str(sys.exc_info()))
+        work_queue.exceptions.put((sys.exc_info(), self))
+      finally:
+        logging.info('_Worker.run(%s) done', self.item.name)
+        work_queue.ready_cond.acquire()
+        try:
+          work_queue.ready_cond.notifyAll()
+        finally:
+          work_queue.ready_cond.release()
 
 
 def GetEditor(git_editor=None):
