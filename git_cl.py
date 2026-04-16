@@ -6734,9 +6734,14 @@ def CMDset_close(parser, args):
     return 0
 
 
+@subcommand.usage('[--] [files ...]')
 @metrics.collector.collect_metrics('git cl diff')
-def CMDdiff(parser, args):
-    """Shows differences between local tree and last upload."""
+def CMDdiff(parser, raw_args):
+    """Shows differences between local tree and last upload.
+
+    positional arguments:
+      files           Files to diff. If omitted, diff all files.
+    """
     if gclient_utils.IsEnvCog():
         print(
             'diff command is not supported. Please navigate to source '
@@ -6748,9 +6753,7 @@ def CMDdiff(parser, args):
                       action='store_true',
                       dest='stat',
                       help='Generate a diffstat')
-    options, args = parser.parse_args(args)
-    if args:
-        parser.error('Unrecognized args: %s' % ' '.join(args))
+    options, args = parser.parse_args(raw_args)
 
     cl = Changelist()
     issue = cl.GetIssue()
@@ -6772,6 +6775,13 @@ def CMDdiff(parser, args):
     if options.stat:
         cmd.append('--stat')
     cmd.append(base)
+    # parse() consumes -- so check raw_args and not args.
+    if '--' in raw_args:
+        if any(not a.startswith('-') for a in raw_args[:raw_args.index('--')]):
+            raise ValueError('-- should come before positional arguments')
+        cmd.append('--')
+    if args:
+        cmd.extend(args)
     subprocess2.check_call(cmd)
 
     return 0
