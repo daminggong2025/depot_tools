@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c391cd56_ddfcbe99",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 4323820
+      },
+      "writtenOn": "2026-04-16T04:12:00Z",
+      "side": 1,
+      "message": "Hi friends. Inspired by ChromeOS tooling, built by gbiv@, I\u0027m looking for opportunities to improve build cache hitrate across workspaces now that AI agents are encouraging us to have many chrome workspaces. This solution is working well for me in my local testing, so I think it\u0027s worth a look for merging into depot_tools as an option.\n\nLet me know what you think or if there\u0027s a better way to do this.\n\nThanks!",
+      "revId": "28473a2dc05a87bea547ccd9454d00fdcee45a53",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
