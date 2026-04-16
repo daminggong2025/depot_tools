@@ -46,6 +46,30 @@
       },
       "revId": "2dff6dec828f97fe25323c48a016c6d321e78da9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "03e22906_7e5a92a7",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 7
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 4323820
+      },
+      "writtenOn": "2026-04-16T16:23:41Z",
+      "side": 1,
+      "message": "You\u0027re right that RBE doesn\u0027t have a as much of a problem with mismatched paths... this is more about the 3-4 minute file eval that siso does when in a workspace in a new path, and then the subsequent download of cached RBE files.",
+      "parentUuid": "14166570_705e05d7",
+      "range": {
+        "startLine": 17,
+        "startChar": 0,
+        "endLine": 17,
+        "endChar": 115
+      },
+      "revId": "2dff6dec828f97fe25323c48a016c6d321e78da9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
