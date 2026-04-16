@@ -930,6 +930,29 @@ class ExecutionQueue(object):
         self.last_subproc_output = datetime.datetime.now()
         return True
 
+    def _print_stall_diagnostics(self, now, elapsed):
+        if self.progress:
+            print("")
+            sys.stdout.flush()
+        print("[%s] STALL DETECTED: gclient has been silent for 5 minutes." %
+              elapsed)
+        print("[%s] Currently active tasks:" % elapsed)
+        for task in self.running:
+            duration = str(now - task.item.start).partition(".")[0] if task.item.start else "N/A"
+            print("[%s]   %s (Running for %s)" %
+                  (elapsed, task.item.name, duration))
+        print("[%s] Suggestions:" % elapsed)
+        print("[%s] 1. Authentication: Check for background prompts." % elapsed)
+        print("[%s] 2. Network: Check your internet connection and proxies." %
+              elapsed)
+        print("[%s] 3. Locks: Check for other git processes holding a lock." %
+              elapsed)
+        print(
+            "[%s] 4. Verbose: Run gclient with --verbose to see more output." %
+            elapsed)
+        sys.stdout.flush()
+
+
     @staticmethod
     def format_task_output(task, comment=''):
         if comment:
@@ -1002,17 +1025,23 @@ class ExecutionQueue(object):
                     # received spew from a suprocess, let the user know we're
                     # still progressing.
                     now = datetime.datetime.now()
-                    if (now - self.last_join > datetime.timedelta(seconds=60)
+                    elapsed = Elapsed()
+                    progress_timeout = datetime.timedelta(seconds=60)
+                    stall_timeout = datetime.timedelta(seconds=300)
+                    if (now - self.last_join > progress_timeout
                             and self.last_subproc_output > self.last_join):
                         if self.progress:
                             print('')
                             sys.stdout.flush()
-                        elapsed = Elapsed()
                         print('[%s] Still working on:' % elapsed)
                         sys.stdout.flush()
                         for task in self.running:
                             print('[%s]   %s' % (elapsed, task.item.name))
                             sys.stdout.flush()
+                    if (now - self.last_join > stall_timeout
+                            and now - self.last_subproc_output > stall_timeout):
+                        self._print_stall_diagnostics(now, elapsed)
+                        self.last_join = now
                 except KeyboardInterrupt:
                     # Help debugging by printing some information:
                     print(
