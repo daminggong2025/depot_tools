@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "39f6ea69_6a14857d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1001629
+      },
+      "writtenOn": "2026-04-16T18:44:36Z",
+      "side": 1,
+      "message": "FWIW, I always thought the previous behavior was convenient and intentional. I often run `git cl patch -b \u003cbranch\u003e \u003curl\u003e` and then that fails after switching to the new branch for some reason (local diff or something). But as it fails after switching branches, I\u0027m already on the new branch. Prior to this change, I could just run this command again. The branch switch would fail (since I\u0027m already on that branch), but as it didn\u0027t abort the command, it\u0027d then apply the patch on the current (correct) branch.\n\nHow do I do this now? Do I have go manually delete the `-b \u003cbranch\u003e` from my command between arrow-up and enter?\n\nDid this solve a problem that people actually had, or was this more a \"maybe it makes sense to change this\" CL?",
+      "revId": "145eee02011c02fc25d2ec055b55451661f3a611",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
