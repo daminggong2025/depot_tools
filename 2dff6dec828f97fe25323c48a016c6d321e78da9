@@ -70,6 +70,23 @@
       },
       "revId": "2dff6dec828f97fe25323c48a016c6d321e78da9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3e9e8337_36cc41e8",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1577257
+      },
+      "writtenOn": "2026-04-17T08:30:53Z",
+      "side": 1,
+      "message": "This is very cool! It\u0027s great to see that you can achieve it in this quite elegant way via `unshare` purely in the depot_tools scripts.\n\nI think I would prefer if we had support for this natively in Siso (basically, let Siso create the namespace and handle the path mapping) and could get it to work without requiring btrfs, but I also don\u0027t want to block this if it works today, is opt-in and has no downsides. Let me think about it over the weekend and I\u0027ll get back to this CL on Monday when I had a chance to try it out.\n\nThank you for the contribution!",
+      "revId": "2dff6dec828f97fe25323c48a016c6d321e78da9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
