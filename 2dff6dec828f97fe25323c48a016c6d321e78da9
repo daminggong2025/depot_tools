@@ -87,6 +87,24 @@
       "message": "This is very cool! It\u0027s great to see that you can achieve it in this quite elegant way via `unshare` purely in the depot_tools scripts.\n\nI think I would prefer if we had support for this natively in Siso (basically, let Siso create the namespace and handle the path mapping) and could get it to work without requiring btrfs, but I also don\u0027t want to block this if it works today, is opt-in and has no downsides. Let me think about it over the weekend and I\u0027ll get back to this CL on Monday when I had a chance to try it out.\n\nThank you for the contribution!",
       "revId": "2dff6dec828f97fe25323c48a016c6d321e78da9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "caab7a34_6ff7c44c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 4323820
+      },
+      "writtenOn": "2026-04-17T17:10:26Z",
+      "side": 1,
+      "message": "I initially pondered submitting a patch to Siso, but this was a much simpler step to start with. I agree it\u0027s much better in Siso itself, but that\u0027s a big task for someone not on the Siso team, such as myself.\n\nAnother alternative to `unshare` that\u0027s worth considering is `bwrap`, tho that\u0027s not a default linux feature like `unshare` is. https://manpages.debian.org/testing/bubblewrap/bwrap.1.en.html",
+      "parentUuid": "3e9e8337_36cc41e8",
+      "revId": "2dff6dec828f97fe25323c48a016c6d321e78da9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
