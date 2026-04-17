@@ -55,6 +55,9 @@ class _NodeDict(collections.abc.MutableMapping):
     def __repr__(self):
         return self.__str__()
 
+    def copy(self):
+        return dict(self.items())
+
     def __getitem__(self, key):
         return self.data[key][0]
 
@@ -334,6 +337,39 @@ _GCLIENT_SCHEMA = schema.Schema(
     }))
 
 
+_GCLIENT_CONFIG_SCHEMA = schema.Schema(
+    _NodeDictSchema({
+        schema.Optional('solutions'): [
+            _NodeDictSchema({
+                'name':
+                str,
+                'url':
+                str,
+                schema.Optional('managed'):
+                bool,
+                schema.Optional('custom_deps'):
+                _NodeDictSchema({schema.Optional(str): schema.Or(None, str)}),
+                schema.Optional('custom_vars'):
+                _NodeDictSchema({schema.Optional(str): str}),
+                schema.Optional('custom_hooks'):
+                list,
+                schema.Optional('deps_file'):
+                str,
+                schema.Optional('protocol_override'):
+                str,
+            })
+        ],
+        schema.Optional('target_os'): [str],
+        schema.Optional('target_os_only'):
+        bool,
+        schema.Optional('target_cpu'): [str],
+        schema.Optional('target_cpu_only'):
+        bool,
+        schema.Optional('cache_dir'):
+        str,
+    }))
+
+
 def _gclient_eval(node_or_string, filename='<unknown>', vars_dict=None):
     """Safely evaluates a single expression. Returns the result."""
     _allowed_names = {'None': None, 'True': True, 'False': False}
@@ -428,7 +464,11 @@ def _gclient_eval(node_or_string, filename='<unknown>', vars_dict=None):
     return _convert(node_or_string)
 
 
-def Exec(content, filename='<unknown>', vars_override=None, builtin_vars=None):
+def Exec(content,
+         filename='<unknown>',
+         vars_override=None,
+         builtin_vars=None,
+         validation_schema=_GCLIENT_SCHEMA):
     """Safely execs a set of assignments."""
     def _validate_statement(node, local_scope):
         if not isinstance(node, ast.Assign):
@@ -496,7 +536,7 @@ def Exec(content, filename='<unknown>', vars_override=None, builtin_vars=None):
         local_scope.SetNode(name, value, node)
 
     try:
-        return _GCLIENT_SCHEMA.validate(local_scope)
+        return validation_schema.validate(local_scope)
     except schema.SchemaError as e:
         raise gclient_utils.Error(str(e))
 

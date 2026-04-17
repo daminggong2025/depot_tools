@@ -1332,6 +1332,40 @@ class ParseTest(unittest.TestCase):
             }, local_scope)
 
 
+class GClientConfigTest(unittest.TestCase):
+
+    def test_valid_config(self):
+        content = file_join([
+            'solutions = [',
+            '  {',
+            '    "name": "src",',
+            '    "url": "https://chromium.googlesource.com/chromium/src.git",',
+            '    "managed": False,',
+            '    "custom_deps": {',
+            '      "src/third_party/WebKit": None,',
+            '    },',
+            '  },',
+            ']',
+            'target_os = ["android"]',
+        ])
+        local_scope = gclient_eval.Exec(
+            content,
+            '.gclient',
+            validation_schema=gclient_eval._GCLIENT_CONFIG_SCHEMA)
+        self.assertEqual(local_scope['target_os'], ['android'])
+        self.assertEqual(local_scope['solutions'][0]['name'], 'src')
+
+    def test_invalid_config_wrong_type(self):
+        content = file_join([
+            'solutions = {}',
+        ])
+        with self.assertRaises(gclient_utils.Error):
+            gclient_eval.Exec(
+                content,
+                '.gclient',
+                validation_schema=gclient_eval._GCLIENT_CONFIG_SCHEMA)
+
+
 if __name__ == '__main__':
     level = logging.DEBUG if '-v' in sys.argv else logging.FATAL
     logging.basicConfig(level=level,

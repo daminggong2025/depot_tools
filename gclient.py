@@ -1890,10 +1890,12 @@ it or fix the checkout.
 
     def SetConfig(self, content):
         assert not self.dependencies
-        config_dict = {}
         self.config_content = content
         try:
-            exec(content, config_dict)
+            config_dict = gclient_eval.Exec(
+                content,
+                '.gclient',
+                validation_schema=gclient_eval._GCLIENT_CONFIG_SCHEMA)
         except SyntaxError as e:
             gclient_utils.SyntaxErrorToError('.gclient', e)
 
