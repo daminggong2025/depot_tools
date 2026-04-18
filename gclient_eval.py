@@ -215,6 +215,11 @@ _GCLIENT_HOOKS_SCHEMA = [
         # if the condition evaluates to True.
         schema.Optional('condition'):
         str,
+
+        # Whether the hook can be run in parallel with immediately preceding
+        # or succeeding parallel hooks.
+        schema.Optional('parallel'):
+        bool,
     })
 ]
 
