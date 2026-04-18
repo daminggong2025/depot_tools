@@ -15,6 +15,8 @@ import os
 import queue
 import sys
 import tempfile
+import threading
+import time
 import unittest
 from unittest import mock
 
@@ -322,6 +324,154 @@ class GclientTest(trial_dir.TestCase):
 
         self.assertEqual([h.action for h in self._get_hooks()],
                          [tuple(x['action']) for x in hooks])
+
+    def testParallelHooksParsing(self):
+        hooks = [
+            {
+                'pattern': '.',
+                'action': ['cmd1'],
+                'parallel': True
+            },
+            {
+                'pattern': '.',
+                'action': ['cmd2']
+            },
+        ]
+
+        write(
+            '.gclient', 'solutions = [{\n'
+            '  "name": "top",\n'
+            '  "url": "svn://example.com/top"\n'
+            '}]')
+        write(os.path.join('top', 'DEPS'), 'hooks =  %s' % repr(hooks))
+        write(os.path.join('top', 'fake.txt'), "bogus content")
+
+        parsed_hooks = self._get_hooks()
+        self.assertEqual(len(parsed_hooks), 2)
+        self.assertTrue(parsed_hooks[0].parallel)
+        self.assertFalse(parsed_hooks[1].parallel)
+
+    def testParallelHooksExecution(self):
+        hooks = [
+            {
+                'name': 'h1',
+                'pattern': '.',
+                'action': ['cmd1'],
+                'parallel': True
+            },
+            {
+                'name': 'h2',
+                'pattern': '.',
+                'action': ['cmd2'],
+                'parallel': True
+            },
+            {
+                'name': 'h3',
+                'pattern': '.',
+                'action': ['cmd3']
+            },
+        ]
+
+        write(
+            '.gclient', 'solutions = [{\n'
+            '  "name": "top",\n'
+            '  "url": "svn://example.com/top"\n'
+            '}]')
+        write(os.path.join('top', 'DEPS'), 'hooks =  %s' % repr(hooks))
+        write(os.path.join('top', 'fake.txt'), "bogus content")
+
+        parser = gclient.OptionParser()
+        options, _ = parser.parse_args([])
+        options.force = True
+        options.jobs = 2
+
+        client = gclient.GClient.LoadCurrentConfig(options)
+        work_queue = gclient_utils.ExecutionQueue(options.jobs, None, False)
+        for s in client.dependencies:
+            work_queue.enqueue(s)
+        work_queue.flush({},
+                         None, [],
+                         options=options,
+                         patch_refs={},
+                         target_branches={},
+                         skip_sync_revisions={})
+
+        execution_log = []
+        barrier = threading.Barrier(2)
+
+        def mock_run(self):
+            execution_log.append((self.name, 'start'))
+            if self.name in ('h1', 'h2'):
+                try:
+                    barrier.wait(timeout=5)
+                except threading.BrokenBarrierError:
+                    pass
+            execution_log.append((self.name, 'end'))
+
+        with mock.patch.object(gclient.Hook,
+                               'run',
+                               autospec=True,
+                               side_effect=mock_run):
+            client.RunHooksRecursively(options, None)
+
+        # Verify that both h1 and h2 started before either ended.
+        # Since they are parallel and wait at the barrier, the first two events
+        # must be starts for h1 and h2.
+        self.assertEqual(set(n for n, e in execution_log[:2]), {'h1', 'h2'})
+        self.assertEqual(set(e for n, e in execution_log[:2]), {'start'})
+
+        # And the next two must be ends for h1 and h2.
+        self.assertEqual(set(n for n, e in execution_log[2:4]), {'h1', 'h2'})
+        self.assertEqual(set(e for n, e in execution_log[2:4]), {'end'})
+
+        # And h3 must be last.
+        self.assertEqual(execution_log[4], ('h3', 'start'))
+        self.assertEqual(execution_log[5], ('h3', 'end'))
+
+        self._get_processed()
+
+    def testHookGroups(self):
+
+        class MockHook:
+
+            def __init__(self, name, parallel):
+                self.name = name
+                self.parallel = parallel
+
+        h1 = MockHook('h1', True)
+        h2 = MockHook('h2', True)
+        h3 = MockHook('h3', False)
+        h4 = MockHook('h4', True)
+        hooks = [h1, h2, h3, h4]
+
+        groups = gclient._HookGroups(hooks)
+        self.assertListEqual(groups, [[h1, h2], [h3], [h4]])
+
+        # Single hook
+        h1 = MockHook('h1', False)
+        groups = gclient._HookGroups([h1])
+        self.assertListEqual(groups, [[h1]])
+
+        # Single parallel hook
+        h1 = MockHook('h1', True)
+        groups = gclient._HookGroups([h1])
+        self.assertListEqual(groups, [[h1]])
+
+        # Only parallel hooks
+        h1 = MockHook('h1', True)
+        h2 = MockHook('h2', True)
+        groups = gclient._HookGroups([h1, h2])
+        self.assertListEqual(groups, [[h1, h2]])
+
+        # Only sequential hooks
+        h1 = MockHook('h1', False)
+        h2 = MockHook('h2', False)
+        groups = gclient._HookGroups([h1, h2])
+        self.assertListEqual(groups, [[h1], [h2]])
+
+        # Empty list
+        groups = gclient._HookGroups([])
+        self.assertListEqual(groups, [])
 
     def testCustomHooks(self):
         extra_hooks = [{
