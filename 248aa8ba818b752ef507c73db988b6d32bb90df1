@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a91b64d8_60894112",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 4787465
+      },
+      "writtenOn": "2026-04-18T19:23:01Z",
+      "side": 1,
+      "message": "Livrosfatosreaisespiritual",
+      "revId": "248aa8ba818b752ef507c73db988b6d32bb90df1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
