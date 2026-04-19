@@ -262,6 +262,14 @@ def adopt_git_worktree(src, dest):
     src_index = os.path.join(real_git_dir(src), 'index')
     dest_index = os.path.join(real_git_dir(dest), 'index')
     copy_on_write(src_index, dest_index)
+    # Reset the worktree to HEAD to clear any uncommitted changes from the
+    # source repository that were copied.
+    subprocess.check_call(['git', 'reset', '--hard', 'HEAD'], cwd=dest)
+    # Clean the worktree of any untracked or ignored files that were copied
+    # from the source repository.
+    subprocess.check_call(['git', 'clean', '-fdx'], cwd=dest)
+    # Refresh the index to ensure Git is aware that the worktree is clean.
+    subprocess.call(['git', 'update-index', '--refresh'], cwd=dest)
 
 
 def create_git_worktree(src, workdir):
@@ -301,10 +309,10 @@ def main():
             os.symlink(gclient, new_gclient)
 
         if args.max_depth is None:
-            # Since we're doing a btrfs subvolume snapshot or reflink copy, the
-            # sub-repositories will already be present in the copy, and we only
-            # need to link the .git directory for the top-level repositories.
-            args.max_depth = 1 if args.copy_on_write else -1
+            # We want to link all sub-repositories even if we're doing a
+            # copy-on-write clone, to ensure they are properly converted to
+            # worktrees and cleaned of any copied uncommitted changes.
+            args.max_depth = -1
 
         visited_dirs = set()
         for root, dirs, _ in os.walk(args.repository, followlinks=True):
