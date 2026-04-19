@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "931c67b9_28565918",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1286217
+      },
+      "writtenOn": "2026-04-19T05:06:13Z",
+      "side": 1,
+      "message": "Disclosure: this is 98% vibe coded.\n\nI understand the git bit pretty well, but barely the python bits.\n\nThis DID successfully let me get the Dart SDK copied without issue. It was in a VERY broken state before due to our third_party git bits.",
+      "revId": "7a8f16ff99f83860ac43fa6bfecb56223fd2ba6d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
