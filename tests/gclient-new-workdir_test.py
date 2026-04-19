@@ -59,6 +59,7 @@ class TestGclientNewWorkdir(unittest.TestCase):
 
         # Mock parse_options
         mock_args = MagicMock()
+        mock_args.prune = False
         mock_args.repository = "repo"
         mock_args.new_workdir = "dest"
 
@@ -97,6 +98,7 @@ class TestGclientNewWorkdir(unittest.TestCase):
 
         # Mock parse_options
         mock_args = MagicMock()
+        mock_args.prune = False
         mock_args.repository = "repo"
         mock_args.new_workdir = "dest"
 
@@ -136,6 +138,7 @@ class TestGclientNewWorkdir(unittest.TestCase):
             mock_support_cow.side_effect = SystemExit(0)
 
             mock_args = MagicMock()
+            mock_args.prune = False
             mock_args.repository = "repo"
             mock_args.new_workdir = "dest"
 
@@ -184,6 +187,7 @@ class TestGclientNewWorkdir(unittest.TestCase):
 
         # Mock parse_options
         mock_args = MagicMock()
+        mock_args.prune = False
         mock_args.repository = "repo"
         mock_args.new_workdir = "dest"
 
@@ -234,6 +238,7 @@ class TestGclientNewWorkdir(unittest.TestCase):
 
         # Mock parse_options
         mock_args = MagicMock()
+        mock_args.prune = False
         mock_args.repository = "repo"
         mock_args.new_workdir = "dir/dest"
 
@@ -249,7 +254,6 @@ class TestGclientNewWorkdir(unittest.TestCase):
         mock_exit.assert_called_with(1)
         mock_makedirs.assert_not_called()
 
-
     @patch("os.walk")
     @patch("os.path.exists")
     @patch("os.makedirs")
@@ -260,6 +264,7 @@ class TestGclientNewWorkdir(unittest.TestCase):
                                    mock_makedirs, mock_exists, mock_walk):
         # Mock parse_options
         mock_args = MagicMock()
+        mock_args.prune = False
         mock_args.repository = "/fake/repo"
         mock_args.new_workdir = "/fake/dest"
         mock_args.copy_on_write = True
@@ -292,6 +297,7 @@ class TestGclientNewWorkdir(unittest.TestCase):
 
             # Verify that adopt_git_worktree was called!
             mock_adopt.assert_called_once_with("/fake/repo", "/fake/dest")
+
 
 if __name__ == "__main__":
     unittest.main()
