@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c4180d47_af95b211",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 11
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1116294
+      },
+      "writtenOn": "2026-04-20T18:23:36Z",
+      "side": 1,
+      "message": "Was this the primary purpose of this original CL, or was it cleaning up the repo with git reset / git clean?\n\nregardless, this was removed.",
+      "range": {
+        "startLine": 15,
+        "startChar": 0,
+        "endLine": 16,
+        "endChar": 73
+      },
+      "revId": "3eb6da5946173d11a1175255e6aa262d7b2469c0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
