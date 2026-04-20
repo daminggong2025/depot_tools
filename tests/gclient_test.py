@@ -15,6 +15,7 @@ import os
 import queue
 import sys
 import tempfile
+import threading
 import unittest
 from unittest import mock
 
@@ -322,6 +323,140 @@ class GclientTest(trial_dir.TestCase):
 
         self.assertEqual([h.action for h in self._get_hooks()],
                          [tuple(x['action']) for x in hooks])
+
+    def testIndependentHooksParsing(self):
+        hooks = [
+            {
+                'pattern': '.',
+                'action': ['cmd1'],
+                'independent': True
+            },
+            {
+                'pattern': '.',
+                'action': ['cmd2']
+            },
+        ]
+
+        write(
+            '.gclient', 'solutions = [{\n'
+            '  "name": "top",\n'
+            '  "url": "svn://example.com/top"\n'
+            '}]')
+        write(os.path.join('top', 'DEPS'), 'hooks =  %s' % repr(hooks))
+        write(os.path.join('top', 'fake.txt'), "bogus content")
+
+        parsed_hooks = self._get_hooks()
+        self.assertEqual(len(parsed_hooks), 2)
+        self.assertTrue(parsed_hooks[0].independent)
+        self.assertFalse(parsed_hooks[1].independent)
+
+    def testIndependentHooksExecution(self):
+
+        class MockHook:
+
+            def __init__(self, name, independent):
+                self.name = name
+                self.independent = independent
+
+            def run(self):
+                execution_log.append((self.name, 'start'))
+                if self.name in ('h1', 'h2'):
+                    # Barrier ensures that we wait for 2 independent hooks to
+                    # start before continuing.
+                    barrier.wait()
+                execution_log.append((self.name, 'end'))
+
+        h0 = MockHook('h0', independent=False)
+        h1 = MockHook('h1', independent=True)
+        h2 = MockHook('h2', independent=True)
+        h3 = MockHook('h3', independent=False)
+
+        write(
+            '.gclient', 'solutions = [{\n'
+            '  "name": "top",\n'
+            '  "url": "svn://example.com/top"\n'
+            '}]')
+        write(os.path.join('top', 'DEPS'), 'hooks = []')
+        write(os.path.join('top', 'fake.txt'), "bogus content")
+
+        parser = gclient.OptionParser()
+        options, _ = parser.parse_args([])
+        options.force = True
+        options.jobs = 2
+
+        client = gclient.GClient.LoadCurrentConfig(options)
+
+        execution_log = []
+        # Barrier to sync the start of h1 and h2
+        barrier = threading.Barrier(2)
+
+        with mock.patch.object(client,
+                               'GetHooks',
+                               return_value=[h0, h1, h2, h3]):
+            client.RunHooksRecursively(options, None)
+
+        # h0 is a sequential hook, so it runs first.
+        self.assertEqual(execution_log[0], ('h0', 'start'))
+        self.assertEqual(execution_log[1], ('h0', 'end'))
+
+        # h1 and h2 are independent and can run in parallel. The barrier is used
+        # to make sure that we wait for them to start before continuing.
+        start_logs = execution_log[2:4]
+        self.assertEqual(set(name for name, event in start_logs), {'h1', 'h2'})
+        self.assertEqual(set(event for name, event in start_logs), {'start'})
+
+        end_logs = execution_log[4:6]
+        self.assertEqual(set(name for name, event in end_logs), {'h1', 'h2'})
+        self.assertEqual(set(event for name, event in end_logs), {'end'})
+
+        # h3 is a sequential hook, so it runs after all independent hooks.
+        self.assertEqual(execution_log[6], ('h3', 'start'))
+        self.assertEqual(execution_log[7], ('h3', 'end'))
+
+        self._get_processed()
+
+    def testHookGroups(self):
+
+        class MockHookForGrouping:
+
+            def __init__(self, name, independent):
+                self.name = name
+                self.independent = independent
+
+        h1 = MockHookForGrouping('h1', independent=True)
+        h2 = MockHookForGrouping('h2', independent=True)
+        h3 = MockHookForGrouping('h3', independent=False)
+        h4 = MockHookForGrouping('h4', independent=True)
+        hooks = [h1, h2, h3, h4]
+
+        groups = gclient._HookGroups(hooks)
+        self.assertListEqual(groups, [[h1, h2], [h3], [h4]])
+
+        # Single hook
+        h1 = MockHookForGrouping('h1', independent=False)
+        groups = gclient._HookGroups([h1])
+        self.assertListEqual(groups, [[h1]])
+
+        # Single independent hook
+        h1 = MockHookForGrouping('h1', independent=True)
+        groups = gclient._HookGroups([h1])
+        self.assertListEqual(groups, [[h1]])
+
+        # Only independent hooks
+        h1 = MockHookForGrouping('h1', independent=True)
+        h2 = MockHookForGrouping('h2', independent=True)
+        groups = gclient._HookGroups([h1, h2])
+        self.assertListEqual(groups, [[h1, h2]])
+
+        # Only sequential hooks
+        h1 = MockHookForGrouping('h1', independent=False)
+        h2 = MockHookForGrouping('h2', independent=False)
+        groups = gclient._HookGroups([h1, h2])
+        self.assertListEqual(groups, [[h1], [h2]])
+
+        # Empty list
+        groups = gclient._HookGroups([])
+        self.assertListEqual(groups, [])
 
     def testCustomHooks(self):
         extra_hooks = [{
