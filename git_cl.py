@@ -6737,7 +6737,7 @@ def CMDset_close(parser, args):
 
 @metrics.collector.collect_metrics('git cl diff')
 def CMDdiff(parser, args):
-    """Shows differences between local tree and last upload."""
+    """Shows differences between local tree and last upload - blah."""
     if gclient_utils.IsEnvCog():
         print(
             'diff command is not supported. Please navigate to source '
