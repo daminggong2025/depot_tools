@@ -122,6 +122,24 @@
       "message": "@bryner@google.com @gavinmak@google.com could you submit the change? I don\u0027t have enough permissions to do it.",
       "revId": "5332f27b3800c1e2b82b5c23903b599c3387f4d5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e4df5173_c4e1054e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-04-20T16:41:51Z",
+      "side": 1,
+      "message": "you should be able to use the \"CQ+2\" vote to submit your change (and not the \"submit\" button if that\u0027s visible for you). I\u0027ll CQ+2 on your behalf",
+      "parentUuid": "3d58d908_5b40015a",
+      "revId": "5332f27b3800c1e2b82b5c23903b599c3387f4d5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
