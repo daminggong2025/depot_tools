@@ -72,6 +72,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "2173056a_d140bdf2",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 7
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2026-04-20T02:14:27Z",
+      "side": 1,
+      "message": "\u003e If you use btrfs copies\n\nOh, I didn\u0027t understand this part. That sounds a really great way to create a new workspace 😮 The new workspace can inherit the build state/artifacts from the base workspace easily, IIUC.\n\n(It seem Philipp is already involved in the discussion. Let me close this comment.)",
+      "parentUuid": "03e22906_7e5a92a7",
+      "range": {
+        "startLine": 17,
+        "startChar": 0,
+        "endLine": 17,
+        "endChar": 115
+      },
+      "revId": "2dff6dec828f97fe25323c48a016c6d321e78da9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "3e9e8337_36cc41e8",
