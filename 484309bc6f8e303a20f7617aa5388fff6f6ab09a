@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ba5add9e_9ada4e85",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 17
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1132654
+      },
+      "writtenOn": "2026-04-20T07:50:09Z",
+      "side": 1,
+      "message": "PTAL\n\nI\u0027ve noticed that I spend a lot of time locally (and on the bots) on gclient sync.\nWe have a ton of hooks that run sequentially, but a large subset of those can be run in parallel (especially the PGO profile collection).\n\nI think this could help quit a bit, and it should have no impact on any of the current hooks.",
+      "revId": "484309bc6f8e303a20f7617aa5388fff6f6ab09a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
