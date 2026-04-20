@@ -161,6 +161,23 @@ def ToGNString(value):
     raise GNException("Unsupported type when printing to GN.")
 
 
+def _HookGroups(hooks):
+    """Splits hooks into independent groups and single sequential hooks."""
+    groups = []
+    current_group = []
+    for hook in hooks:
+        if hook.independent:
+            current_group.append(hook)
+            continue
+        if current_group:
+            groups.append(current_group)
+            current_group = []
+        groups.append([hook])
+    if current_group:
+        groups.append(current_group)
+    return groups
+
+
 class Hook(object):
     """Descriptor of command ran before/after sync or on demand."""
     def __init__(self,
@@ -171,7 +188,8 @@ class Hook(object):
                  condition=None,
                  variables=None,
                  verbose=False,
-                 cwd_base=None):
+                 cwd_base=None,
+                 independent=False):
         """Constructor.
 
     Arguments:
@@ -181,6 +199,8 @@ class Hook(object):
       cwd (str): working directory to use
       condition (str): condition when to run the hook
       variables (dict): variables for evaluating the condition
+      independent (bool): whether the hook can be run in parallel with the
+                       previous or next independent hook.
     """
         self._action = gclient_utils.freeze(action)
         self._pattern = pattern
@@ -190,6 +210,7 @@ class Hook(object):
         self._variables = variables
         self._verbose = verbose
         self._cwd_base = cwd_base
+        self._independent = independent
 
     @staticmethod
     def from_dict(d,
@@ -209,11 +230,16 @@ class Hook(object):
             variables=variables,
             # Always print the header if not printing to a TTY.
             verbose=verbose or not setup_color.IS_TTY,
-            cwd_base=cwd_base)
+            cwd_base=cwd_base,
+            independent=d.get('independent', False))
 
     @property
     def action(self):
         return self._action
+
+    @property
+    def independent(self):
+        return self._independent
 
     @property
     def pattern(self):
@@ -288,6 +314,20 @@ class Hook(object):
             if elapsed_time > 10:
                 print("Hook '%s' took %.2f secs" %
                       (gclient_utils.CommandToStr(cmd), elapsed_time))
+
+
+class IndependentHookWorkItem(gclient_utils.WorkItem):
+
+    def __init__(self, hook):
+        name = hook.name or f"independent_{id(hook)}"
+        super(IndependentHookWorkItem, self).__init__(name)
+        self.hook = hook
+        # Independent hooks do not have requirements but needed by the
+        # ExecutionQueue.
+        self.requirements = []
+
+    def run(self, work_queue):
+        self.hook.run()
 
 
 class DependencySettings(object):
@@ -1472,16 +1512,38 @@ class Dependency(gclient_utils.WorkItem, DependencySettings):
             result.extend(s.GetHooks(options))
         return result
 
+    def _RunHookGroup(self, group, jobs, total_hooks, progress):
+        if len(group) > 1 and jobs > 1:
+            self._RunParallelHookGroup(group, jobs, total_hooks, progress)
+        else:
+            for hook in group:
+                if progress:
+                    progress.update(extra=hook.name or '')
+                hook.run()
+
+    def _RunParallelHookGroup(self, group, jobs, total_hooks, progress):
+        work_queue = gclient_utils.ExecutionQueue(jobs,
+                                                  progress,
+                                                  ignore_requirements=True)
+        # Run multiple independent hooks in parallel.
+        for hook in group:
+            work_queue.enqueue(IndependentHookWorkItem(hook))
+        if progress:
+            # .eneque resets _total to the pending group items, reset it to
+            # total_hooks for the progress bar.
+            progress._total = total_hooks
+        work_queue.flush()
+
     def RunHooksRecursively(self, options, progress):
         assert self.hooks_ran == False
         self._hooks_ran = True
         hooks = self.GetHooks(options)
+        total_hooks = len(hooks)
+        groups = _HookGroups(hooks)
         if progress:
-            progress._total = len(hooks)
-        for hook in hooks:
-            if progress:
-                progress.update(extra=hook.name or '')
-            hook.run()
+            progress._total = total_hooks
+        for group in groups:
+            self._RunHookGroup(group, options.jobs, total_hooks, progress)
         if progress:
             progress.end()
 
@@ -1493,8 +1555,13 @@ class Dependency(gclient_utils.WorkItem, DependencySettings):
         for s in self.dependencies:
             assert not s.processed
         self._pre_deps_hooks_ran = True
-        for hook in self.pre_deps_hooks:
-            hook.run()
+
+        hooks = self.pre_deps_hooks
+        total_hooks = len(hooks)
+        jobs = self._get_option('jobs', 1)
+        groups = _HookGroups(hooks)
+        for group in groups:
+            self._RunHookGroup(group, jobs, total_hooks)
 
     def GetCipdRoot(self):
         if self.root is self:
