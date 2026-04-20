@@ -1756,7 +1756,7 @@ class GitDependency(Dependency):
 
         # Even if only the main repo uses jj, we direct all submodules to also
         # use the jj wrapper. This works because:
-        # * JjWrapper falls back to GitWrapper since it extends GitWrapper
+        # * JjWrapper falls back to GitWrapper since it forwards commands to it
         # * JjWrapper can convert submodules to colocated jj/git repos as well.
         if GitDependency._scm is None:
             if os.path.exists(os.path.join(self.root.root_dir, self.name,
