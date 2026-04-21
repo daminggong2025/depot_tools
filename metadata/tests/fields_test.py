@@ -7,6 +7,7 @@ import os
 import sys
 from typing import List
 import unittest
+import tempfile
 
 _THIS_DIR = os.path.abspath(os.path.dirname(__file__))
 # The repo's root directory.
@@ -21,7 +22,7 @@ import metadata.validation_result as vr
 import metadata.fields.custom.cpe_prefix as cpe_prefix_util
 import metadata.fields.custom.mitigated
 import metadata.fields.custom.update_mechanism
-
+import metadata.fields.custom.license
 
 class FieldValidationTest(unittest.TestCase):
     def _run_field_validation(self,
@@ -327,6 +328,39 @@ class FieldValidationTest(unittest.TestCase):
                 "Static.HardFork",
             ],
         )
+
+
+    def test_load_restrictive_license_approval_proto(self):
+
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".textproto", delete=False, encoding="utf-8") as f:
+            f.write('license_approval {\n  license_path: "LICENSE"\n  id: "Testing-Restrictive-License"\n}\n')
+            temp_path = f.name
+
+        try:
+            result = metadata.fields.custom.license.load_restrictive_license_approval_textproto(temp_path)
+            self.assertEqual(result, {"Testing-Restrictive-License"})
+        finally:
+            os.unlink(temp_path)
+
+    def test_license_validation_with_rla(self):
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            # This license is not allowlisted.
+            test_license = "LicenseRef-GUST-Font-License"
+
+            # Validate WITHOUT the rla textproto: should return a ValidationWarning.
+            field = metadata.fields.custom.license.LicenseField()
+            res_without = field.validate(test_license, source_file_dir=tmpdir)
+            self.assertIsInstance(res_without, vr.ValidationWarning)
+
+            # Write the rla textproto mentioning the license.
+            text_proto_path = os.path.join(tmpdir, "restrictive_license_approval.textproto")
+            with open(text_proto_path, "w", encoding="utf-8") as f:
+                f.write(f'license_approval {{\n  license_path: "LICENSE"\n  id: "{test_license}"\n}}\n')
+
+            # Validate WITH the rla textproto: should return None (approved / valid).
+            res_with = field.validate(test_license, source_file_dir=tmpdir)
+            self.assertIsNone(res_with)
 
 
 if __name__ == "__main__":
