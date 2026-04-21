@@ -18,6 +18,23 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "282438b4_0dec86ef",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1128437
+      },
+      "writtenOn": "2026-04-21T05:05:38Z",
+      "side": 1,
+      "message": "Thanks!",
+      "revId": "4c6f2d3d294bdddc4dbd19bdda4d914c7b28e702",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "58a29492_bec9e7c8",
@@ -31,6 +48,24 @@
       "writtenOn": "2026-04-21T00:11:36Z",
       "side": 1,
       "message": "This can just be instead of path.is_dir, rather than as well",
+      "revId": "4c6f2d3d294bdddc4dbd19bdda4d914c7b28e702",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "dcfbccb7_66acb200",
+        "filename": "jj/scm.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1128437
+      },
+      "writtenOn": "2026-04-21T05:05:38Z",
+      "side": 1,
+      "message": "`path.is_dir` won\u0027t work for git worktrees where the `.git` is a file rather than a directory.",
+      "parentUuid": "58a29492_bec9e7c8",
       "revId": "4c6f2d3d294bdddc4dbd19bdda4d914c7b28e702",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
