@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6fe3f623_118a06cb",
+        "filename": "gclient-new-workdir.py",
+        "patchSetId": 12
+      },
+      "lineNbr": 234,
+      "author": {
+        "id": 4323820
+      },
+      "writtenOn": "2026-04-21T20:47:43Z",
+      "side": 1,
+      "message": "Optional: Do you want -ffd here? That will ensure any stray repos that contain a .git directory are also cleaned up, in the off chance you happen to have one.",
+      "range": {
+        "startLine": 234,
+        "startChar": 0,
+        "endLine": 234,
+        "endChar": 80
+      },
+      "revId": "94ecbb7abda89bcfc7c6a59409889fc6b2211835",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "943c47c8_be67dcc4",
+        "filename": "gclient-new-workdir.py",
+        "patchSetId": 12
+      },
+      "lineNbr": 234,
+      "author": {
+        "id": 4323820
+      },
+      "writtenOn": "2026-04-21T20:47:43Z",
+      "side": 1,
+      "message": "Optional: -e supports glob, so you could `\u0027-e\u0027, \u0027.gclient*\u0027`.\n\nWe might also want to protect other gclient related files as well, which a glob would cover.",
+      "revId": "94ecbb7abda89bcfc7c6a59409889fc6b2211835",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ecdcb916_2c832a47",
+        "filename": "gclient-new-workdir.py",
+        "patchSetId": 12
+      },
+      "lineNbr": 403,
+      "author": {
+        "id": 4323820
+      },
+      "writtenOn": "2026-04-21T20:47:43Z",
+      "side": 1,
+      "message": "In a worktree (not the base), `.git` is a file not a directory. See https://crrev.com/c/7739623 where I added support for worktrees .git files previously.\n\nYou might want something more like this:\n\n```suggestion\n            for root, dirs, _ in os.walk(args.new_workdir):\n                has_git \u003d os.path.exists(os.path.join(root, \u0027.git\u0027))\n                if \u0027.git\u0027 in dirs:\n                    dirs.remove(\u0027.git\u0027)\n                if has_git and root not in processed_workdirs:\n                    cleanup_cow_checkout(root)\n```",
+      "range": {
+        "startLine": 399,
+        "startChar": 0,
+        "endLine": 403,
+        "endChar": 50
+      },
+      "revId": "94ecbb7abda89bcfc7c6a59409889fc6b2211835",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
