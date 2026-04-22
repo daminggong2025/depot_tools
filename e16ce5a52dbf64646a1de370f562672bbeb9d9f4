@@ -34,6 +34,24 @@
       "parentUuid": "ff343309_24d65f20",
       "revId": "e16ce5a52dbf64646a1de370f562672bbeb9d9f4",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "27006ff4_c38868c1",
+        "filename": "jj/scm.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1128437
+      },
+      "writtenOn": "2026-04-22T17:32:13Z",
+      "side": 1,
+      "message": "This is what I had in mind: https://chromium-review.git.corp.google.com/c/chromium/tools/depot_tools/+/7786691",
+      "parentUuid": "1da2fe37_fcb313a6",
+      "revId": "e16ce5a52dbf64646a1de370f562672bbeb9d9f4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
