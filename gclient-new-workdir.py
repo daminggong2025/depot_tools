@@ -31,8 +31,9 @@ def parse_options():
         print('ERROR: This script cannot run in non-git environment.')
         sys.exit(1)
 
-    parser = argparse.ArgumentParser(description='''Clone an existing '''
-    '''gclient workspace, taking care of all sub-repositories.''')
+    parser = argparse.ArgumentParser(
+        description='''Clone an existing '''
+        '''gclient workspace, taking care of all sub-repositories.''')
     parser.add_argument('repository',
                         type=os.path.abspath,
                         help='should contain a .gclient file')
@@ -70,6 +71,11 @@ def parse_options():
         '''sub-directories of the workspace, and so on. A value of -1 means '''
         '''there is no limit. The default is 1 if copy-on-write is used, '''
         '''otherwise the default is -1.''')
+    parser.add_argument(
+        '--prune',
+        action='store_true',
+        help='''Prune stale worktrees in the source repository before creating '''
+        '''the new workdir.''')
     args = parser.parse_args()
 
     if '--use-git-worktree' not in sys.argv and '--use-git-symlinks' not in sys.argv:
@@ -205,14 +211,31 @@ def is_btrfs_subvolume(path):
 
 
 def real_git_dir(repo_path):
-    relative_git_dir = (
-        subprocess.check_output(
-            ['git', 'rev-parse', '--git-dir'], cwd=repo_path
-        )
-        .decode()
-        .strip()
-    )
+    relative_git_dir = (subprocess.check_output(
+        ['git', 'rev-parse', '--git-dir'], cwd=repo_path).decode().strip())
     return os.path.realpath(os.path.join(repo_path, relative_git_dir))
+
+
+def cleanup_cow_checkout(dest):
+    """Resets and cleans a copy-on-write checkout to ensure it's a clean slate.
+
+    This is necessary because copy-on-write clones (APFS clone or Btrfs snapshot)
+    include uncommitted changes and untracked files from the source repository,
+    which can cause gclient sync to fail when it attempts to switch remotes.
+    """
+    print(f'Cleaning: {dest}')
+    # Reset the worktree to HEAD to clear any uncommitted changes from the
+    # source repository that were copied.
+    subprocess.check_call(['git', 'reset', '--hard', 'HEAD'], cwd=dest)
+    # Clean the worktree of any untracked files that were copied from the
+    # source repository. We exclude .gclient* files to avoid deleting the
+    # workspace configuration or cache if this is the root repository.
+    subprocess.check_call([
+        'git', 'clean', '-ffd', '-e', '.gclient*'
+    ],
+                          cwd=dest)
+    # Refresh the index to ensure Git is aware that the worktree is clean.
+    subprocess.check_call(['git', 'update-index', '-q', '--refresh'], cwd=dest)
 
 
 def link_git_repo(src, dest, use_copy_on_write):
@@ -226,8 +249,8 @@ def link_git_repo(src, dest, use_copy_on_write):
         copy_on_write(src_index, dest_index)
         # Detach the HEAD ref without checking out files or updating the index.
         subprocess.check_call(
-            ['git', 'update-ref', '--no-deref', 'HEAD', 'HEAD'], cwd=dest
-        )
+            ['git', 'update-ref', '--no-deref', 'HEAD', 'HEAD'], cwd=dest)
+        cleanup_cow_checkout(dest)
     else:
         print('Running: git checkout --detach -f %s' % dest)
         subprocess.check_call(['git', 'checkout', '--detach', '-f'], cwd=dest)
@@ -250,8 +273,7 @@ def adopt_git_worktree(src, dest):
     # touching any files in the worktree.
     print('Running: git worktree add %s --no-checkout -d -f' % dest)
     subprocess.check_call(
-        ['git', 'worktree', 'add', dest, '--no-checkout', '-d', '-f'], cwd=src
-    )
+        ['git', 'worktree', 'add', dest, '--no-checkout', '-d', '-f'], cwd=src)
     # Move the .git file from the worktree to the temporary directory and move
     # the temporary directory back to the worktree directory. Note that the .git
     # file is different from the worktree's real .git directory used below.
@@ -262,13 +284,13 @@ def adopt_git_worktree(src, dest):
     src_index = os.path.join(real_git_dir(src), 'index')
     dest_index = os.path.join(real_git_dir(dest), 'index')
     copy_on_write(src_index, dest_index)
+    cleanup_cow_checkout(dest)
 
 
 def create_git_worktree(src, workdir):
     print('Running: git worktree add %s -d -f' % workdir)
-    subprocess.check_call(
-        ['git', 'worktree', 'add', workdir, '-d', '-f'], cwd=src
-    )
+    subprocess.check_call(['git', 'worktree', 'add', workdir, '-d', '-f'],
+                          cwd=src)
 
 
 def main():
@@ -307,6 +329,7 @@ def main():
             args.max_depth = 1 if args.copy_on_write else -1
 
         visited_dirs = set()
+        processed_workdirs = set()
         for root, dirs, _ in os.walk(args.repository, followlinks=True):
             # Keep track of visited directories to avoid processing the same
             # directory multiple times or infinite loops due to symlink cycles.
@@ -337,10 +360,15 @@ def main():
             if not has_git:
                 continue
 
+            if args.prune:
+                subprocess.check_call(['git', 'worktree', 'prune'], cwd=root)
+
             if rel_path == '.':
                 workdir = args.new_workdir
             else:
                 workdir = os.path.join(args.new_workdir, rel_path)
+
+            processed_workdirs.add(workdir)
 
             if args.copy_on_write:
                 if not os.path.exists(workdir):
@@ -365,22 +393,29 @@ def main():
 
         if args.copy_on_write:
             print(
-                textwrap.dedent(
-                    '''\
-        The repo was copied using copy-on-write, and the artifacts were retained.
+                'Cleaning up untracked files and uncommitted changes in copied sub-repositories...'
+            )
+            for root, dirs, _ in os.walk(args.new_workdir):
+                has_git = os.path.exists(os.path.join(root, '.git'))
+                if '.git' in dirs:
+                    dirs.remove('.git')
+                if has_git and root not in processed_workdirs:
+                    cleanup_cow_checkout(root)
+
+            print(
+                textwrap.dedent('''\
+        The repo was copied using copy-on-write. Tracked files were reset
+        and untracked files were cleaned. Build artifacts were retained.
         More details on http://crbug.com/721585.
 
         Depending on your usage pattern, you might want to do "gn gen"
-        on the output directories. More details: http://crbug.com/723856.'''
-                )
-            )
+        on the output directories. More details: http://crbug.com/723856.'''))
     except Exception as e:
         print(f'Error: {e}')
         print(f'Cleaning up {args.new_workdir}')
         if is_btrfs_subvolume(args.new_workdir):
             subprocess.check_call(
-                ['btrfs', 'subvol', 'delete', args.new_workdir]
-            )
+                ['btrfs', 'subvol', 'delete', args.new_workdir])
         else:
             shutil.rmtree(args.new_workdir, ignore_errors=True)
         return 1
