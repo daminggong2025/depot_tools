@@ -18,6 +18,23 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "cc14da67_18dcfa17",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2026-04-22T00:56:43Z",
+      "side": 1,
+      "message": "Thank you!\n\n\nHere are some alternatives to breaking validation api:\n\n1) Update the api to pass **kwargs\n\n2) Do it in DependencyMetadata.validate(...) with a helper func in LICENSE similar to validate_on_disk\n?",
+      "revId": "7233b451c8923fc3ffd484a2fd9f1c1f55c563ce",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "db072b6f_7be99421",
@@ -31,6 +48,30 @@
       "writtenOn": "2026-04-22T00:28:05Z",
       "side": 1,
       "message": "Comparing against the field constant is better than defining this string.",
+      "range": {
+        "startLine": 215,
+        "startChar": 42,
+        "endLine": 215,
+        "endChar": 51
+      },
+      "revId": "7233b451c8923fc3ffd484a2fd9f1c1f55c563ce",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e874cee8_113a857f",
+        "filename": "metadata/dependency_metadata.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 215,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2026-04-22T00:56:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "db072b6f_7be99421",
       "range": {
         "startLine": 215,
         "startChar": 42,
@@ -58,6 +99,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "3f780179_b9ddc8d6",
+        "filename": "metadata/fields/custom/license.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2026-04-22T00:56:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6398acc5_c4888026",
+      "revId": "7233b451c8923fc3ffd484a2fd9f1c1f55c563ce",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "2a2fe80f_5f466937",
@@ -71,6 +130,24 @@
       "writtenOn": "2026-04-22T00:28:05Z",
       "side": 1,
       "message": "Don\u0027t use bare except, please specify the type.",
+      "revId": "7233b451c8923fc3ffd484a2fd9f1c1f55c563ce",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "050b327b_55387e68",
+        "filename": "metadata/fields/custom/license.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2026-04-22T00:56:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2a2fe80f_5f466937",
       "revId": "7233b451c8923fc3ffd484a2fd9f1c1f55c563ce",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -92,6 +169,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "b7855ff0_c654bbc8",
+        "filename": "metadata/fields/custom/license.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2026-04-22T00:56:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "97b3ba15_2a25f02f",
+      "revId": "7233b451c8923fc3ffd484a2fd9f1c1f55c563ce",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "4acaba5e_86760a10",
@@ -105,6 +200,24 @@
       "writtenOn": "2026-04-22T00:28:05Z",
       "side": 1,
       "message": "I think its generally preferred to have actual files, not using tempfiles for testing since it\u0027s clearer. Since we already have a test data directory, recommend we do that for these tests as well.",
+      "revId": "7233b451c8923fc3ffd484a2fd9f1c1f55c563ce",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4a237621_4f1a6a73",
+        "filename": "metadata/tests/fields_test.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 345,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2026-04-22T00:56:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4acaba5e_86760a10",
       "revId": "7233b451c8923fc3ffd484a2fd9f1c1f55c563ce",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
