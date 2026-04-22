@@ -16,6 +16,40 @@
       "message": "This works now for both colocated jj/git repos as well as standalone jj repos.",
       "revId": "d40886a688369b48d6a07ee5c26c38e4b4135cdd",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1aacdd92_d2d65eb5",
+        "filename": "jj/scm.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1450817
+      },
+      "writtenOn": "2026-04-22T23:32:06Z",
+      "side": 1,
+      "message": "Nit: Can we call this \"prefer_git_wrapper\" to clarify that it will fallback to jj? Default behaviour is to override, after all, so this could be confusing.",
+      "revId": "d40886a688369b48d6a07ee5c26c38e4b4135cdd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fd9a12a5_bd062bde",
+        "filename": "jj/scm.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1450817
+      },
+      "writtenOn": "2026-04-22T23:32:06Z",
+      "side": 1,
+      "message": "Nit: self._is_git_repo",
+      "revId": "d40886a688369b48d6a07ee5c26c38e4b4135cdd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
