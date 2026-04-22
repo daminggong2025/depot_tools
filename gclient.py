@@ -1761,10 +1761,10 @@ class GitDependency(Dependency):
         if GitDependency._scm is None:
             if os.path.exists(os.path.join(self.root.root_dir, self.name,
                                            '.jj')):
-                GitDependency._scm = jj.scm.JjWrapper
+              GitDependency._scm = jj.scm.JjWrapper
             else:
-                GitDependency._scm = gclient_scm.GitWrapper
-
+              GitDependency._scm = gclient_scm.GitWrapper
+        
         return GitDependency._scm(
             self.url,
             self.root.root_dir,
