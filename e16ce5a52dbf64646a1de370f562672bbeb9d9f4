@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ff343309_24d65f20",
+        "filename": "jj/scm.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1450817
+      },
+      "writtenOn": "2026-04-22T01:30:46Z",
+      "side": 1,
+      "message": "This line is almost certainly the root cause of the change in behaviour I see when syncing.\n\nWhen I add `target_os \u003d [ \"android\" ] to .gclient, without this CL, it downloads the \"clank\" repo. With this CL, it does not.\n\nI\u0027d suggest instead inheriting from SCMWrapper, and instead create a decorator `@maybe_git_wrapper` that decides whether to `super()` call or not.\n\nThat way, git wrapper is opt-out rather than opt-in, so we can\u0027t miss anything.",
+      "revId": "e16ce5a52dbf64646a1de370f562672bbeb9d9f4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
