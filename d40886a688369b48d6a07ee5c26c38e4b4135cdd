@@ -35,6 +35,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ee9a9fa5_7cdbfb83",
+        "filename": "jj/scm.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1128437
+      },
+      "writtenOn": "2026-04-22T23:50:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1aacdd92_d2d65eb5",
+      "revId": "d40886a688369b48d6a07ee5c26c38e4b4135cdd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "fd9a12a5_bd062bde",
@@ -48,6 +66,24 @@
       "writtenOn": "2026-04-22T23:32:06Z",
       "side": 1,
       "message": "Nit: self._is_git_repo",
+      "revId": "d40886a688369b48d6a07ee5c26c38e4b4135cdd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d7ae2f51_0f12cc3c",
+        "filename": "jj/scm.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1128437
+      },
+      "writtenOn": "2026-04-22T23:50:11Z",
+      "side": 1,
+      "message": "pylint doesn\u0027t like this because the decorator is technically outside the class - we can disable the pylint warning with `# pylint: disable\u003dprotected-access` and rename if you prefer that.",
+      "parentUuid": "fd9a12a5_bd062bde",
       "revId": "d40886a688369b48d6a07ee5c26c38e4b4135cdd",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
