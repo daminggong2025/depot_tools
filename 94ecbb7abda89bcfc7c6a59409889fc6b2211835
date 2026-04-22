@@ -41,6 +41,48 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "46afc981_ceb99400",
+        "filename": "gclient-new-workdir.py",
+        "patchSetId": 12
+      },
+      "lineNbr": 234,
+      "author": {
+        "id": 1286217
+      },
+      "writtenOn": "2026-04-22T00:10:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "943c47c8_be67dcc4",
+      "revId": "94ecbb7abda89bcfc7c6a59409889fc6b2211835",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "aeeebe92_96f4a0f4",
+        "filename": "gclient-new-workdir.py",
+        "patchSetId": 12
+      },
+      "lineNbr": 234,
+      "author": {
+        "id": 1286217
+      },
+      "writtenOn": "2026-04-22T00:10:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6fe3f623_118a06cb",
+      "range": {
+        "startLine": 234,
+        "startChar": 0,
+        "endLine": 234,
+        "endChar": 80
+      },
+      "revId": "94ecbb7abda89bcfc7c6a59409889fc6b2211835",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "ecdcb916_2c832a47",
@@ -54,6 +96,30 @@
       "writtenOn": "2026-04-21T20:47:43Z",
       "side": 1,
       "message": "In a worktree (not the base), `.git` is a file not a directory. See https://crrev.com/c/7739623 where I added support for worktrees .git files previously.\n\nYou might want something more like this:\n\n```suggestion\n            for root, dirs, _ in os.walk(args.new_workdir):\n                has_git \u003d os.path.exists(os.path.join(root, \u0027.git\u0027))\n                if \u0027.git\u0027 in dirs:\n                    dirs.remove(\u0027.git\u0027)\n                if has_git and root not in processed_workdirs:\n                    cleanup_cow_checkout(root)\n```",
+      "range": {
+        "startLine": 399,
+        "startChar": 0,
+        "endLine": 403,
+        "endChar": 50
+      },
+      "revId": "94ecbb7abda89bcfc7c6a59409889fc6b2211835",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "85efaff2_2032f060",
+        "filename": "gclient-new-workdir.py",
+        "patchSetId": 12
+      },
+      "lineNbr": 403,
+      "author": {
+        "id": 1286217
+      },
+      "writtenOn": "2026-04-22T00:10:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ecdcb916_2c832a47",
       "range": {
         "startLine": 399,
         "startChar": 0,
