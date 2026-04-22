@@ -7,11 +7,9 @@ import subprocess
 import gclient_scm
 
 
-class JjWrapper(gclient_scm.GitWrapper):
-    """JjWrapper handles repos that are intended to be used with jj.
-
-    The repo does not yet need to be using jj, and does not even need to exist.
-    """
+class JjWrapper(gclient_scm.SCMWrapper):
+    """JjWrapper handles standalone JJ repos, i.e. those without a .git dir."""
+    name = 'jj'
 
     def _GetSubmodulePaths(self):
         with pathlib.Path(self.checkout_path, '.gitmodules').open('r') as f:
@@ -21,7 +19,7 @@ class JjWrapper(gclient_scm.GitWrapper):
                     continue
                 path = pathlib.Path(self.checkout_path, line[len('path = '):])
                 # Not every submodule will exist, because many are conditional.
-                if path.is_dir() and (path / '.git').exists():
+                if (path / '.git').exists() or (path / '.jj').exists():
                     yield path
 
     def GetSubmoduleStateFromIndex(self):
@@ -30,13 +28,22 @@ class JjWrapper(gclient_scm.GitWrapper):
         # read the submodules from the .gitmodules file.
         state = {}
         for submodule_path in self._GetSubmodulePaths():
-            # TODO: Convert the submodule to jj and use jj log instead.
-            state[str(submodule_path)] = subprocess.run(
-                ['git', 'rev-parse', 'HEAD'],
-                check=True,
-                cwd=submodule_path,
-                stdout=subprocess.PIPE,
-            ).stdout.decode('utf-8').strip()
+            if (submodule_path / '.git').exists():
+                state[str(submodule_path)] = subprocess.run(
+                    ['git', 'rev-parse', 'HEAD'],
+                    check=True,
+                    cwd=submodule_path,
+                    stdout=subprocess.PIPE,
+                ).stdout.decode('utf-8').strip()
+            else:
+                assert (submodule_path / '.jj').exists()
+                state[str(submodule_path)] = subprocess.run(
+                    ['jj', 'log', '-r', '@', '-G', '-T', 'commit_id',
+                     '--color=never', '--no-pager'],
+                    check=True,
+                    cwd=submodule_path,
+                    stdout=subprocess.PIPE,
+                ).stdout.decode('utf-8').strip()
         return state
 
     def GetSubmoduleDiff(self):
@@ -44,3 +51,32 @@ class JjWrapper(gclient_scm.GitWrapper):
         # at the index and a diff since the index.
         # Jj has no index so this is always empty.
         return {}
+
+    # All the rest are no-ops for now.
+    def GetCacheMirror(self):
+        return None
+
+    def GetActualRemoteURL(self, options):
+        return None
+
+    def DoesRemoteURLMatch(self, options):
+        del options
+        return True
+
+    def revert(self, options, args, file_list):
+        pass
+
+    def diff(self, options, args, file_list):
+        pass
+
+    def pack(self, options, args, file_list):
+        pass
+
+    def revinfo(self, options, args, file_list):
+        pass
+
+    def status(self, options, args, file_list):
+        pass
+
+    def update(self, options, args, file_list):
+        pass
