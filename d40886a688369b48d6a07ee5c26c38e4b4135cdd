@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f0c5d07c_5b0d4dd4",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1128437
+      },
+      "writtenOn": "2026-04-22T22:41:27Z",
+      "side": 1,
+      "message": "This works now for both colocated jj/git repos as well as standalone jj repos.",
+      "revId": "d40886a688369b48d6a07ee5c26c38e4b4135cdd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
