@@ -131,6 +131,23 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ac1213ec_9c27bc1e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2026-04-22T06:41:03Z",
+      "side": 1,
+      "message": "LGTM to unblock this since it\u0027s behind the flag. \n\nnit: This approach should work fine even with the original ninja (via ninja.py), IIUC. But that\u0027s optional.",
+      "revId": "2dff6dec828f97fe25323c48a016c6d321e78da9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "df9c3fd3_9249ada0",
@@ -144,6 +161,30 @@
       "writtenOn": "2026-04-21T22:38:01Z",
       "side": 1,
       "message": "I\u0027m curious - why not pass in the virtual path as a command line option e.g. `--virtual-build-path\u003d\u003cmy_path\u003e`? It\u0027s a bit inconsistent to use a command line flag to enable the feature, but then use the env var to control the path that\u0027s used. And maybe, it\u0027s better to just have it all controlled by an env var instead of a flag so we don\u0027t need plumbing between the high level btrfs workspace tooling and siso.py.",
+      "range": {
+        "startLine": 525,
+        "startChar": 36,
+        "endLine": 525,
+        "endChar": 59
+      },
+      "revId": "2dff6dec828f97fe25323c48a016c6d321e78da9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "62308153_92a31bb0",
+        "filename": "siso.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 525,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2026-04-22T06:41:03Z",
+      "side": 1,
+      "message": "I think the point is to always use the same virtual build path across all workspaces and users (and bots). So, I would rather not to provide a way to override the default path.",
+      "parentUuid": "df9c3fd3_9249ada0",
       "range": {
         "startLine": 525,
         "startChar": 36,
