@@ -16,6 +16,24 @@
       "message": "This line is almost certainly the root cause of the change in behaviour I see when syncing.\n\nWhen I add `target_os \u003d [ \"android\" ] to .gclient, without this CL, it downloads the \"clank\" repo. With this CL, it does not.\n\nI\u0027d suggest instead inheriting from SCMWrapper, and instead create a decorator `@maybe_git_wrapper` that decides whether to `super()` call or not.\n\nThat way, git wrapper is opt-out rather than opt-in, so we can\u0027t miss anything.",
       "revId": "e16ce5a52dbf64646a1de370f562672bbeb9d9f4",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1da2fe37_fcb313a6",
+        "filename": "jj/scm.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1128437
+      },
+      "writtenOn": "2026-04-22T06:11:05Z",
+      "side": 1,
+      "message": "Ok, how about we use `GitWrapper` by default if the dep has a `.git` directory even if it\u0027s a colocated jj/git repo? AFAICT there\u0027s no reason to not use `GitWrapper` in this case, but please correct me if I\u0027m mistaken.\n\nAnd if the dep only has a `.jj` directory i.e. if it\u0027s a standalone jj workspace, then we use `JjWrapper` which will derive from the base `SCMWrapper` class and no-op most operations except the ones dealing with submodules.",
+      "parentUuid": "ff343309_24d65f20",
+      "revId": "e16ce5a52dbf64646a1de370f562672bbeb9d9f4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
