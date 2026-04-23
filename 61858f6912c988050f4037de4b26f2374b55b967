@@ -158,6 +158,24 @@
       "parentUuid": "23d64428_21ce80bc",
       "revId": "61858f6912c988050f4037de4b26f2374b55b967",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9fb6ba0e_f53fd5ca",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002869
+      },
+      "writtenOn": "2026-04-23T17:31:36Z",
+      "side": 1,
+      "message": "Sounds good, I\u0027ll land this as is then. We don\u0027t have any prompts in depot_tools yet but I\u0027d also definitely want some broader alignment if/when we add them.",
+      "parentUuid": "a083ea00_e88bace7",
+      "revId": "61858f6912c988050f4037de4b26f2374b55b967",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
