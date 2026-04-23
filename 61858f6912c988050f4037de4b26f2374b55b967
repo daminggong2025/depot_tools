@@ -68,6 +68,24 @@
       "message": "Thanks for the review Brian and thanks Henrique for being willing to help review skills!",
       "revId": "61858f6912c988050f4037de4b26f2374b55b967",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "46d0edc0_059c3210",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1163549
+      },
+      "writtenOn": "2026-04-23T16:58:31Z",
+      "side": 1,
+      "message": "I will say that if the desire is to have Henrique review skills (and only skills), adding them to `//agents/skills/OWNERS` would be more appropriate.",
+      "parentUuid": "67ce399d_623a21ab",
+      "revId": "61858f6912c988050f4037de4b26f2374b55b967",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
