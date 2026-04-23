@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "03f8403b_97d67b1c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002869
+      },
+      "writtenOn": "2026-04-23T14:46:44Z",
+      "side": 1,
+      "message": "Hi Brian,\n\nWith Erik gone, we\u0027d like to help own the agents/ dir and add new skills that are wider scope than chromium (e.g. like the buildbucket skill https://crrev.com/c/7791295).\n\nThanks,\nPeter",
+      "revId": "61858f6912c988050f4037de4b26f2374b55b967",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
