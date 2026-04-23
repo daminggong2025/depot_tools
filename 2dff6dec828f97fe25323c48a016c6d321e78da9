@@ -193,6 +193,30 @@
       },
       "revId": "2dff6dec828f97fe25323c48a016c6d321e78da9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "81525c9c_6a48f5dd",
+        "filename": "siso.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 525,
+      "author": {
+        "id": 4323820
+      },
+      "writtenOn": "2026-04-23T00:27:24Z",
+      "side": 1,
+      "message": "Yeah, that was my motivation... I wanted to make it possible to override it if you absolutely wanted to, but not encourage it as I wanted the interface (the flag) to communicate that the intention is to have consistent build paths. By making it an env var, I was trying to suggest that if you change it, it should be changed for all invocations, not per workspace.",
+      "parentUuid": "62308153_92a31bb0",
+      "range": {
+        "startLine": 525,
+        "startChar": 36,
+        "endLine": 525,
+        "endChar": 59
+      },
+      "revId": "2dff6dec828f97fe25323c48a016c6d321e78da9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
