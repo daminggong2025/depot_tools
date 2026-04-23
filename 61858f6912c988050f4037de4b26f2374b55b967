@@ -86,6 +86,24 @@
       "parentUuid": "67ce399d_623a21ab",
       "revId": "61858f6912c988050f4037de4b26f2374b55b967",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5a63d025_3f95ac31",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002869
+      },
+      "writtenOn": "2026-04-23T17:01:01Z",
+      "side": 1,
+      "message": "I think if the naming/convention of agent skills stays the same then yes definitely. For now it would be nice to have flexibility as for example, jetski supports rules in addition to skills which may or may not belong in the same \"skills\" dir 😊\n\nWDYT?",
+      "parentUuid": "46d0edc0_059c3210",
+      "revId": "61858f6912c988050f4037de4b26f2374b55b967",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
