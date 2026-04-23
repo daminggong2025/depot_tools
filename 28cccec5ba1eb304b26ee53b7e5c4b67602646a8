@@ -1,0 +1,106 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2b01dbe4_489d2e7d",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 6
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1544922
+      },
+      "writtenOn": "2026-04-23T07:42:13Z",
+      "side": 1,
+      "message": "Please update the commit message title and description.",
+      "revId": "28cccec5ba1eb304b26ee53b7e5c4b67602646a8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2ab58454_6bc8c00e",
+        "filename": "metadata/fields/custom/license.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1544922
+      },
+      "writtenOn": "2026-04-23T07:42:13Z",
+      "side": 1,
+      "message": "nit: would be nice to be more specific on the return type: `set[str]` (I think)",
+      "revId": "28cccec5ba1eb304b26ee53b7e5c4b67602646a8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "663b8643_5fe0b21a",
+        "filename": "metadata/fields/custom/license.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1544922
+      },
+      "writtenOn": "2026-04-23T07:42:13Z",
+      "side": 1,
+      "message": "I would add a warning here instead of silently failing. It could be helpful debugging a newly added textproto.",
+      "revId": "28cccec5ba1eb304b26ee53b7e5c4b67602646a8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "070eecb3_d9f31b9c",
+        "filename": "metadata/fields/custom/license.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 1544922
+      },
+      "writtenOn": "2026-04-23T07:42:13Z",
+      "side": 1,
+      "message": "Variable names should be related to the significance. Perhaps `restricted_approval_filepath`?\n\nAlso, perhaps add a global constant for `\"restrictive_license_approval.textproto\"`.",
+      "revId": "28cccec5ba1eb304b26ee53b7e5c4b67602646a8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e616370f_92d728c5",
+        "filename": "metadata/restrictive_license_approval_pb2.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1544922
+      },
+      "writtenOn": "2026-04-23T07:42:13Z",
+      "side": 1,
+      "message": "I recommend adding instructions in `metadata/README.md` on how to regenerate this file, in case someone needs to update the proto later down the track.",
+      "revId": "28cccec5ba1eb304b26ee53b7e5c4b67602646a8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bab32c7c_c7c07a85",
+        "filename": "metadata/tests/fields_test.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1544922
+      },
+      "writtenOn": "2026-04-23T07:42:13Z",
+      "side": 1,
+      "message": "This isn\u0027t used anymore?",
+      "revId": "28cccec5ba1eb304b26ee53b7e5c4b67602646a8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
