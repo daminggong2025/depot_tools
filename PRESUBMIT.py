@@ -237,3 +237,17 @@ def CheckSkillValidatorTestsOnCommit(input_api, output_api):
                                'scripts'),
         files_to_check=[r'.*test\.py$'])
     return input_api.RunTests(tests)
+
+
+def CheckSkillTestsOnCommit(input_api, output_api):
+    """Runs all skill tests on commit."""
+    skills_dir = input_api.os_path.join(input_api.PresubmitLocalPath(), 'agents', 'skills')
+    unit_tests = []
+    for root, _, filenames in input_api.os_walk(skills_dir):
+        for filename in filenames:
+            if filename.endswith('_test.py') or filename.endswith('_unittest.py'):
+                full_path = input_api.os_path.join(root, filename)
+                rel_path = input_api.os_path.relpath(full_path, input_api.PresubmitLocalPath())
+                unit_tests.append(rel_path)
+    tests = input_api.canned_checks.GetUnitTests(input_api, output_api, unit_tests)
+    return input_api.RunTests(tests)
