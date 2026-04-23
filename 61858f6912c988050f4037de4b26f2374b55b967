@@ -104,6 +104,24 @@
       "parentUuid": "46d0edc0_059c3210",
       "revId": "61858f6912c988050f4037de4b26f2374b55b967",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "23d64428_21ce80bc",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002869
+      },
+      "writtenOn": "2026-04-23T17:06:16Z",
+      "side": 1,
+      "message": "For example, upstream there\u0027s a lot more than just skills (https://source.chromium.org/chromium/chromium/src/+/main:agents/) and I think it\u0027s nice to have shared ownership for all these here too.",
+      "parentUuid": "5a63d025_3f95ac31",
+      "revId": "61858f6912c988050f4037de4b26f2374b55b967",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
