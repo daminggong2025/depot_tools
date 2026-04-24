@@ -16,6 +16,42 @@
       "message": "nit: remove one of the two blank lines?",
       "revId": "dacc218cdbd527dc9826265c9670de9bec693f43",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "91459050_feeddad4",
+        "filename": "agents/skills/luci-test-results/SKILL.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1001917
+      },
+      "writtenOn": "2026-04-24T21:52:11Z",
+      "side": 1,
+      "message": "Fix applied.",
+      "parentUuid": "a1072fd4_7149a89c",
+      "fixSuggestions": [
+        {
+          "fixId": "77349352_ceece2eb",
+          "description": "GET_AI_FIX_FOR_COMMENT prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "agents/skills/luci-test-results/SKILL.md",
+              "range": {
+                "startLine": 49,
+                "startChar": 0,
+                "endLine": 50,
+                "endChar": 0
+              },
+              "replacement": ""
+            }
+          ]
+        }
+      ],
+      "revId": "dacc218cdbd527dc9826265c9670de9bec693f43",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
