@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "43a4b2c9_8d498478",
+        "filename": "gn.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2026-04-24T06:17:56Z",
+      "side": 1,
+      "message": "Better to show that this is not supported and recommend to use buildtools path too?",
+      "range": {
+        "startLine": 57,
+        "startChar": 22,
+        "endLine": 57,
+        "endChar": 46
+      },
+      "revId": "2d59870217b5abe1440b49c46d962ee5c26503c1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
