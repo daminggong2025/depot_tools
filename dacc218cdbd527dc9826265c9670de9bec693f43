@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a1072fd4_7149a89c",
+        "filename": "agents/skills/luci-test-results/SKILL.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1002869
+      },
+      "writtenOn": "2026-04-24T12:18:49Z",
+      "side": 1,
+      "message": "nit: remove one of the two blank lines?",
+      "revId": "dacc218cdbd527dc9826265c9670de9bec693f43",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
