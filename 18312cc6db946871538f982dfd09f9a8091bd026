@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "f1dc86ac_917fa77a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 11
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1241393
+      },
+      "writtenOn": "2026-04-24T19:49:49Z",
+      "side": 1,
+      "message": "`luci-test-results` is kind of specific for looking at ResultDB test results, so I think combining the two might be the most effective thing. I\u0027m not sure how the two descriptions interact.",
+      "parentUuid": "25ede014_90cd19c3",
+      "revId": "18312cc6db946871538f982dfd09f9a8091bd026",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "37cc7968_eb177f83",
