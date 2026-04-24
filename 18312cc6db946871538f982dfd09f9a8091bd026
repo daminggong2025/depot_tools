@@ -1,0 +1,112 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "37cc7968_eb177f83",
+        "filename": "agents/skills/buildbucket/SKILL.md",
+        "patchSetId": 11
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1241393
+      },
+      "writtenOn": "2026-04-24T19:28:58Z",
+      "side": 1,
+      "message": "git cl format doesn\u0027t wrap this?",
+      "revId": "18312cc6db946871538f982dfd09f9a8091bd026",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2d0e6f3e_b2ec6c84",
+        "filename": "agents/skills/buildbucket/SKILL.md",
+        "patchSetId": 11
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1241393
+      },
+      "writtenOn": "2026-04-24T19:28:58Z",
+      "side": 1,
+      "message": "I got this when trying to use the skill. Might be worth mentioning bb auth-login.\n\n```\nThe command failed again because the bb tool is not authenticated in the current environment.\n\nAdding the explicit patchset (--patchset 1) successfully bypassed the Gerrit API call, but the subsequent call to the bb tool resulted in the error: Login required: run bb auth-login``\n\nSince I cannot perform interactive authentication, you will need to run bb auth-login manually in your terminal to authorize the bb tool. Once you have authenticated, let me know and I can try pulling the results again!\n```",
+      "revId": "18312cc6db946871538f982dfd09f9a8091bd026",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b9fce840_c03bc26b",
+        "filename": "agents/skills/buildbucket/scripts/bb_wrapper.py",
+        "patchSetId": 11
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1241393
+      },
+      "writtenOn": "2026-04-24T19:28:58Z",
+      "side": 1,
+      "message": "I got some issues when trying to get results from a Gerrit link:\n\n```\nSummary of Work\n\n- Observed that the raw bb tool failed to parse the corp URL due to regex constraints.\n- Observed that it also required a patchset number when using the public mirror URL.\n- Launched the raw bb command with the public URL and patchset 1 in the background.\n```\n\nAnd the command `bb ls -cl https://chromium-review.googlesource.com/c/chromium/src/+/7474058/1 -n 20` seems to be hanging. Not sure if it\u0027s extremely slow (there are runs with a ton of failures in this CL) or it\u0027s just buggy.",
+      "revId": "18312cc6db946871538f982dfd09f9a8091bd026",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b20100cd_a34c039b",
+        "filename": "agents/skills/buildbucket/scripts/bb_wrapper.py",
+        "patchSetId": 11
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1241393
+      },
+      "writtenOn": "2026-04-24T19:28:58Z",
+      "side": 1,
+      "message": "If you place this skill in your home\u0027s skills dir, it doesn\u0027t quite work because of this assumption:\n\n```\n/usr/local/google/home/hnakashima/.gemini/jetski/skills/buildbucket/scripts/bb_wrapper.py cl https://chromium-review.git.corp.google.com/c/chromium/src/+/7474058\nTraceback (most recent call last):\n  File \"/usr/local/google/home/hnakashima/.gemini/jetski/skills/buildbucket/scri\npts/bb_wrapper.py\", line 20, in \u003cmodule\u003e\n    import git_cl\nModuleNotFoundError: No module named \u0027git_cl\u0027\n```\n\nMaybe a non-issue. Just flagging.",
+      "range": {
+        "startLine": 17,
+        "startChar": 0,
+        "endLine": 20,
+        "endChar": 13
+      },
+      "revId": "18312cc6db946871538f982dfd09f9a8091bd026",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3e4a165f_edbe3fe1",
+        "filename": "agents/skills/buildbucket/scripts/bb_wrapper.py",
+        "patchSetId": 11
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 1241393
+      },
+      "writtenOn": "2026-04-24T19:28:58Z",
+      "side": 1,
+      "message": "Should not ignore these errors, instead raise or log them.",
+      "revId": "18312cc6db946871538f982dfd09f9a8091bd026",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "03dab345_bb53eec0",
+        "filename": "agents/skills/buildbucket/scripts/bb_wrapper_test.py",
+        "patchSetId": 11
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1241393
+      },
+      "writtenOn": "2026-04-24T19:28:58Z",
+      "side": 1,
+      "message": "Should assert that this outputs stuff to the stdout/err (esp. the failure).",
+      "revId": "18312cc6db946871538f982dfd09f9a8091bd026",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
