@@ -1,6 +1,29 @@
 {
   "comments": [
     {
+      "unresolved": true,
+      "key": {
+        "uuid": "320c4d4d_8f81c552",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2026-04-24T01:17:35Z",
+      "side": 1,
+      "message": "Just curious, how do they run build? Are they builders or a local development tool?",
+      "range": {
+        "startLine": 16,
+        "startChar": 3,
+        "endLine": 17,
+        "endChar": 38
+      },
+      "revId": "2b9d48bc61eb561f161e268e864db018b25af01f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": false,
       "key": {
         "uuid": "ac4dc54e_1acb2174",
