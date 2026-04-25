@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "711efed8_1178c499",
+        "filename": "gclient_utils.py",
+        "patchSetId": 17
+      },
+      "lineNbr": 951,
+      "author": {
+        "id": 1326772
+      },
+      "writtenOn": "2026-04-25T00:07:18Z",
+      "side": 1,
+      "message": "Thanks for improving the logging. I regularly hit gclient stall issue.\nCould we add a bit more about this? I don\u0027t know what \u0027check for background prompts\u0027 means.",
+      "range": {
+        "startLine": 951,
+        "startChar": 15,
+        "endLine": 951,
+        "endChar": 66
+      },
+      "revId": "442cbd6d584d2c992ca9bcc19ecbd2235bea772e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
