@@ -132,6 +132,8 @@ _EXTENDED_LICENSE_CLASSIFIERS = frozenset([
     # go/keep-sorted start case=no
     "AhemFont",
     "Android-SDK",
+    "anyContains-GPL-",
+    "anyStartsWith-Apache-",
     "LZMA",
     "Public Domain",
     "Public-Domain-Gutenberg",
