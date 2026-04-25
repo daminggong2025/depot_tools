@@ -79,6 +79,7 @@ _ALLOWED_SPDX_LICENSES = frozenset([
     "BSD-2-Clause-FreeBSD",
     "BSD-3-Clause",
     "BSD-3-Clause-Attribution",
+    "BSD-3-Clause-flex",
     "BSD-3-Clause-Open-MPI",
     "BSD-4-Clause",
     "BSD-4-Clause-UC",
@@ -132,6 +133,8 @@ _EXTENDED_LICENSE_CLASSIFIERS = frozenset([
     # go/keep-sorted start case=no
     "AhemFont",
     "Android-SDK",
+    "anyContains-GPL-",
+    "anyStartsWith-Apache-",
     "LZMA",
     "Public Domain",
     "Public-Domain-Gutenberg",
@@ -221,6 +224,7 @@ _WITH_PERMISSION_ONLY = frozenset([
     # go/keep-sorted end
     # by_exception_only.
     # go/keep-sorted start case=no
+    "Alliance-for-Open-Media-Patent",
     "Commercial",
     "MicrosoftEnterpriseWindowsDriverKit",
     "Opus-Patent-BSD-3-Clause",
