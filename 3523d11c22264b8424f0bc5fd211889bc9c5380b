@@ -33,6 +33,23 @@
       "message": "Owner",
       "revId": "3523d11c22264b8424f0bc5fd211889bc9c5380b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b6b417db_8e8d5701",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 4012691
+      },
+      "writtenOn": "2026-04-27T17:32:05Z",
+      "side": 1,
+      "message": "From 3523d11c22264b8424f0bc5fd211889bc9c5380b Mon Sep 17 00:00:00 2001\nFrom: Alex Ovsienko \u003covsienko@google.com\u003e\nDate: Tue, 16 Dec 2025 16:09:00 -0800\nSubject: [PATCH] Enable unit test integration for vscode users.\n\n.vscode folder will be picked up for every vscode that opens this project, and the config makes it so that tests are ran with vpython3.\n\nChange-Id: Ide0566287dde36b914dd55053daba4d36a6a6964\nReviewed-on: https://chromium-review.googlesource.com/c/chromium/tools/depot_tools/+/7262695\nCommit-Queue: Alex Ovsienko \u003covsienko@google.com\u003e\nReviewed-by: Junji Watanabe \u003cjwata@google.com\u003e\nReviewed-by: Scott Lee \u003cddoman@chromium.org\u003e\n---\n\ndiff --git a/.vscode/settings.json b/.vscode/settings.json\nnew file mode 100644\nindex 0000000..a5f0baa\n--- /dev/null\n+++ b/.vscode/settings.json\n@@ -0,0 +1,11 @@\n+{\n+    \"python.testing.unittestEnabled\": true,\n+    \"python.testing.pytestEnabled\": true,\n+    \"python.testing.unittestArgs\": [\n+        \"-s\",\n+        \"./tests\",\n+        \"-p\",\n+        \"*_test.py\"\n+    ],\n+    \"python.defaultInterpreterPath\": \"vpython3\"\n+}",
+      "revId": "3523d11c22264b8424f0bc5fd211889bc9c5380b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
