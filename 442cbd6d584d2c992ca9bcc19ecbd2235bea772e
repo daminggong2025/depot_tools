@@ -22,6 +22,30 @@
       },
       "revId": "442cbd6d584d2c992ca9bcc19ecbd2235bea772e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e89c8682_be79a863",
+        "filename": "gclient_utils.py",
+        "patchSetId": 17
+      },
+      "lineNbr": 951,
+      "author": {
+        "id": 1103654
+      },
+      "writtenOn": "2026-04-27T15:40:36Z",
+      "side": 1,
+      "message": "Does it eventually succeed or does it get stuck? If it eventually succeeds, we could either increase the timeout or potentially have a list of known steps that take a long time and have different/no timeouts for those.",
+      "parentUuid": "711efed8_1178c499",
+      "range": {
+        "startLine": 951,
+        "startChar": 15,
+        "endLine": 951,
+        "endChar": 66
+      },
+      "revId": "442cbd6d584d2c992ca9bcc19ecbd2235bea772e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
