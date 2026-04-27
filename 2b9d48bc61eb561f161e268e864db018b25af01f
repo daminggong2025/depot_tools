@@ -26,6 +26,30 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "d7b1e316_8f08c50b",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1163549
+      },
+      "writtenOn": "2026-04-27T16:57:09Z",
+      "side": 1,
+      "message": "It\u0027s a script that\u0027s available at `//agents/testing/eval_prompts.py`. That should run locally for basically anyone. There\u0027s also a builder that uses [this recipe](https://source.chromium.org/chromium/infra/infra_superproject/+/main:build/recipes/recipes/chromium/eval_prompts.py), which just essentially sets up the necessary environment to run the tests quickly and then invokes that same script.",
+      "parentUuid": "320c4d4d_8f81c552",
+      "range": {
+        "startLine": 16,
+        "startChar": 3,
+        "endLine": 17,
+        "endChar": 38
+      },
+      "revId": "2b9d48bc61eb561f161e268e864db018b25af01f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "ac4dc54e_1acb2174",
         "filename": "/PATCHSET_LEVEL",
         "patchSetId": 1
