@@ -16,6 +16,23 @@
       "message": "From bcb32289654c2f5216b8f629aa8e4c7cb9f0a976 Mon Sep 17 00:00:00 2001\nFrom: Alex Ovsienko \u003covsienko@google.com\u003e\nDate: Tue, 16 Dec 2025 09:11:27 +0900\nSubject: [PATCH] Enable unit test integration for vscode users.\n\n.vscode folder will be picked up for every vscode that opens this project, and the config makes it so that tests are ran with vpython3.\n\nChange-Id: Ide0566287dde36b914dd55053daba4d36a6a6964\n---\n\ndiff --git a/.vscode/settings.json b/.vscode/settings.json\nnew file mode 100644\nindex 0000000..a5f0baa\n--- /dev/null\n+++ b/.vscode/settings.json\n@@ -0,0 +1,11 @@\n+{\n+    \"python.testing.unittestEnabled\": true,\n+    \"python.testing.pytestEnabled\": true,\n+    \"python.testing.unittestArgs\": [\n+        \"-s\",\n+        \"./tests\",\n+        \"-p\",\n+        \"*_test.py\"\n+    ],\n+    \"python.defaultInterpreterPath\": \"vpython3\"\n+}",
       "revId": "3523d11c22264b8424f0bc5fd211889bc9c5380b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0e9d91d0_346b5d05",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 4012691
+      },
+      "writtenOn": "2026-04-27T17:29:57Z",
+      "side": 1,
+      "message": "Owner",
+      "revId": "3523d11c22264b8424f0bc5fd211889bc9c5380b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
