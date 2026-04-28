@@ -237,3 +237,14 @@ def CheckSkillValidatorTestsOnCommit(input_api, output_api):
                                'scripts'),
         files_to_check=[r'.*test\.py$'])
     return input_api.RunTests(tests)
+
+
+def CheckSkillTestsOnCommit(input_api, output_api):
+    """Runs all skill tests on commit."""
+    tests = input_api.canned_checks.GetUnitTestsRecursively(
+        input_api,
+        output_api,
+        input_api.os_path.join('agents', 'skills'),
+        files_to_check=[r'.+_(?:unit)?test\.py$'],
+        files_to_skip=[])
+    return input_api.RunTests(tests)
