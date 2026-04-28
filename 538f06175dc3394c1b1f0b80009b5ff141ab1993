@@ -16,6 +16,98 @@
       "message": "Removed presubmit changes.",
       "revId": "538f06175dc3394c1b1f0b80009b5ff141ab1993",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "57f21532_dadd4dd0",
+        "filename": "agents/skills/buildbucket/SKILL.md",
+        "patchSetId": 20
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1241393
+      },
+      "writtenOn": "2026-04-28T18:01:54Z",
+      "side": 1,
+      "message": "to avoid",
+      "range": {
+        "startLine": 4,
+        "startChar": 48,
+        "endLine": 5,
+        "endChar": 34
+      },
+      "revId": "538f06175dc3394c1b1f0b80009b5ff141ab1993",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e224f27a_2d60f2ca",
+        "filename": "agents/skills/buildbucket/SKILL.md",
+        "patchSetId": 20
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1241393
+      },
+      "writtenOn": "2026-04-28T18:01:54Z",
+      "side": 1,
+      "message": "comprehensive information about",
+      "range": {
+        "startLine": 8,
+        "startChar": 2,
+        "endLine": 8,
+        "endChar": 36
+      },
+      "revId": "538f06175dc3394c1b1f0b80009b5ff141ab1993",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7b5000d6_d1cee993",
+        "filename": "agents/skills/luci-test-results/SKILL.md",
+        "patchSetId": 20
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1241393
+      },
+      "writtenOn": "2026-04-28T18:01:54Z",
+      "side": 1,
+      "message": "Fetches lists",
+      "range": {
+        "startLine": 5,
+        "startChar": 2,
+        "endLine": 5,
+        "endChar": 65
+      },
+      "revId": "538f06175dc3394c1b1f0b80009b5ff141ab1993",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d848faaf_1944a21a",
+        "filename": "agents/skills/luci-test-results/SKILL.md",
+        "patchSetId": 20
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1241393
+      },
+      "writtenOn": "2026-04-28T18:01:54Z",
+      "side": 1,
+      "message": "and the failure causes",
+      "range": {
+        "startLine": 6,
+        "startChar": 10,
+        "endLine": 6,
+        "endChar": 12
+      },
+      "revId": "538f06175dc3394c1b1f0b80009b5ff141ab1993",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
