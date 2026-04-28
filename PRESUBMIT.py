@@ -230,10 +230,28 @@ def CheckSkillFiles(input_api, output_api):
 
 def CheckSkillValidatorTestsOnCommit(input_api, output_api):
     """Runs skill-validator tests on commit."""
-    tests = input_api.canned_checks.GetUnitTestsInDirectory(
-        input_api,
-        output_api,
-        input_api.os_path.join('agents', 'skills', 'skill-validator',
-                               'scripts'),
-        files_to_check=[r'.*test\.py$'])
-    return input_api.RunTests(tests)
+    directory = input_api.os_path.join('agents', 'skills', 'skill-validator',
+                                       'scripts')
+    files_to_check = [r'.*test\.py$']
+
+    tests = []
+    for filepath in input_api.change.AllFiles(directory):
+        if any(input_api.re.match(f, filepath) for f in files_to_check):
+            tests.append(input_api.os_path.join(directory, filepath))
+
+    return input_api.RunTests(
+        input_api.canned_checks.GetUnitTests(input_api, output_api, tests))
+
+
+def CheckSkillTestsOnCommit(input_api, output_api):
+    """Runs all skill tests on commit."""
+    directory = input_api.os_path.join('agents', 'skills')
+    files_to_check = [r'.+_(?:unit)?test\.py$']
+
+    tests = []
+    for filepath in input_api.change.AllFiles(directory):
+        if any(input_api.re.match(f, filepath) for f in files_to_check):
+            tests.append(input_api.os_path.join(directory, filepath))
+
+    return input_api.RunTests(
+        input_api.canned_checks.GetUnitTests(input_api, output_api, tests))
