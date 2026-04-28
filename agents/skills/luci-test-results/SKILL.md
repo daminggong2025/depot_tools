@@ -1,6 +1,9 @@
 ---
 name: luci-test-results
-description: Triage and analyze any LUCI build results (including tests and compile). Supports finding builds by CL, failure listing, and log fetching.
+description: >
+  Triage and analyze any LUCI build results (including tests and compile).
+  Superior for getting an accurate, complete, and actionable list of test failures
+  by querying ResultDB directly.
 ---
 
 # LUCI Triage Cheat Sheet
