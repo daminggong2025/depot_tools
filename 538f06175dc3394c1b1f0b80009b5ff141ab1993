@@ -41,6 +41,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "6aff889a_ff34ae4c",
+        "filename": "agents/skills/buildbucket/SKILL.md",
+        "patchSetId": 20
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1002869
+      },
+      "writtenOn": "2026-04-28T18:14:53Z",
+      "side": 1,
+      "message": "Done, gemini picked \u0027without overly verbose logs\u0027 which I think is sufficient.",
+      "parentUuid": "57f21532_dadd4dd0",
+      "range": {
+        "startLine": 4,
+        "startChar": 48,
+        "endLine": 5,
+        "endChar": 34
+      },
+      "revId": "538f06175dc3394c1b1f0b80009b5ff141ab1993",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e224f27a_2d60f2ca",
@@ -54,6 +78,30 @@
       "writtenOn": "2026-04-28T18:01:54Z",
       "side": 1,
       "message": "comprehensive information about",
+      "range": {
+        "startLine": 8,
+        "startChar": 2,
+        "endLine": 8,
+        "endChar": 36
+      },
+      "revId": "538f06175dc3394c1b1f0b80009b5ff141ab1993",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b69ee219_4b4e53ae",
+        "filename": "agents/skills/buildbucket/SKILL.md",
+        "patchSetId": 20
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1002869
+      },
+      "writtenOn": "2026-04-28T18:14:53Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e224f27a_2d60f2ca",
       "range": {
         "startLine": 8,
         "startChar": 2,
@@ -87,6 +135,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "acbaf5a1_53db99cb",
+        "filename": "agents/skills/luci-test-results/SKILL.md",
+        "patchSetId": 20
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1002869
+      },
+      "writtenOn": "2026-04-28T18:14:53Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7b5000d6_d1cee993",
+      "range": {
+        "startLine": 5,
+        "startChar": 2,
+        "endLine": 5,
+        "endChar": 65
+      },
+      "revId": "538f06175dc3394c1b1f0b80009b5ff141ab1993",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d848faaf_1944a21a",
@@ -100,6 +172,30 @@
       "writtenOn": "2026-04-28T18:01:54Z",
       "side": 1,
       "message": "and the failure causes",
+      "range": {
+        "startLine": 6,
+        "startChar": 10,
+        "endLine": 6,
+        "endChar": 12
+      },
+      "revId": "538f06175dc3394c1b1f0b80009b5ff141ab1993",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1921dc3e_56ca9ee6",
+        "filename": "agents/skills/luci-test-results/SKILL.md",
+        "patchSetId": 20
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1002869
+      },
+      "writtenOn": "2026-04-28T18:14:53Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d848faaf_1944a21a",
       "range": {
         "startLine": 6,
         "startChar": 10,
