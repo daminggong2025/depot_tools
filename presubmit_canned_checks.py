@@ -1232,7 +1232,12 @@ def GetUnitTestsRecursively(input_api,
         found += 1
         if check(filepath):
             to_run += 1
-            tests.append(filepath)
+            if not input_api.os_path.isabs(
+                    filepath) and not filepath.startswith(
+                        directory + input_api.os_path.sep):
+                tests.append(input_api.os_path.join(directory, filepath))
+            else:
+                tests.append(filepath)
     input_api.logging.debug('Found %d files, running %d' % (found, to_run))
     if not to_run:
         return [

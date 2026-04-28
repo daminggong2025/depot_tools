@@ -332,6 +332,47 @@ class InclusiveLanguageCheckTest(unittest.TestCase):
         self.assertTrue(os.path.normpath('dir2/2.py') in errors[0].message)
 
 
+class GetUnitTestsRecursivelyTest(unittest.TestCase):
+
+    def testPrependsDirectory(self):
+        input_api = MockInputApi()
+        input_api.verbose = False
+
+        def mock_command(name, cmd, kwargs, message):
+            m = mock.Mock()
+            m.name = name
+            return m
+
+        input_api.Command = mock_command
+        input_api.change = MockChange([], issue=123)
+        input_api.change.RepositoryRoot = lambda: ''
+        input_api.presubmit_local_path = ''
+
+        # Mock input_api.change.AllFiles to return relative paths from directory
+        input_api.change.AllFiles = lambda directory: [
+            'skill-validator/scripts/skill_validator_test.py',
+            'buildbucket/scripts/bb_wrapper_test.py'
+        ]
+
+        # Mock input_api.re.match to match all tests
+        input_api.re.match = lambda regex, filename: True
+
+        tests = presubmit_canned_checks.GetUnitTestsRecursively(
+            input_api,
+            MockOutputApi(),
+            'agents/skills',
+            files_to_check=[r'.*test\.py$'],
+            files_to_skip=[])
+
+        # Verify that paths in tests have directory prefix!
+        test_names = [t.name for t in tests]
+        self.assertIn(
+            'agents/skills/skill-validator/scripts/skill_validator_test.py',
+            test_names)
+        self.assertIn('agents/skills/buildbucket/scripts/bb_wrapper_test.py',
+                      test_names)
+
+
 
 class DescriptionChecksTest(unittest.TestCase):
     def testCheckDescriptionUsesColonInsteadOfEquals(self):
