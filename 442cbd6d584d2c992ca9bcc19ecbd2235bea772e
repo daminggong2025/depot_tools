@@ -46,6 +46,30 @@
       },
       "revId": "442cbd6d584d2c992ca9bcc19ecbd2235bea772e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b8ce7b2f_2cecf54b",
+        "filename": "gclient_utils.py",
+        "patchSetId": 17
+      },
+      "lineNbr": 951,
+      "author": {
+        "id": 1326772
+      },
+      "writtenOn": "2026-04-28T00:25:49Z",
+      "side": 1,
+      "message": "Stuck for 1 hour for just 1 submodule. I suspect I hit the [3] here.\nWhen I saw the \u0027background prompts\u0027, I thought it\u0027s hidden somewhere in some logs. Especially after we recently had the auth incident. But now I think you just mean the std output, right? When I sync on corp machine, sometimes I saw the std output mentions that some repos need auth and I need to run some login commands.",
+      "parentUuid": "e89c8682_be79a863",
+      "range": {
+        "startLine": 951,
+        "startChar": 15,
+        "endLine": 951,
+        "endChar": 66
+      },
+      "revId": "442cbd6d584d2c992ca9bcc19ecbd2235bea772e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
