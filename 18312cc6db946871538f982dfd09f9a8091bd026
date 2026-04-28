@@ -53,6 +53,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "b8e18dee_bbad18fa",
+        "filename": "agents/skills/buildbucket/SKILL.md",
+        "patchSetId": 11
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1002869
+      },
+      "writtenOn": "2026-04-28T15:20:20Z",
+      "side": 1,
+      "message": "Hmm... not sure we have any markdown formatting yet in git cl format. It would be nice though.",
+      "parentUuid": "37cc7968_eb177f83",
+      "revId": "18312cc6db946871538f982dfd09f9a8091bd026",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "2d0e6f3e_b2ec6c84",
@@ -70,6 +88,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "a4544133_86325a46",
+        "filename": "agents/skills/buildbucket/SKILL.md",
+        "patchSetId": 11
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1002869
+      },
+      "writtenOn": "2026-04-28T15:20:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2d0e6f3e_b2ec6c84",
+      "revId": "18312cc6db946871538f982dfd09f9a8091bd026",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "b9fce840_c03bc26b",
@@ -83,6 +119,24 @@
       "writtenOn": "2026-04-24T19:28:58Z",
       "side": 1,
       "message": "I got some issues when trying to get results from a Gerrit link:\n\n```\nSummary of Work\n\n- Observed that the raw bb tool failed to parse the corp URL due to regex constraints.\n- Observed that it also required a patchset number when using the public mirror URL.\n- Launched the raw bb command with the public URL and patchset 1 in the background.\n```\n\nAnd the command `bb ls -cl https://chromium-review.googlesource.com/c/chromium/src/+/7474058/1 -n 20` seems to be hanging. Not sure if it\u0027s extremely slow (there are runs with a ton of failures in this CL) or it\u0027s just buggy.",
+      "revId": "18312cc6db946871538f982dfd09f9a8091bd026",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "31597e33_49ee6320",
+        "filename": "agents/skills/buildbucket/scripts/bb_wrapper.py",
+        "patchSetId": 11
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002869
+      },
+      "writtenOn": "2026-04-28T15:20:20Z",
+      "side": 1,
+      "message": "I think this is fixed?",
+      "parentUuid": "b9fce840_c03bc26b",
       "revId": "18312cc6db946871538f982dfd09f9a8091bd026",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -127,6 +181,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ff74b989_693222e8",
+        "filename": "agents/skills/buildbucket/scripts/bb_wrapper.py",
+        "patchSetId": 11
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 1002869
+      },
+      "writtenOn": "2026-04-28T15:20:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3e4a165f_edbe3fe1",
+      "revId": "18312cc6db946871538f982dfd09f9a8091bd026",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "03dab345_bb53eec0",
@@ -140,6 +212,24 @@
       "writtenOn": "2026-04-24T19:28:58Z",
       "side": 1,
       "message": "Should assert that this outputs stuff to the stdout/err (esp. the failure).",
+      "revId": "18312cc6db946871538f982dfd09f9a8091bd026",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9bf10698_f9689db9",
+        "filename": "agents/skills/buildbucket/scripts/bb_wrapper_test.py",
+        "patchSetId": 11
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1002869
+      },
+      "writtenOn": "2026-04-28T15:20:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "03dab345_bb53eec0",
       "revId": "18312cc6db946871538f982dfd09f9a8091bd026",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }

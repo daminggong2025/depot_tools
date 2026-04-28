@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e8f75f46_0d75e3d4",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 13
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002869
+      },
+      "writtenOn": "2026-04-28T15:20:20Z",
+      "side": 1,
+      "message": "Thanks for trying it out! I think I\u0027ve addressed your comments. I think the buildbucket tool is mainly good for wrapping bb for agents and to deal with all failures (not just test failures). i.e. there are bots like pgo and orderfile that don\u0027t run tests but have tons of non-test failure cases.",
+      "revId": "39c5303a310fa16e72f010e8e63474d4bf84b764",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
