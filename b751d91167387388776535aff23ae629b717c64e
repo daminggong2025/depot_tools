@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "03181030_217bf6ed",
+        "filename": "PRESUBMIT.py",
+        "patchSetId": 19
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1241393
+      },
+      "writtenOn": "2026-04-28T17:54:43Z",
+      "side": 1,
+      "message": "Would move this to a separate CL along with other non-bb skill changes.",
+      "revId": "b751d91167387388776535aff23ae629b717c64e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
