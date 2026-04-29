@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9a51fba4_4f87fc77",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 4058813
+      },
+      "writtenOn": "2026-04-29T19:56:56Z",
+      "side": 1,
+      "message": "Hi Brian, I work on Chrome for Android, but I feel this change would be helpful to my workflow (and maybe others).\n\nThere\u0027s some steps to getting this in that I have not seen before, so I apologize in advance. I know that I will need to manually roll this change to chromeOS and also, obviously this CL fails the presubmit checks because it intentionally contains `DO NOT SUBMIT` in the message. If you think this is a reasonable change and know how, would you help me with getting this merged?",
+      "revId": "44b8cd011a0cdf8d8d3fa0d67fbd58d4f91b9e95",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
