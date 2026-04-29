@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "87425406_0e572ea7",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 6
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1544922
+      },
+      "writtenOn": "2026-04-29T01:26:05Z",
+      "side": 1,
+      "message": "Do you have a bug number to attach to this change?",
+      "revId": "3612d7203a0f39fe290eb79109f7fc754ee90a1e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "66160fe7_4384e096",
+        "filename": "metadata/fields/custom/license_allowlist.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 229,
+      "author": {
+        "id": 1544922
+      },
+      "writtenOn": "2026-04-29T01:26:05Z",
+      "side": 1,
+      "message": "Is using one of these licenses on a case-by-case basis? i.e. if another dep attempts to use one of these restricted licenses, is there any validation or warning?",
+      "revId": "3612d7203a0f39fe290eb79109f7fc754ee90a1e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
