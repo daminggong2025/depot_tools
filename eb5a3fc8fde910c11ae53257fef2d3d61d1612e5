@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fe2df9c0_5dac8c81",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1544922
+      },
+      "writtenOn": "2026-04-29T08:04:51Z",
+      "side": 1,
+      "message": "LGTM but I won\u0027t trigger auto-submit while you\u0027re OOO.",
+      "revId": "eb5a3fc8fde910c11ae53257fef2d3d61d1612e5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
