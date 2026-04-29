@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "bf70fcbd_ba05f393",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 6
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2026-04-29T08:02:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "87425406_0e572ea7",
+      "revId": "3612d7203a0f39fe290eb79109f7fc754ee90a1e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "66160fe7_4384e096",
@@ -31,6 +49,24 @@
       "writtenOn": "2026-04-29T01:26:05Z",
       "side": 1,
       "message": "Is using one of these licenses on a case-by-case basis? i.e. if another dep attempts to use one of these restricted licenses, is there any validation or warning?",
+      "revId": "3612d7203a0f39fe290eb79109f7fc754ee90a1e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6f3ab09e_e43c7584",
+        "filename": "metadata/fields/custom/license_allowlist.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 229,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2026-04-29T08:02:39Z",
+      "side": 1,
+      "message": "Currently, the effective purpose of this allowlist is to prevent unknown licenses being used. The import, and milestone (release) reviews are intended to catch the use of _any_ restrictive license in an unapproved way.\n\nEventually, once restrictive_license_approval.textproto is fully supported, I\u0027ll talk with open source licensing to see which (if any) of these they want to migrate.",
+      "parentUuid": "66160fe7_4384e096",
       "revId": "3612d7203a0f39fe290eb79109f7fc754ee90a1e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
