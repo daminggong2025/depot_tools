@@ -16,6 +16,24 @@
       "message": "Hi Brian, I work on Chrome for Android, but I feel this change would be helpful to my workflow (and maybe others).\n\nThere\u0027s some steps to getting this in that I have not seen before, so I apologize in advance. I know that I will need to manually roll this change to chromeOS and also, obviously this CL fails the presubmit checks because it intentionally contains `DO NOT SUBMIT` in the message. If you think this is a reasonable change and know how, would you help me with getting this merged?",
       "revId": "44b8cd011a0cdf8d8d3fa0d67fbd58d4f91b9e95",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "27b46c9d_a1c88270",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-04-29T21:50:05Z",
+      "side": 1,
+      "message": "Subbing in for Brian as the main owner of depot_tools. I\u0027m overall a bit hesitant about this change since adding `DO NOT SUBMIT` would also bypass other presubmit checks/formatting/hooks that the user might want run. IMO DNS doesn\u0027t imply skipping all checks, despite it being experimental. and as you noted you\u0027d still need to manually add `--bypass-hooks` later anyway\n\nBut if you feel strongly about this, I recommend filing a feature request at https://b.corp.google.com/issues/new?component\u003d1456102\u0026template\u003d1922777 and seeing how many people also think this feature is worth adding",
+      "parentUuid": "9a51fba4_4f87fc77",
+      "revId": "44b8cd011a0cdf8d8d3fa0d67fbd58d4f91b9e95",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
