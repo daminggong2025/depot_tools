@@ -16,6 +16,40 @@
       "message": "PTAL: I\u0027m mostly new here and well aware how critical this infra is. I\u0027m not too happy with the testing and would love if there is a eral end2end test somwhere we could use.",
       "revId": "6838bee37083e00c40ff78a88fdd2ef4933b4928",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9f43d92d_5f7dd882",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 39
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-04-29T18:31:21Z",
+      "side": 1,
+      "message": "thanks, please also add a comment to chromium/src DEPS.\n\nAlso I think it\u0027d be better to use a single ExecutionQueue for all hooks and translate the sequential order into `requirements` (instead of setting `ignore_requirements\u003dTrue`). not blocking, but if you decide it\u0027s better to do in a followup, you should put a TODO somewhere",
+      "revId": "6838bee37083e00c40ff78a88fdd2ef4933b4928",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c1ab9b0c_f2f6afb5",
+        "filename": "gclient.py",
+        "patchSetId": 39
+      },
+      "lineNbr": 1532,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-04-29T18:31:21Z",
+      "side": 1,
+      "message": "nit: enqueue",
+      "revId": "6838bee37083e00c40ff78a88fdd2ef4933b4928",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
