@@ -5661,6 +5661,17 @@ def CMDupload(parser, args):
 
     cl = Changelist(branchref=options.target_branch)
 
+    # Bypass hooks if last commit message contains "DO NOT SUBMIT" on first upload.
+    if not options.bypass_hooks and not cl.GetIssue():
+        try:
+            if 'DO NOT SUBMIT' in RunGit(['log', '-1', '--format=%B']):
+                print('Bypassing hooks automatically because "DO NOT SUBMIT" '
+                      'was found in the last commit message.')
+                options.bypass_hooks = True
+        except Exception:
+            pass
+
+
     # Ensure we're authenticated correctly. Otherwise `git cl upload` will:
     #   * run `git status` (slow for large repos)
     #   * run presubmit tests (likely slow)
