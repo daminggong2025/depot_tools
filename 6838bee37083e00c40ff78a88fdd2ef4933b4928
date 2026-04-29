@@ -55,6 +55,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "90bf752c_7de35e60",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 39
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-04-29T18:59:49Z",
+      "side": 1,
+      "message": "yes, I believe so: https://source.chromium.org/chromium/chromium/tools/depot_tools/+/main:gclient_utils.py;l\u003d1006-1007;drc\u003d442cbd6d584d2c992ca9bcc19ecbd2235bea772e",
+      "parentUuid": "76924648_228f657d",
+      "revId": "6838bee37083e00c40ff78a88fdd2ef4933b4928",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "c1ab9b0c_f2f6afb5",
         "filename": "gclient.py",
         "patchSetId": 39
