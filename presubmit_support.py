@@ -2110,7 +2110,10 @@ def DoPresubmitChecks(change,
         running_msg = 'Running presubmit '
         running_msg += 'commit ' if committing else 'upload '
         running_msg += 'checks '
-        if branch := scm.GIT.GetBranch(change.RepositoryRoot()):
+        branch = change.Name()
+        if not branch or branch == 'no name':
+            branch = scm.GIT.GetBranch(change.RepositoryRoot())
+        if branch:
             running_msg += f'on branch {branch} '
         running_msg += '...\n'
         sys.stdout.write(running_msg)
