@@ -22,11 +22,7 @@ import git_common
 
 
 def parse_options():
-    if sys.platform == 'win32':
-        print(
-            'ERROR: This script cannot run on Windows because it uses symlinks.'
-        )
-        sys.exit(1)
+
     if gclient_utils.IsEnvCog():
         print('ERROR: This script cannot run in non-git environment.')
         sys.exit(1)
@@ -72,6 +68,12 @@ def parse_options():
         '''otherwise the default is -1.''')
     args = parser.parse_args()
 
+    if sys.platform == 'win32' and not args.copy_on_write:
+        print(
+            'ERROR: This script cannot run on Windows unless --copy-on-write is used.'
+        )
+        sys.exit(1)
+
     if '--use-git-worktree' not in sys.argv and '--use-git-symlinks' not in sys.argv:
         print(
             'Warning: --use-git-worktree is now the default. If you experience\n'
@@ -100,6 +102,92 @@ def parse_options():
 
 _libc = None
 
+if sys.platform == 'win32':
+    import ctypes
+    from ctypes import wintypes
+
+    FSCTL_DUPLICATE_EXTENTS_TO_FILE = 0x00098344
+    GENERIC_READ = 0x80000000
+    GENERIC_WRITE = 0x40000000
+    FILE_SHARE_READ = 0x00000001
+    FILE_SHARE_WRITE = 0x00000002
+    OPEN_EXISTING = 3
+    CREATE_ALWAYS = 2
+    FILE_ATTRIBUTE_NORMAL = 0x80
+    INVALID_HANDLE_VALUE = -1
+    FILE_BEGIN = 0
+
+    class DUPLICATE_EXTENTS_DATA(ctypes.Structure):
+        _fields_ = [
+            ("FileHandle", wintypes.HANDLE),
+            ("SourceFileOffset", ctypes.c_longlong),
+            ("TargetFileOffset", ctypes.c_longlong),
+            ("ByteCount", ctypes.c_longlong),
+        ]
+
+    kernel32 = ctypes.windll.kernel32
+
+    kernel32.CreateFileW.argtypes = [
+        wintypes.LPCWSTR,
+        wintypes.DWORD,
+        wintypes.DWORD,
+        ctypes.c_void_p,
+        wintypes.DWORD,
+        wintypes.DWORD,
+        wintypes.HANDLE,
+    ]
+    kernel32.CreateFileW.restype = wintypes.HANDLE
+
+    kernel32.DeviceIoControl.argtypes = [
+        wintypes.HANDLE,
+        wintypes.DWORD,
+        ctypes.c_void_p,
+        wintypes.DWORD,
+        ctypes.c_void_p,
+        wintypes.DWORD,
+        ctypes.POINTER(wintypes.DWORD),
+        ctypes.c_void_p,
+    ]
+    kernel32.DeviceIoControl.restype = wintypes.BOOL
+
+    kernel32.CloseHandle.argtypes = [wintypes.HANDLE]
+    kernel32.CloseHandle.restype = wintypes.BOOL
+
+    kernel32.GetFileSizeEx.argtypes = [
+        wintypes.HANDLE,
+        ctypes.POINTER(ctypes.c_longlong),
+    ]
+    kernel32.GetFileSizeEx.restype = wintypes.BOOL
+
+    kernel32.SetFilePointerEx.argtypes = [
+        wintypes.HANDLE,
+        ctypes.c_longlong,
+        ctypes.POINTER(ctypes.c_longlong),
+        wintypes.DWORD,
+    ]
+    kernel32.SetFilePointerEx.restype = wintypes.BOOL
+
+    kernel32.SetEndOfFile.argtypes = [wintypes.HANDLE]
+    kernel32.SetEndOfFile.restype = wintypes.BOOL
+
+    kernel32.ReadFile.argtypes = [
+        wintypes.HANDLE,
+        ctypes.c_void_p,
+        wintypes.DWORD,
+        ctypes.POINTER(wintypes.DWORD),
+        ctypes.c_void_p,
+    ]
+    kernel32.ReadFile.restype = wintypes.BOOL
+
+    kernel32.WriteFile.argtypes = [
+        wintypes.HANDLE,
+        ctypes.c_void_p,
+        wintypes.DWORD,
+        ctypes.POINTER(wintypes.DWORD),
+        ctypes.c_void_p,
+    ]
+    kernel32.WriteFile.restype = wintypes.BOOL
+
 
 def clonefile_darwin(src, dst):
     global _libc
@@ -117,10 +205,135 @@ def clonefile_darwin(src, dst):
         raise OSError(err, os.strerror(err), src, None, dst)
 
 
+def clonefile_windows(src, dst):
+    """Copies a file using Windows copy-on-write (block cloning)."""
+
+    src_handle = kernel32.CreateFileW(
+        src,
+        GENERIC_READ,
+        FILE_SHARE_READ | FILE_SHARE_WRITE,
+        None,
+        OPEN_EXISTING,
+        FILE_ATTRIBUTE_NORMAL,
+        None,
+    )
+    if src_handle == INVALID_HANDLE_VALUE:
+        raise ctypes.WinError()
+
+    try:
+        dst_handle = kernel32.CreateFileW(
+            dst,
+            GENERIC_WRITE,
+            FILE_SHARE_READ | FILE_SHARE_WRITE,
+            None,
+            CREATE_ALWAYS,
+            FILE_ATTRIBUTE_NORMAL,
+            None,
+        )
+        if dst_handle == INVALID_HANDLE_VALUE:
+            raise ctypes.WinError()
+
+        try:
+            file_size = ctypes.c_longlong()
+            if not kernel32.GetFileSizeEx(src_handle, ctypes.byref(file_size)):
+                raise ctypes.WinError()
+
+            FILE_BEGIN = 0
+            if not kernel32.SetFilePointerEx(
+                dst_handle, file_size, None, FILE_BEGIN
+            ):
+                raise ctypes.WinError()
+            if not kernel32.SetEndOfFile(dst_handle):
+                raise ctypes.WinError()
+
+            # Alignment to 64KB (covers 4KB and 64KB clusters)
+            alignment = 64 * 1024
+            aligned_size = (file_size.value // alignment) * alignment
+            remaining_size = file_size.value - aligned_size
+
+            # Clone the aligned part
+            if aligned_size > 0:
+                ded = DUPLICATE_EXTENTS_DATA()
+                ded.FileHandle = src_handle
+                ded.SourceFileOffset = 0
+                ded.TargetFileOffset = 0
+                ded.ByteCount = aligned_size
+
+                bytes_returned = wintypes.DWORD()
+                res = kernel32.DeviceIoControl(
+                    dst_handle,
+                    FSCTL_DUPLICATE_EXTENTS_TO_FILE,
+                    ctypes.byref(ded),
+                    ctypes.sizeof(ded),
+                    None,
+                    0,
+                    ctypes.byref(bytes_returned),
+                    None,
+                )
+                if not res:
+                    raise ctypes.WinError()
+
+            # Copy the remainder manually
+            if remaining_size > 0:
+                # Seek to aligned_size in both files
+                if not kernel32.SetFilePointerEx(
+                    src_handle,
+                    ctypes.c_longlong(aligned_size),
+                    None,
+                    FILE_BEGIN,
+                ):
+                    raise ctypes.WinError()
+                if not kernel32.SetFilePointerEx(
+                    dst_handle,
+                    ctypes.c_longlong(aligned_size),
+                    None,
+                    FILE_BEGIN,
+                ):
+                    raise ctypes.WinError()
+
+                # Read and write
+                buffer_size = 64 * 1024  # 64KB buffer
+                buffer = ctypes.create_string_buffer(buffer_size)
+                bytes_to_copy = remaining_size
+
+                while bytes_to_copy > 0:
+                    chunk = min(bytes_to_copy, buffer_size)
+                    bytes_read = wintypes.DWORD()
+                    if not kernel32.ReadFile(
+                        src_handle, buffer, chunk, ctypes.byref(bytes_read), None
+                    ):
+                        raise ctypes.WinError()
+                    if bytes_read.value == 0:
+                        break  # EOF
+
+                    bytes_written = wintypes.DWORD()
+                    if not kernel32.WriteFile(
+                        dst_handle,
+                        buffer,
+                        bytes_read.value,
+                        ctypes.byref(bytes_written),
+                        None,
+                    ):
+                        raise ctypes.WinError()
+                    bytes_to_copy -= bytes_read.value
+        finally:
+            kernel32.CloseHandle(dst_handle)
+    finally:
+        kernel32.CloseHandle(src_handle)
+
+
 def copy_on_write(src, dest):
     """Copies a file or directory using copy-on-write, if possible."""
     if sys.platform == 'darwin':
         clonefile_darwin(src, dest)
+    elif sys.platform == 'win32':
+        if os.path.isdir(src):
+            def ignore_git(dir, contents):
+                return ['.git'] if '.git' in contents else []
+            
+            shutil.copytree(src, dest, copy_function=clonefile_windows, ignore=ignore_git, dirs_exist_ok=True)
+        else:
+            clonefile_windows(src, dest)
     else:
         subprocess.check_call(['cp', '-a', '--reflink', src, dest])
 
@@ -131,11 +344,13 @@ def support_copy_on_write(src, dest):
     try:
         if sys.platform == 'darwin':
             clonefile_darwin(src, dest)
+        elif sys.platform == 'win32':
+            clonefile_windows(src, dest)
         else:
             subprocess.check_output(['cp', '-a', '--reflink', src, dest],
                                     stderr=subprocess.STDOUT)
     except OSError:
-        # clonefile_darwin failed
+        # clonefile_darwin or clonefile_windows failed
         return False
     except subprocess.CalledProcessError:
         # cp --reflink failed
@@ -298,7 +513,19 @@ def main():
                 print('Copy-on-write support is detected.')
 
         if not os.path.exists(new_gclient):
-            os.symlink(gclient, new_gclient)
+            try:
+                os.symlink(gclient, new_gclient)
+            except OSError:
+                if sys.platform == 'win32':
+                    print(
+                        'Warning: Failed to create symlink for .gclient. Falling back to copy.'
+                    )
+                    if args.copy_on_write:
+                        copy_on_write(gclient, new_gclient)
+                    else:
+                        shutil.copy(gclient, new_gclient)
+                else:
+                    raise
 
         if args.max_depth is None:
             # Since we're doing a btrfs subvolume snapshot or reflink copy, the
