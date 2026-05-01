@@ -43,7 +43,8 @@ import subprocess2 as subprocess
 # Shortcut.
 presubmit_canned_checks = presubmit.presubmit_canned_checks
 
-RUNNING_PY_CHECKS_TEXT = ('Running presubmit upload checks ...\n')
+RUNNING_PY_CHECKS_TEXT = (
+    'Running presubmit upload checks on branch mychange ...\n')
 
 # Access to a protected member XXX of a client class
 # pylint: disable=protected-access
