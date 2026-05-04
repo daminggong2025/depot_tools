@@ -71,6 +71,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "f8d36187_7453baeb",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 39
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1132654
+      },
+      "writtenOn": "2026-05-04T08:46:06Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "90bf752c_7de35e60",
+      "revId": "6838bee37083e00c40ff78a88fdd2ef4933b4928",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "c1ab9b0c_f2f6afb5",
@@ -84,6 +102,24 @@
       "writtenOn": "2026-04-29T18:31:21Z",
       "side": 1,
       "message": "nit: enqueue",
+      "revId": "6838bee37083e00c40ff78a88fdd2ef4933b4928",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e081e07d_2234e2fe",
+        "filename": "gclient.py",
+        "patchSetId": 39
+      },
+      "lineNbr": 1532,
+      "author": {
+        "id": 1132654
+      },
+      "writtenOn": "2026-05-04T08:46:06Z",
+      "side": 1,
+      "message": "Acknowledged",
+      "parentUuid": "c1ab9b0c_f2f6afb5",
       "revId": "6838bee37083e00c40ff78a88fdd2ef4933b4928",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
