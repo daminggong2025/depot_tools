@@ -16,6 +16,29 @@
       "message": "PTAL again",
       "revId": "33113a81cfe2c531341985c2d29a2bde01870f9e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3dddaa9b_b3974200",
+        "filename": "gclient.py",
+        "patchSetId": 42
+      },
+      "lineNbr": 1529,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-05-04T18:27:37Z",
+      "side": 1,
+      "message": "nit: fix formatting",
+      "range": {
+        "startLine": 1528,
+        "startChar": 7,
+        "endLine": 1529,
+        "endChar": 7
+      },
+      "revId": "33113a81cfe2c531341985c2d29a2bde01870f9e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
