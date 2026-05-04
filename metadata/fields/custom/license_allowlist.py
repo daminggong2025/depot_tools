@@ -102,7 +102,6 @@ _ALLOWED_SPDX_LICENSES = frozenset([
     "ISC",
     "JSON",
     "Libpng",
-    "libpng-2.0",
     "libtiff",
     "Martin-Birgmeier",
     "Minpack",
