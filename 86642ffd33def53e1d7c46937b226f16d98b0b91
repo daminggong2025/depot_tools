@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0709e73f_75166b26",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-05-04T18:55:57Z",
+      "side": 1,
+      "message": "please add a test: https://crsrc.org/d/tests/gclient_paths_test.py",
+      "revId": "86642ffd33def53e1d7c46937b226f16d98b0b91",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
