@@ -20,6 +20,24 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "85e5c76c_bb55d31d",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 6
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2026-05-05T03:48:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2b01dbe4_489d2e7d",
+      "revId": "28cccec5ba1eb304b26ee53b7e5c4b67602646a8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "2ab58454_6bc8c00e",
         "filename": "metadata/fields/custom/license.py",
         "patchSetId": 6
@@ -52,6 +70,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "250a6bdf_adfa9bf6",
+        "filename": "metadata/fields/custom/license.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2026-05-05T03:48:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "663b8643_5fe0b21a",
+      "revId": "28cccec5ba1eb304b26ee53b7e5c4b67602646a8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "070eecb3_d9f31b9c",
@@ -65,6 +101,24 @@
       "writtenOn": "2026-04-23T07:42:13Z",
       "side": 1,
       "message": "Variable names should be related to the significance. Perhaps `restricted_approval_filepath`?\n\nAlso, perhaps add a global constant for `\"restrictive_license_approval.textproto\"`.",
+      "revId": "28cccec5ba1eb304b26ee53b7e5c4b67602646a8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "94601cdb_42b5990e",
+        "filename": "metadata/fields/custom/license.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2026-05-05T03:48:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "070eecb3_d9f31b9c",
       "revId": "28cccec5ba1eb304b26ee53b7e5c4b67602646a8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -86,6 +140,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "7c137b1b_ab2e0fc6",
+        "filename": "metadata/restrictive_license_approval_pb2.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2026-05-05T03:48:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e616370f_92d728c5",
+      "revId": "28cccec5ba1eb304b26ee53b7e5c4b67602646a8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "bab32c7c_c7c07a85",
@@ -99,6 +171,42 @@
       "writtenOn": "2026-04-23T07:42:13Z",
       "side": 1,
       "message": "This isn\u0027t used anymore?",
+      "revId": "28cccec5ba1eb304b26ee53b7e5c4b67602646a8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0477ef26_c378b8de",
+        "filename": "metadata/tests/fields_test.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2026-05-05T03:48:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "bab32c7c_c7c07a85",
+      "revId": "28cccec5ba1eb304b26ee53b7e5c4b67602646a8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "57367be0_473d5a3b",
+        "filename": "metadata/tests/fields_test.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2026-05-05T03:48:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "bab32c7c_c7c07a85",
       "revId": "28cccec5ba1eb304b26ee53b7e5c4b67602646a8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
