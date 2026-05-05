@@ -22,7 +22,27 @@ import metadata.fields.field_types as field_types
 import metadata.fields.util as util
 import metadata.validation_result as vr
 import metadata.fields.custom.license_allowlist as allowlist_util
+import metadata.restrictive_license_approval_pb2 as rla_pb2
+from google.protobuf import text_format
 
+import logging
+
+RESTRICTED_APPROVAL_FILENAME = "restrictive_license_approval.textproto"
+
+def load_restrictive_license_approval_textproto(path: str) -> set[str]:
+    """Loads a restrictive_license_approval.textproto file and returns all license IDs."""
+    covered = set()
+    try:
+        proto_msg = rla_pb2.RestrictiveLicenseApproval()
+        with open(path, "r", encoding="utf-8") as f:
+            text_format.Parse(f.read(), proto_msg)
+        for approval in proto_msg.license_approval:
+            if approval.id:
+                covered.add(approval.id.lower())
+                covered.add(allowlist_util.normalize_value(approval.id).lower())
+    except (IOError, text_format.ParseError) as e:
+        logging.warning("Failed to parse restrictive_license_approval.textproto at %s: %s", path, e)
+    return covered
 
 class LicenseField(field_types.SingleLineTextField):
     """Custom field for the package's license type(s).
@@ -57,7 +77,7 @@ class LicenseField(field_types.SingleLineTextField):
             allowlist_util.is_license_allowed(license, is_open_source_project)
             for license in self._extract_licenses(license_field_value))
 
-    def validate(self, value: str) -> Optional[vr.ValidationResult]:
+    def validate(self, value: str, source_file_dir: Optional[str] = None) -> Optional[vr.ValidationResult]:
         """Checks the given value consists of recognized license types.
 
         Note: this field supports multiple values.
@@ -82,13 +102,21 @@ class LicenseField(field_types.SingleLineTextField):
                 not_allowlisted.append(license)
 
         if not_allowlisted:
-            return vr.ValidationWarning(
-                reason="License not in the allowlist."
-                " Follow the steps at https://source.chromium.org/chromium/chromium/tools/depot_tools/+/main:metadata/fields/custom/license_allowlist.py.",
-                additional=[
-                    "Licenses not allowlisted: "
-                    f"{util.quoted(not_allowlisted)}.",
-                ])
+            covered = set()
+            if source_file_dir:
+                restricted_approval_filepath = os.path.join(source_file_dir, RESTRICTED_APPROVAL_FILENAME)
+                if os.path.isfile(restricted_approval_filepath):
+                    covered.update(load_restrictive_license_approval_textproto(restricted_approval_filepath))
+
+            missing = [lic for lic in not_allowlisted if lic.lower() not in covered]
+            if missing:
+                return vr.ValidationWarning(
+                    reason="License not in the allowlist."
+                    " Follow the steps at https://source.chromium.org/chromium/chromium/tools/depot_tools/+/main:metadata/fields/custom/license_allowlist.py.",
+                    additional=[
+                        "Licenses not allowlisted: "
+                        f"{util.quoted(missing)}.",
+                    ])
 
         return None
 
