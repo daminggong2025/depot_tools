@@ -82,6 +82,12 @@ wheel: <
   version: "version:0.8.1"
 >
 
+# Used by metadata.
+wheel: <
+  name: "infra/python/wheels/protobuf-py3"
+  version: "version:4.25.1"
+>
+
 # Used by:
 #   tests/siso_test.py
 wheel: <
