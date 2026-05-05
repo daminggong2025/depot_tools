@@ -56,6 +56,24 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "20d6ca61_eec90c03",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 6
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2026-05-05T04:29:08Z",
+      "side": 1,
+      "message": "Sorry! My bad, I\u0027ve updated it",
+      "parentUuid": "82ce6ba9_d5f89c65",
+      "revId": "28cccec5ba1eb304b26ee53b7e5c4b67602646a8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "2ab58454_6bc8c00e",
         "filename": "metadata/fields/custom/license.py",
         "patchSetId": 6
