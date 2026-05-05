@@ -44,6 +44,26 @@ def load_restrictive_license_approval_textproto(path: str) -> set[str]:
         logging.warning("Failed to parse restrictive_license_approval.textproto at %s: %s", path, e)
     return covered
 
+
+import logging
+
+RESTRICTED_APPROVAL_FILENAME = "restrictive_license_approval.textproto"
+
+def load_restrictive_license_approval_textproto(path: str) -> set[str]:
+    """Loads a restrictive_license_approval.textproto file and returns all license IDs."""
+    covered = set()
+    try:
+        proto_msg = rla_pb2.RestrictiveLicenseApproval()
+        with open(path, "r", encoding="utf-8") as f:
+            text_format.Parse(f.read(), proto_msg)
+        for approval in proto_msg.license_approval:
+            if approval.id:
+                covered.add(approval.id.lower())
+                covered.add(allowlist_util.normalize_value(approval.id).lower())
+    except (IOError, text_format.ParseError) as e:
+        logging.warning("Failed to parse restrictive_license_approval.textproto at %s: %s", path, e)
+    return covered
+
 class LicenseField(field_types.SingleLineTextField):
     """Custom field for the package's license type(s).
 
