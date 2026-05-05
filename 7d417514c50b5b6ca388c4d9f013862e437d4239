@@ -16,6 +16,29 @@
       "message": "Friendly ping!",
       "revId": "7d417514c50b5b6ca388c4d9f013862e437d4239",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7e39c0a7_4568c36a",
+        "filename": "git_cl.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 5086,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-05-05T02:35:20Z",
+      "side": 1,
+      "message": "we should also use the parent\u0027s \"side\", otherwise it\u0027ll default to `REVISION` (the right side)\n\nhttps://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#comment-info",
+      "range": {
+        "startLine": 5085,
+        "startChar": 0,
+        "endLine": 5086,
+        "endChar": 12
+      },
+      "revId": "7d417514c50b5b6ca388c4d9f013862e437d4239",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
