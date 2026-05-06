@@ -1,0 +1,89 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d38920fc_748f5614",
+        "filename": "metadata/fields/custom/license_allowlist.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 281,
+      "author": {
+        "id": 1378662
+      },
+      "writtenOn": "2026-05-06T06:54:51Z",
+      "side": 1,
+      "message": "don\u0027t need the second strip",
+      "revId": "0c92209b1f2f3933ddb23b8fdeb6cd854ac14499",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "02c2827b_3c5de1f0",
+        "filename": "metadata/fields/custom/license_allowlist.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 336,
+      "author": {
+        "id": 1378662
+      },
+      "writtenOn": "2026-05-06T06:54:51Z",
+      "side": 1,
+      "message": "subprocess.check_output()",
+      "revId": "0c92209b1f2f3933ddb23b8fdeb6cd854ac14499",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b3cb8c63_8d46000f",
+        "filename": "metadata/fields/custom/license_allowlist.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 346,
+      "author": {
+        "id": 1378662
+      },
+      "writtenOn": "2026-05-06T06:54:51Z",
+      "side": 1,
+      "message": "raise the e",
+      "revId": "0c92209b1f2f3933ddb23b8fdeb6cd854ac14499",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9db5caa9_9eac4e06",
+        "filename": "metadata/fields/custom/license_allowlist.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 397,
+      "author": {
+        "id": 1378662
+      },
+      "writtenOn": "2026-05-06T06:54:51Z",
+      "side": 1,
+      "message": "Only load the restrictive license approval file when ...",
+      "revId": "0c92209b1f2f3933ddb23b8fdeb6cd854ac14499",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c58e3952_797ea817",
+        "filename": "metadata/scripts/parse_restrictive_license_approval.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1378662
+      },
+      "writtenOn": "2026-05-06T06:54:51Z",
+      "side": 1,
+      "message": "ensure bug exist",
+      "revId": "0c92209b1f2f3933ddb23b8fdeb6cd854ac14499",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
