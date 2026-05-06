@@ -54,6 +54,23 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "97f6d78f_8a2387f6",
+        "filename": "metadata/fields/custom/license_allowlist.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 371,
+      "author": {
+        "id": 1378662
+      },
+      "writtenOn": "2026-05-06T06:56:58Z",
+      "side": 1,
+      "message": "I would prefer json here but consider the use case at least give a schema for the DSL and explain where it would be used.",
+      "revId": "0c92209b1f2f3933ddb23b8fdeb6cd854ac14499",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "9db5caa9_9eac4e06",
         "filename": "metadata/fields/custom/license_allowlist.py",
         "patchSetId": 6
