@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9a3bb1c6_e890619a",
+        "filename": "metadata/SECURITY_TEAM_OWNERS",
+        "patchSetId": 2
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1272455
+      },
+      "writtenOn": "2026-05-06T02:49:40Z",
+      "side": 1,
+      "message": "Add fancl?",
+      "revId": "4b0d56bda1341d56b3114c0c35956c978f67a607",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
