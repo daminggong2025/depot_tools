@@ -346,6 +346,62 @@ class FieldValidationTest(unittest.TestCase):
         res_with = field.validate(test_license, source_file_dir=os.path.join(_THIS_DIR, "data"))
         self.assertIsNone(res_with)
 
+    def test_get_license_validation_status(self):
+        get_status = metadata.fields.custom.license.get_license_validation_status
+        data_dir = os.path.join(_THIS_DIR, "data")
+
+        # 1. Globally allowed
+        self.assertEqual(get_status("MIT"), "ALLOWED")
+        self.assertEqual(get_status("Apache-2.0"), "ALLOWED")
+        self.assertEqual(get_status("MIT, Apache-2.0"), "ALLOWED")
+
+        # 2. Restricted but approved
+        self.assertEqual(
+            get_status("LicenseRef-GUST-Font-License",
+                       source_file_dir=data_dir),
+            "APPROVED[(GUST-Font-License, b/987654321)]")
+        self.assertEqual(
+            get_status("MIT, LicenseRef-GUST-Font-License",
+                       source_file_dir=data_dir),
+            "APPROVED[(GUST-Font-License, b/987654321)]")
+
+        # 3. Restricted (GPL-2.0) is globally allowed
+        self.assertEqual(get_status("GPL-2.0"), "ALLOWED")
+        self.assertEqual(get_status("GPL-2.0", source_file_dir=data_dir),
+                         "ALLOWED")
+        self.assertEqual(get_status("MIT, GPL-2.0", source_file_dir=data_dir),
+                         "ALLOWED")
+        self.assertEqual(
+            get_status("LicenseRef-GUST-Font-License, GPL-2.0",
+                       source_file_dir=data_dir),
+            "APPROVED[(GUST-Font-License, b/987654321)]")
+
+        # 3b. Unknown and NOT approved
+        self.assertEqual(get_status("My-Custom-License"),
+                         "NOT ALLOWED[My-Custom-License]")
+        self.assertEqual(
+            get_status("My-Custom-License", source_file_dir=data_dir),
+            "NOT ALLOWED[My-Custom-License]")
+        self.assertEqual(
+            get_status("MIT, My-Custom-License", source_file_dir=data_dir),
+            "NOT ALLOWED[My-Custom-License]")
+        self.assertEqual(
+            get_status("LicenseRef-GUST-Font-License, My-Custom-License",
+                       source_file_dir=data_dir),
+            "NOT ALLOWED[My-Custom-License], APPROVED[(GUST-Font-License, b/987654321)]"
+        )
+
+        # 4. Empty or None
+        self.assertEqual(get_status(""), "NOT ALLOWED")
+        self.assertEqual(get_status(None), "NOT ALLOWED")
+
+        # 5. Reciprocal licenses (only allowed in open source)
+        self.assertEqual(get_status("CDDL-1.0"), "ALLOWED")
+        self.assertEqual(get_status("CDDL-1.0", is_open_source_project=True),
+                         "ALLOWED")
+        self.assertEqual(get_status("CDDL-1.0", is_open_source_project=False),
+                         "NOT ALLOWED[CDDL-1.0]")
+
 
 if __name__ == "__main__":
     unittest.main()
