@@ -264,7 +264,7 @@ def normalize_value(value: str) -> str:
     """
     # Do not convert to lower case here, as we want to preserve the original
     # casing for warning messages.
-    return value.removeprefix("LicenseRef-").strip()
+    return value.strip().removeprefix("LicenseRef-").strip()
 
 
 def _license_in_list(value: str, allow_list: frozenset[str]) -> bool:
