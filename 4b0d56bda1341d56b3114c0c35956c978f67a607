@@ -16,6 +16,24 @@
       "message": "Add fancl?",
       "revId": "4b0d56bda1341d56b3114c0c35956c978f67a607",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ed742cb7_8696c86b",
+        "filename": "metadata/SECURITY_TEAM_OWNERS",
+        "patchSetId": 2
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 3408137
+      },
+      "writtenOn": "2026-05-06T02:55:45Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a3bb1c6_e890619a",
+      "revId": "4b0d56bda1341d56b3114c0c35956c978f67a607",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
