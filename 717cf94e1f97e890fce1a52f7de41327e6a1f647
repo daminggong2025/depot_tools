@@ -16,6 +16,24 @@
       "message": "@cbruni@chromium.org I think this broke correct exit code setting on a hook failure. I no longer see non-zero exit code if any hook failed (at least on Windows).\n\nPlease double check this. The test case:\n1. modify any hook to fail\n2. run `gclient runhooks`\n3. check exit code.",
       "revId": "717cf94e1f97e890fce1a52f7de41327e6a1f647",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "72b190f4_fd8b5d08",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 44
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1132654
+      },
+      "writtenOn": "2026-05-07T16:37:11Z",
+      "side": 1,
+      "message": "OOO today until monday... feel free to revert. I will investiage next week 👍",
+      "parentUuid": "fe97328d_111d3b6c",
+      "revId": "717cf94e1f97e890fce1a52f7de41327e6a1f647",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
