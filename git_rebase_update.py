@@ -12,6 +12,7 @@ import logging
 import sys
 import textwrap
 import os
+import re
 
 from fnmatch import fnmatch
 from pprint import pformat
@@ -45,6 +46,27 @@ def find_return_branch_workdir():
             git.set_config(STARTING_BRANCH_KEY, return_branch)
 
     return return_branch, workdir
+
+
+def get_branches_in_other_worktrees():
+    """Returns a set of branches checked out in other worktrees."""
+    output = git.run('worktree', 'list', '--porcelain')
+    branches = set()
+    current_worktree = os.path.abspath(os.getcwd())
+
+    pattern = re.compile(
+        r'^worktree (.*?)\nHEAD [0-9a-fA-F]+\n(?:branch refs/heads/(.*?)\n)?',
+        re.MULTILINE)
+
+    for match in pattern.finditer(output):
+        worktree_path = match.group(1)
+        worktree_branch = match.group(2)
+
+        if worktree_branch and os.path.abspath(
+                worktree_path) != current_worktree:
+            branches.add(worktree_branch)
+
+    return branches
 
 
 def fetch_remotes(branch_tree):
@@ -291,6 +313,10 @@ def main(args=None):
         '--no-squash',
         action='store_true',
         help='Will not try to squash branches if rebasing fails.')
+    parser.add_argument(
+        '--skip-worktrees',
+        action='store_true',
+        help='Skip branches checked out in a different worktree.')
 
     opts = parser.parse_args(args)
 
@@ -349,11 +375,18 @@ def main(args=None):
 
     retcode = 0
     unrebased_branches = []
+    worktree_branches = set()
+    if opts.skip_worktrees:
+        worktree_branches = get_branches_in_other_worktrees()
     # Rebase each branch starting with the root-most branches and working
     # towards the leaves.
     for branch, parent in git.topo_iter(branch_tree):
         # Only rebase specified branches, unless none specified.
         if branches_to_rebase and branch not in branches_to_rebase:
+            continue
+        if branch in worktree_branches:
+            print('Skipping branch checked out in another worktree',
+                  format_branch_name(branch))
             continue
         if git.is_dormant(branch):
             print('Skipping dormant branch', format_branch_name(branch))
