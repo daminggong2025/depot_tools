@@ -16,6 +16,24 @@
       "message": "nit: this would miss `//components/browser_ui/styles/android/java/res-arcore`\n\nMaybe allow for `res-` as well?",
       "revId": "e44c978455433754eda06fc8f60afc6ced03b4b2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "af4571da_88315f9b",
+        "filename": "git_cl.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 7383,
+      "author": {
+        "id": 1153420
+      },
+      "writtenOn": "2026-05-08T18:00:47Z",
+      "side": 1,
+      "message": "Oooh, good catch. Actually, in addition to `/res-`, I also see`/res_` and `_res/` and `_resources` from things like\n\n* chrome/android/java/res_base/font/chrome_google_sans_text_medium.xml\n* components/payments/content/android/minimal_java_res/drawable/payments_item_background_rounded.xml\n* components/browser_ui/settings/android/java/managed_prefs_java_resources/layout/chrome_managed_preference.xml\n\nIt\u0027d be nice to actually rename them all to /res_*/ but that\u0027s a lot of churn for a couple extra checks, and the extra checks are probably more durable for people making similar changes in the future. I guess we could have a presubmit that files that get put into a `android_resources` target have paths that match some sort of pattern. But probably not worth it for now.",
+      "parentUuid": "add1014b_f4b44cc6",
+      "revId": "e44c978455433754eda06fc8f60afc6ced03b4b2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
