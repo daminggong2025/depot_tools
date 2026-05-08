@@ -88,6 +88,24 @@
       "parentUuid": "0bc32987_f7bed374",
       "revId": "e44c978455433754eda06fc8f60afc6ced03b4b2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b8710fe7_73efd712",
+        "filename": "git_cl.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 7383,
+      "author": {
+        "id": 1126674
+      },
+      "writtenOn": "2026-05-08T18:37:09Z",
+      "side": 1,
+      "message": "Maybe just change this one to `\u0027res\u0027 in path and path.endswith(\u0027.xml\u0027)`?",
+      "parentUuid": "93848725_b6f937e9",
+      "revId": "e44c978455433754eda06fc8f60afc6ced03b4b2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
