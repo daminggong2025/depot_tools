@@ -7369,6 +7369,36 @@ def _RunMetricsXMLFormat(opts, paths, top_dir, diffs):
     return return_value
 
 
+def _RunAndroidResFormat(opts, paths, top_dir, diffs):
+    primary_solution_path = gclient_paths.GetPrimarySolutionPath()
+    if not primary_solution_path:
+        return 0
+    tool = os.path.join(primary_solution_path, 'tools', 'android',
+                        'res_formatter', 'android_res_formatter.py')
+    if not os.path.exists(tool):
+        return 0
+
+    valid_paths = []
+    for path in paths:
+        if '/res/' in path and path.endswith('.xml'):
+            valid_paths.append(path)
+
+    if not valid_paths:
+        return 0
+
+    cmd = ['vpython3', tool]
+    if opts.diff:
+        cmd.append('--diff')
+    elif opts.dry_run:
+        cmd.append('--check')
+
+    exit_code = subprocess2.call(cmd + valid_paths, cwd=top_dir)
+    if exit_code == 2:
+        return 2
+
+    return 0
+
+
 def _RunLUCICfgFormat(opts, paths, top_dir, diffs):
     depot_tools_path = os.path.dirname(os.path.abspath(__file__))
     lucicfg = os.path.join(depot_tools_path, 'lucicfg')
@@ -7591,6 +7621,7 @@ def CMDformat(parser: optparse.OptionParser, args: list[str]):
     formatters: list[tuple[list[str], FormatterFunction]] = [
         (GN_EXTS, _RunGnFormat),
         (['.xml'], _RunMetricsXMLFormat),
+        (['.xml'], _RunAndroidResFormat),
         (['.md'], _RunMarkdownFormat),
     ]
     if not opts.no_java:
