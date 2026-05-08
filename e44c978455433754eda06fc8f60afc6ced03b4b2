@@ -34,6 +34,24 @@
       "parentUuid": "add1014b_f4b44cc6",
       "revId": "e44c978455433754eda06fc8f60afc6ced03b4b2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a78039a6_59762c7f",
+        "filename": "git_cl.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 7383,
+      "author": {
+        "id": 1126674
+      },
+      "writtenOn": "2026-05-08T18:16:59Z",
+      "side": 1,
+      "message": "ah, you\u0027re right. I wonder if a regex is meritted then to avoid false-positives?\n\n```\nr\"(\\b|_)res[^/]*/(?:styles|color|layout|anim|animator|drawable|menu|values)(?:-\\w+)?/[^/]+\\.xml\"\n```\n\nThis will also avoid files in `xml` and `raw`, which I\u0027d guess we don\u0027t want to touch.",
+      "parentUuid": "af4571da_88315f9b",
+      "revId": "e44c978455433754eda06fc8f60afc6ced03b4b2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
