@@ -8,3 +8,8 @@ license_approval {
   id: "LicenseRef-GUST-Font-License"
   bug: 987654321
 }
+license_approval {
+  license_path: "LICENSE"
+  id: "MPL-2.0"
+  bug: 777777777
+}

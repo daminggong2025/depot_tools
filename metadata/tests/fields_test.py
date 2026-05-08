@@ -402,7 +402,39 @@ class FieldValidationTest(unittest.TestCase):
         self.assertEqual(get_status("CDDL-1.0", is_open_source_project=True),
                          "ALLOWED")
         self.assertEqual(get_status("CDDL-1.0", is_open_source_project=False),
-                         "UNKNOWN[CDDL-1.0]")
+                         "RECIPROCAL_NOT_ALLOWED[CDDL-1.0]")
+
+    def test_get_license_validation_status_with_android_compatibility(self):
+        get_status = metadata.fields.custom.license_allowlist.get_license_validation_status
+        data_dir = os.path.join(_THIS_DIR, "data")
+
+        # 1. Reciprocal license with no RLA: blocked regardless of Android compatibility
+        self.assertEqual(
+            get_status("CDDL-1.0",
+                       is_open_source_project=False,
+                       android_compatible="yes"),
+            "UNKNOWN[CDDL-1.0]")
+
+        # 2. RLA approved, but missing or 'no' Android compatibility -> RECIPROCAL_NOT_ALLOWED with warning
+        self.assertEqual(
+            get_status("MPL-2.0",
+                       source_file_dir=data_dir,
+                       is_open_source_project=False),
+            "RECIPROCAL_NOT_ALLOWED[MPL-2.0]")
+        self.assertEqual(
+            get_status("MPL-2.0",
+                       source_file_dir=data_dir,
+                       is_open_source_project=False,
+                       android_compatible="no"),
+            "RECIPROCAL_NOT_ALLOWED[MPL-2.0]")
+
+        # 3. RLA approved AND 'yes' Android compatibility -> APPROVED!
+        self.assertEqual(
+            get_status("MPL-2.0",
+                       source_file_dir=data_dir,
+                       is_open_source_project=False,
+                       android_compatible="yes"),
+            "APPROVED[(MPL-2.0, b/777777777)]")
 
 
 if __name__ == "__main__":
