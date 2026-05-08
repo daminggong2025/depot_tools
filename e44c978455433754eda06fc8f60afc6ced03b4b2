@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "add1014b_f4b44cc6",
+        "filename": "git_cl.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 7383,
+      "author": {
+        "id": 1126674
+      },
+      "writtenOn": "2026-05-08T17:30:01Z",
+      "side": 1,
+      "message": "nit: this would miss `//components/browser_ui/styles/android/java/res-arcore`\n\nMaybe allow for `res-` as well?",
+      "revId": "e44c978455433754eda06fc8f60afc6ced03b4b2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
