@@ -7369,6 +7369,45 @@ def _RunMetricsXMLFormat(opts, paths, top_dir, diffs):
     return return_value
 
 
+def _RunAndroidResFormat(opts, paths, top_dir, diffs):
+    return_value = 0
+    primary_solution_path = gclient_paths.GetPrimarySolutionPath()
+    if not primary_solution_path:
+        return 0
+    tool = os.path.join(primary_solution_path, 'tools', 'android',
+                        'res_formatter', 'android_res_formatter.py')
+    if not os.path.exists(tool):
+        return 0
+
+    for path in paths:
+        if '/res/' not in path or not path.endswith('.xml'):
+            continue
+
+        if opts.diff or opts.dry_run:
+            if opts.diff:
+                cmd = [shutil.which('vpython3'), tool, '--stdout', path]
+                stdout = RunCommand(cmd, cwd=top_dir, error_ok=True)
+                diff_output = RunGitDiffCmd(['-U3'],
+                                            '--no-index', [path, '-'],
+                                            stdin=stdout.encode(),
+                                            cwd=top_dir,
+                                            error_ok=True)
+                if diff_output:
+                    sys.stdout.write('Requires formatting: ' + diff_output)
+                    if opts.dry_run:
+                        return_value = 2
+            else:
+                cmd = [shutil.which('vpython3'), tool, '--check', path]
+                ret = subprocess2.call(cmd, cwd=top_dir)
+                if ret != 0:
+                    return_value = 2
+        else:
+            cmd = [shutil.which('vpython3'), tool, path]
+            subprocess2.call(cmd, cwd=top_dir)
+
+    return return_value
+
+
 def _RunLUCICfgFormat(opts, paths, top_dir, diffs):
     depot_tools_path = os.path.dirname(os.path.abspath(__file__))
     lucicfg = os.path.join(depot_tools_path, 'lucicfg')
@@ -7591,6 +7630,7 @@ def CMDformat(parser: optparse.OptionParser, args: list[str]):
     formatters: list[tuple[list[str], FormatterFunction]] = [
         (GN_EXTS, _RunGnFormat),
         (['.xml'], _RunMetricsXMLFormat),
+        (['.xml'], _RunAndroidResFormat),
         (['.md'], _RunMarkdownFormat),
     ]
     if not opts.no_java:
