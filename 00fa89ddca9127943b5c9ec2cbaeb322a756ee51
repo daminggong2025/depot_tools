@@ -16,6 +16,24 @@
       "message": "PTAL",
       "revId": "00fa89ddca9127943b5c9ec2cbaeb322a756ee51",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4826f885_fb37dc38",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1153420
+      },
+      "writtenOn": "2026-05-08T17:23:28Z",
+      "side": 1,
+      "message": "The message now looks like\n\n```\n\nskym@skym0129:/usr/local/google/code/clankium/src$ git cl presubmit -u\nRunning presubmit upload checks on branch 26_05_08_TestFormat ...\n** Presubmit Warnings: 1 **\nThe src directory requires source formatting.\nRequires formatting: chrome/android/java/res/layout/fake_search_box_layout.xml\nRequires formatting: chrome/browser/ui/android/omnibox/java/res/layout/fusebox_layout.xml\n\nThe following command may be able to fix some errors, while others may need to be fixed manually:\n  git cl format \nAlternatively, if you are in Cider G, please use the \"Format Modified Lines in All Files (git cl format)\" functionality in the command palette.\n\nPresubmit checks took 5.2s to calculate.\nThere were presubmit warnings. \nWas the presubmit check useful? If not, run \"git cl presubmit -v\"\nto figure out which PRESUBMIT.py was run, then run \"git blame\"\non the file to figure out who to ask for help.\n```",
+      "parentUuid": "40b95c52_666caf81",
+      "revId": "00fa89ddca9127943b5c9ec2cbaeb322a756ee51",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
