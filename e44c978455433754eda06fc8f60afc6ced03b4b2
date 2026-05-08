@@ -52,6 +52,24 @@
       "parentUuid": "af4571da_88315f9b",
       "revId": "e44c978455433754eda06fc8f60afc6ced03b4b2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0bc32987_f7bed374",
+        "filename": "git_cl.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 7383,
+      "author": {
+        "id": 1153420
+      },
+      "writtenOn": "2026-05-08T18:20:08Z",
+      "side": 1,
+      "message": "Oh, that\u0027s a better idea, will do. I\u0027m not happy having so much triggering logic in this file. I wonder if I could move it out to the tools/android/res_formatter/android_res_formatter.py, kind of like metrics_xml_format.GetMetricsDir does.",
+      "parentUuid": "a78039a6_59762c7f",
+      "revId": "e44c978455433754eda06fc8f60afc6ced03b4b2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
