@@ -70,6 +70,24 @@
       "parentUuid": "a78039a6_59762c7f",
       "revId": "e44c978455433754eda06fc8f60afc6ced03b4b2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "93848725_b6f937e9",
+        "filename": "git_cl.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 7383,
+      "author": {
+        "id": 1126674
+      },
+      "writtenOn": "2026-05-08T18:36:14Z",
+      "side": 1,
+      "message": "Yeah, that seems good too! In that case I think you should inspect the contents of the file rather than path in case it\u0027s used with temporary files or streamed input.",
+      "parentUuid": "0bc32987_f7bed374",
+      "revId": "e44c978455433754eda06fc8f60afc6ced03b4b2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
