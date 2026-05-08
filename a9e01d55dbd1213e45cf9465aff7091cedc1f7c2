@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "86b4c65c_ba20ac55",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1001629
+      },
+      "writtenOn": "2026-05-08T13:40:34Z",
+      "side": 1,
+      "message": "hans and i wrote a proposal for this that\u0027s a bit more flexible a while ago. i cc\u0027d you on it, maybe it\u0027s interesting inspiration. (if not, feel free to ignore.)",
+      "revId": "a9e01d55dbd1213e45cf9465aff7091cedc1f7c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
