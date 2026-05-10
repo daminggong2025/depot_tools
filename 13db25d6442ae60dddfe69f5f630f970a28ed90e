@@ -16,6 +16,23 @@
       "message": "cc+Jordan as FYI.",
       "revId": "13db25d6442ae60dddfe69f5f630f970a28ed90e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c62700e5_8f8320d6",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1553262
+      },
+      "writtenOn": "2026-05-10T23:22:17Z",
+      "side": 1,
+      "message": "I don\u0027t have a specific problem with adding EPL-2.0 since its reciprocal, but do you know which dependency is using it?  All the references I could see in the licenses directory are for EPL-1.0.\n\nI think the license classification line might be slightly out of date. We\u0027re also missing references for the scala license for example. @rop@google.com can you take a closer look at this one and figure out what steps we need to take so the new analyzer doesn\u0027t have a fit?",
+      "revId": "13db25d6442ae60dddfe69f5f630f970a28ed90e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
