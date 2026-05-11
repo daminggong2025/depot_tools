@@ -332,6 +332,146 @@ class InclusiveLanguageCheckTest(unittest.TestCase):
         self.assertTrue(os.path.normpath('dir2/2.py') in errors[0].message)
 
 
+class CheckLongLinesTest(unittest.TestCase):
+
+    def testCheckLongLines(self):
+        test_cases = [
+            {
+                'name':
+                'long lines in java text blocks',
+                'files': [
+                    ('some/java/file/TestBlock.java', [
+                        'class TestBlock {',
+                        '  String s = """',
+                        '    this is a very long line that should be ignored because it is inside a text block and we want to allow it as per the style guide.',
+                        '    """;',
+                        '}',
+                    ]),
+                    ('some/java/file/TestNormal.java', [
+                        'class TestNormal {',
+                        '  String s = "this is a very long line that should NOT be ignored because it is in a normal string literal.";',
+                        '}',
+                    ]),
+                    ('some/java/file/TestLongClosing.java', [
+                        'class TestLongClosing {',
+                        '  String s = """',
+                        '    content',
+                        '    """; // this line is very long and should be flagged because of this comment that makes it exceed 80 characters.',
+                        '}',
+                    ]),
+                ],
+                'expected_errors':
+                1,
+                'expected_items': ['TestNormal.java', 'TestLongClosing.java'],
+                'unexpected_items': ['TestBlock.java'],
+            },
+            {
+                'name':
+                'long lines in java text blocks with comments',
+                'files': [
+                    ('some/java/file/TestComment.java', [
+                        'class TestComment {',
+                        '  // Comment with """',
+                        '  String s = """',
+                        '    this is a very long line that should be ignored because it is inside a text block and we want to allow it as per the style guide.',
+                        '    """;',
+                        '}',
+                    ]),
+                ],
+                'expected_errors':
+                0,
+            },
+            {
+                'name':
+                'long lines in java text blocks with escaped quotes',
+                'files': [
+                    ('some/java/file/TestEscaped.java', [
+                        'class TestEscaped {',
+                        '  String s = """',
+                        '    line 1',
+                        '    escaped \\""" here',
+                        '    line 3 that is also long but inside block and should be ignored',
+                        '    """;',
+                        '}',
+                    ]),
+                ],
+                'expected_errors':
+                0,
+            },
+            {
+                'name':
+                'long lines in java text blocks with quotes in normal string',
+                'files': [
+                    ('some/java/file/TestNormalQuotes.java', [
+                        'class TestNormalQuotes {',
+                        '  String s = "normal string with \\"\\"\\" inside";',
+                        '  String t = "normal string that is very long and should be flagged because it is not a text block.";',
+                        '}',
+                    ]),
+                ],
+                'expected_errors':
+                1,
+                'expected_items': ['TestNormalQuotes.java'],
+            },
+            {
+                'name':
+                'long closing line in java text blocks - content',
+                'files': [
+                    ('some/java/file/TestLongClosingContent.java', [
+                        'class TestLongClosingContent {',
+                        '  String s = """',
+                        '    content',
+                        '    this is a very long line that ends the text block """;',
+                        '}',
+                    ]),
+                ],
+                'expected_errors':
+                0,
+            },
+            {
+                'name':
+                'long closing line in java text blocks - code',
+                'files': [
+                    ('some/java/file/TestLongClosingCode.java', [
+                        'class TestLongClosingCode {',
+                        '  String s = """',
+                        '    content',
+                        '    """; // this line is very long because of this comment and should be flagged. extra text here to exceed 80 characters.',
+                        '}',
+                    ]),
+                ],
+                'expected_errors':
+                1,
+                'expected_items': ['TestLongClosingCode.java'],
+            },
+        ]
+
+        for case in test_cases:
+            with self.subTest(case_name=case['name']):
+                input_api = MockInputApi()
+                input_api.files = [
+                    MockFile(os.path.normpath(path), lines)
+                    for path, lines in case['files']
+                ]
+                errors = presubmit_canned_checks.CheckLongLines(input_api,
+                                                                MockOutputApi(),
+                                                                maxlen=80)
+                expected_errors = case.get('expected_errors', 0)
+                self.assertEqual(expected_errors, len(errors))
+                if expected_errors > 0:
+                    all_items = getattr(errors[0], 'items', [])
+                    expected_items = case.get('expected_items', [])
+                    self.assertEqual(len(expected_items), len(all_items))
+                    for item in expected_items:
+                        self.assertTrue(
+                            any(item in str(actual) for actual in all_items))
+                    if 'unexpected_items' in case:
+                        for item in case['unexpected_items']:
+                            self.assertFalse(
+                                any(item in str(actual)
+                                    for actual in all_items))
+
+
 
 class DescriptionChecksTest(unittest.TestCase):
     def testCheckDescriptionUsesColonInsteadOfEquals(self):
