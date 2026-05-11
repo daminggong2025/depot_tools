@@ -16,6 +16,29 @@
       "message": "+gavinmak@ for OWNERS",
       "revId": "017af8f02c5ba217428c8ff726f5e669de1ef3e0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c02c5561_f6b4a5ec",
+        "filename": "git_cl.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 7400,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-05-11T17:49:22Z",
+      "side": 1,
+      "message": "this feels a little off, if `android_res_formatter.py` exits 1, this check returns 0\n\nhttps://source.chromium.org/chromium/chromium/src/+/main:tools/android/res_formatter/android_res_formatter.py;drc\u003da457d835b83ef2e042c23a24880eb49ce16e0326\n\nmaybe something like this instead? to match other fns like `_RunMojomFormat`\n```\nif opts.dry_run and ret !\u003d 0:\n    return 2\nreturn ret\n```",
+      "range": {
+        "startLine": 7397,
+        "startChar": 4,
+        "endLine": 7400,
+        "endChar": 12
+      },
+      "revId": "017af8f02c5ba217428c8ff726f5e669de1ef3e0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
