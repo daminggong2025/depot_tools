@@ -701,6 +701,26 @@ def CheckLongLines(input_api, output_api, maxlen, source_file_filter=None):
 
         return errors
 
+    def check_java_long_lines(affected_files, error_formatter):
+        errors = []
+        for f in affected_files:
+            file_path = f.LocalPath()
+            in_text_block = False
+            for idx, line in enumerate(f.NewContents()):
+                line_num = idx + 1
+                count = line.count('"""')
+
+                is_closing = in_text_block and (count % 2 == 1)
+                do_check = not in_text_block or is_closing
+
+                line_is_short = no_long_lines('java', line)
+                if do_check and not line_is_short:
+                    errors.append(error_formatter(file_path, line_num, line))
+
+                if count % 2 == 1:
+                    in_text_block = not in_text_block
+        return errors
+
     def format_error(filename, line_num, line):
         return '%s, line %s, %s chars' % (filename, line_num, len(line))
 
@@ -709,21 +729,25 @@ def CheckLongLines(input_api, output_api, maxlen, source_file_filter=None):
 
     errors = []
 
-    # For non-Python files, a simple line-based rule check is enough.
-    non_py_file_ext_list = [
-        x for x in file_ext_list if x[1] not in PY_FILE_EXTS
+    # For non-Python and non-Java files, a simple line-based rule check is enough.
+    non_special_file_ext_list = [
+        x for x in file_ext_list
+        if x[1] not in PY_FILE_EXTS and x[1] not in JAVA_FILE_EXTS
     ]
-    if non_py_file_ext_list:
+    if non_special_file_ext_list:
         errors += _FindNewViolationsOfRuleForList(no_long_lines,
-                                                  non_py_file_ext_list,
+                                                  non_special_file_ext_list,
                                                   error_formatter=format_error)
 
-    # However, Python files need more sophisticated checks that need parsing
-    # the whole source file.
     py_file_list = [x[0] for x in file_ext_list if x[1] in PY_FILE_EXTS]
     if py_file_list:
         errors += check_python_long_lines(py_file_list,
                                           error_formatter=format_error)
+
+    java_file_list = [x[0] for x in file_ext_list if x[1] in JAVA_FILE_EXTS]
+    if java_file_list:
+        errors += check_java_long_lines(java_file_list,
+                                        error_formatter=format_error)
 
     if errors:
         msg = 'Found %d lines longer than %s characters (first 5 shown).' % (
