@@ -3855,8 +3855,9 @@ def urlretrieve(source, destination):
 
     This is necessary because urllib is broken for SSL connections via a proxy.
     """
-    with open(destination, 'wb') as f:
-        f.write(urllib.request.urlopen(source).read())
+    with urllib.request.urlopen(source, timeout=gclient_utils.NETWORK_TIMEOUT) as response:
+        with open(destination, 'wb') as f:
+            shutil.copyfileobj(response, f)
 
 
 def hasSheBang(fname):
@@ -6391,7 +6392,7 @@ def GetTreeStatus(url=None):
     'unknown' or 'unset'."""
     url = url or settings.GetTreeStatusUrl(error_ok=True)
     if url:
-        status = str(urllib.request.urlopen(url).read().lower())
+        status = str(urllib.request.urlopen(url, timeout=gclient_utils.NETWORK_TIMEOUT).read().lower())
         if status.find('closed') != -1 or status == '0':
             return 'closed'
 
@@ -6407,9 +6408,8 @@ def GetTreeStatusReason():
     with the reason for the tree to be opened or closed."""
     url = settings.GetTreeStatusUrl()
     json_url = urllib.parse.urljoin(url, '/current?format=json')
-    connection = urllib.request.urlopen(json_url)
-    status = json.loads(connection.read())
-    connection.close()
+    with urllib.request.urlopen(json_url, timeout=gclient_utils.NETWORK_TIMEOUT) as connection:
+        status = json.loads(connection.read())
     return status['message']
 
 

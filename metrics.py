@@ -77,7 +77,8 @@ class _Config(object):
             # access denied.
             try:
                 req = urllib.request.urlopen(metrics_utils.APP_URL +
-                                             '/should-upload')
+                                             '/should-upload',
+                                             timeout=gclient_utils.NETWORK_TIMEOUT)
                 self._config['is-googler'] = req.getcode() == 200
             except (urllib.request.URLError, urllib.request.HTTPError):
                 self._config['is-googler'] = False
