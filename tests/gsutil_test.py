@@ -23,6 +23,7 @@ THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 DEPOT_TOOLS_DIR = os.path.dirname(THIS_DIR)
 sys.path.append(DEPOT_TOOLS_DIR)
 
+import gclient_utils
 import gsutil
 
 
@@ -77,10 +78,14 @@ class GsutilUnitTests(unittest.TestCase):
         md5_calc.update(data)
         b64_md5 = base64.b64encode(md5_calc.digest()).decode('utf-8')
         response_data = json.dumps({'md5Hash': b64_md5}).encode('utf-8')
-        self.fake.add_expectation(url, _returns=MockResponse(response_data))
+        self.fake.add_expectation(url,
+                                  timeout=gclient_utils.NETWORK_TIMEOUT,
+                                  _returns=MockResponse(response_data))
 
     def add_file_expectation(self, url, data):
-        self.fake.add_expectation(url, None, _returns=MockResponse(data))
+        self.fake.add_expectation(url,
+                                  timeout=gclient_utils.NETWORK_TIMEOUT,
+                                  _returns=MockResponse(data))
 
     def test_download_gsutil(self):
         version = gsutil.VERSION
