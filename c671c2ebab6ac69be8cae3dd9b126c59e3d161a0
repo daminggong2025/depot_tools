@@ -52,6 +52,24 @@
       "parentUuid": "5b65a06c_cf246ec3",
       "revId": "c671c2ebab6ac69be8cae3dd9b126c59e3d161a0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8db0864d_7106cbcc",
+        "filename": "auto_update.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 4840574
+      },
+      "writtenOn": "2026-05-12T13:24:39Z",
+      "side": 1,
+      "message": "Marked as unresolved.",
+      "parentUuid": "fe9f0ac1_c4ae5fb6",
+      "revId": "c671c2ebab6ac69be8cae3dd9b126c59e3d161a0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
