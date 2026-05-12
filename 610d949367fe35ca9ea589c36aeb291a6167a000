@@ -1,0 +1,22 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "688c9c56_272574aa",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 4839382
+      },
+      "writtenOn": "2026-05-12T23:43:24Z",
+      "side": 1,
+      "message": "Done. PS2 fixes both:\n\n1. Removed the incorrect attribution to 124bb8e53c (that was just an indentation change). These calls never had timeouts.\n\n2. Added DEPOT_TOOLS_NETWORK_TIMEOUT env var with 30s default, following the DEPOT_TOOLS_GSUTIL_BIN_DIR naming pattern. Each file defines _NETWORK_TIMEOUT \u003d int(os.environ.get(\"DEPOT_TOOLS_NETWORK_TIMEOUT\", \"30\")) at module level.",
+      "parentUuid": "902cf102_b5bf4e5c",
+      "revId": "610d949367fe35ca9ea589c36aeb291a6167a000",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
