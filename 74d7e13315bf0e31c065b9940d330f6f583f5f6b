@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0893d313_0f9a83f4",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 4840574
+      },
+      "writtenOn": "2026-05-12T13:05:20Z",
+      "side": 1,
+      "message": "Borrar",
+      "revId": "74d7e13315bf0e31c065b9940d330f6f583f5f6b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
