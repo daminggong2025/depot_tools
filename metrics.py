@@ -19,6 +19,8 @@ import newauth
 import subprocess2
 import utils
 
+_NETWORK_TIMEOUT = int(os.environ.get('DEPOT_TOOLS_NETWORK_TIMEOUT', '30'))
+
 DEPOT_TOOLS = os.path.dirname(os.path.abspath(__file__))
 CONFIG_FILE = utils.depot_tools_config_path('metrics.cfg')
 UPLOAD_SCRIPT = os.path.join(DEPOT_TOOLS, 'upload_metrics.py')
@@ -77,7 +79,8 @@ class _Config(object):
             # access denied.
             try:
                 req = urllib.request.urlopen(metrics_utils.APP_URL +
-                                             '/should-upload')
+                                             '/should-upload',
+                                             timeout=_NETWORK_TIMEOUT)
                 self._config['is-googler'] = req.getcode() == 200
             except (urllib.request.URLError, urllib.request.HTTPError):
                 self._config['is-googler'] = False

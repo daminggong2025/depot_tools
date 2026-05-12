@@ -38,6 +38,8 @@ import build_telemetry
 import gclient_utils
 import ninja
 
+_NETWORK_TIMEOUT = int(os.environ.get('DEPOT_TOOLS_NETWORK_TIMEOUT', '30'))
+
 # Configs that should not be uploaded as is.
 SENSITIVE_CONFIGS = (
     "google_api_key",
@@ -210,7 +212,7 @@ def _getGCEInfo():
     url = "http://metadata.google.internal/computeMetadata/v1/?recursive=true"
     request = urllib.request.Request(url, headers={"Metadata-Flavor": "Google"})
     try:
-        response = urllib.request.urlopen(request)
+        response = urllib.request.urlopen(request, timeout=_NETWORK_TIMEOUT)
         meta = json.load(response)
     except Exception as e:
         # Only GCE machines can access to the metadata server.
@@ -243,7 +245,8 @@ def UploadNinjaLog(server, ninjalog, metadata):
                 "https://" + server + "/upload_ninja_log/",
                 data=output.getvalue(),
                 headers={"Content-Encoding": "gzip"},
-            ))
+            ),
+            timeout=_NETWORK_TIMEOUT)
         status = resp.status
         logging.info("response header: %s", resp.headers)
         logging.info("response content: %s", resp.read())

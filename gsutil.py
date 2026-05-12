@@ -18,6 +18,8 @@ import urllib.request
 
 import gclient_utils
 
+_NETWORK_TIMEOUT = int(os.environ.get('DEPOT_TOOLS_NETWORK_TIMEOUT', '30'))
+
 GSUTIL_URL = 'https://storage.googleapis.com/pub/'
 API_URL = 'https://www.googleapis.com/storage/v1/b/pub/o/'
 
@@ -52,7 +54,7 @@ def download_gsutil(version, target_dir):
 
     # Get md5 hash of the remote file from the metadata.
     metadata_url = '%s%s' % (API_URL, filename)
-    metadata = json.load(urllib.request.urlopen(metadata_url))
+    metadata = json.load(urllib.request.urlopen(metadata_url, timeout=_NETWORK_TIMEOUT))
     remote_md5 = base64.b64decode(metadata['md5Hash'])
 
     # Calculate the md5 hash of the local file.
@@ -72,7 +74,9 @@ def download_gsutil(version, target_dir):
 
     # Download the file.
     url = '%s%s' % (GSUTIL_URL, filename)
-    urllib.request.urlretrieve(url, target_filename)
+    with urllib.request.urlopen(url, timeout=_NETWORK_TIMEOUT) as response:
+        with open(target_filename, 'wb') as f:
+            f.write(response.read())
 
     # Check if the file was downloaded correctly.
     if calc_local_md5() != remote_md5:

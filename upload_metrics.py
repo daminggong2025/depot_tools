@@ -4,12 +4,15 @@
 # found in the LICENSE file.
 
 import http
+import os
 import sys
 import urllib.error
 import urllib.request
 
 import auth
 import metrics_utils
+
+_NETWORK_TIMEOUT = int(os.environ.get('DEPOT_TOOLS_NETWORK_TIMEOUT', '30'))
 
 
 def main():
@@ -22,7 +25,8 @@ def main():
         urllib.request.urlopen(
             urllib.request.Request(url=metrics_utils.APP_URL + '/upload',
                                    data=metrics.encode('utf-8'),
-                                   headers=headers))
+                                   headers=headers),
+            timeout=_NETWORK_TIMEOUT)
     except (urllib.error.HTTPError, urllib.error.URLError,
             http.client.RemoteDisconnected):
         pass
