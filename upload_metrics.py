@@ -22,7 +22,8 @@ def main():
         urllib.request.urlopen(
             urllib.request.Request(url=metrics_utils.APP_URL + '/upload',
                                    data=metrics.encode('utf-8'),
-                                   headers=headers))
+                                   headers=headers),
+            timeout=30)
     except (urllib.error.HTTPError, urllib.error.URLError,
             http.client.RemoteDisconnected):
         pass
