@@ -210,7 +210,7 @@ def _getGCEInfo():
     url = "http://metadata.google.internal/computeMetadata/v1/?recursive=true"
     request = urllib.request.Request(url, headers={"Metadata-Flavor": "Google"})
     try:
-        response = urllib.request.urlopen(request)
+        response = urllib.request.urlopen(request, timeout=30)
         meta = json.load(response)
     except Exception as e:
         # Only GCE machines can access to the metadata server.
@@ -243,7 +243,8 @@ def UploadNinjaLog(server, ninjalog, metadata):
                 "https://" + server + "/upload_ninja_log/",
                 data=output.getvalue(),
                 headers={"Content-Encoding": "gzip"},
-            ))
+            ),
+            timeout=30)
         status = resp.status
         logging.info("response header: %s", resp.headers)
         logging.info("response content: %s", resp.read())
