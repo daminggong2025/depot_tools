@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "2b4e9001_cf9199f1",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 728,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-05-15T17:55:44Z",
+      "side": 1,
+      "message": "very defensive, probably not needed yet/ever. removed",
+      "parentUuid": "3c883f53_37ec6c57",
+      "range": {
+        "startLine": 727,
+        "startChar": 69,
+        "endLine": 728,
+        "endChar": 42
+      },
+      "revId": "fc7dc73ae0aa1007a264259fad851a3e08f7b59e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "c6b14169_4e3944d1",
@@ -41,6 +65,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "fc7653aa_715e16f0",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 733,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-05-15T17:55:44Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c6b14169_4e3944d1",
+      "revId": "fc7dc73ae0aa1007a264259fad851a3e08f7b59e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "af1fb16e_80e40874",
@@ -54,6 +96,30 @@
       "writtenOn": "2026-05-12T15:54:21Z",
       "side": 1,
       "message": "nit-nit: I think it might be difficult to explain to user that the line is too long because we only counts the indent and the part after closing triple quote instead of just the entire line. If this is not really a hard requirement, I\u0027m leaning towards removing this check to just allow long lines at the closing lines because I don\u0027t anticipate user would add a lot stuff after the closing triple quote.",
+      "range": {
+        "startLine": 735,
+        "startChar": 0,
+        "endLine": 742,
+        "endChar": 62
+      },
+      "revId": "fc7dc73ae0aa1007a264259fad851a3e08f7b59e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fd52acab_bacadeca",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 742,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-05-15T17:55:44Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "af1fb16e_80e40874",
       "range": {
         "startLine": 735,
         "startChar": 0,
