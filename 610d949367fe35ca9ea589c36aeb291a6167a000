@@ -17,6 +17,46 @@
       "parentUuid": "902cf102_b5bf4e5c",
       "revId": "610d949367fe35ca9ea589c36aeb291a6167a000",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "09056054_cde15c87",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-05-15T17:31:40Z",
+      "side": 1,
+      "message": "let\u0027s dedupe all the `_NETWORK_TIMEOUT \u003d int(os.environ.get(\u0027DEPOT_TOOLS_NETWORK_TIMEOUT\u0027, \u002730\u0027))` lines into a `NETWORK_TIMEOUT` in `gclient_utils.py`",
+      "revId": "610d949367fe35ca9ea589c36aeb291a6167a000",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "47d65d47_c16f0705",
+        "filename": "gsutil.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-05-15T17:31:40Z",
+      "side": 1,
+      "message": "use `shutil.copyfileobj` instead of loading the entire file into memory",
+      "range": {
+        "startLine": 79,
+        "startChar": 20,
+        "endLine": 79,
+        "endChar": 33
+      },
+      "revId": "610d949367fe35ca9ea589c36aeb291a6167a000",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
