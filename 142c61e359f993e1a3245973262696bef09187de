@@ -1,0 +1,40 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2c947d39_9d25e8e0",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 4839382
+      },
+      "writtenOn": "2026-05-16T14:20:13Z",
+      "side": 1,
+      "message": "Done. Moved to gclient_utils.NETWORK_TIMEOUT. Added import gclient_utils to upload_metrics.py and presubmit_canned_checks.py (the other four already had it).",
+      "parentUuid": "09056054_cde15c87",
+      "revId": "142c61e359f993e1a3245973262696bef09187de",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4638f3a2_0d63a476",
+        "filename": "gsutil.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 4839382
+      },
+      "writtenOn": "2026-05-16T14:20:13Z",
+      "side": 1,
+      "message": "Done. Using shutil.copyfileobj(response, f) now.",
+      "parentUuid": "47d65d47_c16f0705",
+      "revId": "142c61e359f993e1a3245973262696bef09187de",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
