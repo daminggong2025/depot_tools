@@ -22,6 +22,30 @@
       },
       "revId": "e279fb904a444842116a5515e40c156b79d2accd",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ae31a909_b139399e",
+        "filename": "gclient-new-workdir.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 367,
+      "author": {
+        "id": 1116294
+      },
+      "writtenOn": "2026-05-18T18:57:11Z",
+      "side": 1,
+      "message": "Yeah, rmtree is scary and I was too aggressive guarding it.  Updated this to fix the first iteration.",
+      "parentUuid": "77a7702d_c84f9cca",
+      "range": {
+        "startLine": 367,
+        "startChar": 24,
+        "endLine": 367,
+        "endChar": 58
+      },
+      "revId": "e279fb904a444842116a5515e40c156b79d2accd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
