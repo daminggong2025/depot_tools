@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "1b4c09f6_dd45766a",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1185234
+      },
+      "writtenOn": "2026-05-18T19:04:02Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4027f307_7c972e8d",
+      "revId": "14cb7f1e9cd344ca8155616a12492d66c26b2403",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "a5306134_8d381439",
@@ -67,6 +85,24 @@
       "side": 1,
       "message": "that would be a new test case in `tests/git_cl_test.py`",
       "parentUuid": "c2f9928f_f3542d28",
+      "revId": "14cb7f1e9cd344ca8155616a12492d66c26b2403",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b65a1949_570ebdf6",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1185234
+      },
+      "writtenOn": "2026-05-18T19:04:02Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e275f43e_78813e77",
       "revId": "14cb7f1e9cd344ca8155616a12492d66c26b2403",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
