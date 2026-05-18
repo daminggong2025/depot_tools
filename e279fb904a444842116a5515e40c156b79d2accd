@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "77a7702d_c84f9cca",
+        "filename": "gclient-new-workdir.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 367,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-05-18T18:39:31Z",
+      "side": 1,
+      "message": "L341 sets `workdir \u003d args.new_workdir`, so won\u0027t this fail when non-CoW?",
+      "range": {
+        "startLine": 367,
+        "startChar": 24,
+        "endLine": 367,
+        "endChar": 58
+      },
+      "revId": "e279fb904a444842116a5515e40c156b79d2accd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
