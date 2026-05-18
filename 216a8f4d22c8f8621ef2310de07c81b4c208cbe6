@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7a230d8e_a8e4c824",
+        "filename": "gclient-new-workdir.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 364,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-05-18T19:53:43Z",
+      "side": 1,
+      "message": "let\u0027s resolve `workdir` with `os.path.realpath` before comparing it to `args.new_workdir`",
+      "range": {
+        "startLine": 364,
+        "startChar": 23,
+        "endLine": 364,
+        "endChar": 30
+      },
+      "revId": "216a8f4d22c8f8621ef2310de07c81b4c208cbe6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "de91c4d5_7522947e",
+        "filename": "gclient-new-workdir.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 367,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-05-18T19:53:43Z",
+      "side": 1,
+      "message": "asserts are ignored if run with `-O`, let\u0027s replace this with an if + `raise ValueError`",
+      "range": {
+        "startLine": 367,
+        "startChar": 24,
+        "endLine": 367,
+        "endChar": 30
+      },
+      "revId": "216a8f4d22c8f8621ef2310de07c81b4c208cbe6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
