@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a0e65ecc_44877aad",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1163549
+      },
+      "writtenOn": "2026-05-20T01:07:17Z",
+      "side": 1,
+      "message": "+gavinmak to stamp the `//tests/` change. It seems like the OWNERS file might need to be updated to make the recipe owners the owners for `bot_update_coverage_test.py`.",
+      "revId": "4453faa4c055b7dc588f93c2ca6f9c4a48e0b809",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
