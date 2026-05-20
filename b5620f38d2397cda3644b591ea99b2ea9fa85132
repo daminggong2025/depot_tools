@@ -16,6 +16,23 @@
       "message": "The led job is happy during the bot_update: https://ci.chromium.org/b/8681343827660408273\n\nSo should be good for the repo.",
       "revId": "b5620f38d2397cda3644b591ea99b2ea9fa85132",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "10495070_527b8ed8",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2026-05-20T05:10:15Z",
+      "side": 1,
+      "message": "lgtm",
+      "revId": "b5620f38d2397cda3644b591ea99b2ea9fa85132",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
