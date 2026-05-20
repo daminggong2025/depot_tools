@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3519e34e_40b2e51a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1163549
+      },
+      "writtenOn": "2026-05-20T00:54:21Z",
+      "side": 1,
+      "message": "PTAL\n\n[Sample led run](https://ci.chromium.org/ui/p/angle/builders/ci.shadow/angle-mac-arm64-apple-m2-rel/12/infra) with this CL + crrev.com/c/7858369 + an ANGLE-specific optimization (omit a large number of unnecessary CIPD dependencies).\n\nWithout these optimizations, syncing without a cache is prone to hit the 1 hour timeout before even finishing the git dependencies, e.g. in [this build](https://ci.chromium.org/ui/p/angle/builders/ci/angle-mac-arm64-apple-m2-rel/589/infra). With the optimizations, a sync without a cache takes 11-12 minutes.",
+      "revId": "0c7f877984a57ec1f6140efcfe2677de84f246d8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
