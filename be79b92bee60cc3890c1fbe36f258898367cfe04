@@ -39,6 +39,30 @@
       },
       "revId": "be79b92bee60cc3890c1fbe36f258898367cfe04",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "89f48b6a_3ee27aed",
+        "filename": "upload_to_google_storage_first_class.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 131,
+      "author": {
+        "id": 1540893
+      },
+      "writtenOn": "2026-05-21T23:51:33Z",
+      "side": 1,
+      "message": "comment updated with more info. ptal",
+      "parentUuid": "af15b075_2484622a",
+      "range": {
+        "startLine": 131,
+        "startChar": 4,
+        "endLine": 131,
+        "endChar": 71
+      },
+      "revId": "be79b92bee60cc3890c1fbe36f258898367cfe04",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
