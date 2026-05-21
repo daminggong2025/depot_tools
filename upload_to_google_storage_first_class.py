@@ -11,6 +11,7 @@ import json
 import tempfile
 
 import re
+import stat
 import sys
 import tarfile
 
@@ -126,6 +127,15 @@ def upload_to_google_storage(file: str, base_url: str, object_name: str,
         return
     print("Uploading %s as %s" % (file, file_url))
     gsutil_args = ['-h', 'Cache-Control:public, max-age=31536000', 'cp', '-v']
+
+    # Mark executable files with the header "x-goog-meta-executable: 1"
+    # The gclient downloader (download_from_google_storage.py) checks for
+    # this GCS header on Mac and Linux hosts to automatically apply
+    # 'chmod +x' permissions to the downloaded binary.
+    if not sys.platform.startswith('win'):
+        if os.stat(file).st_mode & stat.S_IEXEC:
+            gsutil_args.extend(['-h', 'x-goog-meta-executable:1'])
+
     if gzip:
         gsutil_args.extend(['-z', gzip])
     gsutil_args.extend([file, file_url])
