@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b7aa946d_fa91a40f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1540893
+      },
+      "writtenOn": "2026-05-21T16:30:03Z",
+      "side": 1,
+      "message": "ptal. This is useful when the uploader does not have writer permission (only creator permission), so the executable metadata can be directly attached during initial upload. (currently running into troubles doing clang-format rolling in https://chromium.googlesource.com/chromium/src/+/main/docs/updating_clang_format_binaries.md)",
+      "revId": "be79b92bee60cc3890c1fbe36f258898367cfe04",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
