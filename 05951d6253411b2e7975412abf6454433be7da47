@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "aa7d1705_8662f48a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1369468
+      },
+      "writtenOn": "2026-05-22T18:50:25Z",
+      "side": 1,
+      "message": "I got approval by johirsch@google.com to use this by-exception-only license for testing on bots. See https://chromium-review.git.corp.google.com/c/chromium/src/+/7841136 where I\u0027ll be referencing this license.",
+      "revId": "05951d6253411b2e7975412abf6454433be7da47",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
