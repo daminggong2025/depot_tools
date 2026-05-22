@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3ae03b4c_720746d8",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1244248
+      },
+      "writtenOn": "2026-05-22T09:58:07Z",
+      "side": 1,
+      "message": "Hey Gavin, I can open an issue if this needs discussion. My motivation is that unmanaged mode seems to be the accepted default for every project and managed mode is documented as deprecated at https://www.chromium.org/developers/how-tos/get-the-code/gclient-managed-mode/.\n\nAdditionally, this was first implemented at https://codereview.chromium.org/2099153003 and, apparently, reverted by mistake with unrelated changes at https://codereview.chromium.org/2162583004.\n\nUnfortunately, I don\u0027t have permission to read the bugs linked in those changes so I don\u0027t have more context than this.",
+      "revId": "be39363bd2ca346d9088b0593f96ba36c5742b35",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
