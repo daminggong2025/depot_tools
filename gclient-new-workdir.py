@@ -323,7 +323,7 @@ def main():
                 current_depth = rel_path.count(os.sep) + 1
 
             # Check if there's a .git directory before modifying dirs.
-            has_git = os.path.exists(os.path.join(root, '.git'))
+            has_git = os.path.isdir(os.path.join(root, '.git'))
             # Don't descend into the .git directory.
             if '.git' in dirs:
                 dirs.remove('.git')
