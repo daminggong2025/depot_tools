@@ -33,6 +33,24 @@
       "message": "I\u0027m not sure this new `git cl diff-apply` command is different enough from the existing `git cl patch` to justify a new command.\n\nInstead, could we just add a `--reauthor` command to `git cl patch`? ie `git cl patch --reauthor \u003cchangenum\u003e` would run a regular `cherry-pick`, run commit with `--reset-author`, and remove any existing `Change-Id` footer",
       "revId": "a4a5819b9c1f2f1607e242ff56ab4457850c2a90",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "63a90dc2_444dc900",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 4367499
+      },
+      "writtenOn": "2026-05-25T23:57:34Z",
+      "side": 1,
+      "message": "done, wdyt?",
+      "parentUuid": "a9b5f203_64dcd5b3",
+      "revId": "a4a5819b9c1f2f1607e242ff56ab4457850c2a90",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
