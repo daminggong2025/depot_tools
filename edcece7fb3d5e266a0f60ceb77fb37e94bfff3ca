@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c498c7fb_1ac42d36",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000112
+      },
+      "writtenOn": "2026-05-25T18:22:51Z",
+      "side": 1,
+      "message": "Forgot to mention the approval thread for the record: https://groups.google.com/a/google.com/d/msgid/chrome-atls-discuss/CAJuY5KPOP%2BLarDb-tmAKdoaEw00wXzSibRFFg7Xr0rLu%3Dw6L4Q%40mail.gmail.com",
+      "revId": "edcece7fb3d5e266a0f60ceb77fb37e94bfff3ca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
