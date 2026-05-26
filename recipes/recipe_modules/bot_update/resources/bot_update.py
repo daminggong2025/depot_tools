@@ -1135,8 +1135,24 @@ def checkout(options, git_slns, specs, revisions, step_text):
           clean_ignored=options.clean_ignored)
       ensure_checkout(**checkout_parameters)
       should_create_dirty_file = False
-    except GclientSyncFailed:
+    except GclientSyncFailed as e:
       print('We failed gclient sync, lets delete the checkout and retry.')
+      # Check if failure was due to any Git corruption in the mirror.
+      # `git fsck` is another option, but it is slower than just reading
+      # the output of `gclient sync`.
+      stderr = e.output or ''
+      signatures = (
+          'bad object',
+          'could not read',
+          'is corrupt',
+      )
+      if any(s in stderr.lower() for s in signatures):
+        print('Git corruption detected in gclient sync output.')
+        git_cache_dir = options.git_cache_dir
+        if git_cache_dir and os.path.exists(git_cache_dir):
+          print(f'Wiping entire git cache directory to ensure recovery from corruption: {git_cache_dir}')
+          remove(git_cache_dir, options.cleanup_dir)
+
       ensure_no_checkout(dir_names, options.cleanup_dir)
       ensure_checkout(**checkout_parameters)
       should_create_dirty_file = False
