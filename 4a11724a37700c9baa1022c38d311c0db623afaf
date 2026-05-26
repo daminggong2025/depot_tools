@@ -34,6 +34,23 @@
       "parentUuid": "305213b7_de2eb095",
       "revId": "4a11724a37700c9baa1022c38d311c0db623afaf",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c1234746_32178ac5",
+        "filename": "presubmit_support.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-05-26T21:16:34Z",
+      "side": 1,
+      "message": "change overall LGTM, but let\u0027s revert this version bump if possible. the line hasn\u0027t been touched in years (despite many changes to canned checks), and I\u0027m heistant to include it in this change if it doesn\u0027t break anything",
+      "revId": "4a11724a37700c9baa1022c38d311c0db623afaf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
