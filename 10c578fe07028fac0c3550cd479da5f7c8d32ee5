@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9d066f42_0de892d0",
+        "filename": "git_cl.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 3073,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-05-26T21:24:42Z",
+      "side": 1,
+      "message": "we should use `elif not self.GetBranch` so the `WARNING: You are in detached HEAD state` warning makes sense",
+      "range": {
+        "startLine": 3073,
+        "startChar": 8,
+        "endLine": 3073,
+        "endChar": 12
+      },
+      "revId": "10c578fe07028fac0c3550cd479da5f7c8d32ee5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4262b43e_7fa5796c",
+        "filename": "git_cl.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 6378,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-05-26T21:24:42Z",
+      "side": 1,
+      "message": "nit: might be better worded as \"Apply the patch under your own authorship, removing the original Change-Id footer so you can upload it as a new CL.\"",
+      "range": {
+        "startLine": 6377,
+        "startChar": 14,
+        "endLine": 6378,
+        "endChar": 35
+      },
+      "revId": "10c578fe07028fac0c3550cd479da5f7c8d32ee5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
