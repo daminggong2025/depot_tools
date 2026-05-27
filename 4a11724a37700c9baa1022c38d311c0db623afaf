@@ -69,6 +69,24 @@
       "parentUuid": "c1234746_32178ac5",
       "revId": "4a11724a37700c9baa1022c38d311c0db623afaf",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4b0012ad_c40eb0c9",
+        "filename": "presubmit_support.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1159306
+      },
+      "writtenOn": "2026-05-27T14:50:52Z",
+      "side": 1,
+      "message": "PTANL - your +1 was lost in the rebase",
+      "parentUuid": "eb72fb58_38bc6ee4",
+      "revId": "4a11724a37700c9baa1022c38d311c0db623afaf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
