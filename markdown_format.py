@@ -148,6 +148,22 @@ def process_stdin(args: argparse.Namespace) -> int:
     return 0
 
 
+def find_process_prompts(path: str) -> Optional[str]:
+    """Finds process_prompts.py in the ancestor directories of path."""
+    cur = os.path.abspath(path)
+    if os.path.isfile(cur):
+        cur = os.path.dirname(cur)
+    while True:
+        candidate = os.path.join(cur, 'process_prompts.py')
+        if os.path.exists(candidate):
+            return candidate
+        parent = os.path.dirname(cur)
+        if parent == cur:
+            break
+        cur = parent
+    return None
+
+
 def process_files(args: argparse.Namespace) -> int:
     """Handles formatting for a list of files on disk."""
     return_value = 0
@@ -156,6 +172,58 @@ def process_files(args: argparse.Namespace) -> int:
             print(f'Error: File not found: {path}', file=sys.stderr)
             return_value = 1
             continue
+
+        # Check if it is a prompt file managed by process_prompts.py.
+        process_prompts_script = find_process_prompts(path)
+        is_prompt_file = False
+        tmpl_path = None
+        md_path = None
+
+        if process_prompts_script:
+            if path.endswith('.tmpl.md'):
+                is_prompt_file = True
+                tmpl_path = path
+                md_path = path.replace('.tmpl.md', '.md')
+            elif path.endswith('.md'):
+                potential_tmpl = path.replace('.md', '.tmpl.md')
+                if os.path.exists(potential_tmpl):
+                    is_prompt_file = True
+                    tmpl_path = potential_tmpl
+                    md_path = path
+
+        if is_prompt_file:
+            import importlib.util
+            spec = importlib.util.spec_from_file_location(
+                "process_prompts", process_prompts_script)
+            process_prompts = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(process_prompts)
+
+            if args.check:
+                stale = process_prompts.process_file(tmpl_path, check_only=True)
+                if stale:
+                    print(f'File "{md_path}" is stale. Please run process_prompts.py.', file=sys.stderr)
+                    return_value = return_value or 2
+                continue
+
+            elif args.diff:
+                with open(tmpl_path, 'r', encoding='utf-8') as f:
+                    tmpl_content = f.read()
+                import re
+                expected = re.sub(r"<!--.*?-->\n?", "", tmpl_content, flags=re.DOTALL)
+
+                actual = ""
+                if os.path.exists(md_path):
+                    with open(md_path, 'r', encoding='utf-8') as f:
+                        actual = f.read()
+
+                ret = print_diff(actual, expected, md_path)
+                return_value = return_value or ret
+                continue
+
+            else:
+                process_prompts.process_file(tmpl_path, check_only=False)
+                print(f"Processed '{tmpl_path}' -> '{md_path}' (via process_prompts.py)")
+                continue
 
         # Opt-in check: only format if a marker file is found.
         if not utils.find_config_file(path, _CONFIG_FILENAME):
