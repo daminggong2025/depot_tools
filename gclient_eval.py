@@ -101,6 +101,44 @@ def _NodeDictSchema(dict_schema):
     return validate
 
 
+def _JsonLikeSchema():
+    """Schema predicate for an arbitrarily-nested JSON-like value.
+
+    Unlike `vars` (which is restricted to scalar string/bool values), this
+    accepts the full range of value types JSON can express:
+
+      * scalars: str (incl. ConstantString), bool, int, float, None
+      * arrays:  list/tuple of JSON-like values
+      * objects: dict (incl. _NodeDict) with str keys and JSON-like values
+
+    Validation recurses into arrays and objects so that every nested element
+    is checked, not just the top-level container.
+    """
+
+    def validate(value):
+        if value is None or isinstance(value,
+                                       (ConstantString, str, bool, int, float)):
+            return True
+        if isinstance(value, (list, tuple)):
+            for item in value:
+                validate(item)
+            return True
+        # Note: DEPS dict literals evaluate to _NodeDict, which is a
+        # collections.abc.MutableMapping rather than a builtin dict.
+        if isinstance(value, collections.abc.Mapping):
+            for key, item in value.items():
+                if not isinstance(key, str):
+                    raise schema.SchemaError(
+                        'extra_vars keys must be strings, got %r' % (key, ))
+                validate(item)
+            return True
+        raise schema.SchemaError(
+            'extra_vars values must be JSON-like (string, number, bool, null, '
+            'list or dict); got %s: %r' % (type(value).__name__, value))
+
+    return validate
+
+
 def _IsConstant(node):
     return isinstance(node, ast.Constant)
 
@@ -330,6 +368,14 @@ _GCLIENT_SCHEMA = schema.Schema(
         _NodeDictSchema({
             schema.Optional(str):
             schema.Or(ConstantString, str, bool),
+        }),
+
+        # `extra_vars` is a special entry to allow embedders to place their own
+        # particular keys in the DEPS file. This particular validates that the
+        # schema recursively is JSON-like.
+        schema.Optional('extra_vars'):
+        _NodeDictSchema({
+            schema.Optional(str): _JsonLikeSchema(),
         }),
     }))
 
