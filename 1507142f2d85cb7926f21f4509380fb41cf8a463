@@ -3,6 +3,23 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "3cd14e7f_f58b8aa0",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1378662
+      },
+      "writtenOn": "2026-05-29T05:41:08Z",
+      "side": 1,
+      "message": "hmm in theory this should be fine though I\u0027m not sure why we didn\u0027t use mtime before. @ddoman@chromium.org may have more context I guess.\n\nalso cc @iannucci@google.com for cipd related and we have discussed this issue before.",
+      "revId": "1507142f2d85cb7926f21f4509380fb41cf8a463",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "f6be66fb_6f18549b",
         "filename": "cipd_bin_setup.sh",
         "patchSetId": 4
