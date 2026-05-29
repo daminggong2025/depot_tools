@@ -16,6 +16,24 @@
       "message": "A previous version of this used content rather than timestamp diff. The timestamp diff took it down from 50 -\u003e 35 milliseconds, and I *think* it\u0027s fine, but I\u0027m happy to revert it to a content-based approach if we\u0027re hesitant.",
       "revId": "1507142f2d85cb7926f21f4509380fb41cf8a463",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5fce02ed_2d7e91dd",
+        "filename": "cipd_bin_setup.sh",
+        "patchSetId": 4
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-05-29T05:00:35Z",
+      "side": 1,
+      "message": "Timestamp is used by UV as well, this is an industry standard and I\u0027d much rather have it instead.",
+      "parentUuid": "f6be66fb_6f18549b",
+      "revId": "1507142f2d85cb7926f21f4509380fb41cf8a463",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
