@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f6be66fb_6f18549b",
+        "filename": "cipd_bin_setup.sh",
+        "patchSetId": 4
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1450817
+      },
+      "writtenOn": "2026-05-29T04:56:16Z",
+      "side": 1,
+      "message": "A previous version of this used content rather than timestamp diff. The timestamp diff took it down from 50 -\u003e 35 milliseconds, and I *think* it\u0027s fine, but I\u0027m happy to revert it to a content-based approach if we\u0027re hesitant.",
+      "revId": "1507142f2d85cb7926f21f4509380fb41cf8a463",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
