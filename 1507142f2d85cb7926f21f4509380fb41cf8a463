@@ -68,6 +68,24 @@
       "parentUuid": "f6be66fb_6f18549b",
       "revId": "1507142f2d85cb7926f21f4509380fb41cf8a463",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7e870740_354cf7db",
+        "filename": "cipd_bin_setup.sh",
+        "patchSetId": 4
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1147264
+      },
+      "writtenOn": "2026-05-29T18:33:23Z",
+      "side": 1,
+      "message": "I believe that Matt\u0027s previous version stores the hash of the ensured cipd_manifest.txt in the separate stamp file, and compares the hash with the hash of the latest cipd_manifest.txt to validate the cache, right?\n\nI prefer the content-based approach over  mtime  because the timestamp approach carries assumptions about how Git and CIPD manage the timestamp of the manifest file.\n\nFor instance, Git checkouts to a specific revision on a CI bot could trigger false-positive runs, which are hard to debug. Unless there are meaningful benefits to  mtime  other than saving 15ms, I\u0027d prefer to go with the content-based approach as it is more robust.",
+      "parentUuid": "5fce02ed_2d7e91dd",
+      "revId": "1507142f2d85cb7926f21f4509380fb41cf8a463",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
