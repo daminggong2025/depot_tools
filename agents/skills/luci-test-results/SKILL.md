@@ -2,9 +2,10 @@
 name: luci-test-results
 description: >
   Triage and analyze any LUCI build results (including tests and compile).
-  Fetches an accurate, complete, and actionable list of test
-  failures and the failure causes by querying ResultDB directly. Use this when you need to
-  investigate specific test failures rather than just knowing which builders failed.
+  Fetches an accurate, complete, and actionable list of test failures by
+  querying ResultDB directly. Can also be used to check results of specific tests.
+  Use this when you need to investigate specific test failures rather than
+  just knowing which builders failed.
 ---
 
 # LUCI Triage Cheat Sheet
@@ -81,6 +82,18 @@ Retrieve a filtered failure log snippet using the result name (`res`) from step
 scripts/luci_triage.py fetch-log \
   --res "<RES_NAME>"
 ```
+
+## 6. Check Specific Test
+
+Check if a specific test (or tests matching a regex) ran in a build, and see its status:
+
+```bash
+scripts/luci_triage.py check-test \
+  --build-id <BUILD_ID> \
+  --test-regex "<TEST_REGEX>"
+```
+
+- **Efficiency:** This command uses server-side filtering via `QueryTestResults` and automatically wraps your regex with `.*` for partial matching. It fetches all results (expected and unexpected) for matching tests.
 
 ## Implementation Notes
 
