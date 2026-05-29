@@ -217,6 +217,51 @@ def fetch_log_snippet(res_name, raw=False):
     return "\n".join(output_lines[:200])
 
 
+def check_test(build_id, test_regex):
+    """Checks if a test matching regex ran in the build using QueryTestResults."""
+    if build_id.startswith('b'):
+        build_id = build_id[1:]
+
+    # Ensure regex matches partially by wrapping with .* if not already anchored
+    if not test_regex.startswith('.*'):
+        test_regex = '.*' + test_regex
+    if not test_regex.endswith('.*'):
+        test_regex = test_regex + '.*'
+
+    payload = {
+        'invocations': [f'invocations/build-{build_id}'],
+        'predicate': {
+            'testIdRegexp': test_regex,
+            'expectancy': 'ALL'
+        },
+        'pageSize': 1000
+    }
+
+    test_results = []
+    while True:
+        result = run_prpc('results.api.luci.app',
+                          'luci.resultdb.v1.ResultDB.QueryTestResults', payload)
+        if not result:
+            print("Error: Failed to query ResultDB", file=sys.stderr)
+            break
+
+        test_results.extend(result.get('testResults', []))
+
+        if 'nextPageToken' not in result:
+            break
+        payload['pageToken'] = result['nextPageToken']
+
+    matching_tests = []
+    for tr in test_results:
+        matching_tests.append({
+            'id': tr['testId'],
+            'status': tr.get('status'),
+            'expected': tr.get('expected')
+        })
+
+    return matching_tests
+
+
 def main():
     """Main CLI entry point."""
     parser = argparse.ArgumentParser()
@@ -251,6 +296,11 @@ def main():
                    action='store_true',
                    help='Return full log without filtering')
 
+    # check-test
+    p = subparsers.add_parser('check-test')
+    p.add_argument('--build-id', required=True)
+    p.add_argument('--test-regex', required=True)
+
     args = parser.parse_args()
 
     if args.command == 'resolve-build-id':
@@ -267,6 +317,8 @@ def main():
         print(json.dumps(list_failures(args.build_id, args.limit), indent=2))
     elif args.command == 'fetch-log':
         print(fetch_log_snippet(args.res, args.raw))
+    elif args.command == 'check-test':
+        print(json.dumps(check_test(args.build_id, args.test_regex), indent=2))
 
 
 if __name__ == '__main__':
