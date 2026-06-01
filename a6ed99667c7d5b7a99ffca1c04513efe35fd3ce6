@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d5405b44_28992a28",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1564673
+      },
+      "writtenOn": "2026-06-01T15:09:25Z",
+      "side": 1,
+      "message": "I\u0027m not sure if this is the best way to go about this. What I really wanted was a way that we could have our own `\u0027dep_type\u0027`, for things we download, that is very similar to what `\u0027dep_type\u0027: \u0027gcs\u0027,` does.",
+      "revId": "a6ed99667c7d5b7a99ffca1c04513efe35fd3ce6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
