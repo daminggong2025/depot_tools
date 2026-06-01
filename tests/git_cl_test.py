@@ -6250,7 +6250,6 @@ Change-Id: I25699146b24c7ad8776f17775f489b9d41499595
                                         mockQueryChanges):
         mockQueryChanges.return_value = [{
             'id': 'change_id',
-            'current_revision': 'abc',
             'revisions': {
                 'abc': {
                     'commit': {
