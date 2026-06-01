@@ -5421,6 +5421,22 @@ test_format_input_diff_windows = "\r\n".join([
 ])
 
 
+test_format_input_diff_html_ts = ("""
+diff --git a/ui/webui/resources/tools/foo.ts b/ui/webui/resources/tools/foo.ts
+--- a/ui/webui/resources/tools/foo.ts
++++ b/ui/webui/resources/tools/foo.ts
+@@ -1,2 +1,2 @@
+-const a = 1;
++const a  =  1;
+diff --git a/ui/webui/resources/tools/bar.html.ts b/ui/webui/resources/tools/bar.html.ts
+--- a/ui/webui/resources/tools/bar.html.ts
++++ b/ui/webui/resources/tools/bar.html.ts
+@@ -1,2 +1,2 @@
+-const html = `<div></div>`;
++const html  =  `<div></div>`;
+""")
+
+
 class CMDFormatTestCase(unittest.TestCase):
     def setUp(self):
         super(CMDFormatTestCase, self).setUp()
@@ -5940,6 +5956,78 @@ class CMDFormatTestCase(unittest.TestCase):
                 mock.ANY)
         finally:
             os.remove(input_diff.name)
+
+    def testHtmlTsExempt(self):
+        diffs = git_cl._SplitDiffsByFile(test_format_input_diff_html_ts)
+        files = list(diffs.keys())
+        mock_opts = mock.Mock(full=False, dry_run=False, diff=False)
+
+        git_cl.RunCommand.return_value = ""
+        return_value = git_cl._RunClangFormatDiff(mock_opts, files,
+                                                  self._top_dir, diffs)
+        self.assertEqual(0, return_value)
+
+        # It should only pass the diff of foo.ts to stdin of clang-format-diff
+        expected_stdin = diffs['ui/webui/resources/tools/foo.ts'].encode()
+
+        git_cl.RunCommand.assert_called_with(
+            mock.ANY,  # command
+            error_ok=True,
+            stdin=expected_stdin,
+            cwd=self._top_dir,
+            env=mock.ANY,
+            shell=mock.ANY,
+        )
+
+    @mock.patch('git_cl._RunClangFormatDiff', return_value=0)
+    def testJsDefault(self, clang_formatter):
+        with tempfile.NamedTemporaryFile(mode="w+", delete=False) as input_diff:
+            input_diff.write(test_format_input_diff_html_ts)
+
+        try:
+            previous_cwd = os.getcwd()
+            os.chdir(self._top_dir)
+            ret = git_cl.main([
+                'format',
+                "--input_diff_file",
+                input_diff.name,
+                "--presubmit",
+                "--dry-run",
+            ])
+            self.assertEqual(0, ret)
+
+            # git_cl.main should pass both because they are both .ts files and --js is default.
+            clang_formatter.assert_called_with(mock.ANY, [
+                'ui/webui/resources/tools/foo.ts',
+                'ui/webui/resources/tools/bar.html.ts'
+            ], mock.ANY, mock.ANY)
+        finally:
+            os.remove(input_diff.name)
+            os.chdir(previous_cwd)
+
+    @mock.patch('git_cl._RunClangFormatDiff', return_value=0)
+    def testNoJsOption(self, clang_formatter):
+        with tempfile.NamedTemporaryFile(mode="w+", delete=False) as input_diff:
+            input_diff.write(test_format_input_diff_html_ts)
+
+        try:
+            previous_cwd = os.getcwd()
+            os.chdir(self._top_dir)
+            ret = git_cl.main([
+                'format',
+                "--input_diff_file",
+                input_diff.name,
+                "--presubmit",
+                "--dry-run",
+                "--no-js",
+            ])
+            self.assertEqual(0, ret)
+
+            # Since --no-js is passed, clang_formatter should NOT be called.
+            clang_formatter.assert_not_called()
+        finally:
+            os.remove(input_diff.name)
+            os.chdir(previous_cwd)
 
 
 @unittest.skipIf(gclient_utils.IsEnvCog(),

@@ -7051,6 +7051,10 @@ def RunGitDiffCmd(diff_type,
 
 def _RunClangFormatDiff(opts, paths, top_dir, diffs):
     """Runs clang-format-diff and sets a return value if necessary."""
+    paths = [p for p in paths if not p.lower().endswith('.html.ts')]
+    if not paths:
+        return 0
+
     # Set to 2 to signal to CheckPatchFormatted() that this patch isn't
     # formatted. This is used to block during the presubmit.
     return_value = 0
@@ -7559,10 +7563,13 @@ def CMDformat(parser: optparse.OptionParser, args: list[str]):
         'If neither --python or --no-python are set, python files that have a '
         '.style.yapf file in an ancestor directory will be formatted. '
         'It is an error to set both.')
-    parser.add_option('--js',
-                      action='store_true',
-                      help='Format javascript code with clang-format. '
-                      'Has no effect if --no-clang-format is set.')
+    parser.add_option(
+        '--no-js',
+        action='store_false',
+        dest='js',
+        default=True,
+        help=
+        'Disable formatting of javascript/typescript code with clang-format.')
     parser.add_option('--diff',
                       action='store_true',
                       help='Print diff to stdout rather than modifying files.')
