@@ -16,6 +16,24 @@
       "message": "This handling for Gerrit URLs was written by Gemini CLI. It\u0027s not obvious to me whether there\u0027s a better way to do this. If you have any suggestions, I\u0027m happy to update this.",
       "revId": "e2841018f37a04a782ce6688107885d629d76106",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7b742349_5869248b",
+        "filename": "git_cl.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 4957,
+      "author": {
+        "id": 1115920
+      },
+      "writtenOn": "2026-06-01T22:50:39Z",
+      "side": 1,
+      "message": "The code this refers to has been moved to a separate CL.",
+      "parentUuid": "db503364_f7818e18",
+      "revId": "e2841018f37a04a782ce6688107885d629d76106",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
