@@ -16,6 +16,24 @@
       "message": "what happens if `--flag\u003d\"value\"` is given at the end?\nhow *.bat passes the command line to siso.py?",
       "revId": "eedf2f4f9aa58e83c2a402e7f573945771c4d11e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7fd36423_6d8ead5a",
+        "filename": "tests/siso_test.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 1645,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2026-06-02T07:16:48Z",
+      "side": 1,
+      "message": "\u003e what happens if --flag\u003d\"value\" is given at the end?\n\nIf `--flag\u003d\"value\"` is given at the end of the command line, `siso.bat` passes it wrapped in outer double quotes: `\"compile -C out/Default --flag\u003d\"value\"\"`.\n\nIf the user escapes the quotes as `--flag\u003d\\\"value\\\"` at the end, Python receives it as `--flag\u003d\"value\"` (ending with a double quote, but containing an even number of double quotes: 2). To prevent corruption in this case, I have added a safety check: we now only strip the trailing double quote if there is an **odd number of double quotes** in the last argument.\n\n\u003e how *.bat passes the command line to siso.py?\n\n`siso.bat` wraps the entire list of arguments in a single set of double quotes using `\"%*\"`:\n\n```batch\n@call %scriptdir%python-bin\\python3 \"%~dp0\\siso.py\" \"%*\"\n```\n\nThis forwards the arguments as a single outer-quoted string. If the last argument ends with a backslash (e.g.,  out\\Default\\ ), Windows cmd/CLI parsing treats the backslash before the closing quote as an escape character ( \\\" ), causing a literal double quote to be appended to Python\u0027s raw arguments string.",
+      "parentUuid": "5066bfb7_a7ff7fe8",
+      "revId": "eedf2f4f9aa58e83c2a402e7f573945771c4d11e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
