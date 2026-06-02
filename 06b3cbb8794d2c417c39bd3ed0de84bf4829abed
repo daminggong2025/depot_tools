@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "71b033d5_5985cb4a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2026-06-02T06:20:16Z",
+      "side": 1,
+      "message": "can we have a test?",
+      "revId": "06b3cbb8794d2c417c39bd3ed0de84bf4829abed",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c0665604_595bc19e",
+        "filename": "siso.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 502,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2026-06-02T06:20:16Z",
+      "side": 1,
+      "message": "ok to strip \" from every arg?",
+      "revId": "06b3cbb8794d2c417c39bd3ed0de84bf4829abed",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
