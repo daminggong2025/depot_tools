@@ -6362,6 +6362,8 @@ Change-Id: I25699146b24c7ad8776f17775f489b9d41499595
             base=None,
             allow_conflicts=False)
 
+<<<<<<< PATCH SET (38a81965f21dbf061e6ead2f8a53ee67511d1884 Support Gerrit URLs and Change IDs or Numbers in "git cl che)
+<<<<<<< PATCH SET (589bfb48b9237a686d360c77e8b0f4fc4abc3143 Support Gerrit URLs and Change IDs or Numbers in "git cl che)
     @mock.patch('gerrit_util.QueryChanges')
     @mock.patch('gerrit_util.CherryPick')
     @mock.patch('gerrit_util.AddReviewers')
@@ -6472,6 +6474,313 @@ Change-Id: I25699146b24c7ad8776f17775f489b9d41499595
             123,
             reviewers=['rubber-stamper@appspot.gserviceaccount.com'])
 
+    @mock.patch('gerrit_util.QueryChanges')
+    @mock.patch('gerrit_util.CherryPick')
+    @mock.patch('gerrit_util.GetChangePageUrl', return_value='url')
+    def testCherryPick_FromUrl(self, _mockGetUrl, mockCherryPick,
+                               mockQueryChanges):
+        mockQueryChanges.return_value = [{
+            'id': 'change_id',
+            'revisions': {
+                'abc': {
+                    'commit': {
+                        'message': 'msg'
+                    }
+                }
+            }
+        }]
+        mockCherryPick.return_value = {'_number': 123}
+
+        # URL ends with 12345, so QueryChanges called with ('change', '12345')
+        url = 'https://chromium-review.googlesource.com/c/chromium/src/+/12345'
+        self.assertEqual(0,
+                         git_cl.main(['cherry-pick', '--branch', 'main', url]))
+
+        mockQueryChanges.assert_called_once_with(
+            host='chromium-review.googlesource.com',
+            params=[('change', '12345')],
+            o_params=['CURRENT_REVISION', 'CURRENT_COMMIT'])
+
+    @mock.patch('gerrit_util.QueryChanges')
+    @mock.patch('gerrit_util.CherryPick')
+    @mock.patch('gerrit_util.GetChangePageUrl', return_value='url')
+    def testCherryPick_FromChangeId(self, _mockGetUrl, mockCherryPick,
+                                    mockQueryChanges):
+        mockQueryChanges.return_value = [{
+            'id': 'change_id',
+            'revisions': {
+                'abc': {
+                    'commit': {
+                        'message': 'msg'
+                    }
+                }
+            }
+        }]
+        mockCherryPick.return_value = {'_number': 123}
+
+        # ChangeId is long and starts with I
+        change_id = 'I1234567890abcdef'
+        self.assertEqual(
+            0, git_cl.main(['cherry-pick', '--branch', 'main', change_id]))
+
+        mockQueryChanges.assert_called_once_with(
+            host='chromium-review.googlesource.com',
+            params=[('change', 'I1234567890abcdef')],
+            o_params=['CURRENT_REVISION', 'CURRENT_COMMIT'])
+
+    @mock.patch('gerrit_util.QueryChanges')
+    @mock.patch('gerrit_util.CherryPick')
+    @mock.patch('gerrit_util.GetChangePageUrl', return_value='url')
+    def testCherryPick_FromChangeNumber(self, _mockGetUrl, mockCherryPick,
+                                        mockQueryChanges):
+        mockQueryChanges.return_value = [{
+            'id': 'change_id',
+            'revisions': {
+                'abc': {
+                    'commit': {
+                        'message': 'msg'
+                    }
+                }
+            }
+        }]
+        mockCherryPick.return_value = {'_number': 123}
+
+        # Digit change number
+        change_num = '12345'
+        self.assertEqual(
+            0, git_cl.main(['cherry-pick', '--branch', 'main', change_num]))
+
+        mockQueryChanges.assert_called_once_with(
+            host='chromium-review.googlesource.com',
+            params=[('change', '12345')],
+            o_params=['CURRENT_REVISION', 'CURRENT_COMMIT'])
+
+||||||| BASE      (7cc1803a562abc7ee7ba379540c0f10d78dbb91c Add new command-line flags to "git cl cherry-pick" for conve)
+    @mock.patch('gerrit_util.QueryChanges')
+    @mock.patch('gerrit_util.CherryPick')
+    @mock.patch('gerrit_util.AddReviewers')
+    @mock.patch('gerrit_util.SetReview')
+    @mock.patch('gerrit_util.GetChangePageUrl', return_value='url')
+    def testCherryPick_CQDryRun(self, _mockGetUrl, mockSetReview,
+                                mockAddReviewers, mockCherryPick,
+                                mockQueryChanges):
+        mockQueryChanges.return_value = [{
+            'id': 'change_id',
+            'current_revision': 'abc',
+            'revisions': {
+                'abc': {
+                    'commit': {
+                        'message': 'msg'
+                    }
+                }
+            }
+        }]
+        mockCherryPick.return_value = {'_number': 123}
+
+        self.assertEqual(
+            0,
+            git_cl.main(
+                ['cherry-pick', '--branch', 'main', 'abc', '--cq-dry-run']))
+
+        expected_message = 'Cherry pick "msg"\n\nOriginal change\'s description:\n> msg\n\n'
+        mockCherryPick.assert_called_once_with(
+            'chromium-review.googlesource.com',
+            'change_id',
+            'main',
+            message=expected_message,
+            base=None,
+            allow_conflicts=False)
+        mockAddReviewers.assert_not_called()
+        mockSetReview.assert_called_once_with(
+            'chromium-review.googlesource.com', 123, labels={'Commit-Queue': 1})
+
+    @mock.patch('gerrit_util.QueryChanges')
+    @mock.patch('gerrit_util.CherryPick')
+    @mock.patch('gerrit_util.AddReviewers')
+    @mock.patch('gerrit_util.GetChangePageUrl', return_value='url')
+    def testCherryPick_WithMilestone(self, _mockGetUrl, mockAddReviewers,
+                                     mockCherryPick, mockQueryChanges):
+        mockQueryChanges.return_value = [{
+            'id': 'change_id',
+            'current_revision': 'abc',
+            'revisions': {
+                'abc': {
+                    'commit': {
+                        'message': 'msg'
+                    }
+                }
+            }
+        }]
+        mockCherryPick.return_value = {'_number': 123}
+
+        self.assertEqual(
+            0,
+            git_cl.main([
+                'cherry-pick', '--branch', 'main', 'abc', '--milestone', '123'
+            ]))
+
+        expected_message = '[123] msg\n\nOriginal change\'s description:\n> msg\n\n'
+        mockCherryPick.assert_called_once_with(
+            'chromium-review.googlesource.com',
+            'change_id',
+            'main',
+            message=expected_message,
+            base=None,
+            allow_conflicts=False)
+        mockAddReviewers.assert_not_called()
+
+    @mock.patch('gerrit_util.QueryChanges')
+    @mock.patch('gerrit_util.CherryPick')
+    @mock.patch('gerrit_util.AddReviewers')
+    @mock.patch('gerrit_util.GetChangePageUrl', return_value='url')
+    def testCherryPick_WithRubberStamper(self, _mockGetUrl, mockAddReviewers,
+                                         mockCherryPick, mockQueryChanges):
+        mockQueryChanges.return_value = [{
+            'id': 'change_id',
+            'current_revision': 'abc',
+            'revisions': {
+                'abc': {
+                    'commit': {
+                        'message': 'msg'
+                    }
+                }
+            }
+        }]
+        mockCherryPick.return_value = {'_number': 123}
+
+        self.assertEqual(
+            0,
+            git_cl.main(
+                ['cherry-pick', '--branch', 'main', 'abc', '--rubber-stamper']))
+
+        expected_message = 'Cherry pick "msg"\n\nOriginal change\'s description:\n> msg\n\n'
+        mockCherryPick.assert_called_once_with(
+            'chromium-review.googlesource.com',
+            'change_id',
+            'main',
+            message=expected_message,
+            base=None,
+            allow_conflicts=False)
+        mockAddReviewers.assert_called_once_with(
+            'chromium-review.googlesource.com',
+            123,
+            reviewers=['rubber-stamper@appspot.gserviceaccount.com'])
+
+=======
+>>>>>>> BASE      (9eecd66fa8e0f5008303f272a5a6818aca6d8c7e Add interactive conflict handling to "git cl cherry-pick".)
+||||||| BASE      (9eecd66fa8e0f5008303f272a5a6818aca6d8c7e Add interactive conflict handling to "git cl cherry-pick".)
+=======
+    @mock.patch('gerrit_util.QueryChanges')
+    @mock.patch('gerrit_util.CherryPick')
+    @mock.patch('gerrit_util.AddReviewers')
+    @mock.patch('gerrit_util.SetReview')
+    @mock.patch('gerrit_util.GetChangePageUrl', return_value='url')
+    def testCherryPick_CQDryRun(self, _mockGetUrl, mockSetReview,
+                                mockAddReviewers, mockCherryPick,
+                                mockQueryChanges):
+        mockQueryChanges.return_value = [{
+            'id': 'change_id',
+            'current_revision': 'abc',
+            'revisions': {
+                'abc': {
+                    'commit': {
+                        'message': 'msg'
+                    }
+                }
+            }
+        }]
+        mockCherryPick.return_value = {'_number': 123}
+
+        self.assertEqual(
+            0,
+            git_cl.main(
+                ['cherry-pick', '--branch', 'main', 'abc', '--cq-dry-run']))
+
+        expected_message = 'Cherry pick "msg"\n\nOriginal change\'s description:\n> msg\n\n'
+        mockCherryPick.assert_called_once_with(
+            'chromium-review.googlesource.com',
+            'change_id',
+            'main',
+            message=expected_message,
+            base=None,
+            allow_conflicts=False)
+        mockAddReviewers.assert_not_called()
+        mockSetReview.assert_called_once_with(
+            'chromium-review.googlesource.com', 123, labels={'Commit-Queue': 1})
+
+    @mock.patch('gerrit_util.QueryChanges')
+    @mock.patch('gerrit_util.CherryPick')
+    @mock.patch('gerrit_util.AddReviewers')
+    @mock.patch('gerrit_util.GetChangePageUrl', return_value='url')
+    def testCherryPick_WithMilestone(self, _mockGetUrl, mockAddReviewers,
+                                     mockCherryPick, mockQueryChanges):
+        mockQueryChanges.return_value = [{
+            'id': 'change_id',
+            'current_revision': 'abc',
+            'revisions': {
+                'abc': {
+                    'commit': {
+                        'message': 'msg'
+                    }
+                }
+            }
+        }]
+        mockCherryPick.return_value = {'_number': 123}
+
+        self.assertEqual(
+            0,
+            git_cl.main([
+                'cherry-pick', '--branch', 'main', 'abc', '--milestone', '123'
+            ]))
+
+        expected_message = '[123] msg\n\nOriginal change\'s description:\n> msg\n\n'
+        mockCherryPick.assert_called_once_with(
+            'chromium-review.googlesource.com',
+            'change_id',
+            'main',
+            message=expected_message,
+            base=None,
+            allow_conflicts=False)
+        mockAddReviewers.assert_not_called()
+
+    @mock.patch('gerrit_util.QueryChanges')
+    @mock.patch('gerrit_util.CherryPick')
+    @mock.patch('gerrit_util.AddReviewers')
+    @mock.patch('gerrit_util.GetChangePageUrl', return_value='url')
+    def testCherryPick_WithRubberStamper(self, _mockGetUrl, mockAddReviewers,
+                                         mockCherryPick, mockQueryChanges):
+        mockQueryChanges.return_value = [{
+            'id': 'change_id',
+            'current_revision': 'abc',
+            'revisions': {
+                'abc': {
+                    'commit': {
+                        'message': 'msg'
+                    }
+                }
+            }
+        }]
+        mockCherryPick.return_value = {'_number': 123}
+
+        self.assertEqual(
+            0,
+            git_cl.main(
+                ['cherry-pick', '--branch', 'main', 'abc', '--rubber-stamper']))
+
+        expected_message = 'Cherry pick "msg"\n\nOriginal change\'s description:\n> msg\n\n'
+        mockCherryPick.assert_called_once_with(
+            'chromium-review.googlesource.com',
+            'change_id',
+            'main',
+            message=expected_message,
+            base=None,
+            allow_conflicts=False)
+        mockAddReviewers.assert_called_once_with(
+            'chromium-review.googlesource.com',
+            123,
+            reviewers=['rubber-stamper@appspot.gserviceaccount.com'])
+
+>>>>>>> BASE      (08846254291d08979fad450bff686080bb1d13c6 Add new command-line flags to "git cl cherry-pick" for conve)
 
 @unittest.skipIf(gclient_utils.IsEnvCog(),
                  'not supported in non-git environment')
