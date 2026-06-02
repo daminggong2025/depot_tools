@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5066bfb7_a7ff7fe8",
+        "filename": "tests/siso_test.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 1645,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2026-06-02T06:54:47Z",
+      "side": 1,
+      "message": "what happens if `--flag\u003d\"value\"` is given at the end?\nhow *.bat passes the command line to siso.py?",
+      "revId": "eedf2f4f9aa58e83c2a402e7f573945771c4d11e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
