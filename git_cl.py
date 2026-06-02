@@ -5991,20 +5991,60 @@ def UploadAllSquashed(options: optparse.Values,
                                            options.push_options)
 
     # Post push updates
-    regex = re.compile(r'remote:\s+https?://[\w\-\.\+\/#]*/(\d+)\s?.*')
-    change_numbers = [
-        m.group(1) for m in map(regex.search, push_stdout.splitlines()) if m
-    ]
+    regex = re.compile(r'remote:\s+https?://[\w\-\.\+\/#]*/(\d+)\s?(.*)')
+
+    # Gerrit might wrap long URLs, splitting them across lines.
+    # Join split lines before parsing.
+    lines = push_stdout.splitlines()
+    joined_lines = []
+    i = 0
+    while i < len(lines):
+        line = lines[i]
+        if line.strip().startswith('remote:') and ('https://' in line
+                                                   or 'http://' in line):
+            while (i + 1 < len(lines)
+                   and not lines[i + 1].strip().startswith('remote:')
+                   and not lines[i + 1].strip().startswith('To ')
+                   and not lines[i + 1].strip().startswith('* ')):
+                line = line.rstrip() + lines[i + 1].lstrip()
+                i += 1
+        joined_lines.append(line)
+        i += 1
+
+    parsed_outputs = []
+    for line in joined_lines:
+        m = regex.search(line)
+        if m:
+            parsed_outputs.append((m.group(1), m.group(2).strip()))
+
+    change_numbers = [x[0] for x in parsed_outputs]
 
     if len(change_numbers) != len(uploads_by_cl):
-        DieWithError('Created|Updated %d issues on Gerrit, but %d expected.\n'
-                     'Detected change numbers: %s\n'
-                     'Full git push output:\n%s' %
-                     (len(change_numbers), len(uploads_by_cl), change_numbers,
-                      push_stdout))
-
-    for i, (cl, new_upload) in enumerate(uploads_by_cl):
-        cl.PostUploadUpdates(options, new_upload, change_numbers[i])
+        print('WARNING: Number of uploaded changes (%d) does not match '
+              'number of branches in stack (%d).' %
+              (len(change_numbers), len(uploads_by_cl)))
+        print('Attempting to match changes by subject...')
+        for cl, new_upload in uploads_by_cl:
+            subject = new_upload.change_desc.description.splitlines()[0].strip()
+            found = False
+            for change_number, url_subject in parsed_outputs:
+                if (url_subject.startswith(subject)
+                        or subject.startswith(url_subject)):
+                    print('Matched branch "%s" (subject: "%s") to CL %s' %
+                          (cl.GetBranch(), subject, change_number))
+                    cl.PostUploadUpdates(options, new_upload, change_number)
+                    found = True
+                    break
+            if not found:
+                DieWithError(
+                    'Could not find matching CL for branch "%s" '
+                    '(subject: "%s").\n'
+                    'Detected change numbers: %s\n'
+                    'Full git push output:\n%s' %
+                    (cl.GetBranch(), subject, change_numbers, push_stdout))
+    else:
+        for i, (cl, new_upload) in enumerate(uploads_by_cl):
+            cl.PostUploadUpdates(options, new_upload, change_numbers[i])
 
     return 0
 
