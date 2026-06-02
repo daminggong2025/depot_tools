@@ -6297,6 +6297,7 @@ Change-Id: I25699146b24c7ad8776f17775f489b9d41499595
                                          mockQueryChanges, mockAskForData):
         mockQueryChanges.return_value = [{
             'id': 'change_id',
+            'current_revision': 'abc',
             'revisions': {
                 'abc': {
                     'commit': {
@@ -6310,7 +6311,8 @@ Change-Id: I25699146b24c7ad8776f17775f489b9d41499595
                 '_number': 123
             }
         ]
-        mockAskForData.return_value = 'y'
+        # First call returns '', second returns 'maybe', third returns 'y'
+        mockAskForData.side_effect = ['', 'maybe', 'y']
 
         self.assertEqual(
             0, git_cl.main(['cherry-pick', '--branch', 'main', 'abc']))
@@ -6330,6 +6332,7 @@ Change-Id: I25699146b24c7ad8776f17775f489b9d41499595
                       base=None,
                       allow_conflicts=True)
         ])
+        self.assertEqual(mockAskForData.call_count, 3)
 
     @mock.patch('gclient_utils.AskForData')
     @mock.patch('gerrit_util.QueryChanges')
