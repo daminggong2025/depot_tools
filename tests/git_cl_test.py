@@ -6456,6 +6456,87 @@ Change-Id: I25699146b24c7ad8776f17775f489b9d41499595
             123,
             reviewers=['rubber-stamper@appspot.gserviceaccount.com'])
 
+    @mock.patch('gerrit_util.QueryChanges')
+    @mock.patch('gerrit_util.CherryPick')
+    @mock.patch('gerrit_util.GetChangePageUrl', return_value='url')
+    def testCherryPick_FromUrl(self, _mockGetUrl, mockCherryPick,
+                               mockQueryChanges):
+        mockQueryChanges.return_value = [{
+            'id': 'change_id',
+            'revisions': {
+                'abc': {
+                    'commit': {
+                        'message': 'msg'
+                    }
+                }
+            }
+        }]
+        mockCherryPick.return_value = {'_number': 123}
+
+        # URL ends with 12345, so QueryChanges called with ('change', '12345')
+        url = 'https://chromium-review.googlesource.com/c/chromium/src/+/12345'
+        self.assertEqual(0,
+                         git_cl.main(['cherry-pick', '--branch', 'main', url]))
+
+        mockQueryChanges.assert_called_once_with(
+            host='chromium-review.googlesource.com',
+            params=[('change', '12345')],
+            o_params=['CURRENT_REVISION', 'CURRENT_COMMIT'])
+
+    @mock.patch('gerrit_util.QueryChanges')
+    @mock.patch('gerrit_util.CherryPick')
+    @mock.patch('gerrit_util.GetChangePageUrl', return_value='url')
+    def testCherryPick_FromChangeId(self, _mockGetUrl, mockCherryPick,
+                                    mockQueryChanges):
+        mockQueryChanges.return_value = [{
+            'id': 'change_id',
+            'revisions': {
+                'abc': {
+                    'commit': {
+                        'message': 'msg'
+                    }
+                }
+            }
+        }]
+        mockCherryPick.return_value = {'_number': 123}
+
+        # ChangeId is long and starts with I
+        change_id = 'I1234567890abcdef'
+        self.assertEqual(
+            0, git_cl.main(['cherry-pick', '--branch', 'main', change_id]))
+
+        mockQueryChanges.assert_called_once_with(
+            host='chromium-review.googlesource.com',
+            params=[('change', 'I1234567890abcdef')],
+            o_params=['CURRENT_REVISION', 'CURRENT_COMMIT'])
+
+    @mock.patch('gerrit_util.QueryChanges')
+    @mock.patch('gerrit_util.CherryPick')
+    @mock.patch('gerrit_util.GetChangePageUrl', return_value='url')
+    def testCherryPick_FromChangeNumber(self, _mockGetUrl, mockCherryPick,
+                                        mockQueryChanges):
+        mockQueryChanges.return_value = [{
+            'id': 'change_id',
+            'revisions': {
+                'abc': {
+                    'commit': {
+                        'message': 'msg'
+                    }
+                }
+            }
+        }]
+        mockCherryPick.return_value = {'_number': 123}
+
+        # Digit change number
+        change_num = '12345'
+        self.assertEqual(
+            0, git_cl.main(['cherry-pick', '--branch', 'main', change_num]))
+
+        mockQueryChanges.assert_called_once_with(
+            host='chromium-review.googlesource.com',
+            params=[('change', '12345')],
+            o_params=['CURRENT_REVISION', 'CURRENT_COMMIT'])
+
 
 @unittest.skipIf(gclient_utils.IsEnvCog(),
                  'not supported in non-git environment')
