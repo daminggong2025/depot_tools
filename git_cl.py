@@ -4936,6 +4936,47 @@ def _create_commit_message(orig_message, bug=None, milestone=None):
     return new_message
 
 
+def _GetChangeFromArg(host, arg):
+    """Retrieves the change details from Gerrit based on the argument.
+
+    Args:
+        host (str): The Gerrit host.
+        arg (str): A commit hash, Change ID, Change Number, or Gerrit URL.
+
+    Returns:
+        dict: The change dictionary from Gerrit.
+    """
+    params = []
+    if re.match(r'^[0-9a-fA-F]{40}$', arg):
+        params = [('commit', arg)]
+    elif arg.isdigit():
+        params = [('change', arg)]
+    elif arg.startswith('I') and len(arg) > 10:
+        params = [('change', arg)]
+    else:
+        parsed = urllib.parse.urlparse(arg)
+        if parsed.scheme and parsed.netloc:
+            match = re.search(r'/(\d+)(?:/|$)', parsed.path)
+            if match:
+                params = [('change', match.group(1))]
+
+    if not params:
+        params = [('change', arg)]
+
+    # Query Gerrit with the hash/change number/change ID in order to verify
+    # there's a unique CL with a unique change ID.
+    changes = gerrit_util.QueryChanges(
+        host=host,
+        params=params,
+        o_params=['CURRENT_REVISION', 'CURRENT_COMMIT'],
+    )
+    if not changes:
+        raise RuntimeError(f'No changes found for {arg}.')
+    if len(changes) > 1:
+        raise RuntimeError(f'Multiple changes found for {arg}.')
+    return changes[0]
+
+
 # TODO(b/341792235): Add metrics.
 @subcommand.usage('[revisions ...]')
 def CMDcherry_pick(parser, args):
@@ -5002,22 +5043,13 @@ def CMDcherry_pick(parser, args):
     change_ids_to_commit = {}
 
     # Gerrit needs a change ID for each commit we cherry pick.
-    for commit in args:
-        # Don't use the ChangeId in the commit message since it may not be
-        # unique. Gerrit will error with "Multiple changes found" if we use a
-        # non-unique ID. Instead, query Gerrit with the hash and verify it
-        # corresponds to a unique CL.
-        changes = gerrit_util.QueryChanges(
-            host=host,
-            params=[('commit', commit)],
-            o_params=['CURRENT_REVISION', 'CURRENT_COMMIT'],
-        )
-        if not changes:
-            raise RuntimeError(f'No changes found for {commit}.')
-        if len(changes) > 1:
-            raise RuntimeError(f'Multiple changes found for {commit}.')
+    for arg in args:
+        change = _GetChangeFromArg(host, arg)
 
-        change = changes[0]
+        if re.match(r'^[0-9a-fA-F]{40}$', arg):
+            commit = arg
+        else:
+            commit = change['current_revision']
         change_id = change['id']
         message = change['revisions'][commit]['commit']['message']
         change_ids_to_commit[change_id] = commit
