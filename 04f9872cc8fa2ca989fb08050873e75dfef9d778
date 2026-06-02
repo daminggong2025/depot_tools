@@ -16,6 +16,24 @@
       "message": "I wanted to automatically determine the milestone from the branch ref but couldn\u0027t find a way to do it. So I just added this flag to manually specify it instead.",
       "revId": "04f9872cc8fa2ca989fb08050873e75dfef9d778",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2c68afc8_d2259272",
+        "filename": "git_cl.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 4966,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-06-02T16:48:48Z",
+      "side": 1,
+      "message": "Acknowledged",
+      "parentUuid": "55d19597_3f133f59",
+      "revId": "04f9872cc8fa2ca989fb08050873e75dfef9d778",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
