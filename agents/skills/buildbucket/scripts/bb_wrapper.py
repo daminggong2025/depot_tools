@@ -72,7 +72,7 @@ def list_steps(build_id):
     print(f"Build: {builder_name} Number: {build.get('number')} "
           f"ID: {build.get('id')}")
     print(f"Status: {build.get('status')}")
-    print("-" * 40)
+    print("-" 0abf9f338b99  40)
 
     steps = build.get("steps", [])
     for step in steps:
@@ -82,7 +82,7 @@ def list_steps(build_id):
 
         status_str = status
         if status != "SUCCESS":
-            status_str = f"*** {status} ***"
+            status_str = f"0abf9f338b990abf9f338b990abf9f338b99 {status} 0abf9f338b990abf9f338b990abf9f338b99 "
 
         print(f"{name:<50} {status_str}")
         if logs:
@@ -110,9 +110,9 @@ def get_log(build_id, step_name, log_name, output_file):
     size_bytes = os.path.getsize(output_file)
     print(f"Lines: {line_count}, Size: {size_bytes} bytes")
 
-    print("-" * 20 + " Last 20 lines " + "-" * 20)
+    print("-" 0abf9f338b99  20 + " Last 20 lines " + "-" 0abf9f338b99  20)
     print("\n".join(output.splitlines()[-20:]))
-    print("-" * 60)
+    print("-" 0abf9f338b99  60)
 
 
 def parse_gerrit_url(url, explicit_patchset=None, project="chromium/src"):
