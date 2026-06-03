@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bc9e169b_300cde85",
+        "filename": "siso.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 453,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-06-03T05:16:46Z",
+      "side": 1,
+      "message": ": Optional[bool] ?",
+      "range": {
+        "startLine": 453,
+        "startChar": 2,
+        "endLine": 453,
+        "endChar": 13
+      },
+      "revId": "ef9e9899a15fed5d8874bdb92e6cef85371832a4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6de6b13b_22b7c6d4",
+        "filename": "tests/siso_test.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-06-03T05:16:46Z",
+      "side": 1,
+      "message": "I don\u0027t think this name is correct, maybe add another fixture instead?",
+      "range": {
+        "startLine": 30,
+        "startChar": 0,
+        "endLine": 30,
+        "endChar": 26
+      },
+      "revId": "ef9e9899a15fed5d8874bdb92e6cef85371832a4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
