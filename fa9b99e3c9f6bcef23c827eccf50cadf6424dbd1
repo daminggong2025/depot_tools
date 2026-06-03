@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c46463ca_cf2988c6",
+        "filename": "siso.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 456,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-06-03T05:32:22Z",
+      "side": 1,
+      "message": "https://docs.python.org/3/library/functools.html#functools.cache, and get rid of the global.",
+      "range": {
+        "startLine": 455,
+        "startChar": 0,
+        "endLine": 456,
+        "endChar": 24
+      },
+      "revId": "fa9b99e3c9f6bcef23c827eccf50cadf6424dbd1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
