@@ -289,6 +289,12 @@ def apply_telemetry_flags(subcmd_args: list[str],
         subcmd_args = subcmd_args + [f"--namespace={namespace}"]
 
 
+    # Bypassing trace collection on physical local gWindows workstations to
+    # prevent major build stall (e.g. slowing build time from ~13m to ~38m)
+    # due to direct, in-process trace exports.
+    should_disable_cloud_trace = (sys.platform == 'win32'
+                                  and not _is_gce())
+
     telemetry_flags = [
         "enable_cloud_monitoring", "enable_cloud_profiler",
         "enable_cloud_trace", "enable_cloud_logging"
@@ -307,6 +313,8 @@ def apply_telemetry_flags(subcmd_args: list[str],
                 found = True
                 break
         if not found:
+            if flag == "enable_cloud_trace" and should_disable_cloud_trace:
+                continue
             flags_to_add.append(f"--{flag}")
 
     # This is a temporary measure as on new siso versions metrics_project
@@ -439,6 +447,22 @@ def _fix_system_limits() -> None:
 def _is_google_corp_machine() -> bool:
     """This assumes that corp machine has gcert binary in known location."""
     return shutil.which("gcert") is not None
+
+
+_cache_is_gce: Optional[bool] = None
+
+
+def _is_gce() -> bool:
+    global _cache_is_gce
+    if _cache_is_gce is None:
+        try:
+            conn = http.client.HTTPConnection("metadata.google.internal", timeout=1)
+            conn.request("GET", "/")
+            resp = conn.getresponse()
+            _cache_is_gce = resp.getheader("metadata-flavor") == "Google"
+        except Exception:
+            _cache_is_gce = False
+    return _cache_is_gce
 
 
 def main(args: list[str],
