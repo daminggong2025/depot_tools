@@ -27,11 +27,12 @@ import gclient_paths
 
 # The functions are annotated with lru and the state is preserved between tests.
 @pytest.fixture(autouse=True)
-def clear_gclient_paths_caches():
+def default_mocks(mocker):
     gclient_paths.FindGclientRoot.cache_clear()
     gclient_paths._GetPrimarySolutionPathInternal.cache_clear()
     gclient_paths._GetBuildtoolsPathInternal.cache_clear()
     gclient_paths._GetGClientSolutions.cache_clear()
+    mocker.patch("siso._is_google_corp_machine", return_value=False)
 
 
 def _get_siso_config_dir(tmp_path: Path) -> Path:
@@ -1781,6 +1782,54 @@ def test_ai_agent_env_prepends_flags(
         assert "--namespace=developer:ai-agent" not in subcmd_args
         assert "Detected AI agent env" not in stdout
         assert "finished" not in stdout
+
+def test_apply_telemetry_flags_physical_gwindows(mocker: Any) -> None:
+    mocker.patch("sys.platform", "win32")
+    mocker.patch("siso._is_google_corp_machine", return_value=True)
+    mocker.patch("siso._is_gce", return_value=False)
+
+    subcmd_args = ["-C", "out/Default"]
+    env = {"SISO_PROJECT": "test-project"}
+    got = siso.apply_telemetry_flags(subcmd_args, env)
+
+    assert "--enable_cloud_trace" not in got
+    # Other telemetry flags should still be enabled
+    assert "--enable_cloud_logging" in got
+    assert "--enable_cloud_monitoring" in got
+    assert "--enable_cloud_profiler" in got
+
+
+def test_apply_telemetry_flags_gwindows_cloudtop(mocker: Any) -> None:
+    mocker.patch("sys.platform", "win32")
+    mocker.patch("siso._is_google_corp_machine", return_value=True)
+    mocker.patch("siso._is_gce", return_value=True)
+
+    subcmd_args = ["-C", "out/Default"]
+    env = {"SISO_PROJECT": "test-project"}
+    got = siso.apply_telemetry_flags(subcmd_args, env)
+
+    # Telemetry should be fully enabled (so positive flags are added)
+    assert "--enable_cloud_trace" in got
+    assert "--enable_cloud_logging" in got
+    assert "--enable_cloud_monitoring" in got
+    assert "--enable_cloud_profiler" in got
+
+
+
+def test_apply_telemetry_flags_user_override_trace(mocker: Any) -> None:
+    mocker.patch("sys.platform", "win32")
+    mocker.patch("siso._is_google_corp_machine", return_value=True)
+    mocker.patch("siso._is_gce", return_value=False)
+
+    # User explicitly enables trace
+    subcmd_args = ["-C", "out/Default", "--enable_cloud_trace"]
+    env = {"SISO_PROJECT": "test-project"}
+    got = siso.apply_telemetry_flags(subcmd_args, env)
+
+    assert "--enable_cloud_trace" in got
+    assert "--enable_cloud_logging" in got
+    assert "--enable_cloud_monitoring" in got
+    assert "--enable_cloud_profiler" in got
 
 
 # Stanza to have pytest be executed.
