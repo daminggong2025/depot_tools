@@ -2772,16 +2772,15 @@ def _ParseDeps(contents):
 
 
 def CheckVPythonSpec(input_api, output_api, file_filter=None):
-    """Validates any changed .vpython and .vpython3 files with vpython
-    verification tool.
+    """Validates any changed .vpython, .vpython3, vpython.toml, or script files.
 
     Args:
         input_api: Bag of input related interfaces.
         output_api: Bag of output related interfaces.
         file_filter: Custom function that takes a path (relative to client root) and
             returns boolean, which is used to filter files for which to apply the
-            verification to. Defaults to any path ending with .vpython(3), which captures
-            both global .vpython(3) and <script>.vpython(3) files.
+            verification to. Defaults to any path ending with .vpython(3),
+            vpython.toml, or .py files.
 
     Returns:
         A list of input_api.Command objects containing verification commands.
@@ -2790,24 +2789,53 @@ def CheckVPythonSpec(input_api, output_api, file_filter=None):
         lambda f: (
             f.LocalPath().endswith(".vpython")
             or f.LocalPath().endswith(".vpython3")
+            or f.LocalPath().endswith("vpython.toml")
+            or f.LocalPath().endswith(".py")
         )
     )
     affected_files = input_api.AffectedTestableFiles(file_filter=file_filter)
-    affected_files = map(lambda f: f.AbsoluteLocalPath(), affected_files)
+
+    depot_tools_dir = input_api.os_path.dirname(__file__)
+    verify_script = input_api.os_path.join(
+        depot_tools_dir, "verify_lockfile.py"
+    )
 
     commands = []
-    for f in affected_files:
+    for affected_file in affected_files:
+        local_path = affected_file.LocalPath()
+        filename = affected_file.AbsoluteLocalPath()
+        if local_path.endswith((".vpython", ".vpython3")):
+            cmd = [
+                input_api.python3_executable,
+                "-vpython-spec",
+                filename,
+                "-vpython-tool",
+                "verify",
+            ]
+        elif local_path.endswith("vpython.toml"):
+            cmd = [
+                input_api.python3_executable,
+                verify_script,
+                filename,
+                filename + ".uv.lock",
+            ]
+        else:
+            # PEP 723 Python script
+            cmd = [
+                input_api.python3_executable,
+                verify_script,
+                filename,
+                filename + ".uv.lock",
+            ]
         commands.append(
             input_api.Command(
-                "Verify %s" % f,
-                [
-                    input_api.python3_executable,
-                    "-vpython-spec",
-                    f,
-                    "-vpython-tool",
-                    "verify",
-                ],
-                {"stderr": input_api.subprocess.STDOUT},
+                "Verify %s" % local_path,
+                cmd,
+                {
+                    "stderr": input_api.subprocess.STDOUT,
+                    "stdout": input_api.subprocess.PIPE,
+                    "stdin": input_api.subprocess.PIPE,
+                },
                 output_api.PresubmitError,
             )
         )
