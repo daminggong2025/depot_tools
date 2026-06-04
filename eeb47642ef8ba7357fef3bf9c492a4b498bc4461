@@ -39,6 +39,30 @@
       },
       "revId": "eeb47642ef8ba7357fef3bf9c492a4b498bc4461",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a94f9106_f4fdccf6",
+        "filename": "git_cl.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 7563,
+      "author": {
+        "id": 1182404
+      },
+      "writtenOn": "2026-06-04T21:55:13Z",
+      "side": 1,
+      "message": "No, we\u0027d still need all the other changes because they\u0027re related to exempting .html.ts files, not all TS files. Since .html.ts is a 2 part extension, I don\u0027t think we can drop it out using clang_exts without also taking all TS files off of clang-format.\n\nWe could split this into 2 different options, but the only reason for doing so would be if clients will want to opt out of formatting for only TypeScript or only JavaScript files while opting in for the other language. I don\u0027t think this is likely, given so far just the \"--js\" option has been used for both?",
+      "parentUuid": "488843af_3f1b3006",
+      "range": {
+        "startLine": 7563,
+        "startChar": 14,
+        "endLine": 7563,
+        "endChar": 16
+      },
+      "revId": "eeb47642ef8ba7357fef3bf9c492a4b498bc4461",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
