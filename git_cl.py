@@ -7559,10 +7559,13 @@ def CMDformat(parser: optparse.OptionParser, args: list[str]):
         'If neither --python or --no-python are set, python files that have a '
         '.style.yapf file in an ancestor directory will be formatted. '
         'It is an error to set both.')
-    parser.add_option('--js',
-                      action='store_true',
-                      help='Format javascript code with clang-format. '
-                      'Has no effect if --no-clang-format is set.')
+    parser.add_option(
+        '--no-js',
+        action='store_false',
+        dest='js',
+        default=True,
+        help=
+        'Disable formatting of javascript/typescript code with clang-format.')
     parser.add_option('--diff',
                       action='store_true',
                       help='Print diff to stdout rather than modifying files.')
@@ -7663,15 +7666,16 @@ def CMDformat(parser: optparse.OptionParser, args: list[str]):
     if opts.js:
         clang_exts.extend(['.js', '.ts'])
 
-    formatters: list[tuple[list[str], FormatterFunction]] = [
-        (GN_EXTS, _RunGnFormat),
-        (['.xml'], _RunMetricsXMLFormat),
-        (['.md'], _RunMarkdownFormat),
-    ]
+    formatters: list[tuple[list[str], FormatterFunction]
+                     | tuple[list[str], FormatterFunction, list[str]]] = [
+                         (GN_EXTS, _RunGnFormat),
+                         (['.xml'], _RunMetricsXMLFormat),
+                         (['.md'], _RunMarkdownFormat),
+                     ]
     if not opts.no_java:
         formatters.append((['.java'], _RunGoogleJavaFormat))
     if opts.clang_format:
-        formatters.append((clang_exts, _RunClangFormatDiff))
+        formatters.append((clang_exts, _RunClangFormatDiff, ['.html.ts']))
     if opts.use_rust_fmt:
         formatters.append((['.rs'], _RunRustFmt))
     if opts.use_swift_format:
@@ -7684,8 +7688,16 @@ def CMDformat(parser: optparse.OptionParser, args: list[str]):
         formatters.append((['.star'], _RunLUCICfgFormat))
 
     return_value = 0
-    for file_types, format_func in formatters:
+    for item in formatters:
+        file_types = item[0]
+        format_func = item[1]
+        exclude_types = item[2] if len(item) > 2 else []
+
         paths = [p for p in diff_files if p.lower().endswith(tuple(file_types))]
+        if exclude_types:
+            paths = [
+                p for p in paths if not p.lower().endswith(tuple(exclude_types))
+            ]
         if not paths:
             continue
         ret = format_func(opts, paths, top_dir, diffs)

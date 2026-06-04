@@ -5421,6 +5421,24 @@ test_format_input_diff_windows = "\r\n".join([
 ])
 
 
+# Note: The paths in this diff are dummy files used for testing and do not
+# actually exist in the repository.
+test_format_input_diff_html_ts = ("""
+diff --git a/ui/webui/resources/tools/foo.ts b/ui/webui/resources/tools/foo.ts
+--- a/ui/webui/resources/tools/foo.ts
++++ b/ui/webui/resources/tools/foo.ts
+@@ -1,2 +1,2 @@
+-const a = 1;
++const a  =  1;
+diff --git a/ui/webui/resources/tools/bar.html.ts b/ui/webui/resources/tools/bar.html.ts
+--- a/ui/webui/resources/tools/bar.html.ts
++++ b/ui/webui/resources/tools/bar.html.ts
+@@ -1,2 +1,2 @@
+-const html = `<div></div>`;
++const html  =  `<div></div>`;
+""")
+
+
 class CMDFormatTestCase(unittest.TestCase):
     def setUp(self):
         super(CMDFormatTestCase, self).setUp()
@@ -5940,6 +5958,56 @@ class CMDFormatTestCase(unittest.TestCase):
                 mock.ANY)
         finally:
             os.remove(input_diff.name)
+
+    @mock.patch('git_cl._RunClangFormatDiff', return_value=0)
+    def testJsDefaultAndHtmlTsExempt(self, clang_formatter):
+        with tempfile.NamedTemporaryFile(mode="w+", delete=False) as input_diff:
+            input_diff.write(test_format_input_diff_html_ts)
+
+        try:
+            previous_cwd = os.getcwd()
+            os.chdir(self._top_dir)
+            ret = git_cl.main([
+                'format',
+                "--input_diff_file",
+                input_diff.name,
+                "--presubmit",
+                "--dry-run",
+            ])
+            self.assertEqual(0, ret)
+
+            # git_cl.main should format JS/TS by default, but exempt .html.ts files.
+            # So only foo.ts should be passed to the formatter, and bar.html.ts should be skipped.
+            clang_formatter.assert_called_with(
+                mock.ANY, ['ui/webui/resources/tools/foo.ts'], mock.ANY,
+                mock.ANY)
+        finally:
+            os.remove(input_diff.name)
+            os.chdir(previous_cwd)
+
+    @mock.patch('git_cl._RunClangFormatDiff', return_value=0)
+    def testNoJsOption(self, clang_formatter):
+        with tempfile.NamedTemporaryFile(mode="w+", delete=False) as input_diff:
+            input_diff.write(test_format_input_diff_html_ts)
+
+        try:
+            previous_cwd = os.getcwd()
+            os.chdir(self._top_dir)
+            ret = git_cl.main([
+                'format',
+                "--input_diff_file",
+                input_diff.name,
+                "--presubmit",
+                "--dry-run",
+                "--no-js",
+            ])
+            self.assertEqual(0, ret)
+
+            # Since --no-js is passed, clang_formatter should NOT be called.
+            clang_formatter.assert_not_called()
+        finally:
+            os.remove(input_diff.name)
+            os.chdir(previous_cwd)
 
 
 @unittest.skipIf(gclient_utils.IsEnvCog(),
