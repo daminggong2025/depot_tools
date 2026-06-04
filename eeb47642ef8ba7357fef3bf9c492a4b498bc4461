@@ -16,6 +16,29 @@
       "message": "Can you take a look and make sure this makes sense to you before I go ahead and add depot_tools OWNERS?",
       "revId": "eeb47642ef8ba7357fef3bf9c492a4b498bc4461",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "488843af_3f1b3006",
+        "filename": "git_cl.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 7563,
+      "author": {
+        "id": 1115893
+      },
+      "writtenOn": "2026-06-04T21:02:52Z",
+      "side": 1,
+      "message": "Should we rename this as follows for more clarity?\n```suggestion\n        \u0027--no-js-ts\u0027,\n```\n\nOr alternatively, should there be two separate `--no-ts` and `--no-js` options? IIUC this would eliminate the need for most of the changes made further below in this file?",
+      "range": {
+        "startLine": 7563,
+        "startChar": 14,
+        "endLine": 7563,
+        "endChar": 16
+      },
+      "revId": "eeb47642ef8ba7357fef3bf9c492a4b498bc4461",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
