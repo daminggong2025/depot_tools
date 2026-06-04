@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e154c7dd_467e19bd",
+        "filename": "git_cl.py",
+        "patchSetId": 10
+      },
+      "lineNbr": 4950,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-06-04T00:06:21Z",
+      "side": 1,
+      "message": "should we expand this to match short commit hashes?",
+      "range": {
+        "startLine": 4950,
+        "startChar": 31,
+        "endLine": 4950,
+        "endChar": 33
+      },
+      "revId": "618fde779b8038ce752fae258b10081f5c7af7e0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "570445af_9e22c770",
+        "filename": "git_cl.py",
+        "patchSetId": 10
+      },
+      "lineNbr": 4958,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-06-04T00:06:21Z",
+      "side": 1,
+      "message": "we should raise an error if the URL\u0027s host doesn\u0027t match the current repo\u0027s host / whatever --host is",
+      "range": {
+        "startLine": 4958,
+        "startChar": 8,
+        "endLine": 4958,
+        "endChar": 43
+      },
+      "revId": "618fde779b8038ce752fae258b10081f5c7af7e0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a0b0c9cd_1102cf26",
+        "filename": "git_cl.py",
+        "patchSetId": 10
+      },
+      "lineNbr": 4986,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-06-04T00:06:21Z",
+      "side": 1,
+      "message": "we should update the help string to document that it also accepts Gerrit URLs and Change IDs or Numbers now",
+      "range": {
+        "startLine": 4986,
+        "startChar": 4,
+        "endLine": 4986,
+        "endChar": 37
+      },
+      "revId": "618fde779b8038ce752fae258b10081f5c7af7e0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
