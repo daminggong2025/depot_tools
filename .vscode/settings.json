@@ -5,7 +5,7 @@
         "-s",
         "./tests",
         "-p",
-        "*_test.py"
+        "Oabf9f338b99_test.py"
     ],
     "python.defaultInterpreterPath": "vpython3"
 }
