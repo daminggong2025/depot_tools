@@ -3838,35 +3838,50 @@ the current line as well!
         change = presubmit.Change('a', 'b', self.fake_root_dir, None, 0, 0,
                                   None)
         input_api = self.MockInputApi(change, False)
-        affected_filenames = ['/path1/to/.vpython', '/path1/to/.vpython3']
+        affected_local_paths = [
+            'path1/to/.vpython',
+            'path1/to/.vpython3',
+            'path1/to/vpython.toml',
+            'path1/to/script.py',
+        ]
         affected_files = []
 
-        for filename in affected_filenames:
+        for local_path in affected_local_paths:
+            filename = os.path.join(self.fake_root_dir, local_path)
             affected_file = mock.MagicMock(presubmit.GitAffectedFile)
             affected_file.AbsoluteLocalPath.return_value = filename
+            affected_file.LocalPath.return_value = local_path
             affected_files.append(affected_file)
         input_api.AffectedTestableFiles.return_value = affected_files
 
         commands = presubmit_canned_checks.CheckVPythonSpec(
             input_api, presubmit.OutputApi)
 
-        self.assertEqual(len(commands), len(affected_filenames))
+        self.assertEqual(len(commands), len(affected_local_paths))
         for i in range(0, len(commands)):
-            self.assertEqual(commands[i].name,
-                             'Verify ' + affected_filenames[i])
-            self.assertEqual(commands[i].cmd, [
-                input_api.python3_executable, '-vpython-spec',
-                affected_filenames[i], '-vpython-tool', 'verify'
-            ])
+            local_path = affected_local_paths[i]
+            filename = os.path.join(self.fake_root_dir, local_path)
+            self.assertEqual(commands[i].name, 'Verify ' + local_path)
+            if local_path.endswith(('.vpython', '.vpython3', 'vpython.toml')):
+                expected_cmd = [
+                    input_api.python3_executable, '-vpython-spec',
+                    filename, '-vpython-tool', 'verify'
+                ]
+            else:
+                expected_cmd = [
+                    input_api.python3_executable, '-vpython-tool', 'verify',
+                    filename
+                ]
+            self.assertEqual(commands[i].cmd, expected_cmd)
             self.assertDictEqual(
-                commands[0].kwargs, {
+                commands[i].kwargs, {
                     'stderr': input_api.subprocess.STDOUT,
                     'stdout': input_api.subprocess.PIPE,
                     'stdin': input_api.subprocess.PIPE,
                 })
-            self.assertEqual(commands[0].message,
+            self.assertEqual(commands[i].message,
                              presubmit.OutputApi.PresubmitError)
-            self.assertIsNone(commands[0].info)
+            self.assertIsNone(commands[i].info)
 
 
 class ThreadPoolTest(unittest.TestCase):
