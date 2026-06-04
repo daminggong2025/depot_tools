@@ -1,6 +1,23 @@
 {
   "comments": [
     {
+      "unresolved": true,
+      "key": {
+        "uuid": "5073907a_52949a65",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1115893
+      },
+      "writtenOn": "2026-06-04T22:04:36Z",
+      "side": 1,
+      "message": "For context, lets add a short sentence explaining why formatitng .html.ts is not desired and pointinhg out that the majority of such files already use `clang-format off` in the codebase?",
+      "revId": "eeb47642ef8ba7357fef3bf9c492a4b498bc4461",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": false,
       "key": {
         "uuid": "28844570_19009f78",
@@ -14,6 +31,24 @@
       "writtenOn": "2026-06-04T20:21:30Z",
       "side": 1,
       "message": "Can you take a look and make sure this makes sense to you before I go ahead and add depot_tools OWNERS?",
+      "revId": "eeb47642ef8ba7357fef3bf9c492a4b498bc4461",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d0ae46a4_1551391b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115893
+      },
+      "writtenOn": "2026-06-04T22:04:36Z",
+      "side": 1,
+      "message": "LGTM.",
+      "parentUuid": "28844570_19009f78",
       "revId": "eeb47642ef8ba7357fef3bf9c492a4b498bc4461",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -60,6 +95,53 @@
         "startChar": 14,
         "endLine": 7563,
         "endChar": 16
+      },
+      "revId": "eeb47642ef8ba7357fef3bf9c492a4b498bc4461",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2353ac27_0642eca2",
+        "filename": "git_cl.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 7563,
+      "author": {
+        "id": 1115893
+      },
+      "writtenOn": "2026-06-04T22:04:36Z",
+      "side": 1,
+      "message": "Acknowledged",
+      "parentUuid": "a94f9106_f4fdccf6",
+      "range": {
+        "startLine": 7563,
+        "startChar": 14,
+        "endLine": 7563,
+        "endChar": 16
+      },
+      "revId": "eeb47642ef8ba7357fef3bf9c492a4b498bc4461",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6eeedbe2_01f4ff9f",
+        "filename": "git_cl.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 7674,
+      "author": {
+        "id": 1115893
+      },
+      "writtenOn": "2026-06-04T22:04:36Z",
+      "side": 1,
+      "message": "I assume this is related to type-checking for Python https://docs.python.org/3/library/typing.html ? Had not encountered this before in Chromium code, so this is interesting.",
+      "range": {
+        "startLine": 7669,
+        "startChar": 0,
+        "endLine": 7674,
+        "endChar": 22
       },
       "revId": "eeb47642ef8ba7357fef3bf9c492a4b498bc4461",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
