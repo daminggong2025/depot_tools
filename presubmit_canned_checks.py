@@ -2535,18 +2535,51 @@ def CheckVPythonSpec(input_api, output_api, file_filter=None):
     Returns:
         A list of input_api.Command objects containing verification commands.
     """
-    file_filter = file_filter or (lambda f: f.LocalPath().endswith('.vpython')
-                                  or f.LocalPath().endswith('.vpython3'))
+
+    def default_filter(f):
+        path = f.LocalPath()
+        if path.endswith(('.vpython', '.vpython3', 'vpython.toml')):
+            return True
+        if path.endswith('.py'):
+            # Check if it has PEP 723 inline spec.
+            try:
+                with open(f.AbsoluteLocalPath(), 'r', encoding='utf-8') as fh:
+                    content = fh.read(1024)
+                    if '# /// script' in content or '# /// vpython' in content:
+                        return True
+            except IOError:
+                pass
+        return False
+
+    file_filter = file_filter or default_filter
     affected_files = input_api.AffectedTestableFiles(file_filter=file_filter)
-    affected_files = map(lambda f: f.AbsoluteLocalPath(), affected_files)
+
+    depot_tools_dir = input_api.os_path.dirname(__file__)
+    verify_script = input_api.os_path.join(depot_tools_dir,
+                                           'verify_lockfile.py')
 
     commands = []
     for f in affected_files:
-        commands.append(
-            input_api.Command('Verify %s' % f, [
-                input_api.python3_executable, '-vpython-spec', f,
+        path = f.AbsoluteLocalPath()
+        if path.endswith(('.vpython', '.vpython3')):
+            cmd = [
+                input_api.python3_executable, '-vpython-spec', path,
                 '-vpython-tool', 'verify'
-            ], {'stderr': input_api.subprocess.STDOUT},
+            ]
+        elif path.endswith('vpython.toml'):
+            cmd = [
+                input_api.python3_executable, verify_script, path,
+                path + '.uv.lock'
+            ]
+        else:
+            # Inline PEP 723 Python scripts (verified as targets)
+            cmd = [
+                input_api.python3_executable, verify_script, path,
+                path + '.uv.lock'
+            ]
+        commands.append(
+            input_api.Command('Verify %s' % f.LocalPath(), cmd,
+                              {'stderr': input_api.subprocess.STDOUT},
                               output_api.PresubmitError))
 
     return commands
