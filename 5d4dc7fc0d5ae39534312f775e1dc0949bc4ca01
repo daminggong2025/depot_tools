@@ -1,6 +1,23 @@
 {
   "comments": [
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "342d0513_c32eb876",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1128437
+      },
+      "writtenOn": "2026-06-05T23:24:53Z",
+      "side": 1,
+      "message": "I don\u0027t think depot_tools is a good place for this. A good part of the setup script is Google specific (the paths for example) and we distribute depot_tools to all Chromium developers. This kind of script should be in a team/user experimental directory in google3 and can be run by any Googler via SrcFS/BinFS.",
+      "revId": "5d4dc7fc0d5ae39534312f775e1dc0949bc4ca01",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "6d94ec87_63f1be1a",
@@ -31,6 +48,24 @@
       "writtenOn": "2026-06-05T23:11:36Z",
       "side": 1,
       "message": "I chose this path arbitrarily a while back... there\u0027s nothing unique about it and there was some feedback that a simpler path could be nice. If you can think of a better default path, we should set it here cause people will set this up once and use this path forever.",
+      "revId": "5d4dc7fc0d5ae39534312f775e1dc0949bc4ca01",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c86fa178_ee8a7936",
+        "filename": "setup_btrfs_loop.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1128437
+      },
+      "writtenOn": "2026-06-05T23:24:53Z",
+      "side": 1,
+      "message": "Generally, I would expect something in $HOME.",
+      "parentUuid": "22105937_f2f18650",
       "revId": "5d4dc7fc0d5ae39534312f775e1dc0949bc4ca01",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
