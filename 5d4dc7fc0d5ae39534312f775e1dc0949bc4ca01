@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6d94ec87_63f1be1a",
+        "filename": "setup_btrfs_loop.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 4323820
+      },
+      "writtenOn": "2026-06-05T23:11:36Z",
+      "side": 1,
+      "message": "same comment re: arbitrary path",
+      "revId": "5d4dc7fc0d5ae39534312f775e1dc0949bc4ca01",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "22105937_f2f18650",
+        "filename": "setup_btrfs_loop.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 4323820
+      },
+      "writtenOn": "2026-06-05T23:11:36Z",
+      "side": 1,
+      "message": "I chose this path arbitrarily a while back... there\u0027s nothing unique about it and there was some feedback that a simpler path could be nice. If you can think of a better default path, we should set it here cause people will set this up once and use this path forever.",
+      "revId": "5d4dc7fc0d5ae39534312f775e1dc0949bc4ca01",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
