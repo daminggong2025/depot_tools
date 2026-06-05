@@ -33,6 +33,29 @@
       "message": "I chose this path arbitrarily a while back... there\u0027s nothing unique about it and there was some feedback that a simpler path could be nice. If you can think of a better default path, we should set it here cause people will set this up once and use this path forever.",
       "revId": "5d4dc7fc0d5ae39534312f775e1dc0949bc4ca01",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "846d183c_401deb87",
+        "filename": "setup_btrfs_loop.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 4323820
+      },
+      "writtenOn": "2026-06-05T23:22:00Z",
+      "side": 1,
+      "message": "we\u0027ll want to be extra extra sure this is correct because a bad fstab file can cause big problems that are annoying to fix. It looks fine to me, I just wanted to say this out loud.",
+      "range": {
+        "startLine": 68,
+        "startChar": 0,
+        "endLine": 97,
+        "endChar": 2
+      },
+      "revId": "5d4dc7fc0d5ae39534312f775e1dc0949bc4ca01",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
