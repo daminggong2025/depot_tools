@@ -37,6 +37,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "a30e98de_d3eee40b",
+        "filename": "setup_btrfs_loop.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1324403
+      },
+      "writtenOn": "2026-06-09T17:58:09Z",
+      "side": 1,
+      "message": "I don\u0027t have a better suggestion. It\u0027s arbitrary but is clearly named and not overly long, and apparently putting this stuff in $HOME causes issues at least for some users.",
+      "parentUuid": "6d94ec87_63f1be1a",
+      "revId": "5d4dc7fc0d5ae39534312f775e1dc0949bc4ca01",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "22105937_f2f18650",
         "filename": "setup_btrfs_loop.sh",
         "patchSetId": 1
@@ -72,6 +90,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "9f07bfde_95d93250",
+        "filename": "setup_btrfs_loop.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1324403
+      },
+      "writtenOn": "2026-06-09T17:58:09Z",
+      "side": 1,
+      "message": "@sunnyps: agreed, but a user reported that putting this in their $HOME broke the Gnome desktop for them. Is it okay to keep it outside $HOME?",
+      "parentUuid": "c86fa178_ee8a7936",
+      "revId": "5d4dc7fc0d5ae39534312f775e1dc0949bc4ca01",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "846d183c_401deb87",
         "filename": "setup_btrfs_loop.sh",
         "patchSetId": 1
@@ -83,6 +119,30 @@
       "writtenOn": "2026-06-05T23:22:00Z",
       "side": 1,
       "message": "we\u0027ll want to be extra extra sure this is correct because a bad fstab file can cause big problems that are annoying to fix. It looks fine to me, I just wanted to say this out loud.",
+      "range": {
+        "startLine": 68,
+        "startChar": 0,
+        "endLine": 97,
+        "endChar": 2
+      },
+      "revId": "5d4dc7fc0d5ae39534312f775e1dc0949bc4ca01",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d92c6acf_5c2474e9",
+        "filename": "setup_btrfs_loop.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1324403
+      },
+      "writtenOn": "2026-06-09T17:58:09Z",
+      "side": 1,
+      "message": "Acknowledged",
+      "parentUuid": "846d183c_401deb87",
       "range": {
         "startLine": 68,
         "startChar": 0,
