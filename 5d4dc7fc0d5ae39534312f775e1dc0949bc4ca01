@@ -53,6 +53,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "7bfba844_3d0a9933",
+        "filename": "setup_btrfs_loop.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1324403
+      },
+      "writtenOn": "2026-06-09T23:02:52Z",
+      "side": 1,
+      "message": "Per offline discussion changed to /var/lib/btrfs",
+      "parentUuid": "a30e98de_d3eee40b",
+      "revId": "5d4dc7fc0d5ae39534312f775e1dc0949bc4ca01",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "22105937_f2f18650",
@@ -102,6 +120,24 @@
       "side": 1,
       "message": "@sunnyps: agreed, but a user reported that putting this in their $HOME broke the Gnome desktop for them. Is it okay to keep it outside $HOME?",
       "parentUuid": "c86fa178_ee8a7936",
+      "revId": "5d4dc7fc0d5ae39534312f775e1dc0949bc4ca01",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "50c0aa7a_463c324a",
+        "filename": "setup_btrfs_loop.sh",
+        "patchSetId": 1
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1324403
+      },
+      "writtenOn": "2026-06-09T23:02:52Z",
+      "side": 1,
+      "message": "Per offline discussion changed to /usr/local/btrfs_mount",
+      "parentUuid": "9f07bfde_95d93250",
       "revId": "5d4dc7fc0d5ae39534312f775e1dc0949bc4ca01",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
