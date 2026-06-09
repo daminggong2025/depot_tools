@@ -3410,6 +3410,7 @@ class TestGitCl(unittest.TestCase):
     def test_GerritCommitMsgHookCheck_custom_hook(self):
         cl = self._common_GerritCommitMsgHookCheck()
         self.calls += [
+            ((['abspath', './.git'], ), '.git'),
             ((['exists', os.path.join('.git', 'hooks', 'commit-msg')], ), True),
             ((['FileRead',
                os.path.join('.git', 'hooks',
@@ -3420,6 +3421,7 @@ class TestGitCl(unittest.TestCase):
     def test_GerritCommitMsgHookCheck_not_exists(self):
         cl = self._common_GerritCommitMsgHookCheck()
         self.calls += [
+            ((['abspath', './.git'], ), '.git'),
             ((['exists', os.path.join('.git', 'hooks',
                                       'commit-msg')], ), False),
         ]
@@ -3428,6 +3430,7 @@ class TestGitCl(unittest.TestCase):
     def test_GerritCommitMsgHookCheck(self):
         cl = self._common_GerritCommitMsgHookCheck()
         self.calls += [
+            ((['abspath', './.git'], ), '.git'),
             ((['exists', os.path.join('.git', 'hooks', 'commit-msg')], ), True),
             ((['FileRead',
                os.path.join('.git', 'hooks', 'commit-msg')], ),
