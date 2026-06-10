@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d90ac033_3e561eff",
+        "filename": "git_cl.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 7563,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-06-10T20:26:59Z",
+      "side": 1,
+      "message": "why not keep `--js` and mention in the help string that it\u0027s now default? to keep flows using `--js` working",
+      "range": {
+        "startLine": 7563,
+        "startChar": 9,
+        "endLine": 7563,
+        "endChar": 16
+      },
+      "revId": "e904a170c2bc85411aef78c04d372a08ddaa23bb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c2255786_d730050b",
+        "filename": "git_cl.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 7670,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-06-10T20:26:59Z",
+      "side": 1,
+      "message": "what if we just consistently used uniform 3-tuples instead of making the third value optional? that would simplify the type hint and make the loop on L7691 simpler",
+      "range": {
+        "startLine": 7669,
+        "startChar": 4,
+        "endLine": 7670,
+        "endChar": 71
+      },
+      "revId": "e904a170c2bc85411aef78c04d372a08ddaa23bb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
