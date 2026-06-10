@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "6cb7780d_4a391d4d",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1324403
+      },
+      "writtenOn": "2026-06-10T21:11:02Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3ca95a7c_8ee445ec",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 9,
+        "endChar": 6
+      },
+      "revId": "df9d57dfc9858d3f8c5ce2025d71d44802e3dbd3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e04cace0_db05b912",
@@ -37,6 +61,24 @@
       "writtenOn": "2026-06-10T20:37:53Z",
       "side": 1,
       "message": "please update OWNERS with appropriate owners for this new file",
+      "revId": "df9d57dfc9858d3f8c5ce2025d71d44802e3dbd3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "641172c5_689a2535",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1324403
+      },
+      "writtenOn": "2026-06-10T21:11:02Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e04cace0_db05b912",
       "revId": "df9d57dfc9858d3f8c5ce2025d71d44802e3dbd3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
