@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7adb7031_2dc92157",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 4820673
+      },
+      "writtenOn": "2026-06-10T09:39:01Z",
+      "side": 1,
+      "message": "@jihadghanna@google.com In my current setup I use one git worktree per CL (chain) that I am currently working on. Unfortunately, `git cl upload --no-squash` failed for me because it requires the `commit-msg` hook which was not accessible before this fix. Since I had to fix this anyway, I thought it would be nice to also fix this upstream :)",
+      "revId": "3ab04d84c875220c1587a47eb36d3cf3fc3cf297",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
