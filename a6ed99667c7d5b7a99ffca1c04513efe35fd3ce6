@@ -16,6 +16,40 @@
       "message": "I\u0027m not sure if this is the best way to go about this. What I really wanted was a way that we could have our own `\u0027dep_type\u0027`, for things we download, that is very similar to what `\u0027dep_type\u0027: \u0027gcs\u0027,` does.",
       "revId": "a6ed99667c7d5b7a99ffca1c04513efe35fd3ce6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "14a00e9d_86002677",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-06-10T21:13:33Z",
+      "side": 1,
+      "message": "I\u0027m not sure the benefits this change brings outweighs the increased complexity we\u0027d be introducing to gclient and the scope creep + potential bloat to DEPS (which is meant to declare repos to sync and hooks to run). like in the example from the commit message, it feels more appropriate to have some standard json store that data rather that in DEPS (which requires gclient_eval or something else to parse)",
+      "revId": "a6ed99667c7d5b7a99ffca1c04513efe35fd3ce6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b2d99e2b_31b00704",
+        "filename": "gclient_eval.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 161,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-06-10T21:13:33Z",
+      "side": 1,
+      "message": "FYI all these other DEPS parsers will likely break. you should coordinate with their owners before moving forward",
+      "revId": "a6ed99667c7d5b7a99ffca1c04513efe35fd3ce6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
