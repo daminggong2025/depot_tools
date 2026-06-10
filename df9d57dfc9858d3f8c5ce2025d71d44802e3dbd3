@@ -104,6 +104,30 @@
       },
       "revId": "df9d57dfc9858d3f8c5ce2025d71d44802e3dbd3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9ee58cb1_aa47c64e",
+        "filename": "setup_btrfs_loop.sh",
+        "patchSetId": 2
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1324403
+      },
+      "writtenOn": "2026-06-10T21:48:26Z",
+      "side": 1,
+      "message": "Overall we do intend for the CoW workspaces stuff to be useful for other repos like Skia and v8 (it works for them already) and this is an extension of gclient-new-workdir.py which is already in depot_tools.",
+      "parentUuid": "090f64f9_f0a52e14",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 9,
+        "endChar": 55
+      },
+      "revId": "df9d57dfc9858d3f8c5ce2025d71d44802e3dbd3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
