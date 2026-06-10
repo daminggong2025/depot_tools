@@ -128,6 +128,30 @@
       },
       "revId": "df9d57dfc9858d3f8c5ce2025d71d44802e3dbd3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c7e31622_481035fe",
+        "filename": "setup_btrfs_loop.sh",
+        "patchSetId": 2
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-06-10T23:21:16Z",
+      "side": 1,
+      "message": "Acknowledged",
+      "parentUuid": "9ee58cb1_aa47c64e",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 9,
+        "endChar": 55
+      },
+      "revId": "df9d57dfc9858d3f8c5ce2025d71d44802e3dbd3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
