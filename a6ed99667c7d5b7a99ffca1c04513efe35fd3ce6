@@ -55,6 +55,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "3f4381c0_59e701cf",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-06-11T19:01:56Z",
+      "side": 1,
+      "message": "I\u0027d be hesitant to support a new DEPS type since my team and I don\u0027t have the bandwidth currently to support that\n\n\u003e place data inside a DEPS file that they\ncan retrieve during the runhooks state from the DEPS file, without\nrunning into schema validation issues.\n\nDEPS currently already has support for arbitrary variables that you can define in `vars` and reference in hook args with `Var()`, like the following: https://source.chromium.org/chromium/chromium/src/+/main:DEPS;l\u003d4896-4903;drc\u003dcda6f030263b342817018fb96c6e0ecdaaf61b0c\n\ndoes that work for your use case?",
+      "parentUuid": "7c60afbd_ebd73985",
+      "revId": "a6ed99667c7d5b7a99ffca1c04513efe35fd3ce6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "b2d99e2b_31b00704",
         "filename": "gclient_eval.py",
         "patchSetId": 1
