@@ -3,6 +3,29 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "fa6afb81_753ada60",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 6
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-06-11T18:48:16Z",
+      "side": 1,
+      "message": "git-common-dir",
+      "range": {
+        "startLine": 13,
+        "startChar": 32,
+        "endLine": 13,
+        "endChar": 46
+      },
+      "revId": "3ab04d84c875220c1587a47eb36d3cf3fc3cf297",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "7adb7031_2dc92157",
         "filename": "/PATCHSET_LEVEL",
         "patchSetId": 6
@@ -31,6 +54,52 @@
       "writtenOn": "2026-06-10T11:34:05Z",
       "side": 1,
       "message": "Hey Yiwei, could you have a look at this? I am also not sure if the issue that the `.git` directory may be in another worktree is relevant in any other part of the code",
+      "revId": "3ab04d84c875220c1587a47eb36d3cf3fc3cf297",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e9321cbb_b3bb3d89",
+        "filename": "git_cl.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 989,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-06-11T18:48:16Z",
+      "side": 1,
+      "message": "can we cache this like GetRoot/GetTreeStatusUrl?",
+      "range": {
+        "startLine": 989,
+        "startChar": 8,
+        "endLine": 989,
+        "endChar": 43
+      },
+      "revId": "3ab04d84c875220c1587a47eb36d3cf3fc3cf297",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "53d943d5_f89751dc",
+        "filename": "scm.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 1113,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-06-11T18:48:16Z",
+      "side": 1,
+      "message": "nit: we can remove this. from https://docs.python.org/3/library/os.path.html#os.path.join : \"If a segment is an absolute path... then all previous segments are ignored and joining continues from the absolute path segment\"\n\n```\n\u003e\u003e\u003e os.path.join(\u0027/path/to/foo\u0027, \u0027.git\u0027)\n\u0027/path/to/foo/.git\u0027\n\u003e\u003e\u003e os.path.join(\u0027/path/to/foo\u0027, \u0027/bar.git\u0027)\n\u0027/bar.git\u0027\n```",
+      "range": {
+        "startLine": 1110,
+        "startChar": 8,
+        "endLine": 1113,
+        "endChar": 26
+      },
       "revId": "3ab04d84c875220c1587a47eb36d3cf3fc3cf297",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
