@@ -51,6 +51,24 @@
       "message": "nit: remove newline so Bug actually becomes a git footer",
       "revId": "fb7de5b0bc62807eb2e3ed8f9606f01868dd0d51",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "757c914f_b887df47",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 5
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1324403
+      },
+      "writtenOn": "2026-06-11T17:50:54Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f529f99e_799f812c",
+      "revId": "fb7de5b0bc62807eb2e3ed8f9606f01868dd0d51",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
