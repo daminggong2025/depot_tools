@@ -1,6 +1,29 @@
 {
   "comments": [
     {
+      "unresolved": true,
+      "key": {
+        "uuid": "6f9bf699_fcda675e",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-06-11T16:21:56Z",
+      "side": 1,
+      "message": "IMO it feels like either the guide should be moved here to depot_tools, or this tool should go into chromium/src somewhere. or at the very least some pointer to the docs that\u0027s not just in a commit message",
+      "range": {
+        "startLine": 17,
+        "startChar": 0,
+        "endLine": 18,
+        "endChar": 99
+      },
+      "revId": "7a065e0bcc52b2c9ac2772ec2e47530cfbd37946",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": false,
       "key": {
         "uuid": "55ccc249_bb98b9c3",
@@ -14,6 +37,23 @@
       "writtenOn": "2026-06-11T06:29:23Z",
       "side": 1,
       "message": "gavinmak: ptal",
+      "revId": "7a065e0bcc52b2c9ac2772ec2e47530cfbd37946",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "80e28f6b_f9760be4",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-06-11T16:21:56Z",
+      "side": 1,
+      "message": "please update OWNERS",
       "revId": "7a065e0bcc52b2c9ac2772ec2e47530cfbd37946",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
