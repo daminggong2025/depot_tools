@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "3a51a061_86aacf33",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 5
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1324403
+      },
+      "writtenOn": "2026-06-11T17:50:17Z",
+      "side": 1,
+      "message": "Fix applied.",
+      "parentUuid": "465187ee_886972b6",
+      "revId": "fb7de5b0bc62807eb2e3ed8f9606f01868dd0d51",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "f529f99e_799f812c",
