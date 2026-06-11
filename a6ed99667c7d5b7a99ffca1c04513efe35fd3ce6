@@ -37,6 +37,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "7c60afbd_ebd73985",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1583582
+      },
+      "writtenOn": "2026-06-11T00:19:57Z",
+      "side": 1,
+      "message": "First of all, thanks for your time, and thanks for replying to my CL. I agree with your assessment. I think the main question is: what realistic options do I have to get to add an alternative to `gcs` deps into `gclient` or `DEPS` that would be acceptable? I guess that\u0027s something that would not be of interest at all to take into gclient, but maybe the owners of this projects have their own thoughts on it, so that\u0027s why I\u0027m reaching out. This is the type of extensibility that would help me on what I\u0027m trying to do.",
+      "parentUuid": "14a00e9d_86002677",
+      "revId": "a6ed99667c7d5b7a99ffca1c04513efe35fd3ce6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "b2d99e2b_31b00704",
         "filename": "gclient_eval.py",
         "patchSetId": 1
