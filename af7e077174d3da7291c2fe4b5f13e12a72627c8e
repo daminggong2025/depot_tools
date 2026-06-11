@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ba993ea7_fb9a347c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1167294
+      },
+      "writtenOn": "2026-06-11T00:54:35Z",
+      "side": 1,
+      "message": "yiwzhang@google.com could you please take a look?\n\nCC\u0027ing Andrew and Lauren in case they would like a different approach here (I think there\u0027s more that could be done, but I\u0027m trying to land a quick fix because stale lock files are intrusive).",
+      "revId": "af7e077174d3da7291c2fe4b5f13e12a72627c8e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
