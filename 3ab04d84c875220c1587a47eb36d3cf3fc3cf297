@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "5441d7a4_bd520bfa",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 6
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 4820673
+      },
+      "writtenOn": "2026-06-12T09:58:03Z",
+      "side": 1,
+      "message": "Done, good catch :)",
+      "parentUuid": "fa6afb81_753ada60",
+      "range": {
+        "startLine": 13,
+        "startChar": 32,
+        "endLine": 13,
+        "endChar": 46
+      },
+      "revId": "3ab04d84c875220c1587a47eb36d3cf3fc3cf297",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "7adb7031_2dc92157",
@@ -58,6 +82,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "784cbd40_27480416",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 4820673
+      },
+      "writtenOn": "2026-06-12T09:58:03Z",
+      "side": 1,
+      "message": "Mark as resolved",
+      "parentUuid": "7adb7031_2dc92157",
+      "revId": "3ab04d84c875220c1587a47eb36d3cf3fc3cf297",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e9321cbb_b3bb3d89",
@@ -81,6 +123,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "c1368794_1e0da74c",
+        "filename": "git_cl.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 989,
+      "author": {
+        "id": 4820673
+      },
+      "writtenOn": "2026-06-12T09:58:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e9321cbb_b3bb3d89",
+      "range": {
+        "startLine": 989,
+        "startChar": 8,
+        "endLine": 989,
+        "endChar": 43
+      },
+      "revId": "3ab04d84c875220c1587a47eb36d3cf3fc3cf297",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "53d943d5_f89751dc",
@@ -94,6 +160,30 @@
       "writtenOn": "2026-06-11T18:48:16Z",
       "side": 1,
       "message": "nit: we can remove this. from https://docs.python.org/3/library/os.path.html#os.path.join : \"If a segment is an absolute path... then all previous segments are ignored and joining continues from the absolute path segment\"\n\n```\n\u003e\u003e\u003e os.path.join(\u0027/path/to/foo\u0027, \u0027.git\u0027)\n\u0027/path/to/foo/.git\u0027\n\u003e\u003e\u003e os.path.join(\u0027/path/to/foo\u0027, \u0027/bar.git\u0027)\n\u0027/bar.git\u0027\n```",
+      "range": {
+        "startLine": 1110,
+        "startChar": 8,
+        "endLine": 1113,
+        "endChar": 26
+      },
+      "revId": "3ab04d84c875220c1587a47eb36d3cf3fc3cf297",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3b6db13b_07442503",
+        "filename": "scm.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 1113,
+      "author": {
+        "id": 4820673
+      },
+      "writtenOn": "2026-06-12T09:58:03Z",
+      "side": 1,
+      "message": "Done, thanks for the explanation - I didn\u0027t know that :)",
+      "parentUuid": "53d943d5_f89751dc",
       "range": {
         "startLine": 1110,
         "startChar": 8,
