@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": true,
+      "key": {
+        "uuid": "d46be5a2_ef352649",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2026-06-12T00:52:23Z",
+      "side": 1,
+      "message": "Do you mean a light weight man page that points to things?\n\nThis chromium/src markdown I linked will contain a good bunch of chromium\u0027s policy and best practices (which also links to more chromium/src markdown files).",
+      "parentUuid": "6f9bf699_fcda675e",
+      "range": {
+        "startLine": 17,
+        "startChar": 0,
+        "endLine": 18,
+        "endChar": 99
+      },
+      "revId": "7a065e0bcc52b2c9ac2772ec2e47530cfbd37946",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": false,
       "key": {
         "uuid": "55ccc249_bb98b9c3",
