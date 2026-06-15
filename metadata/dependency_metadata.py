@@ -146,7 +146,8 @@ class DependencyMetadata:
             # allowlist.
             license_value = self._metadata.get(known_fields.LICENSE)
             if not license_value or not known_fields.LICENSE.all_licenses_allowed(
-                    license_value, is_open_source_project):
+                    license_value, is_open_source_project,
+                    is_shipped=is_shipped):
                 required.add(known_fields.LICENSE_ANDROID_COMPATIBLE)
 
         return required
@@ -197,7 +198,8 @@ class DependencyMetadata:
                 # before overwriting it with the alias field value.
                 if main_field in self._metadata:
                     main_value = self._metadata.get(main_field)
-                    field_result = main_field.validate(main_value)
+                    field_result = main_field.validate(main_value,
+                                                       is_shipped=self.shipped)
                     if field_result:
                         field_result.set_tag(tag="field",
                                              value=main_field.get_name())
@@ -212,7 +214,11 @@ class DependencyMetadata:
         # Validate values for all present fields.
         for field, value in self._metadata.items():
             source_field = sources.get(field) or field
-            field_result = source_field.validate(value, source_file_dir=source_file_dir)
+            field_result = source_field.validate(
+                value,
+                source_file_dir=source_file_dir,
+                is_shipped=self.shipped,
+            )
             if field_result:
                 field_result.set_tag(tag="field", value=source_field.get_name())
                 field_result.set_lines(

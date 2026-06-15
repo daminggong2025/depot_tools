@@ -53,17 +53,24 @@ class LicenseField(field_types.SingleLineTextField):
             for atomic_value in value.split(self.VALUE_DELIMITER)
         ]
 
-    def all_licenses_allowed(self, license_field_value: str,
-                             is_open_source_project: bool) -> bool:
+    def all_licenses_allowed(self,
+                             license_field_value: str,
+                             is_open_source_project: bool,
+                             is_shipped: Optional[bool] = None) -> bool:
         """Returns whether all licenses in the field are allowlisted.
 
         Assumes a non-empty license_field_value.
         """
         return all(
-            allowlist_util.is_license_allowed(license, is_open_source_project)
+            allowlist_util.is_license_allowed(license, is_open_source_project,
+                                              is_shipped)
             for license in self._extract_licenses(license_field_value))
 
-    def validate(self, value: str, source_file_dir: Optional[str] = None) -> Optional[vr.ValidationResult]:
+    def validate(self,
+                 value: str,
+                 source_file_dir: Optional[str] = None,
+                 is_shipped: Optional[bool] = None,
+                 **kwargs) -> Optional[vr.ValidationResult]:
         """Checks the given value consists of recognized license types.
 
         Note: this field supports multiple values.
@@ -83,7 +90,15 @@ class LicenseField(field_types.SingleLineTextField):
                         "When given a choice of licenses, choose the most "
                         "permissive one, do not list all options."
                     ])
-            if not allowlist_util.is_a_known_license(license):
+
+            # We pass is_open_source_project=True to bypass reciprocal license check.
+            # Reciprocal licenses are handled separately in DependencyMetadata.validate.
+            is_allowed = allowlist_util.is_license_allowed(
+                license,
+                is_open_source_project=True,
+                is_shipped=is_shipped,
+            )
+            if not is_allowed:
                 # Preserve the original casing for the warning message.
                 not_allowlisted.append(license)
 
