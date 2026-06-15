@@ -2,12 +2,12 @@
 .\"     Title: git-hyper-blame
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 05/07/2025
+.\"      Date: 06/15/2026
 .\"    Manual: Chromium depot_tools Manual
-.\"    Source: depot_tools fab0a429
+.\"    Source: depot_tools 103dcb228
 .\"  Language: English
 .\"
-.TH "GIT\-HYPER\-BLAME" "1" "05/07/2025" "depot_tools fab0a429" "Chromium depot_tools Manual"
+.TH "GIT\-HYPER\-BLAME" "1" "06/15/2026" "depot_tools 103dcb228" "Chromium depot_tools Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -75,12 +75,12 @@ Let\(cqs run \fBgit blame\fR on a file:
 .\}
 .nf
 \fB$ git blame ipsum\&.txt\fR
-c6eb3bfa (lorem           2014\-08\-11 23:15:57 +0000 1) LOREM IPSUM DOLOR SIT AMET, CONSECTETUR
-3ddda43c (auto\-uppercaser 2014\-07\-05 02:05:18 +0000 2) ADIPISCING ELIT, SED DO EIUSMOD TEMPOR
-3ddda43c (auto\-uppercaser 2014\-07\-05 02:05:18 +0000 3) INCIDIDUNT UT LABORE ET DOLORE MAGNA
-3ddda43c (auto\-uppercaser 2014\-07\-05 02:05:18 +0000 4) ALIQUA\&. UT ENIM AD MINIM VENIAM, QUIS
-c6eb3bfa (lorem           2014\-08\-11 23:15:57 +0000 5) NOSTRUD EXERCITATION ULLAMCO LABORIS
-3ddda43c (auto\-uppercaser 2014\-07\-05 02:05:18 +0000 6) NISI UT ALIQUIP EX EA COMMODO CONSEQUAT\&.
+cc8067cb (lorem           2014\-08\-11 23:15:57 +0000 1) LOREM IPSUM DOLOR SIT AMET, CONSECTETUR
+20d7c852 (auto\-uppercaser 2014\-07\-05 02:05:18 +0000 2) ADIPISCING ELIT, SED DO EIUSMOD TEMPOR
+20d7c852 (auto\-uppercaser 2014\-07\-05 02:05:18 +0000 3) INCIDIDUNT UT LABORE ET DOLORE MAGNA
+20d7c852 (auto\-uppercaser 2014\-07\-05 02:05:18 +0000 4) ALIQUA\&. UT ENIM AD MINIM VENIAM, QUIS
+cc8067cb (lorem           2014\-08\-11 23:15:57 +0000 5) NOSTRUD EXERCITATION ULLAMCO LABORIS
+20d7c852 (auto\-uppercaser 2014\-07\-05 02:05:18 +0000 6) NISI UT ALIQUIP EX EA COMMODO CONSEQUAT\&.
 .fi
 .if n \{\
 .RE
@@ -95,13 +95,7 @@ Notice that almost the entire file has been blamed on a formatting change? You a
 .RS 4
 .\}
 .nf
-\fB$ git hyper\-blame \-i 3ddda43c ipsum\&.txt\fR
-c6eb3bfa (lorem 2014\-08\-11 23:15:57 +0000  1) LOREM IPSUM DOLOR SIT AMET, CONSECTETUR
-134200d1 (lorem 2014\-04\-10 08:54:46 +0000 2*) ADIPISCING ELIT, SED DO EIUSMOD TEMPOR
-a34a1d0d (ipsum 2014\-04\-11 11:25:04 +0000 3*) INCIDIDUNT UT LABORE ET DOLORE MAGNA
-134200d1 (lorem 2014\-04\-10 08:54:46 +0000 4*) ALIQUA\&. UT ENIM AD MINIM VENIAM, QUIS
-c6eb3bfa (lorem 2014\-08\-11 23:15:57 +0000  5) NOSTRUD EXERCITATION ULLAMCO LABORIS
-0f0d17bd (dolor 2014\-06\-02 11:31:48 +0000 6*) NISI UT ALIQUIP EX EA COMMODO CONSEQUAT\&.
+\fB$ git hyper\-blame \-i 20d7c852 ipsum\&.txt\fR
 .fi
 .if n \{\
 .RE

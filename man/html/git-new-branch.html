@@ -850,77 +850,30 @@ This is considered to be the <em>root</em> branch.</p></div>
 <h2 id="_example">EXAMPLE</h2>
 <div class="sectionbody">
 <div class="paragraph"><p></p></div><div class="listingblock"><div class="content"><pre><code><span style="font-weight: bold; color: #BFBFBF">$ git map-branches -v</span>
-<span style="color: #FF5555"></span><span style="color: #FF5555">origin/main            </span><span style="color: #BFBFBF">  </span><span style="color: #FF79C6">          </span><span style="color: #BFBFBF">  </span><span style="color: #FF79C6">         </span><span style="color: #BFBFBF">
-</span><span style="color: #50FA7B"></span><span style="color: #50FA7B">  cool_feature         </span><span style="color: #BFBFBF">[ </span><span style="color: #FF79C6">4 commits </span><span style="color: #BFBFBF">  </span><span style="color: #FF79C6">         </span><span style="color: #BFBFBF">]
-</span><span style="color: #50FA7B"></span><span style="color: #50FA7B">    subfeature         </span><span style="color: #BFBFBF">[ </span><span style="color: #FF79C6">2 commits </span><span style="color: #BFBFBF">| </span><span style="color: #FF79C6">behind 1 </span><span style="color: #BFBFBF">]
-</span><span style="color: #50FA7B"></span><span style="color: #50FA7B">  fixit                </span><span style="color: #BFBFBF">[ </span><span style="color: #FF79C6">2 commits </span><span style="color: #BFBFBF">  </span><span style="color: #FF79C6">         </span><span style="color: #BFBFBF">]
-</span><span style="color: #8BE9FD"></span><span style="font-weight: bold; color: #8BE9FD">    frozen_branch *    </span><span style="font-weight: bold; color: #BFBFBF">[ </span><span style="font-weight: bold; color: #FF79C6">3 commits </span><span style="font-weight: bold; color: #BFBFBF">  </span><span style="font-weight: bold; color: #FF79C6">         </span><span style="font-weight: bold; color: #BFBFBF">]
-</span>
+
 <span style="font-weight: bold; color: #BFBFBF">$ git new-branch independent_cl</span>
 
 <span style="font-weight: bold; color: #BFBFBF">$ git map-branches -v</span>
-<span style="color: #FF5555"></span><span style="font-weight: bold; color: #FF5555">origin/main           </span><span style="font-weight: bold; color: #BFBFBF">  </span><span style="font-weight: bold; color: #FF79C6">          </span><span style="font-weight: bold; color: #BFBFBF">  </span><span style="font-weight: bold; color: #FF79C6">         </span><span style="font-weight: bold; color: #BFBFBF">
-</span><span style="font-weight: bold; color: #50FA7B"></span><span style="color: #50FA7B">  cool_feature        </span><span style="color: #BFBFBF">[ </span><span style="color: #FF79C6">4 commits </span><span style="color: #BFBFBF">  </span><span style="color: #FF79C6">         </span><span style="color: #BFBFBF">]
-</span><span style="color: #50FA7B"></span><span style="color: #50FA7B">    subfeature        </span><span style="color: #BFBFBF">[ </span><span style="color: #FF79C6">2 commits </span><span style="color: #BFBFBF">| </span><span style="color: #FF79C6">behind 1 </span><span style="color: #BFBFBF">]
-</span><span style="color: #50FA7B"></span><span style="color: #50FA7B">  fixit               </span><span style="color: #BFBFBF">[ </span><span style="color: #FF79C6">2 commits </span><span style="color: #BFBFBF">  </span><span style="color: #FF79C6">         </span><span style="color: #BFBFBF">]
-</span><span style="color: #50FA7B"></span><span style="color: #50FA7B">    frozen_branch     </span><span style="color: #BFBFBF">[ </span><span style="color: #FF79C6">3 commits </span><span style="color: #BFBFBF">  </span><span style="color: #FF79C6">         </span><span style="color: #BFBFBF">]
-</span><span style="color: #8BE9FD"></span><span style="font-weight: bold; color: #8BE9FD">  independent_cl *    </span><span style="font-weight: bold; color: #BFBFBF">  </span><span style="font-weight: bold; color: #FF79C6">          </span><span style="font-weight: bold; color: #BFBFBF">  </span><span style="font-weight: bold; color: #FF79C6">         </span><span style="font-weight: bold; color: #BFBFBF">
-</span>
+
 <span style="font-weight: bold; color: #BFBFBF">$ vi foo &amp;&amp; git add -A &amp;&amp; git commit -m foo</span>
 <span style="font-weight: bold; color: #BFBFBF">$ git map-branches -v</span>
-<span style="color: #FF5555"></span><span style="color: #FF5555">origin/main           </span><span style="color: #BFBFBF">  </span><span style="color: #FF79C6">          </span><span style="color: #BFBFBF">  </span><span style="color: #FF79C6">         </span><span style="color: #BFBFBF">
-</span><span style="color: #50FA7B"></span><span style="color: #50FA7B">  cool_feature        </span><span style="color: #BFBFBF">[ </span><span style="color: #FF79C6">4 commits </span><span style="color: #BFBFBF">  </span><span style="color: #FF79C6">         </span><span style="color: #BFBFBF">]
-</span><span style="color: #50FA7B"></span><span style="color: #50FA7B">    subfeature        </span><span style="color: #BFBFBF">[ </span><span style="color: #FF79C6">2 commits </span><span style="color: #BFBFBF">| </span><span style="color: #FF79C6">behind 1 </span><span style="color: #BFBFBF">]
-</span><span style="color: #50FA7B"></span><span style="color: #50FA7B">  fixit               </span><span style="color: #BFBFBF">[ </span><span style="color: #FF79C6">2 commits </span><span style="color: #BFBFBF">  </span><span style="color: #FF79C6">         </span><span style="color: #BFBFBF">]
-</span><span style="color: #50FA7B"></span><span style="color: #50FA7B">    frozen_branch     </span><span style="color: #BFBFBF">[ </span><span style="color: #FF79C6">3 commits </span><span style="color: #BFBFBF">  </span><span style="color: #FF79C6">         </span><span style="color: #BFBFBF">]
-</span><span style="color: #8BE9FD"></span><span style="font-weight: bold; color: #8BE9FD">  independent_cl *    </span><span style="font-weight: bold; color: #BFBFBF">[ </span><span style="font-weight: bold; color: #FF79C6">1 commit  </span><span style="font-weight: bold; color: #BFBFBF">  </span><span style="font-weight: bold; color: #FF79C6">         </span><span style="font-weight: bold; color: #BFBFBF">]
-</span>
+
 <span style="font-weight: bold; color: #BFBFBF">$ git new-branch --upstream subfeature nested_cl</span>
 
 <span style="font-weight: bold; color: #BFBFBF">$ git map-branches -v</span>
-<span style="color: #FF5555"></span><span style="color: #FF5555">origin/main          </span><span style="color: #BFBFBF">  </span><span style="color: #FF79C6">          </span><span style="color: #BFBFBF">  </span><span style="color: #FF79C6">         </span><span style="color: #BFBFBF">
-</span><span style="color: #50FA7B"></span><span style="color: #50FA7B">  cool_feature       </span><span style="color: #BFBFBF">[ </span><span style="color: #FF79C6">4 commits </span><span style="color: #BFBFBF">  </span><span style="color: #FF79C6">         </span><span style="color: #BFBFBF">]
-</span><span style="color: #8BE9FD"></span><span style="font-weight: bold; color: #8BE9FD">    subfeature       </span><span style="font-weight: bold; color: #BFBFBF">[ </span><span style="font-weight: bold; color: #FF79C6">2 commits </span><span style="font-weight: bold; color: #BFBFBF">| </span><span style="font-weight: bold; color: #FF79C6">behind 1 </span><span style="font-weight: bold; color: #BFBFBF">]</span> <b>&lt;1&gt;</b><span>
-</span><span style="font-weight: bold; color: #8BE9FD"></span><span style="font-weight: bold; color: #8BE9FD">      nested_cl *    </span><span style="font-weight: bold; color: #BFBFBF">  </span><span style="font-weight: bold; color: #FF79C6">          </span><span style="font-weight: bold; color: #BFBFBF">  </span><span style="font-weight: bold; color: #FF79C6">         </span><span style="font-weight: bold; color: #BFBFBF">
-</span><span style="font-weight: bold; color: #50FA7B"></span><span style="color: #50FA7B">  fixit              </span><span style="color: #BFBFBF">[ </span><span style="color: #FF79C6">2 commits </span><span style="color: #BFBFBF">  </span><span style="color: #FF79C6">         </span><span style="color: #BFBFBF">]
-</span><span style="color: #50FA7B"></span><span style="color: #50FA7B">    frozen_branch    </span><span style="color: #BFBFBF">[ </span><span style="color: #FF79C6">3 commits </span><span style="color: #BFBFBF">  </span><span style="color: #FF79C6">         </span><span style="color: #BFBFBF">]
-</span><span style="color: #50FA7B"></span><span style="color: #50FA7B">  independent_cl     </span><span style="color: #BFBFBF">[ </span><span style="color: #FF79C6">1 commit  </span><span style="color: #BFBFBF">  </span><span style="color: #FF79C6">         </span><span style="color: #BFBFBF">]
-</span>
+
 <span style="font-weight: bold; color: #BFBFBF">$ git checkout cool_feature</span>
-Switched to branch 'cool_feature'
-Your branch is ahead of 'origin/main' by 4 commits.
-  (use "git push" to publish your local commits)
+error: pathspec 'cool_feature' did not match any file(s) known to git</span> <b>&lt;1&gt;</b><span>
 
 <span style="font-weight: bold; color: #BFBFBF">$ git new-branch --upstream_current cl_depends_on_cool_feature</span>
 
 <span style="font-weight: bold; color: #BFBFBF">$ git map-branches -v</span>
-<span style="color: #FF5555"></span><span style="color: #FF5555">origin/main                         </span><span style="color: #BFBFBF">  </span><span style="color: #FF79C6">          </span><span style="color: #BFBFBF">  </span><span style="color: #FF79C6">         </span><span style="color: #BFBFBF">
-</span><span style="color: #8BE9FD"></span><span style="font-weight: bold; color: #8BE9FD">  cool_feature                      </span><span style="font-weight: bold; color: #BFBFBF">[ </span><span style="font-weight: bold; color: #FF79C6">4 commits </span><span style="font-weight: bold; color: #BFBFBF">  </span><span style="font-weight: bold; color: #FF79C6">         </span><span style="font-weight: bold; color: #BFBFBF">]
-</span><span style="font-weight: bold; color: #8BE9FD"></span><span style="font-weight: bold; color: #8BE9FD">    cl_depends_on_cool_feature *    </span><span style="font-weight: bold; color: #BFBFBF">  </span><span style="font-weight: bold; color: #FF79C6">          </span><span style="font-weight: bold; color: #BFBFBF">  </span><span style="font-weight: bold; color: #FF79C6">         </span><span style="font-weight: bold; color: #BFBFBF">
-</span><span style="font-weight: bold; color: #50FA7B"></span><span style="color: #50FA7B">    subfeature                      </span><span style="color: #BFBFBF">[ </span><span style="color: #FF79C6">2 commits </span><span style="color: #BFBFBF">| </span><span style="color: #FF79C6">behind 1 </span><span style="color: #BFBFBF">]
-</span><span style="color: #50FA7B"></span><span style="color: #50FA7B">      nested_cl                     </span><span style="color: #BFBFBF">  </span><span style="color: #FF79C6">          </span><span style="color: #BFBFBF">  </span><span style="color: #FF79C6">         </span><span style="color: #BFBFBF">
-</span><span style="color: #50FA7B"></span><span style="color: #50FA7B">  fixit                             </span><span style="color: #BFBFBF">[ </span><span style="color: #FF79C6">2 commits </span><span style="color: #BFBFBF">  </span><span style="color: #FF79C6">         </span><span style="color: #BFBFBF">]
-</span><span style="color: #50FA7B"></span><span style="color: #50FA7B">    frozen_branch                   </span><span style="color: #BFBFBF">[ </span><span style="color: #FF79C6">3 commits </span><span style="color: #BFBFBF">  </span><span style="color: #FF79C6">         </span><span style="color: #BFBFBF">]
-</span><span style="color: #50FA7B"></span><span style="color: #50FA7B">  independent_cl                    </span><span style="color: #BFBFBF">[ </span><span style="color: #FF79C6">1 commit  </span><span style="color: #BFBFBF">  </span><span style="color: #FF79C6">         </span><span style="color: #BFBFBF">]
-</span>
+
 <span style="font-weight: bold; color: #BFBFBF">$ git checkout subfeature</span>
-Your branch and 'cool_feature' have diverged,
-and have 2 and 1 different commits each, respectively.
-  (use "git pull" if you want to integrate the remote branch with yours)
 
 <span style="font-weight: bold; color: #BFBFBF">$ git new-branch --inject_current injected_cl</span>
 
 <span style="font-weight: bold; color: #BFBFBF">$ git map-branches -v</span>
-<span style="color: #FF5555"></span><span style="color: #FF5555">origin/main                       </span><span style="color: #BFBFBF">  </span><span style="color: #FF79C6">          </span><span style="color: #BFBFBF">  </span><span style="color: #FF79C6">         </span><span style="color: #BFBFBF">
-</span><span style="color: #8BE9FD"></span><span style="font-weight: bold; color: #8BE9FD">  cool_feature                    </span><span style="font-weight: bold; color: #BFBFBF">[ </span><span style="font-weight: bold; color: #FF79C6">4 commits </span><span style="font-weight: bold; color: #BFBFBF">  </span><span style="font-weight: bold; color: #FF79C6">         </span><span style="font-weight: bold; color: #BFBFBF">]
-</span><span style="font-weight: bold; color: #8BE9FD"></span><span style="font-weight: bold; color: #8BE9FD">    cl_depends_on_cool_feature    </span><span style="font-weight: bold; color: #BFBFBF">  </span><span style="font-weight: bold; color: #FF79C6">          </span><span style="font-weight: bold; color: #BFBFBF">  </span><span style="font-weight: bold; color: #FF79C6">         </span><span style="font-weight: bold; color: #BFBFBF">
-</span><span style="font-weight: bold; color: #8BE9FD"></span><span style="font-weight: bold; color: #8BE9FD">    injected_cl *                 </span><span style="font-weight: bold; color: #BFBFBF">  </span><span style="font-weight: bold; color: #FF79C6">          </span><span style="font-weight: bold; color: #BFBFBF">  </span><span style="font-weight: bold; color: #FF79C6">         </span><span style="font-weight: bold; color: #BFBFBF">
-</span><span style="font-weight: bold; color: #50FA7B"></span><span style="color: #50FA7B">      subfeature                  </span><span style="color: #BFBFBF">[ </span><span style="color: #FF79C6">2 commits </span><span style="color: #BFBFBF">| </span><span style="color: #FF79C6">behind 1 </span><span style="color: #BFBFBF">]
-</span><span style="color: #50FA7B"></span><span style="color: #50FA7B">        nested_cl                 </span><span style="color: #BFBFBF">  </span><span style="color: #FF79C6">          </span><span style="color: #BFBFBF">  </span><span style="color: #FF79C6">         </span><span style="color: #BFBFBF">
-</span><span style="color: #50FA7B"></span><span style="color: #50FA7B">  fixit                           </span><span style="color: #BFBFBF">[ </span><span style="color: #FF79C6">2 commits </span><span style="color: #BFBFBF">  </span><span style="color: #FF79C6">         </span><span style="color: #BFBFBF">]
-</span><span style="color: #50FA7B"></span><span style="color: #50FA7B">    frozen_branch                 </span><span style="color: #BFBFBF">[ </span><span style="color: #FF79C6">3 commits </span><span style="color: #BFBFBF">  </span><span style="color: #FF79C6">         </span><span style="color: #BFBFBF">]
-</span><span style="color: #50FA7B"></span><span style="color: #50FA7B">  independent_cl                  </span><span style="color: #BFBFBF">[ </span><span style="color: #FF79C6">1 commit  </span><span style="color: #BFBFBF">  </span><span style="color: #FF79C6">         </span><span style="color: #BFBFBF">]
-</span>
 </code></pre></div></div><p><div class="paragraph"></p></div>
 <div class="olist arabic"><ol class="arabic">
 <li>
@@ -972,7 +925,7 @@ by checking out the <a href="https://chromium.googlesource.com/chromium/tools/de
 <div id="footer">
 <div id="footer-text">
 Last updated
- 2025-05-07 21:15:19 UTC
+ 2026-06-15 05:47:06 UTC
 </div>
 </div>
 </body>

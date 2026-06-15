@@ -817,24 +817,18 @@ and any commits mentioned in this file are added to the ignore list.</p></div>
 <div class="sectionbody">
 <div class="paragraph"><p>Let&#8217;s run <code>git blame</code> on a file:</p></div>
 <div class="paragraph"><p></p></div><div class="listingblock"><div class="content"><pre><code><span style="font-weight: bold; color: #BFBFBF">$ git blame ipsum.txt</span>
-c6eb3bfa (lorem           2014-08-11 23:15:57 +0000 1) LOREM IPSUM DOLOR SIT AMET, CONSECTETUR
-3ddda43c (auto-uppercaser 2014-07-05 02:05:18 +0000 2) ADIPISCING ELIT, SED DO EIUSMOD TEMPOR
-3ddda43c (auto-uppercaser 2014-07-05 02:05:18 +0000 3) INCIDIDUNT UT LABORE ET DOLORE MAGNA
-3ddda43c (auto-uppercaser 2014-07-05 02:05:18 +0000 4) ALIQUA. UT ENIM AD MINIM VENIAM, QUIS
-c6eb3bfa (lorem           2014-08-11 23:15:57 +0000 5) NOSTRUD EXERCITATION ULLAMCO LABORIS
-3ddda43c (auto-uppercaser 2014-07-05 02:05:18 +0000 6) NISI UT ALIQUIP EX EA COMMODO CONSEQUAT.
+cc8067cb (lorem           2014-08-11 23:15:57 +0000 1) LOREM IPSUM DOLOR SIT AMET, CONSECTETUR
+20d7c852 (auto-uppercaser 2014-07-05 02:05:18 +0000 2) ADIPISCING ELIT, SED DO EIUSMOD TEMPOR
+20d7c852 (auto-uppercaser 2014-07-05 02:05:18 +0000 3) INCIDIDUNT UT LABORE ET DOLORE MAGNA
+20d7c852 (auto-uppercaser 2014-07-05 02:05:18 +0000 4) ALIQUA. UT ENIM AD MINIM VENIAM, QUIS
+cc8067cb (lorem           2014-08-11 23:15:57 +0000 5) NOSTRUD EXERCITATION ULLAMCO LABORIS
+20d7c852 (auto-uppercaser 2014-07-05 02:05:18 +0000 6) NISI UT ALIQUIP EX EA COMMODO CONSEQUAT.
 </code></pre></div></div><p><div class="paragraph"></p></div>
 <div class="paragraph"><p>Notice that almost the entire file has been blamed on a formatting change? You
 aren&#8217;t interested in the uppercasing of the file. You want to know who
 wrote/modified those lines in the first place. Just tell <code>hyper-blame</code> to ignore
 that commit:</p></div>
-<div class="paragraph"><p></p></div><div class="listingblock"><div class="content"><pre><code><span style="font-weight: bold; color: #BFBFBF">$ git hyper-blame -i 3ddda43c ipsum.txt</span>
-c6eb3bfa (lorem 2014-08-11 23:15:57 +0000  1) LOREM IPSUM DOLOR SIT AMET, CONSECTETUR
-134200d1 (lorem 2014-04-10 08:54:46 +0000 2*) ADIPISCING ELIT, SED DO EIUSMOD TEMPOR
-a34a1d0d (ipsum 2014-04-11 11:25:04 +0000 3*) INCIDIDUNT UT LABORE ET DOLORE MAGNA
-134200d1 (lorem 2014-04-10 08:54:46 +0000 4*) ALIQUA. UT ENIM AD MINIM VENIAM, QUIS
-c6eb3bfa (lorem 2014-08-11 23:15:57 +0000  5) NOSTRUD EXERCITATION ULLAMCO LABORIS
-0f0d17bd (dolor 2014-06-02 11:31:48 +0000 6*) NISI UT ALIQUIP EX EA COMMODO CONSEQUAT.
+<div class="paragraph"><p></p></div><div class="listingblock"><div class="content"><pre><code><span style="font-weight: bold; color: #BFBFBF">$ git hyper-blame -i 20d7c852 ipsum.txt</span>
 </code></pre></div></div><p><div class="paragraph"></p></div>
 <div class="paragraph"><p><code>hyper-blame</code> places a <code>*</code> next to any line where it has skipped over an ignored
 commit, so you know that the line in question has been changed (by an ignored
@@ -873,7 +867,7 @@ by checking out the <a href="https://chromium.googlesource.com/chromium/tools/de
 <div id="footer">
 <div id="footer-text">
 Last updated
- 2025-05-07 21:15:19 UTC
+ 2026-06-15 05:47:06 UTC
 </div>
 </div>
 </body>

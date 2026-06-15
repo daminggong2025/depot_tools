@@ -2,12 +2,12 @@
 .\"     Title: git-footers
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 05/07/2025
+.\"      Date: 06/15/2026
 .\"    Manual: Chromium depot_tools Manual
-.\"    Source: depot_tools fab0a429
+.\"    Source: depot_tools 103dcb228
 .\"  Language: English
 .\"
-.TH "GIT\-FOOTERS" "1" "05/07/2025" "depot_tools fab0a429" "Chromium depot_tools Manual"
+.TH "GIT\-FOOTERS" "1" "06/15/2026" "depot_tools 103dcb228" "Chromium depot_tools Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -113,22 +113,14 @@ in the example above)\&.
 .\}
 .nf
 \fB$ git footers HEAD\fR
-Tech\-Debt\-Introduced: \-4 microMSOffices
-Tech\-Debt\-Introduced: 17 microMSOffices
-Cr\-Commit\-Position: refs/heads/main@{#292272}
 
 \fB$ git footers \-\-key Tech\-Debt\-Introduced HEAD\fR
-\-4 microMSOffices
-17 microMSOffices
 
 \fB$ git footers \-\-position HEAD\fR
-refs/heads/main@{#292272}
 
 \fB$ git footers \-\-position\-num HEAD\fR
-292272
 
 \fB$ git footers \-\-position\-ref HEAD\fR
-refs/heads/main
 .fi
 .if n \{\
 .RE
