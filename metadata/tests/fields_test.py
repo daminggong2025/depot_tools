@@ -151,8 +151,6 @@ class FieldValidationTest(unittest.TestCase):
                 "BSD-2-Clause",
                 "BSD-2-Clause-FreeBSD",
                 "MIT",
-                "APSL-2.0, MIT",
-                "APSL-2.0 ,MIT",
                 "Refer to additional_readme_paths.json",
                 "LicenseRef-MIT",
                 "LicenseRef-MIT, Apache-2.0",
@@ -170,8 +168,18 @@ class FieldValidationTest(unittest.TestCase):
                 "Custom license",
                 "Custom, MIT",
                 "Refer to any_other_readme_paths.json",
+                "APSL-2.0, MIT",
+                "APSL-2.0 ,MIT",
             ],
         )
+
+    def test_license_validation_open_source(self):
+        # Reciprocal licenses are valid in open source projects.
+        field = known_fields.LICENSE
+        self.assertIsNone(
+            field.validate("APSL-2.0, MIT", is_open_source_project=True))
+        self.assertIsNone(
+            field.validate("APSL-2.0 ,MIT", is_open_source_project=True))
 
     def test_license_file_validation(self):
         self._run_field_validation(
