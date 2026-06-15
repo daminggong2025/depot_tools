@@ -772,51 +772,16 @@ checks that out.</p></div>
 <h2 id="_example">EXAMPLE</h2>
 <div class="sectionbody">
 <div class="paragraph"><p></p></div><div class="listingblock"><div class="content"><pre><code><span style="font-weight: bold; color: #BFBFBF">$ git map-branches</span>
-<span style="color: #FF5555"></span><span style="color: #FF5555">origin/main
-</span><span style="color: #50FA7B"></span><span style="color: #50FA7B">  cool_feature
-</span><span style="color: #8BE9FD"></span><span style="font-weight: bold; color: #8BE9FD">    subfeature *
-</span><span style="font-weight: bold; color: #50FA7B"></span><span style="color: #50FA7B">  fixit
-</span><span style="color: #50FA7B"></span><span style="color: #50FA7B">    frozen_branch
-</span>
+
 <span style="font-weight: bold; color: #BFBFBF">$ git nav-upstream</span>
-Switched to branch 'cool_feature'
-Your branch is ahead of 'origin/main' by 4 commits.
-  (use "git push" to publish your local commits)
+git: 'nav-upstream' is not a git command. See 'git --help'.
 
 <span style="font-weight: bold; color: #BFBFBF">$ git map-branches</span>
-<span style="color: #FF5555"></span><span style="color: #FF5555">origin/main
-</span><span style="color: #8BE9FD"></span><span style="font-weight: bold; color: #8BE9FD">  cool_feature *
-</span><span style="font-weight: bold; color: #50FA7B"></span><span style="color: #50FA7B">    subfeature
-</span><span style="color: #50FA7B"></span><span style="color: #50FA7B">  fixit
-</span><span style="color: #50FA7B"></span><span style="color: #50FA7B">    frozen_branch
-</span>
+
 <span style="font-weight: bold; color: #BFBFBF">$ git nav-upstream</span>
-Note: switching to 'origin/main'.
+git: 'nav-upstream' is not a git command. See 'git --help'.
 
-You are in 'detached HEAD' state. You can look around, make experimental</span> <b>&lt;1&gt;</b><span>
-changes and commit them, and you can discard any commits you make in this
-state without impacting any branches by switching back to a branch.
-
-If you want to create a new branch to retain commits you create, you may
-do so (now or later) by using -c with the switch command. Example:
-
-  git switch -c &lt;new-branch-name&gt;
-
-Or undo this operation with:
-
-  git switch -
-
-Turn off this advice by setting config variable advice.detachedHead to false
-
-HEAD is now at beec6f4 Make ReflectorImpl use mailboxes
-
-<span style="font-weight: bold; color: #BFBFBF">$ git map-branches</span>
-<span style="color: #FF5555"></span><span style="font-weight: bold; color: #FF5555">origin/main
-</span><span style="font-weight: bold; color: #50FA7B"></span><span style="color: #50FA7B">  cool_feature
-</span><span style="color: #50FA7B"></span><span style="color: #50FA7B">    subfeature
-</span><span style="color: #50FA7B"></span><span style="color: #50FA7B">  fixit
-</span><span style="color: #50FA7B"></span><span style="color: #50FA7B">    frozen_branch
-</span>
+<span style="font-weight: bold; color: #BFBFBF">$ git map-branches</span></span> <b>&lt;1&gt;</b><span>
 </code></pre></div></div><p><div class="paragraph">
 1. Note that being in a <em>detached HEAD</em> state is OK. You&#8217;ll just want to create
 a <a href="git-new-branch.html">git-new-branch(1)</a> from here.</p></div>
@@ -853,7 +818,7 @@ by checking out the <a href="https://chromium.googlesource.com/chromium/tools/de
 <div id="footer">
 <div id="footer-text">
 Last updated
- 2025-05-07 21:15:19 UTC
+ 2026-06-15 05:47:06 UTC
 </div>
 </div>
 </body>

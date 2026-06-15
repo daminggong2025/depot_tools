@@ -2,12 +2,12 @@
 .\"     Title: git-map-branches
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 05/07/2025
+.\"      Date: 06/15/2026
 .\"    Manual: Chromium depot_tools Manual
-.\"    Source: depot_tools fab0a429
+.\"    Source: depot_tools 103dcb228
 .\"  Language: English
 .\"
-.TH "GIT\-MAP\-BRANCHES" "1" "05/07/2025" "depot_tools fab0a429" "Chromium depot_tools Manual"
+.TH "GIT\-MAP\-BRANCHES" "1" "06/15/2026" "depot_tools 103dcb228" "Chromium depot_tools Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -161,23 +161,8 @@ Given the hypothetical demo repo in \fBgit-map\fR(1)\*(Aqs EXAMPLE section, and 
 .\}
 .nf
 \fB$ git map\-branches\fR
-{NO_UPSTREAM}
-  no_upstream
-origin/main
-  cool_feature
-    subfeature
-  fixit
-\fB    frozen_branch *
-\fR
+
 \fB$ git map\-branches \-v\fR
-{NO_UPSTREAM}
-  no_upstream
-origin/main
-  cool_feature         [ 4 commits            ]
-    subfeature         [ 2 commits | behind 1 ]
-  fixit                [ 2 commits            ]
-\fB    frozen_branch *    [ 3 commits            ]
-\fR
 .fi
 .if n \{\
 .RE
