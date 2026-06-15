@@ -827,9 +827,8 @@ def GetGClientRootAndEntries(path=None):
         print("Can't find %s" % config_file)
         return None
     config_path = os.path.join(root, config_file)
-    env = {}
-    with open(config_path) as config:
-        exec(config.read(), env)
+    import gclient_eval
+    env = gclient_eval.ParseLocalConfig(FileRead(config_path), config_path)
     config_dir = os.path.dirname(config_path)
     return config_dir, env['entries']
 
