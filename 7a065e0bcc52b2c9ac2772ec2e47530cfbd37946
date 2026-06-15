@@ -50,6 +50,30 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "29297c70_b9bc9208",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2026-06-15T06:05:56Z",
+      "side": 1,
+      "message": "I\u0027ve put up a sperate CL for man page: https://crrev.com/c/7940328",
+      "parentUuid": "d46be5a2_ef352649",
+      "range": {
+        "startLine": 17,
+        "startChar": 0,
+        "endLine": 18,
+        "endChar": 99
+      },
+      "revId": "7a065e0bcc52b2c9ac2772ec2e47530cfbd37946",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "55ccc249_bb98b9c3",
         "filename": "/PATCHSET_LEVEL",
         "patchSetId": 1
