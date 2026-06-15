@@ -146,7 +146,8 @@ class DependencyMetadata:
             # allowlist.
             license_value = self._metadata.get(known_fields.LICENSE)
             if not license_value or not known_fields.LICENSE.all_licenses_allowed(
-                    license_value, is_open_source_project):
+                    license_value, is_open_source_project,
+                    is_shipped=is_shipped):
                 required.add(known_fields.LICENSE_ANDROID_COMPATIBLE)
 
         return required
