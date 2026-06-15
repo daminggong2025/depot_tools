@@ -2,12 +2,12 @@
 .\"     Title: git-nav-downstream
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 05/07/2025
+.\"      Date: 06/15/2026
 .\"    Manual: Chromium depot_tools Manual
-.\"    Source: depot_tools fab0a429
+.\"    Source: depot_tools 8e3a3cf2f
 .\"  Language: English
 .\"
-.TH "GIT\-NAV\-DOWNSTREAM" "1" "05/07/2025" "depot_tools fab0a429" "Chromium depot_tools Manual"
+.TH "GIT\-NAV\-DOWNSTREAM" "1" "06/15/2026" "depot_tools 8e3a3cf2f" "Chromium depot_tools Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -46,14 +46,14 @@ git-nav-downstream \- Checkout a downstream branch of the currently checked out 
 .RS 4
 .\}
 .nf
-\fB$ git map\-branches\fR
+\fB$ \fR
 \fBorigin/main
 \fR  cool_feature
     subfeature
   fixit
     frozen_branch
 
-\fB$ git nav\-downstream\fR
+\fB$ \fR
 Previous HEAD position was beec6f4 Make ReflectorImpl use mailboxes
 Switched to branch \*(Aqcool_feature\*(Aq
 Your branch is ahead of \*(Aqorigin/main\*(Aq by 4 commits\&.
@@ -62,20 +62,25 @@ Please select a downstream branch
   0\&. cool_feature
   1\&. fixit
 Selection (0\-1)[0]: 0
-\fB$ git map\-branches\fR
+\fB$ \fR
 origin/main
 \fB  cool_feature *
 \fR    subfeature
   fixit
     frozen_branch
 
-\fB$ git nav\-downstream\fR
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+    import sys, pipes; print(" "\&.join(map(pipes\&.quote, sys\&.argv[1:])))
+    ^^^^^^^^^^^^^^^^^
+ModuleNotFoundError: No module named \*(Aqpipes\*(Aq
+\fB$ \fR
 Switched to branch \*(Aqsubfeature\*(Aq
 Your branch and \*(Aqcool_feature\*(Aq have diverged,
 and have 2 and 1 different commits each, respectively\&.
   (use "git pull" if you want to integrate the remote branch with yours)
 
-\fB$ git map\-branches\fR
+\fB$ \fR
 origin/main
   cool_feature
 \fB    subfeature *

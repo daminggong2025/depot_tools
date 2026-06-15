@@ -8,6 +8,8 @@ shopt -s nullglob
 export DEPOT_TOOLS_METRICS=0
 
 cd $(dirname "$0")
+DEPOT_TOOLS_DIR=$(cd ../.. && pwd)
+export PATH="$DEPOT_TOOLS_DIR:$PATH"
 
 # Script which takes all the asciidoc git-*.txt files in this directory, renders
 # them to html + manpage format using git 1.9's doc toolchain, then puts
