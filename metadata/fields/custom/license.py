@@ -63,7 +63,11 @@ class LicenseField(field_types.SingleLineTextField):
             allowlist_util.is_license_allowed(license, is_open_source_project)
             for license in self._extract_licenses(license_field_value))
 
-    def validate(self, value: str, source_file_dir: Optional[str] = None) -> Optional[vr.ValidationResult]:
+    def validate(self,
+                 value: str,
+                 source_file_dir: Optional[str] = None,
+                 is_shipped: Optional[bool] = None,
+                 **kwargs) -> Optional[vr.ValidationResult]:
         """Checks the given value consists of recognized license types.
 
         Note: this field supports multiple values.
@@ -83,7 +87,12 @@ class LicenseField(field_types.SingleLineTextField):
                         "When given a choice of licenses, choose the most "
                         "permissive one, do not list all options."
                     ])
-            if not allowlist_util.is_a_known_license(license):
+
+            is_gpl = license.lower() in ["gpl-2.0", "gpl-3.0"]
+            is_allowed_gpl = is_gpl and is_shipped is True
+
+            if (not allowlist_util.is_a_known_license(license)
+                    or (is_gpl and not is_allowed_gpl)):
                 # Preserve the original casing for the warning message.
                 not_allowlisted.append(license)
 
