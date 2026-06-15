@@ -5,7 +5,7 @@
 
 import os
 import sys
-from typing import List
+from typing import List, Optional
 import unittest
 
 _THIS_DIR = os.path.abspath(os.path.dirname(__file__))
@@ -27,20 +27,24 @@ import metadata.fields.custom.license_allowlist
 class FieldValidationTest(unittest.TestCase):
     def _run_field_validation(self,
                               field: field_types.MetadataField,
-                              valid_values: List[str],
-                              error_values: List[str],
-                              warning_values: List[str] = []):
+                              valid_values: Optional[List[str]] = None,
+                              error_values: Optional[List[str]] = None,
+                              warning_values: Optional[List[str]] = None,
+                              **kwargs):
         """Helper to run a field's validation for different values."""
+        valid_values = valid_values or []
+        error_values = error_values or []
+        warning_values = warning_values or []
         for value in valid_values:
-            self.assertIsNone(field.validate(value), value)
+            self.assertIsNone(field.validate(value, **kwargs), value)
 
         for value in error_values:
-            self.assertIsInstance(field.validate(value), vr.ValidationError,
-                                  value)
+            self.assertIsInstance(field.validate(value, **kwargs),
+                                  vr.ValidationError, value)
 
         for value in warning_values:
-            self.assertIsInstance(field.validate(value), vr.ValidationWarning,
-                                  value)
+            self.assertIsInstance(field.validate(value, **kwargs),
+                                  vr.ValidationWarning, value)
 
     def test_freeform_text_validation(self):
         # Check validation of a freeform text field that should be on
@@ -151,8 +155,6 @@ class FieldValidationTest(unittest.TestCase):
                 "BSD-2-Clause",
                 "BSD-2-Clause-FreeBSD",
                 "MIT",
-                "APSL-2.0, MIT",
-                "APSL-2.0 ,MIT",
                 "Refer to additional_readme_paths.json",
                 "LicenseRef-MIT",
                 "LicenseRef-MIT, Apache-2.0",
@@ -170,6 +172,19 @@ class FieldValidationTest(unittest.TestCase):
                 "Custom license",
                 "Custom, MIT",
                 "Refer to any_other_readme_paths.json",
+                "APSL-2.0, MIT",
+                "APSL-2.0 ,MIT",
+            ],
+        )
+
+    def test_license_validation_open_source(self):
+        # Reciprocal licenses are valid in open source projects.
+        self._run_field_validation(
+            field=known_fields.LICENSE,
+            is_open_source_project=True,
+            valid_values=[
+                "APSL-2.0, MIT",
+                "APSL-2.0 ,MIT",
             ],
         )
 
