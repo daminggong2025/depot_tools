@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8f6927ad_549fc871",
+        "filename": "metadata/dependency_metadata.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 201,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2026-06-15T05:52:25Z",
+      "side": 1,
+      "message": "Errr. I hate passing unrelated stuff to all fields (even if there\u0027s kwargs). Seems to be abusing kwargs.\n\nIdeally you should only be passing is_shipped and is_open_source_project to license field (I\u0027m fine license and license_file being a special case to require more contextual information.",
+      "range": {
+        "startLine": 201,
+        "startChar": 35,
+        "endLine": 201,
+        "endChar": 45
+      },
+      "revId": "f5799dd9d3a300b328c6f9e991130d3c0cc1862d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
