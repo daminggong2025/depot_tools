@@ -2,12 +2,12 @@
 .\"     Title: git-freeze
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 05/07/2025
+.\"      Date: 06/15/2026
 .\"    Manual: Chromium depot_tools Manual
-.\"    Source: depot_tools fab0a429
+.\"    Source: depot_tools 8e3a3cf2f
 .\"  Language: English
 .\"
-.TH "GIT\-FREEZE" "1" "05/07/2025" "depot_tools fab0a429" "Chromium depot_tools Manual"
+.TH "GIT\-FREEZE" "1" "06/15/2026" "depot_tools 8e3a3cf2f" "Chromium depot_tools Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -50,7 +50,7 @@ By default \fBgit freeze\fR will only freeze up to 100MB of untracked files\&. S
 .RS 4
 .\}
 .nf
-\fB$ git status \-\-short\fR
+\fB$ \fR
 A  added_file
 AM added_file_with_unstaged_changes
 D  deleted_file
@@ -58,37 +58,37 @@ D  deleted_file
  D unstaged_deleted_file
 ?? unadded_file
 
-\fB$ git freeze\fR
+\fB$ \fR
 
-\fB$ git status \-\-short\fR
+\fB$ \fR
+A  added_file
+AM added_file_with_unstaged_changes
+D  deleted_file
+ M modified_file
+ D unstaged_deleted_file
+?? unadded_file
 
-\fB$ git log \-n 2 \-\-stat\fR
-commit aca3fe411dc94cc71007253433658bcc4a15827f
+\fB$ \fR
+commit 9e3cf49a1340dc45253f48766a3898b3c150f4d7
 Author: local <local@chromium\&.org>
-Date:   Thu Apr 10 08:54:56 2014 +0000
+Date:   Thu Apr 10 08:54:46 2014 +0000
+
+    demo changes
+
+ deleted_file          | 1 +
+ modified_file         | 1 +
+ unstaged_deleted_file | 1 +
+ 3 files changed, 3 insertions(+)
+
+commit 5ba19cf7e2856e7ff4fff7fd0ac61b26bc14ed27
+Author: local <local@chromium\&.org>
+Date:   Thu Apr 10 08:54:36 2014 +0000
 
     FREEZE\&.unindexed
 
- added_file_with_unstaged_changes | 1 +
- modified_file                    | 1 +
- unadded_file                     | 0
- unstaged_deleted_file            | 1 \-
- 4 files changed, 2 insertions(+), 1 deletion(\-)
+\fB$ \fR
 
-commit 3e9cd7df0e8f5c7a6c9b47a8637c49c180d22222
-Author: local <local@chromium\&.org>
-Date:   Thu Apr 10 08:54:56 2014 +0000
-
-    FREEZE\&.indexed
-
- added_file                       | 1 +
- added_file_with_unstaged_changes | 1 +
- deleted_file                     | 1 \-
- 3 files changed, 2 insertions(+), 1 deletion(\-)
-
-\fB$ git thaw\fR
-
-\fB$ git status \-\-short\fR
+\fB$ \fR
 A  added_file
 AM added_file_with_unstaged_changes
 D  deleted_file

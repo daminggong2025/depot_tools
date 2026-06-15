@@ -773,42 +773,21 @@ command will prompt you with a selection of the branches.</p></div>
 <div class="sect1">
 <h2 id="_example">EXAMPLE</h2>
 <div class="sectionbody">
-<div class="paragraph"><p></p></div><div class="listingblock"><div class="content"><pre><code><span style="font-weight: bold; color: #BFBFBF">$ git map-branches</span>
-<span style="color: #FF5555"></span><span style="font-weight: bold; color: #FF5555">origin/main
-</span><span style="font-weight: bold; color: #50FA7B"></span><span style="color: #50FA7B">  cool_feature
-</span><span style="color: #50FA7B"></span><span style="color: #50FA7B">    subfeature
-</span><span style="color: #50FA7B"></span><span style="color: #50FA7B">  fixit
-</span><span style="color: #50FA7B"></span><span style="color: #50FA7B">    frozen_branch
-</span>
-<span style="font-weight: bold; color: #BFBFBF">$ git nav-downstream</span>
-Previous HEAD position was beec6f4 Make ReflectorImpl use mailboxes
-Switched to branch 'cool_feature'
-Your branch is ahead of 'origin/main' by 4 commits.
-  (use "git push" to publish your local commits)
-Please select a downstream branch
-  0. cool_feature
-  1. fixit
-Selection (0-1)[0]: 0
-<span style="font-weight: bold; color: #BFBFBF">$ git map-branches</span>
-<span style="color: #FF5555"></span><span style="color: #FF5555">origin/main
-</span><span style="color: #8BE9FD"></span><span style="font-weight: bold; color: #8BE9FD">  cool_feature *
-</span><span style="font-weight: bold; color: #50FA7B"></span><span style="color: #50FA7B">    subfeature
-</span><span style="color: #50FA7B"></span><span style="color: #50FA7B">  fixit
-</span><span style="color: #50FA7B"></span><span style="color: #50FA7B">    frozen_branch
-</span>
-<span style="font-weight: bold; color: #BFBFBF">$ git nav-downstream</span>
-Switched to branch 'subfeature'
-Your branch and 'cool_feature' have diverged,
-and have 2 and 1 different commits each, respectively.
-  (use "git pull" if you want to integrate the remote branch with yours)
+<div class="paragraph"><p></p></div><div class="listingblock"><div class="content"><pre><code><span style="font-weight: bold; color: #BFBFBF">$ </span>
 
-<span style="font-weight: bold; color: #BFBFBF">$ git map-branches</span>
-<span style="color: #FF5555"></span><span style="color: #FF5555">origin/main
-</span><span style="color: #50FA7B"></span><span style="color: #50FA7B">  cool_feature
-</span><span style="color: #8BE9FD"></span><span style="font-weight: bold; color: #8BE9FD">    subfeature *
-</span><span style="font-weight: bold; color: #50FA7B"></span><span style="color: #50FA7B">  fixit
-</span><span style="color: #50FA7B"></span><span style="color: #50FA7B">    frozen_branch
-</span>
+<span style="font-weight: bold; color: #BFBFBF">$ </span>
+git: 'nav-downstream' is not a git command. See 'git --help'.
+<span style="font-weight: bold; color: #BFBFBF">$ </span>
+
+Traceback (most recent call last):
+  File "&lt;string&gt;", line 1, in &lt;module&gt;
+    import sys, pipes; print(" ".join(map(pipes.quote, sys.argv[1:])))
+    ^^^^^^^^^^^^^^^^^
+ModuleNotFoundError: No module named 'pipes'
+<span style="font-weight: bold; color: #BFBFBF">$ </span>
+git: 'nav-downstream' is not a git command. See 'git --help'.
+
+<span style="font-weight: bold; color: #BFBFBF">$ </span>
 </code></pre></div></div><p><div class="paragraph"></p></div>
 </div>
 </div>
@@ -843,7 +822,7 @@ by checking out the <a href="https://chromium.googlesource.com/chromium/tools/de
 <div id="footer">
 <div id="footer-text">
 Last updated
- 2025-05-07 21:15:19 UTC
+ 2026-06-15 05:34:53 UTC
 </div>
 </div>
 </body>

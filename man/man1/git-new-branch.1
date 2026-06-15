@@ -2,12 +2,12 @@
 .\"     Title: git-new-branch
 .\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 05/07/2025
+.\"      Date: 06/15/2026
 .\"    Manual: Chromium depot_tools Manual
-.\"    Source: depot_tools fab0a429
+.\"    Source: depot_tools 8e3a3cf2f
 .\"  Language: English
 .\"
-.TH "GIT\-NEW\-BRANCH" "1" "05/07/2025" "depot_tools fab0a429" "Chromium depot_tools Manual"
+.TH "GIT\-NEW\-BRANCH" "1" "06/15/2026" "depot_tools 8e3a3cf2f" "Chromium depot_tools Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -94,77 +94,36 @@ This configures the default \fIupstream\fR for all new branches\&. If it is unse
 .RS 4
 .\}
 .nf
-\fB$ git map\-branches \-v\fR
-origin/main
-  cool_feature         [ 4 commits            ]
-    subfeature         [ 2 commits | behind 1 ]
-  fixit                [ 2 commits            ]
-\fB    frozen_branch *    [ 3 commits            ]
-\fR
-\fB$ git new\-branch independent_cl\fR
+\fB$ \fR
 
-\fB$ git map\-branches \-v\fR
-\fBorigin/main
-\fR  cool_feature        [ 4 commits            ]
-    subfeature        [ 2 commits | behind 1 ]
-  fixit               [ 2 commits            ]
-    frozen_branch     [ 3 commits            ]
-\fB  independent_cl *
-\fR
+\fB$ \fR
+
+\fB$ \fR
+
 \fB$ vi foo && git add \-A && git commit \-m foo\fR
-\fB$ git map\-branches \-v\fR
-origin/main
-  cool_feature        [ 4 commits            ]
-    subfeature        [ 2 commits | behind 1 ]
-  fixit               [ 2 commits            ]
-    frozen_branch     [ 3 commits            ]
-\fB  independent_cl *    [ 1 commit             ]
-\fR
-\fB$ git new\-branch \-\-upstream subfeature nested_cl\fR
+\fB$ \fR
 
-\fB$ git map\-branches \-v\fR
-origin/main
-  cool_feature       [ 4 commits            ]
-\fB    subfeature       [ 2 commits | behind 1 ]  \fR\fB\fB(1)\fR\fR\fB
-      nested_cl *
-\fR  fixit              [ 2 commits            ]
-    frozen_branch    [ 3 commits            ]
-  independent_cl     [ 1 commit             ]
+\fB$ \fR
 
-\fB$ git checkout cool_feature\fR
-Switched to branch \*(Aqcool_feature\*(Aq
-Your branch is ahead of \*(Aqorigin/main\*(Aq by 4 commits\&.
-  (use "git push" to publish your local commits)
+\fB$ \fR
 
-\fB$ git new\-branch \-\-upstream_current cl_depends_on_cool_feature\fR
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>  \fB(1)\fR
+    import sys, pipes; print(" "\&.join(map(pipes\&.quote, sys\&.argv[1:])))
+    ^^^^^^^^^^^^^^^^^
+ModuleNotFoundError: No module named \*(Aqpipes\*(Aq
+\fB$ \fR
+error: pathspec \*(Aqcool_feature\*(Aq did not match any file(s) known to git
 
-\fB$ git map\-branches \-v\fR
-origin/main
-\fB  cool_feature                      [ 4 commits            ]
-    cl_depends_on_cool_feature *
-\fR    subfeature                      [ 2 commits | behind 1 ]
-      nested_cl
-  fixit                             [ 2 commits            ]
-    frozen_branch                   [ 3 commits            ]
-  independent_cl                    [ 1 commit             ]
+\fB$ \fR
 
-\fB$ git checkout subfeature\fR
-Your branch and \*(Aqcool_feature\*(Aq have diverged,
-and have 2 and 1 different commits each, respectively\&.
-  (use "git pull" if you want to integrate the remote branch with yours)
+\fB$ \fR
 
-\fB$ git new\-branch \-\-inject_current injected_cl\fR
+\fB$ \fR
 
-\fB$ git map\-branches \-v\fR
-origin/main
-\fB  cool_feature                    [ 4 commits            ]
-    cl_depends_on_cool_feature
-    injected_cl *
-\fR      subfeature                  [ 2 commits | behind 1 ]
-        nested_cl
-  fixit                           [ 2 commits            ]
-    frozen_branch                 [ 3 commits            ]
-  independent_cl                  [ 1 commit             ]
+\fB$ \fR
+
+\fB$ \fR
 .fi
 .if n \{\
 .RE
