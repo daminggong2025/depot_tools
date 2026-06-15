@@ -230,12 +230,15 @@ _OPEN_SOURCE_SPDX_LICENSES = frozenset([
 
 # TODO(b/388620886): Implement warning when changing to or from these licenses
 # (but not every time the README.chromium file is modified).
+_GPL_LICENSES = frozenset([
+    "GPL-2.0",
+    "GPL-3.0",
+])
+
 _WITH_PERMISSION_ONLY = frozenset([
     # restricted.
     # go/keep-sorted start case=no
     "CC-BY-SA-3.0",
-    "GPL-2.0",
-    "GPL-3.0",
     "LGPL-2.0",
     "LGPL-2.1",
     "LGPL-3.0",
@@ -266,7 +269,7 @@ _ALLOWED_LICENSES = (_ALLOWED_SPDX_LICENSES
                      | _EXTENDED_LICENSE_CLASSIFIERS
                      | _ALLOWED_REFERENCES)
 _ALLOWED_OPEN_SOURCE_LICENSES = _ALLOWED_LICENSES | _OPEN_SOURCE_SPDX_LICENSES
-_ALL_LICENSES = _ALLOWED_OPEN_SOURCE_LICENSES | _WITH_PERMISSION_ONLY
+_ALL_LICENSES = _ALLOWED_OPEN_SOURCE_LICENSES | _WITH_PERMISSION_ONLY | _GPL_LICENSES
 
 
 # TODO(https://crbug.com/452151523): Remove this after migrating downstream
@@ -315,11 +318,20 @@ def is_with_permission_only(value: str) -> bool:
     return _license_in_list(value, _WITH_PERMISSION_ONLY)
 
 
+def is_gpl(value: str) -> bool:
+    return _license_in_list(value, _GPL_LICENSES)
+
+
 def is_license_allowed(value: str,
-                       is_open_source_project: bool = False) -> bool:
+                       is_open_source_project: bool = False,
+                       is_shipped: Optional[bool] = None) -> bool:
     """Returns whether the value is in the allowlist for license
     types.
     """
+    # GPL is only allowed if NOT shipped.
+    if is_gpl(value):
+        return is_shipped is False
+
     # Restricted licenses are not enforced by presubmits, see b/388620886 😢.
     if is_with_permission_only(value):
         return True
@@ -349,11 +361,11 @@ def load_restrictive_license_approval_textproto(path: str) -> dict[str, int]:
     return covered
 
 
-def get_license_validation_status(
-        license_value: str,
-        source_file_dir: Optional[str] = None,
-        is_open_source_project: bool = True,
-        android_compatible: Optional[str] = None) -> str:
+def get_license_validation_status(license_value: str,
+                                  source_file_dir: Optional[str] = None,
+                                  is_open_source_project: bool = True,
+                                  android_compatible: Optional[str] = None,
+                                  is_shipped: Optional[bool] = None) -> str:
     """Evaluates the validation status of a license value.
 
     Returns 'ALLOWED' if all licenses are allowed, or a combination of:
@@ -367,6 +379,7 @@ def get_license_validation_status(
       is_open_source_project: Whether the project is open source (reciprocal
         licenses are disallowed in non-open-source projects).
       android_compatible: Optional string value of 'License Android Compatible' field.
+      is_shipped: Optional string value of 'Shipped' field.
     """
     if not license_value:
         return STATUS_UNKNOWN
@@ -381,7 +394,7 @@ def get_license_validation_status(
 
     for license in licenses:
         # Check if globally allowed.
-        if is_license_allowed(license, is_open_source_project):
+        if is_license_allowed(license, is_open_source_project, is_shipped):
             continue
 
         # Reciprocal in internal requires 'Android Compatible = yes'.
