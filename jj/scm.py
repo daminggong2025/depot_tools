@@ -7,6 +7,7 @@ import pathlib
 import subprocess
 
 import gclient_scm
+import gclient_utils
 
 
 def prefer_git_wrapper(func):
@@ -41,7 +42,9 @@ class JjWrapper(gclient_scm.GitWrapper):
                     continue
                 path = pathlib.Path(self.checkout_path, line[len('path = '):])
                 # Not every submodule will exist, because many are conditional.
-                if path.is_dir() and (path / '.git').exists():
+                if path.is_dir() and (
+                    (path / '.git').exists() or (path / '.jj').exists()
+                ):
                     yield path
 
     @prefer_git_wrapper
@@ -51,13 +54,30 @@ class JjWrapper(gclient_scm.GitWrapper):
         # read the submodules from the .gitmodules file.
         state = {}
         for submodule_path in self._GetSubmodulePaths():
-            # TODO: Convert the submodule to jj and use jj log instead.
-            state[str(submodule_path)] = subprocess.run(
-                ['git', 'rev-parse', 'HEAD'],
-                check=True,
-                cwd=submodule_path,
-                stdout=subprocess.PIPE,
-            ).stdout.decode('utf-8').strip()
+            is_jj = (submodule_path / '.jj').exists()
+            is_git = (submodule_path / '.git').exists()
+            if is_jj and not is_git:
+                state[str(submodule_path)] = (
+                    subprocess.run(
+                        ['jj', 'log', '-r', '@-', '-T', 'commit_id'],
+                        cwd=submodule_path,
+                        capture_output=True,
+                        check=True,
+                    )
+                    .stdout.decode('utf-8')
+                    .strip()
+                )
+            else:
+                state[str(submodule_path)] = (
+                    subprocess.run(
+                        ['git', 'rev-parse', 'HEAD'],
+                        cwd=submodule_path,
+                        capture_output=True,
+                        check=True,
+                    )
+                    .stdout.decode('utf-8')
+                    .strip()
+                )
         return state
 
     @prefer_git_wrapper
@@ -102,4 +122,32 @@ class JjWrapper(gclient_scm.GitWrapper):
 
     @prefer_git_wrapper
     def update(self, options, args, file_list):
-        pass
+        url, deps_revision = gclient_utils.SplitUrlRevision(self.url)
+        revision = deps_revision
+        if options.revision:
+            revision = str(options.revision)
+        if not revision:
+            revision = 'main@origin'
+        if revision == 'unmanaged':
+            return
+
+        # Fetch if the revision is missing locally
+        check_res = subprocess.run(
+            ['jj', 'log', '-r', revision, '-G', '-T', ''],
+            cwd=self.checkout_path,
+            capture_output=True,
+        )
+        if check_res.returncode != 0:
+            subprocess.run(
+                ['jj', 'git', 'fetch'],
+                cwd=self.checkout_path,
+                capture_output=True,
+                check=True,
+            )
+
+        subprocess.run(
+            ['jj', 'new', revision],
+            cwd=self.checkout_path,
+            capture_output=True,
+            check=True,
+        )
