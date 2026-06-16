@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7688ea4b_df79afff",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1244248
+      },
+      "writtenOn": "2026-06-16T08:14:24Z",
+      "side": 1,
+      "message": "Yiwei: PTAL.",
+      "revId": "a3239aac1df6cb2bba3f00026c4a979d5c98fc14",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
