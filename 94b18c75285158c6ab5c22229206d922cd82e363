@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "be0982df_ba6b0362",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1540893
+      },
+      "writtenOn": "2026-06-17T17:03:59Z",
+      "side": 1,
+      "message": "Will roll after the current clang roll lands",
+      "revId": "94b18c75285158c6ab5c22229206d922cd82e363",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
