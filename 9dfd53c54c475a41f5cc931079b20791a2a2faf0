@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3e8db7a0_608290d4",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1381059
+      },
+      "writtenOn": "2026-06-18T21:59:29Z",
+      "side": 1,
+      "message": "I\u0027m sad that we are still using python as the configuration language so things like this happens",
+      "revId": "9dfd53c54c475a41f5cc931079b20791a2a2faf0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
