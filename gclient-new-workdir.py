@@ -228,6 +228,9 @@ def link_git_repo(src, dest, use_copy_on_write):
         subprocess.check_call(
             ['git', 'update-ref', '--no-deref', 'HEAD', 'HEAD'], cwd=dest
         )
+        # Configure Git to ignore ctime and inode changes to avoid rehashing the index.
+        subprocess.check_call(['git', 'config', 'core.checkStat', 'minimal'],
+                              cwd=dest)
     else:
         print('Running: git checkout --detach -f %s' % dest)
         subprocess.check_call(['git', 'checkout', '--detach', '-f'], cwd=dest)
@@ -262,6 +265,9 @@ def adopt_git_worktree(src, dest):
     src_index = os.path.join(real_git_dir(src), 'index')
     dest_index = os.path.join(real_git_dir(dest), 'index')
     copy_on_write(src_index, dest_index)
+    # Configure Git to ignore ctime and inode changes to avoid rehashing the index.
+    subprocess.check_call(['git', 'config', 'core.checkStat', 'minimal'],
+                          cwd=dest)
 
 
 def create_git_worktree(src, workdir):
