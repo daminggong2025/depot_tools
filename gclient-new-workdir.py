@@ -62,6 +62,12 @@ def parse_options():
                         dest='copy_on_write',
                         help=argparse.SUPPRESS)
     parser.add_argument(
+        '--optimize-git-status',
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help='''Configure core.checkStat=minimal on the new repositories to '''
+        '''prevent index rehashing when using copy-on-write.''')
+    parser.add_argument(
         '--max-depth',
         type=int,
         default=None,
@@ -215,7 +221,7 @@ def real_git_dir(repo_path):
     return os.path.realpath(os.path.join(repo_path, relative_git_dir))
 
 
-def link_git_repo(src, dest, use_copy_on_write):
+def link_git_repo(src, dest, use_copy_on_write, optimize_git_status):
     print('Linking: %s/.git' % src)
     src_git_dir = real_git_dir(src)
     dest_git_dir = os.path.join(dest, '.git')
@@ -228,12 +234,16 @@ def link_git_repo(src, dest, use_copy_on_write):
         subprocess.check_call(
             ['git', 'update-ref', '--no-deref', 'HEAD', 'HEAD'], cwd=dest
         )
+        if optimize_git_status:
+            # Configure Git to ignore ctime and inode changes to avoid rehashing the index.
+            subprocess.check_call(
+                ['git', 'config', 'core.checkStat', 'minimal'], cwd=dest)
     else:
         print('Running: git checkout --detach -f %s' % dest)
         subprocess.check_call(['git', 'checkout', '--detach', '-f'], cwd=dest)
 
 
-def adopt_git_worktree(src, dest):
+def adopt_git_worktree(src, dest, optimize_git_status):
     """Adopts an existing directory as a git worktree.
 
     Note that this function requires copy-on-write (reflink) support.
@@ -262,6 +272,10 @@ def adopt_git_worktree(src, dest):
     src_index = os.path.join(real_git_dir(src), 'index')
     dest_index = os.path.join(real_git_dir(dest), 'index')
     copy_on_write(src_index, dest_index)
+    if optimize_git_status:
+        # Configure Git to ignore ctime and inode changes to avoid rehashing the index.
+        subprocess.check_call(['git', 'config', 'core.checkStat', 'minimal'],
+                              cwd=dest)
 
 
 def create_git_worktree(src, workdir):
@@ -355,7 +369,7 @@ def main():
 
             if args.use_git_worktree:
                 if args.copy_on_write:
-                    adopt_git_worktree(root, workdir)
+                    adopt_git_worktree(root, workdir, args.optimize_git_status)
                 else:
                     # Parent checkouts can pre-populate nested submodule
                     # directories. It is safe to remove these empty or
@@ -380,7 +394,8 @@ def main():
             else:
                 link_git_repo(root,
                               workdir,
-                              use_copy_on_write=args.copy_on_write)
+                              use_copy_on_write=args.copy_on_write,
+                              optimize_git_status=args.optimize_git_status)
 
         if args.copy_on_write:
             print(
