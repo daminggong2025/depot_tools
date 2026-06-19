@@ -134,6 +134,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "563aa7f3_64e453df",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3574852
+      },
+      "writtenOn": "2026-06-19T12:55:18Z",
+      "side": 1,
+      "message": "Seems I dont have permission to add Commit-Queue +1",
+      "parentUuid": "e0f059a1_c322f874",
+      "revId": "5fbee64bc01674050a1e3277ef8ab78fa4d761d7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "4d6ce559_f287fb8a",
