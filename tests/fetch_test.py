@@ -82,6 +82,21 @@ class TestUtilityFunctions(unittest.TestCase):
                                caffeinate=False,
                                props=['--some-param=1', '--bar=2']), response)
 
+        response = fetch.handle_args([
+            'filename', '-n', '--dry-run', '--no-hooks', '--nohistory',
+            '--force', '--no-caffeinate', '-p', 'sso', 'foo', '--verbose',
+            '--verbose'
+        ])
+        self.assertEqual(
+            argparse.Namespace(dry_run=True,
+                               nohooks=True,
+                               nohistory=True,
+                               force=True,
+                               config='foo',
+                               protocol_override='sso',
+                               caffeinate=False,
+                               props=['--verbose', '--verbose']), response)
+
     @mock.patch('os.path.exists', return_value=False)
     @mock.patch('sys.stdout', StringIO())
     @mock.patch('sys.exit', side_effect=SystemExitMock)
