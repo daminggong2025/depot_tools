@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8a0fa1da_78bf84ed",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1577257
+      },
+      "writtenOn": "2026-06-22T06:29:58Z",
+      "side": 1,
+      "message": "Successfully tested on gWindows, too, including the case where git.bat / gitk.bat / ... are missing and regenerated via bootstrap/win_tools.bat.",
+      "revId": "febc31d1bfe8028496014b4786e22f47e702a80c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
