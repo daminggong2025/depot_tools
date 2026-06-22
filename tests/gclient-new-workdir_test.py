@@ -293,5 +293,50 @@ class TestGclientNewWorkdir(unittest.TestCase):
             # Verify that adopt_git_worktree was called!
             mock_adopt.assert_called_once_with("/fake/repo", "/fake/dest")
 
+    @patch("os.walk")
+    @patch("os.path.exists")
+    @patch("os.makedirs")
+    @patch("os.symlink")
+    @patch.object(gclient_new_workdir, "create_git_worktree")
+    def test_main_parallel_repos(self, mock_create_worktree, mock_symlink,
+                                 mock_makedirs, mock_exists, mock_walk):
+        mock_args = MagicMock()
+        mock_args.repository = "/fake/repo"
+        mock_args.new_workdir = "/fake/dest"
+        mock_args.copy_on_write = False
+        mock_args.use_git_worktree = True
+        mock_args.max_depth = -1
+
+        with patch.object(gclient_new_workdir,
+                          "parse_options",
+                          return_value=mock_args):
+            mock_walk.return_value = [
+                ("/fake/repo", ["src"], []),
+                ("/fake/repo/src", ["v8"], []),
+                ("/fake/repo/src/v8", [], []),
+            ]
+
+            def exists_side_effect(path):
+                if path in ("/fake/repo/.gclient", "/fake/repo/.git",
+                            "/fake/repo/src/.git", "/fake/repo/src/v8/.git"):
+                    return True
+                return False
+
+            mock_exists.side_effect = exists_side_effect
+
+            with patch.object(gclient_new_workdir,
+                              "is_btrfs_subvolume",
+                              return_value=False):
+                gclient_new_workdir.main()
+
+            expected_calls = [
+                unittest.mock.call("/fake/repo", "/fake/dest"),
+                unittest.mock.call("/fake/repo/src", os.path.join("/fake/dest", "src")),
+                unittest.mock.call("/fake/repo/src/v8", os.path.join("/fake/dest", "src", "v8")),
+            ]
+            mock_create_worktree.assert_has_calls(expected_calls, any_order=True)
+            self.assertEqual(mock_create_worktree.call_count, 3)
+
+
 if __name__ == "__main__":
     unittest.main()
