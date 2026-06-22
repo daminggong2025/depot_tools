@@ -8,6 +8,7 @@
 #
 
 import argparse
+import concurrent.futures
 import ctypes
 import ctypes.util
 import os
@@ -101,15 +102,19 @@ def parse_options():
 _libc = None
 
 
-def clonefile_darwin(src, dst):
+def _init_clonefile():
     global _libc
-    if _libc is None:
+    if sys.platform == 'darwin' and _libc is None:
         libc_path = ctypes.util.find_library('c')
         _libc = ctypes.CDLL(libc_path, use_errno=True)
         _libc.clonefile.argtypes = [
             ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int
         ]
         _libc.clonefile.restype = ctypes.c_int
+
+
+def clonefile_darwin(src, dst):
+    _init_clonefile()
     # CLONE_NOFOLLOW (0x0001) | CLONE_ACL (0x0004) = 5
     res = _libc.clonefile(os.fsencode(src), os.fsencode(dst), 5)
     if res != 0:
@@ -271,8 +276,49 @@ def create_git_worktree(src, workdir):
     )
 
 
+def _process_repo(args, root, workdir):
+    if args.copy_on_write:
+        if not os.path.exists(workdir):
+            print('Copying: %s' % workdir)
+            copy_on_write(root, workdir)
+        workdir_git = os.path.join(workdir, '.git')
+        if os.path.exists(workdir_git):
+            if os.path.isdir(workdir_git):
+                shutil.rmtree(workdir_git)
+            else:
+                os.remove(workdir_git)
+
+    if args.use_git_worktree:
+        if args.copy_on_write:
+            adopt_git_worktree(root, workdir)
+        else:
+            # Parent checkouts can pre-populate nested submodule
+            # directories. It is safe to remove these empty or
+            # placeholder submodule directories since we are about to
+            # check them out as separate worktrees.
+            real_workdir = os.path.realpath(workdir)
+            if real_workdir != args.new_workdir and os.path.exists(
+                    real_workdir):
+                # Ensure workdir is strictly inside the new workspace
+                # and is not the root itself
+                if os.path.commonpath([args.new_workdir,
+                                       real_workdir]) != args.new_workdir:
+                    raise ValueError(
+                        f'Target workdir {real_workdir} is not inside '
+                        f'the new workspace {args.new_workdir}.')
+
+                # Only delete the directory if it contains a .git
+                # file/directory.
+                if os.path.exists(os.path.join(real_workdir, '.git')):
+                    shutil.rmtree(real_workdir)
+            create_git_worktree(root, workdir)
+    else:
+        link_git_repo(root, workdir, use_copy_on_write=args.copy_on_write)
+
+
 def main():
     args = parse_options()
+    _init_clonefile()
 
     args.repository = os.path.realpath(args.repository)
     args.new_workdir = os.path.realpath(args.new_workdir)
@@ -306,6 +352,7 @@ def main():
             # need to link the .git directory for the top-level repositories.
             args.max_depth = 1 if args.copy_on_write else -1
 
+        repos_by_depth = {}
         visited_dirs = set()
         for root, dirs, _ in os.walk(args.repository, followlinks=True):
             # Keep track of visited directories to avoid processing the same
@@ -342,45 +389,21 @@ def main():
             else:
                 workdir = os.path.join(args.new_workdir, rel_path)
 
-            if args.copy_on_write:
-                if not os.path.exists(workdir):
-                    print('Copying: %s' % workdir)
-                    copy_on_write(root, workdir)
-                workdir_git = os.path.join(workdir, '.git')
-                if os.path.exists(workdir_git):
-                    if os.path.isdir(workdir_git):
-                        shutil.rmtree(workdir_git)
-                    else:
-                        os.remove(workdir_git)
+            repos_by_depth.setdefault(current_depth, []).append((root, workdir))
 
-            if args.use_git_worktree:
-                if args.copy_on_write:
-                    adopt_git_worktree(root, workdir)
-                else:
-                    # Parent checkouts can pre-populate nested submodule
-                    # directories. It is safe to remove these empty or
-                    # placeholder submodule directories since we are about to
-                    # check them out as separate worktrees.
-                    real_workdir = os.path.realpath(workdir)
-                    if real_workdir != args.new_workdir and os.path.exists(
-                            real_workdir):
-                        # Ensure workdir is strictly inside the new workspace
-                        # and is not the root itself
-                        if os.path.commonpath([args.new_workdir, real_workdir
-                                               ]) != args.new_workdir:
-                            raise ValueError(
-                                f'Target workdir {real_workdir} is not inside '
-                                f'the new workspace {args.new_workdir}.')
-
-                        # Only delete the directory if it contains a .git
-                        # file/directory.
-                        if os.path.exists(os.path.join(real_workdir, '.git')):
-                            shutil.rmtree(real_workdir)
-                    create_git_worktree(root, workdir)
-            else:
-                link_git_repo(root,
-                              workdir,
-                              use_copy_on_write=args.copy_on_write)
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            for depth in sorted(repos_by_depth.keys()):
+                futures = [
+                    executor.submit(_process_repo, args, root, workdir)
+                    for root, workdir in repos_by_depth[depth]
+                ]
+                try:
+                    for future in concurrent.futures.as_completed(futures):
+                        future.result()
+                except Exception:
+                    for future in futures:
+                        future.cancel()
+                    raise
 
         if args.copy_on_write:
             print(

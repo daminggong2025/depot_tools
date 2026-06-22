@@ -249,7 +249,6 @@ class TestGclientNewWorkdir(unittest.TestCase):
         mock_exit.assert_called_with(1)
         mock_makedirs.assert_not_called()
 
-
     @patch("os.walk")
     @patch("os.path.exists")
     @patch("os.makedirs")
@@ -292,6 +291,102 @@ class TestGclientNewWorkdir(unittest.TestCase):
 
             # Verify that adopt_git_worktree was called!
             mock_adopt.assert_called_once_with("/fake/repo", "/fake/dest")
+
+    @patch("os.walk")
+    @patch("os.path.exists")
+    @patch("os.makedirs")
+    @patch("os.symlink")
+    @patch("shutil.rmtree")
+    @patch.object(gclient_new_workdir, "create_git_worktree")
+    def test_main_parallel_repos(self, mock_create_worktree, mock_rmtree,
+                                 mock_symlink, mock_makedirs, mock_exists,
+                                 mock_walk):
+        mock_args = MagicMock()
+        mock_args.repository = "/fake/repo"
+        mock_args.new_workdir = "/fake/dest"
+        mock_args.copy_on_write = False
+        mock_args.use_git_worktree = True
+        mock_args.max_depth = -1
+
+        with patch.object(gclient_new_workdir,
+                          "parse_options",
+                          return_value=mock_args):
+            mock_walk.return_value = [
+                ("/fake/repo", ["src"], []),
+                ("/fake/repo/src", ["v8", "webrtc"], []),
+                ("/fake/repo/src/v8", [], []),
+                ("/fake/repo/src/webrtc", [], []),
+            ]
+
+            def exists_side_effect(path):
+                if path in ("/fake/repo/.gclient", "/fake/repo/.git",
+                            "/fake/repo/src/.git", "/fake/repo/src/v8/.git",
+                            "/fake/repo/src/webrtc/.git"):
+                    return True
+                # Simulate parent checkout pre-populating placeholder submodule dir for v8
+                if path in (os.path.join("/fake/dest", "src", "v8"),
+                            os.path.join("/fake/dest", "src", "v8", ".git")):
+                    return True
+                return False
+
+            mock_exists.side_effect = exists_side_effect
+
+            with patch.object(gclient_new_workdir,
+                              "is_btrfs_subvolume",
+                              return_value=False):
+                gclient_new_workdir.main()
+
+            expected_calls = [
+                unittest.mock.call("/fake/repo", "/fake/dest"),
+                unittest.mock.call("/fake/repo/src",
+                                   os.path.join("/fake/dest", "src")),
+                unittest.mock.call("/fake/repo/src/v8",
+                                   os.path.join("/fake/dest", "src", "v8")),
+                unittest.mock.call("/fake/repo/src/webrtc",
+                                   os.path.join("/fake/dest", "src", "webrtc")),
+            ]
+            mock_create_worktree.assert_has_calls(expected_calls,
+                                                  any_order=True)
+            self.assertEqual(mock_create_worktree.call_count, 4)
+            mock_rmtree.assert_any_call(os.path.join("/fake/dest", "src", "v8"))
+
+    @patch("os.walk")
+    @patch("os.path.exists")
+    @patch("os.makedirs")
+    @patch("os.symlink")
+    @patch("shutil.rmtree")
+    @patch.object(gclient_new_workdir, "create_git_worktree")
+    def test_main_parallel_worker_failure(self, mock_create_worktree,
+                                          mock_rmtree, mock_symlink,
+                                          mock_makedirs, mock_exists,
+                                          mock_walk):
+        mock_args = MagicMock()
+        mock_args.repository = "/fake/repo"
+        mock_args.new_workdir = "/fake/dest"
+        mock_args.copy_on_write = False
+        mock_args.use_git_worktree = True
+        mock_args.max_depth = -1
+
+        with patch.object(gclient_new_workdir,
+                          "parse_options",
+                          return_value=mock_args):
+            mock_walk.return_value = [
+                ("/fake/repo", ["src"], []),
+                ("/fake/repo/src", [], []),
+            ]
+            mock_exists.return_value = True
+
+            mock_create_worktree.side_effect = subprocess.CalledProcessError(
+                1, "git")
+
+            with patch.object(gclient_new_workdir,
+                              "is_btrfs_subvolume",
+                              return_value=False):
+                res = gclient_new_workdir.main()
+
+            self.assertEqual(res, 1)
+            mock_rmtree.assert_called_with("/fake/dest", ignore_errors=True)
+
 
 if __name__ == "__main__":
     unittest.main()
