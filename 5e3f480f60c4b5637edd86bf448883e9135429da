@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3cbd46b1_f166315f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-06-22T19:34:58Z",
+      "side": 1,
+      "message": "please fix presubmit (and add a test to fetch_test.py)",
+      "revId": "5e3f480f60c4b5637edd86bf448883e9135429da",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
