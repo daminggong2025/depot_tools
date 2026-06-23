@@ -241,6 +241,11 @@ _WITH_PERMISSION_ONLY = frozenset([
     "LGPL-3.0",
     "NPL-1.1",
     # go/keep-sorted end
+    # by_exception_only.
+    # go/keep-sorted start case=no
+    "Opus-Patent-BSD-3-Clause",
+    "Unity-Companion-License-1.3",
+    # go/keep-sorted end
 ])
 
 # These are references to files that are not licenses, but are allowed to be
