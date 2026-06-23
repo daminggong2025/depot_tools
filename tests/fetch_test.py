@@ -50,6 +50,7 @@ class TestUtilityFunctions(unittest.TestCase):
                                config='foo',
                                protocol_override=None,
                                caffeinate=True,
+                               verbose=0,
                                props=[]), response)
 
         response = fetch.handle_args([
@@ -65,6 +66,7 @@ class TestUtilityFunctions(unittest.TestCase):
                                config='foo',
                                protocol_override='sso',
                                caffeinate=True,
+                               verbose=0,
                                props=['--some-param=1', '--bar=2']), response)
 
         response = fetch.handle_args([
@@ -80,7 +82,57 @@ class TestUtilityFunctions(unittest.TestCase):
                                config='foo',
                                protocol_override='sso',
                                caffeinate=False,
+                               verbose=0,
                                props=['--some-param=1', '--bar=2']), response)
+
+        response = fetch.handle_args([
+            'filename',
+            '-n',
+            '--dry-run',
+            '--no-hooks',
+            '--nohistory',
+            '--force',
+            '--no-caffeinate',
+            '--verbose',
+            '--verbose',
+            '-p',
+            'sso',
+            'foo',
+        ])
+        self.assertEqual(
+            argparse.Namespace(dry_run=True,
+                               nohooks=True,
+                               nohistory=True,
+                               force=True,
+                               config='foo',
+                               protocol_override='sso',
+                               caffeinate=False,
+                               verbose=2,
+                               props=[]), response)
+
+        response = fetch.handle_args([
+            'filename',
+            '-n',
+            '--dry-run',
+            '--no-hooks',
+            '--nohistory',
+            '--force',
+            '--no-caffeinate',
+            '-vvv',
+            '-p',
+            'sso',
+            'foo',
+        ])
+        self.assertEqual(
+            argparse.Namespace(dry_run=True,
+                               nohooks=True,
+                               nohistory=True,
+                               force=True,
+                               config='foo',
+                               protocol_override='sso',
+                               caffeinate=False,
+                               verbose=3,
+                               props=[]), response)
 
     @mock.patch('os.path.exists', return_value=False)
     @mock.patch('sys.stdout', StringIO())
@@ -239,7 +291,8 @@ class TestGclientGitCheckout(unittest.TestCase):
 
         self.opts = argparse.Namespace(dry_run=False,
                                        nohooks=True,
-                                       nohistory=False)
+                                       nohistory=False,
+                                       verbose=0)
         specs = {
             'solutions': [{
                 'foo': 'bar',
