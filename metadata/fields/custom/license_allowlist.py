@@ -240,6 +240,8 @@ _WITH_PERMISSION_ONLY = frozenset([
     "LGPL-2.1",
     "LGPL-3.0",
     "NPL-1.1",
+    "Opus-Patent-BSD-3-Clause",
+    "Unity-Companion-License-1.3",
     # go/keep-sorted end
 ])
 
