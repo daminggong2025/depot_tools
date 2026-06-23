@@ -16,6 +16,24 @@
       "message": "add a TODO linked to the bugs you\u0027ve filed for these please",
       "revId": "ef21094cbdcd5f1d32ed9e071715afa40c8432c3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2187c85c_d898fee6",
+        "filename": "metadata/fields/custom/license_allowlist.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 246,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2026-06-23T04:59:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d8c04146_f5f53bd4",
+      "revId": "ef21094cbdcd5f1d32ed9e071715afa40c8432c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
