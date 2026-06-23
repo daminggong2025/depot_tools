@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2680a636_38dab903",
+        "filename": "fetch.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 211,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-06-23T21:27:14Z",
+      "side": 1,
+      "message": "instead of storing a bool, I think it\u0027d make sense to have the flag accept an optional path to the git cache dir. WDYT?",
+      "range": {
+        "startLine": 210,
+        "startChar": 11,
+        "endLine": 211,
+        "endChar": 28
+      },
+      "revId": "18799dbcbd0290a4299741f78ed9decd8ff46f02",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
