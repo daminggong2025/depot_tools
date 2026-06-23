@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d8c04146_f5f53bd4",
+        "filename": "metadata/fields/custom/license_allowlist.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 246,
+      "author": {
+        "id": 1553262
+      },
+      "writtenOn": "2026-06-23T04:49:24Z",
+      "side": 1,
+      "message": "add a TODO linked to the bugs you\u0027ve filed for these please",
+      "revId": "ef21094cbdcd5f1d32ed9e071715afa40c8432c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
