@@ -1,0 +1,61 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "82a97a5e_c7b7a227",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 4
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-06-23T21:49:42Z",
+      "side": 1,
+      "message": "nit: this feels redundant with the commit message header. either remove this line or make it the commit header",
+      "revId": "76c19afc0b96b37f706f9b78f15f4097a0e9096f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ccd0ebed_e38ccc92",
+        "filename": "fetch.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 144,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-06-23T21:49:42Z",
+      "side": 1,
+      "message": "nit: this feels redundant since we\u0027re already checking `self.options.verbose`. maybe just use getattr first, then check and use it?",
+      "range": {
+        "startLine": 144,
+        "startChar": 44,
+        "endLine": 144,
+        "endChar": 79
+      },
+      "revId": "76c19afc0b96b37f706f9b78f15f4097a0e9096f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "be29dc76_f3548501",
+        "filename": "tests/fetch_test.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 328,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-06-23T21:49:42Z",
+      "side": 1,
+      "message": "can we also add a test to verify the forwarding of the  verbose flag to gclient sync?",
+      "revId": "76c19afc0b96b37f706f9b78f15f4097a0e9096f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
