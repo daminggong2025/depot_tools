@@ -22,6 +22,7 @@ import multiprocessing
 import optparse
 import os
 import re
+import shlex
 import shutil
 import stat
 import sys
@@ -7611,6 +7612,12 @@ def CMDformat(parser: optparse.OptionParser, args: list[str]):
     parser.add_option('--full',
                       action='store_true',
                       help='Reformat the full content of all touched files')
+    parser.add_option(
+        '--per-change',
+        action='store_true',
+        dest='per_change',
+        help=
+        'Automatically format each local commit individually and amend them.')
     parser.add_option('--upstream', help='Branch to check against')
     parser.add_option('--dry-run',
                       action='store_true',
@@ -7691,6 +7698,10 @@ def CMDformat(parser: optparse.OptionParser, args: list[str]):
             print('--full and --input_diff_file cannot be used together.',
                   file=sys.stderr)
             return 1
+        if opts.per_change:
+            print('--per-change and --input_diff_file cannot be used together.',
+                  file=sys.stderr)
+            return 1
         if files:
             print(
                 'No file paths to format are allowed '
@@ -7698,6 +7709,10 @@ def CMDformat(parser: optparse.OptionParser, args: list[str]):
                 file=sys.stderr)
             return 1
     elif gclient_utils.IsEnvCog():
+        if opts.per_change:
+            print('--per-change is not supported in Cog environments.',
+                  file=sys.stderr)
+            return 1
         print(
             'Use --input_diff_file to run the format command in non-git '
             'environments. In CiderG, please use the '
@@ -7726,6 +7741,33 @@ def CMDformat(parser: optparse.OptionParser, args: list[str]):
         if not upstream_commit:
             DieWithError('Could not find base commit for this branch. '
                          'Are you in detached state?')
+
+        if opts.per_change:
+            if files:
+                print('Cannot specify files with --per-change.',
+                      file=sys.stderr)
+                return 1
+
+            # Filter out --per-change from the recursive arguments
+            cmd_args = [a for a in args if a != '--per-change']
+            cmd_args.append('--upstream HEAD~1')
+
+            format_cmd = f"{shlex.quote(sys.executable)} {shlex.quote(sys.argv[0])} format {' '.join(cmd_args)}"
+            exec_cmd = f"{format_cmd} && (git diff --quiet || git commit -a --amend --no-edit --no-verify)"
+
+            rebase_cmd = ['rebase', upstream_commit, '-x', exec_cmd]
+            print(
+                f"Running per-change format rebase on top of {upstream_commit}..."
+            )
+
+            return_code = subprocess2.call(['git'] + rebase_cmd)
+            if return_code == 0:
+                print("Per-change format rebase completed successfully.")
+            else:
+                print(
+                    f"Per-change format rebase failed with exit code {return_code}.",
+                    file=sys.stderr)
+            return return_code
 
     # Normalize files against the current path, so paths relative to the
     # current directory are still resolved as expected.
