@@ -22,6 +22,30 @@
       },
       "revId": "18799dbcbd0290a4299741f78ed9decd8ff46f02",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4e7be9b5_b0637c0b",
+        "filename": "fetch.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 211,
+      "author": {
+        "id": 4422564
+      },
+      "writtenOn": "2026-06-24T03:28:00Z",
+      "side": 1,
+      "message": "Let me share what we had in mind here. We wanted this flag as an opt-in to faster chromium clones and after a while if there is no issue promote it to be the default. So I would expect this flag to become unnecessary after some time. Also, then we would have one more way to configure the cache directory. The environment variable being the first/older one. What do you think?",
+      "parentUuid": "2680a636_38dab903",
+      "range": {
+        "startLine": 210,
+        "startChar": 11,
+        "endLine": 211,
+        "endChar": 28
+      },
+      "revId": "18799dbcbd0290a4299741f78ed9decd8ff46f02",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
