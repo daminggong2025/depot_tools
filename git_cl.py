@@ -22,6 +22,7 @@ import multiprocessing
 import optparse
 import os
 import re
+import shlex
 import shutil
 import stat
 import sys
@@ -7596,6 +7597,23 @@ def _FindFilesToFormat(
     return diffs.keys(), diffs
 
 
+def _FilterFormatArgs(args: list[str]) -> typing.Iterable[str]:
+    """Filters out --per-change and --upstream options from the arguments."""
+    skip_next = False
+    for arg in args:
+        if skip_next:
+            skip_next = False
+            continue
+        if arg == '--per-change':
+            continue
+        if arg == '--upstream':
+            skip_next = True
+            continue
+        if arg.startswith('--upstream='):
+            continue
+        yield arg
+
+
 @subcommand.usage('[files or directories to diff]')
 @metrics.collector.collect_metrics('git cl format')
 def CMDformat(parser: optparse.OptionParser, args: list[str]):
@@ -7611,6 +7629,11 @@ def CMDformat(parser: optparse.OptionParser, args: list[str]):
     parser.add_option('--full',
                       action='store_true',
                       help='Reformat the full content of all touched files')
+    parser.add_option(
+        '--per-change',
+        action='store_true',
+        help=
+        'Automatically format each local commit individually and amend them.')
     parser.add_option('--upstream', help='Branch to check against')
     parser.add_option('--dry-run',
                       action='store_true',
@@ -7691,6 +7714,10 @@ def CMDformat(parser: optparse.OptionParser, args: list[str]):
             print('--full and --input_diff_file cannot be used together.',
                   file=sys.stderr)
             return 1
+        if opts.per_change:
+            print('--per-change and --input_diff_file cannot be used together.',
+                  file=sys.stderr)
+            return 1
         if files:
             print(
                 'No file paths to format are allowed '
@@ -7698,6 +7725,10 @@ def CMDformat(parser: optparse.OptionParser, args: list[str]):
                 file=sys.stderr)
             return 1
     elif gclient_utils.IsEnvCog():
+        if opts.per_change:
+            print('--per-change is not supported in Cog environments.',
+                  file=sys.stderr)
+            return 1
         print(
             'Use --input_diff_file to run the format command in non-git '
             'environments. In CiderG, please use the '
@@ -7726,6 +7757,46 @@ def CMDformat(parser: optparse.OptionParser, args: list[str]):
         if not upstream_commit:
             DieWithError('Could not find base commit for this branch. '
                          'Are you in detached state?')
+
+        if opts.per_change:
+            if files:
+                print('Cannot specify files with --per-change.',
+                      file=sys.stderr)
+                return 1
+
+            if RunGit(['status', '--porcelain', '-uno']).strip():
+                DieWithError(
+                    'Working directory is dirty. Please stash or commit your changes first.'
+                )
+
+            commits = RunGit(['rev-list',
+                              f'{upstream_commit}..HEAD']).splitlines()
+            if not commits:
+                print("No local commits to format.")
+                return 0
+
+            # Enforce formatting against the parent commit during rebase.
+            exec_cmd = (
+                f"{shlex.quote(sys.executable)} "
+                f"{shlex.quote(os.path.abspath(sys.argv[0]))} "
+                f"format {' '.join(shlex.quote(a) for a in list(_FilterFormatArgs(args)) + ['--upstream', 'HEAD~1'])} "
+                f"&& (git diff --quiet || (git add -u && git commit --amend --no-edit --no-verify))"
+            )
+
+            print(
+                f"Running per-change format rebase of {len(commits)} commits on top of {upstream_commit}..."
+            )
+            return_code, output = RunGitWithCode(
+                ['rebase', upstream_commit, '-x', exec_cmd])
+            if output:
+                print(output)
+            if return_code == 0:
+                print("Per-change format rebase completed successfully.")
+            else:
+                print(
+                    f"Per-change format rebase failed with exit code {return_code}.",
+                    file=sys.stderr)
+            return return_code
 
     # Normalize files against the current path, so paths relative to the
     # current directory are still resolved as expected.
