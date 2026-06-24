@@ -1,0 +1,124 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8da6565e_93276d4c",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 6
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1170419
+      },
+      "writtenOn": "2026-06-24T17:19:45Z",
+      "side": 1,
+      "message": "This case isn\u0027t exclusive to just internal modules, it\u0027s pretty much any module that the bot\u0027s gclient config doesn\u0027t checkout. So like a mac builder won\u0027t have [this](https://crsrc.org/c/DEPS;drc\u003d3927aa401551861f78f45e79257cf08a5094528d;l\u003d2235) android-only dep.\n\nSo probably want to rephrase things and reword \"internal_submodules\" to something like \"inacessible_submodules\" or \"unavailable_submodules\" or \"not_applicable_submodules\" etc etc",
+      "range": {
+        "startLine": 24,
+        "startChar": 0,
+        "endLine": 26,
+        "endChar": 68
+      },
+      "revId": "4d90190ec777ef6f4956d42ce4c5d59d50bebac0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e142164f_115ce7af",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 6
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1170419
+      },
+      "writtenOn": "2026-06-24T17:19:45Z",
+      "side": 1,
+      "message": "Good call 👍",
+      "revId": "4d90190ec777ef6f4956d42ce4c5d59d50bebac0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7f64e14a_f9f850bf",
+        "filename": "recipes/recipe_modules/tryserver/api.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 247,
+      "author": {
+        "id": 1170419
+      },
+      "writtenOn": "2026-06-24T17:19:45Z",
+      "side": 1,
+      "message": "nit: Mention that it\u0027s not recursive? (ie it won\u0027t recurse into a submodule of a submodule?)",
+      "revId": "4d90190ec777ef6f4956d42ce4c5d59d50bebac0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c0447844_ddeb4f09",
+        "filename": "recipes/recipe_modules/tryserver/api.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 337,
+      "author": {
+        "id": 1170419
+      },
+      "writtenOn": "2026-06-24T17:19:45Z",
+      "side": 1,
+      "message": "nit: I would nix this comment, since GN/analye is mostly a Chrome-ism, while recipe modules in depot_tools are theoretically more project-agnostic. (ie: Some other project might want to call get_files_affected_by_patch() but not use analyze.)",
+      "range": {
+        "startLine": 336,
+        "startChar": 23,
+        "endLine": 337,
+        "endChar": 87
+      },
+      "revId": "4d90190ec777ef6f4956d42ce4c5d59d50bebac0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "260ceefd_5269a45d",
+        "filename": "recipes/recipe_modules/tryserver/api.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 347,
+      "author": {
+        "id": 1170419
+      },
+      "writtenOn": "2026-06-24T17:19:45Z",
+      "side": 1,
+      "message": "That\u0027s some git magic 🧙\n\nTIL",
+      "revId": "4d90190ec777ef6f4956d42ce4c5d59d50bebac0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ebe9a264_1e946e1e",
+        "filename": "recipes/recipe_modules/tryserver/api.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 367,
+      "author": {
+        "id": 1170419
+      },
+      "writtenOn": "2026-06-24T17:19:45Z",
+      "side": 1,
+      "message": "nit: Also a Chrome-ism.\n\nSkipping analyze and compiling/testing everything when it\u0027s a submodule roll of a submodule roll sgtm, since that should be pretty rare. But how do we plan on signalling to Chrome\u0027s recipe code that one of the files in the submodule roll was itself a submodule roll? Are we gonna change get_files_affected_by_patch()\u0027s return val at all?",
+      "range": {
+        "startLine": 366,
+        "startChar": 0,
+        "endLine": 367,
+        "endChar": 61
+      },
+      "revId": "4d90190ec777ef6f4956d42ce4c5d59d50bebac0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
