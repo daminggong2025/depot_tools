@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "67aed8d4_48aeed12",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-06-24T23:14:14Z",
+      "side": 1,
+      "message": "I have no idea why the Review-Enforcement SR is unsatisfied, filed http://b/527600652 on gerrit",
+      "revId": "481027c1c9323afe2f4e6b0a9f92a784d91c04dc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
