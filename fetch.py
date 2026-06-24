@@ -140,6 +140,8 @@ class GclientGitCheckout(GclientCheckout, GitCheckout):
             sync_cmd.append('--nohooks')
         if self.options.nohistory:
             sync_cmd.append('--no-history')
+        if self.options.verbose:
+            sync_cmd.extend(['--verbose'] * self.options.verbose)
         if self.spec.get('with_branch_heads', False):
             sync_cmd.append('--with_branch_heads')
         self.run_gclient(*sync_cmd)
@@ -232,6 +234,13 @@ def handle_args(argv):
                         type=str,
                         nargs=argparse.REMAINDER,
                         default=[])
+    parser.add_argument(
+        '-v',
+        '--verbose',
+        action='count',
+        default=0,
+        help='Produces additional output for diagnostics. Can be used up to '
+        'three times for more logging info.')
 
     args = parser.parse_args(argv[1:])
 
