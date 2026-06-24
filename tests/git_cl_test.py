@@ -5958,6 +5958,115 @@ class CMDFormatTestCase(unittest.TestCase):
         finally:
             os.remove(input_diff.name)
 
+    @mock.patch('sys.stderr', io.StringIO())
+    def testPerChangeIsMutuallyExclusiveWithInputDiffFile(self):
+        """Verifies that opts.input_diff_file cannot be set with opts.per_change."""
+        ret = git_cl.main([
+            'format',
+            "--per-change",
+            "--input_diff_file",
+            "/tmp/patch.diff",
+        ])
+        self.assertEqual(1, ret)
+        self.assertEqual(
+            sys.stderr.getvalue().strip(),
+            '--per-change and --input_diff_file cannot be used together.',
+        )
+
+    @mock.patch('sys.stderr', io.StringIO())
+    def testPerChangeIsMutuallyExclusiveWithPositionalFilePaths(self):
+        """Verifies that opts.per_change cannot be used if file given."""
+        git_cl.settings.GetRelativeRoot.return_value = None
+        ret = git_cl.main([
+            'format',
+            "--per-change",
+            "common.cc",
+        ])
+        self.assertEqual(1, ret)
+        self.assertEqual(
+            sys.stderr.getvalue().strip(),
+            'Cannot specify files with --per-change.',
+        )
+
+    @mock.patch('sys.stderr', io.StringIO())
+    @mock.patch('gclient_utils.IsEnvCog', return_value=True)
+    def testPerChangeNotSupportedInCog(self, _mock_cog):
+        """Verifies that --per-change is not supported in Cog."""
+        ret = git_cl.main([
+            'format',
+            "--per-change",
+        ])
+        self.assertEqual(1, ret)
+        self.assertEqual(
+            sys.stderr.getvalue().strip(),
+            '--per-change is not supported in Cog environments.',
+        )
+
+    @mock.patch('sys.stderr', io.StringIO())
+    @mock.patch('git_cl.RunGit')
+    @mock.patch('gclient_utils.IsEnvCog', return_value=False)
+    def testPerChangeDirtyWorkingDirectory(self, _mock_cog, mock_rungit):
+        """Verifies that --per-change aborts if working directory is dirty."""
+        git_cl.settings.GetRelativeRoot.return_value = None
+        mock_rungit.side_effect = lambda args, **kwargs: {
+            ('status', '--porcelain', '-uno'): ' M file.cc\n',
+            ('merge-base', 'HEAD', 'origin/main'): 'upstream_sha\n',
+        }[tuple(args)]
+
+        mock_cl = mock.Mock()
+        mock_cl.GetUpstreamBranch.return_value = 'origin/main'
+        with mock.patch('git_cl.Changelist', return_value=mock_cl):
+            with self.assertRaises(SystemExit) as cm:
+                git_cl.main([
+                    'format',
+                    "--per-change",
+                ])
+            self.assertEqual(cm.exception.code, 1)
+        self.assertIn(
+            'Working directory is dirty. Please stash or commit your changes first.',
+            sys.stderr.getvalue().strip(),
+        )
+
+    @mock.patch('git_cl.RunGitWithCode')
+    @mock.patch('git_cl.RunGit')
+    @mock.patch('gclient_utils.IsEnvCog', return_value=False)
+    def testPerChangeHappyPath(self, _mock_cog, mock_rungit,
+                               mock_rungitwithcode):
+        """Tests the happy path of git cl format --per-change."""
+        import shlex
+        git_cl.settings.GetRelativeRoot.return_value = None
+        mock_rungit.side_effect = lambda args, **kwargs: {
+            ('status', '--porcelain', '-uno'): '',
+            ('merge-base', 'HEAD', 'origin/main'): 'upstream_sha\n',
+            ('rev-list', 'upstream_sha..HEAD'): 'commit1_sha\ncommit2_sha\n',
+        }[tuple(args)]
+
+        mock_rungitwithcode.return_value = (0, 'Rebase success')
+
+        mock_cl = mock.Mock()
+        mock_cl.GetUpstreamBranch.return_value = 'origin/main'
+
+        fake_git_cl_path = '/mock/path/to/git_cl.py'
+        with mock.patch('git_cl.Changelist', return_value=mock_cl), \
+             mock.patch('sys.argv', [fake_git_cl_path, 'format', '--per-change', '--python']):
+
+            ret = git_cl.main([
+                'format',
+                "--per-change",
+                "--python",
+            ])
+
+        self.assertEqual(0, ret)
+
+        expected_exec_cmd = (
+            f"{shlex.quote(sys.executable)} "
+            f"{shlex.quote(fake_git_cl_path)} "
+            f"format --python --upstream 'HEAD~1' "
+            f"&& (git diff --quiet || (git add -u && git commit --amend --no-edit --no-verify))"
+        )
+        mock_rungitwithcode.assert_called_once_with(
+            ['rebase', 'upstream_sha', '-x', expected_exec_cmd])
+
 
 @unittest.skipIf(gclient_utils.IsEnvCog(),
                 'not supported in non-git environment')
