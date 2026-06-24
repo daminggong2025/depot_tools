@@ -46,6 +46,30 @@
       },
       "revId": "18799dbcbd0290a4299741f78ed9decd8ff46f02",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "38d77cbc_7593b3e0",
+        "filename": "fetch.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 211,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-06-24T23:30:58Z",
+      "side": 1,
+      "message": "ack, that makes sense. resolving",
+      "parentUuid": "4e7be9b5_b0637c0b",
+      "range": {
+        "startLine": 210,
+        "startChar": 11,
+        "endLine": 211,
+        "endChar": 28
+      },
+      "revId": "18799dbcbd0290a4299741f78ed9decd8ff46f02",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
