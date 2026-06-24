@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "3568f231_4987a4f0",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 4
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 3574852
+      },
+      "writtenOn": "2026-06-24T13:18:29Z",
+      "side": 1,
+      "message": "Acknowledged",
+      "parentUuid": "82a97a5e_c7b7a227",
+      "revId": "76c19afc0b96b37f706f9b78f15f4097a0e9096f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "ccd0ebed_e38ccc92",
@@ -41,6 +59,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "21c4c7f0_dd81f965",
+        "filename": "fetch.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 144,
+      "author": {
+        "id": 3574852
+      },
+      "writtenOn": "2026-06-24T13:18:29Z",
+      "side": 1,
+      "message": "Acknowledged",
+      "parentUuid": "ccd0ebed_e38ccc92",
+      "range": {
+        "startLine": 144,
+        "startChar": 44,
+        "endLine": 144,
+        "endChar": 79
+      },
+      "revId": "76c19afc0b96b37f706f9b78f15f4097a0e9096f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "be29dc76_f3548501",
@@ -54,6 +96,24 @@
       "writtenOn": "2026-06-23T21:49:42Z",
       "side": 1,
       "message": "can we also add a test to verify the forwarding of the  verbose flag to gclient sync?",
+      "revId": "76c19afc0b96b37f706f9b78f15f4097a0e9096f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0c5320b6_f400c32e",
+        "filename": "tests/fetch_test.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 328,
+      "author": {
+        "id": 3574852
+      },
+      "writtenOn": "2026-06-24T13:18:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "be29dc76_f3548501",
       "revId": "76c19afc0b96b37f706f9b78f15f4097a0e9096f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
