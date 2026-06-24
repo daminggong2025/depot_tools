@@ -6534,6 +6534,186 @@ def CMDpatch(parser, args):
                                       reauthor=options.reauthor)
 
 
+def _BranchExists(branch):
+    return RunGitWithCode(['rev-parse', '--verify',
+                           'refs/heads/%s' % branch],
+                          suppress_stderr=True)[0] == 0
+
+
+def _DefaultRestoreStackBase():
+    code, base = RunGitWithCode(
+        ['rev-parse', '--abbrev-ref', '--symbolic-full-name', '@{u}'],
+        suppress_stderr=True)
+    return base.strip() if code == 0 and base.strip() else 'origin/main'
+
+
+def _RestoreStackBranchName(prefix, change):
+    return '%s%s' % (prefix, change['_change_number'])
+
+
+def _RestoreStackSubject(change):
+    subject = change.get('subject')
+    return ' - %s' % subject if subject else ''
+
+
+def _PrintRestoreStackPlan(plan):
+    print('Stack:')
+    if not plan:
+        return
+    print(plan[0][2])
+    for index, (change_num, branch, _upstream, subject) in enumerate(plan):
+        print('%s`- %s (CL %s)%s' %
+              ('   ' * index, branch, change_num, subject))
+    print('')
+
+
+def _RelatedChangesInStack(host, issue):
+    related = gerrit_util.GetRelatedChanges(host, str(issue))
+    changes = [
+        c for c in related.get('changes', [])
+        if c.get('_change_number') and c.get('status') == 'NEW'
+    ]
+    commit_to_change = {
+        c['commit']['commit']: c
+        for c in changes if c.get('commit', {}).get('commit')
+    }
+    target_commits = [
+        commit for commit, change in commit_to_change.items()
+        if int(change['_change_number']) == int(issue)
+    ]
+    if not target_commits:
+        DieWithError('Could not find open change %s in related changes.' %
+                     issue)
+
+    parents = {}
+    children = collections.defaultdict(list)
+    neighbors = collections.defaultdict(set)
+    for commit, change in commit_to_change.items():
+        parent_commit = None
+        for parent in change.get('commit', {}).get('parents', []):
+            candidate = parent.get('commit')
+            if candidate in commit_to_change:
+                parent_commit = candidate
+                break
+        if parent_commit:
+            parents[commit] = parent_commit
+            children[parent_commit].append(commit)
+            neighbors[commit].add(parent_commit)
+            neighbors[parent_commit].add(commit)
+
+    component = set()
+    stack = [target_commits[0]]
+    while stack:
+        commit = stack.pop()
+        if commit in component:
+            continue
+        component.add(commit)
+        stack.extend(neighbors[commit] - component)
+
+    roots = [c for c in component if parents.get(c) not in component]
+    if len(roots) != 1:
+        DieWithError('Could not determine a linear stack for change %s.' %
+                     issue)
+
+    ordered = []
+    commit = roots[0]
+    while commit:
+        ordered.append(commit_to_change[commit])
+        next_commits = [c for c in children.get(commit, []) if c in component]
+        if len(next_commits) > 1:
+            DieWithError('Change %s has multiple child changes; restore-stack '
+                         'only supports linear stacks.' %
+                         commit_to_change[commit]['_change_number'])
+        commit = next_commits[0] if next_commits else None
+    return ordered
+
+
+@subcommand.usage('<codereview url or issue id>')
+@metrics.collector.collect_metrics('git cl restore-stack')
+def CMDrestore_stack(parser, args):
+    """Restores a Gerrit CL stack as local branches."""
+    parser.add_option('-f',
+                      '--force',
+                      action='store_true',
+                      help='overwrite existing stack branches')
+    parser.add_option('--branch-prefix',
+                      default='cl/',
+                      help='prefix for created branches (default: cl/)')
+    parser.add_option('--base',
+                      help='upstream for the bottom branch (default: current '
+                      'branch upstream, or origin/main)')
+    parser.add_option('-n',
+                      '--dry-run',
+                      action='store_true',
+                      help='print what would be restored without changing git')
+    (options, args) = parser.parse_args(args)
+
+    if len(args) != 1 or not args[0]:
+        parser.error('Must specify issue number or URL.')
+
+    target_issue_arg = ParseIssueNumberArgument(args[0])
+    if not target_issue_arg.valid:
+        parser.error('Invalid issue ID or URL.')
+
+    if git_common.is_dirty_git_tree('restore-stack'):
+        return 1
+
+    cl = Changelist(codereview_host=target_issue_arg.hostname,
+                    issue=target_issue_arg.issue)
+    host = cl.GetGerritHost()
+    changes = _RelatedChangesInStack(host, target_issue_arg.issue)
+    base = options.base or _DefaultRestoreStackBase()
+
+    previous = base
+    plan = []
+    for change in changes:
+        branch = _RestoreStackBranchName(options.branch_prefix, change)
+        plan.append((change['_change_number'], branch, previous,
+                     _RestoreStackSubject(change)))
+        previous = branch
+
+    _PrintRestoreStackPlan(plan)
+
+    existing = [
+        branch for _change_num, branch, _upstream, _subject in plan
+        if _BranchExists(branch)
+    ]
+    if existing and not options.force:
+        print('Refusing to overwrite existing branch(es): %s' %
+              ', '.join(existing))
+        print('Use --force to reset them to the current Gerrit patchsets.')
+        return 1
+
+    if options.dry_run:
+        for change_num, branch, upstream, _subject in plan:
+            action = 'reset' if _BranchExists(branch) else 'create'
+            print('%s %s for CL %s, upstream %s' %
+                  (action, branch, change_num, upstream))
+        return 0
+
+    for change_num, branch, upstream, _subject in plan:
+        if _BranchExists(branch):
+            print('Resetting %s to CL %s' % (branch, change_num))
+            RunGit(['checkout', branch])
+        else:
+            print('Creating %s for CL %s' % (branch, change_num))
+            RunGit(['checkout', '-b', branch, upstream])
+
+        patch_arg = ParseIssueNumberArgument(str(change_num))
+        patch_cl = Changelist(codereview_host=host, issue=change_num)
+        ret = patch_cl.CMDPatchWithParsedIssue(patch_arg,
+                                               nocommit=False,
+                                               force=True)
+        if ret:
+            return ret
+        RunGit(['branch', '--set-upstream-to', upstream, branch])
+
+    if plan:
+        RunGit(['checkout', plan[-1][1]])
+        print('Restored %d CL(s); checked out %s.' % (len(plan), plan[-1][1]))
+    return 0
+
+
 def GetTreeStatus(url=None):
     """Fetches the tree status and returns either 'open', 'closed',
     'unknown' or 'unset'."""
