@@ -38,6 +38,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "1a053513_1904273b",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 4
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-06-24T23:23:25Z",
+      "side": 1,
+      "message": "unresolving since commit message was unchanged",
+      "parentUuid": "3568f231_4987a4f0",
+      "revId": "76c19afc0b96b37f706f9b78f15f4097a0e9096f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "ccd0ebed_e38ccc92",
         "filename": "fetch.py",
         "patchSetId": 4

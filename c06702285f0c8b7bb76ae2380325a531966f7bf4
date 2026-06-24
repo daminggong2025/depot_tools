@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8c1c7aa0_a04ef1a2",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 7
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-06-24T23:23:25Z",
+      "side": 1,
+      "message": "wrap this line to 72 chars (gerrit has a Format tool if you click the \"Edit\" button on the bottom right of the commit message box)",
+      "range": {
+        "startLine": 10,
+        "startChar": 5,
+        "endLine": 10,
+        "endChar": 11
+      },
+      "revId": "c06702285f0c8b7bb76ae2380325a531966f7bf4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
