@@ -26,6 +26,30 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "c88ee57a_8210ef84",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 6
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1551929
+      },
+      "writtenOn": "2026-06-25T16:47:29Z",
+      "side": 1,
+      "message": "Ah ok, didn\u0027t realize there were cases beyond internal-only. I renamed the variable and log to be \"unchecked_out_submodules\".",
+      "parentUuid": "8da6565e_93276d4c",
+      "range": {
+        "startLine": 24,
+        "startChar": 0,
+        "endLine": 26,
+        "endChar": 68
+      },
+      "revId": "4d90190ec777ef6f4956d42ce4c5d59d50bebac0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "e142164f_115ce7af",
         "filename": "/COMMIT_MSG",
         "patchSetId": 6
@@ -58,6 +82,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "9728bfa8_d67f85ed",
+        "filename": "recipes/recipe_modules/tryserver/api.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 247,
+      "author": {
+        "id": 1551929
+      },
+      "writtenOn": "2026-06-25T16:47:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7f64e14a_f9f850bf",
+      "revId": "4d90190ec777ef6f4956d42ce4c5d59d50bebac0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "c0447844_ddeb4f09",
@@ -71,6 +113,30 @@
       "writtenOn": "2026-06-24T17:19:45Z",
       "side": 1,
       "message": "nit: I would nix this comment, since GN/analye is mostly a Chrome-ism, while recipe modules in depot_tools are theoretically more project-agnostic. (ie: Some other project might want to call get_files_affected_by_patch() but not use analyze.)",
+      "range": {
+        "startLine": 336,
+        "startChar": 23,
+        "endLine": 337,
+        "endChar": 87
+      },
+      "revId": "4d90190ec777ef6f4956d42ce4c5d59d50bebac0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7fc43c0a_70c80df8",
+        "filename": "recipes/recipe_modules/tryserver/api.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 337,
+      "author": {
+        "id": 1551929
+      },
+      "writtenOn": "2026-06-25T16:47:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c0447844_ddeb4f09",
       "range": {
         "startLine": 336,
         "startChar": 23,
@@ -111,6 +177,30 @@
       "writtenOn": "2026-06-24T17:19:45Z",
       "side": 1,
       "message": "nit: Also a Chrome-ism.\n\nSkipping analyze and compiling/testing everything when it\u0027s a submodule roll of a submodule roll sgtm, since that should be pretty rare. But how do we plan on signalling to Chrome\u0027s recipe code that one of the files in the submodule roll was itself a submodule roll? Are we gonna change get_files_affected_by_patch()\u0027s return val at all?",
+      "range": {
+        "startLine": 366,
+        "startChar": 0,
+        "endLine": 367,
+        "endChar": 61
+      },
+      "revId": "4d90190ec777ef6f4956d42ce4c5d59d50bebac0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "99539ca8_923b35bd",
+        "filename": "recipes/recipe_modules/tryserver/api.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 367,
+      "author": {
+        "id": 1551929
+      },
+      "writtenOn": "2026-06-25T16:47:29Z",
+      "side": 1,
+      "message": "Got rid of the comment.\n\nYeah... we will need to change the return val, I had been punting on that decision for the time being, since this CL just logs diffs and the presence of these edge cases. It would probably make sense to put this behavior in a new function that the chromium_checkout recipe module could call, rather than modifying get_files_affected_by_patch()\u0027s return val and needing to update all of its callsites (which I\u0027m assuming contains many recipes besides Chromium\u0027s)",
+      "parentUuid": "ebe9a264_1e946e1e",
       "range": {
         "startLine": 366,
         "startChar": 0,
