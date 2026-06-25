@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2ee0630f_11058480",
+        "filename": "recipes/recipe_modules/tryserver/api.py",
+        "patchSetId": 12
+      },
+      "lineNbr": 328,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-06-25T21:48:10Z",
+      "side": 1,
+      "message": "won\u0027t path be `src\\tdst` on renames? from https://git-scm.com/docs/git-diff#_raw_output_format",
+      "range": {
+        "startLine": 328,
+        "startChar": 16,
+        "endLine": 328,
+        "endChar": 20
+      },
+      "revId": "69a39f8e8e8f8c346b39e6fc4a1d6936d5c2ae56",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
