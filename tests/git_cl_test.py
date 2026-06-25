@@ -2683,6 +2683,335 @@ class TestGitCl(unittest.TestCase):
         self.assertEqual('Command "git cherry-pick FETCH_HEAD" failed.\n\n',
                          sys.stderr.getvalue())
 
+    def _related_changes_common(self):
+        scm.GIT.SetConfig('', 'remote.origin.url',
+                          'https://chromium.googlesource.com/my/repo')
+        return {
+            'changes': [
+                {
+                    '_change_number': 1001,
+                    'status': 'NEW',
+                    'subject': 'Bottom change',
+                    'commit': {
+                        'commit': 'aaa',
+                        'parents': [{
+                            'commit': 'base'
+                        }],
+                    },
+                },
+                {
+                    '_change_number': 1002,
+                    'status': 'NEW',
+                    'subject': 'Middle change',
+                    'commit': {
+                        'commit': 'bbb',
+                        'parents': [{
+                            'commit': 'aaa'
+                        }],
+                    },
+                },
+                {
+                    '_change_number': 1003,
+                    'status': 'NEW',
+                    'subject': 'Top change',
+                    'commit': {
+                        'commit': 'ccc',
+                        'parents': [{
+                            'commit': 'bbb'
+                        }],
+                    },
+                },
+            ],
+        }
+
+    @unittest.skipIf(gclient_utils.IsEnvCog(),
+                     'not supported in non-git environment')
+    def test_restore_stack_dry_run(self):
+        with mock.patch('gerrit_util.GetRelatedChanges',
+                        return_value=self._related_changes_common()):
+            self.calls += [
+                ((['git', 'rev-parse', '--verify',
+                   'refs/heads/cl/1001'], ), CERR1),
+                ((['git', 'rev-parse', '--verify',
+                   'refs/heads/cl/1002'], ), CERR1),
+                ((['git', 'rev-parse', '--verify',
+                   'refs/heads/cl/1003'], ), CERR1),
+                ((['git', 'rev-parse', '--verify',
+                   'refs/heads/cl/1001'], ), CERR1),
+                ((['git', 'rev-parse', '--verify',
+                   'refs/heads/cl/1002'], ), CERR1),
+                ((['git', 'rev-parse', '--verify',
+                   'refs/heads/cl/1003'], ), CERR1),
+            ]
+            self.assertEqual(
+                0,
+                git_cl.main([
+                    'stack', 'checkout', '--dry-run', '--base', 'origin/main',
+                    '1003'
+                ]))
+        self.assertEqual(
+            'Stack:\n'
+            'origin/main\n'
+            '`- cl/1001 (CL 1001) - Bottom change\n'
+            '   `- cl/1002 (CL 1002) - Middle change\n'
+            '      `- cl/1003 (CL 1003) - Top change\n'
+            '\n'
+            'create cl/1001 for CL 1001, upstream origin/main\n'
+            'create cl/1002 for CL 1002, upstream cl/1001\n'
+            'create cl/1003 for CL 1003, upstream cl/1002\n',
+            sys.stdout.getvalue())
+
+    @unittest.skipIf(gclient_utils.IsEnvCog(),
+                     'not supported in non-git environment')
+    def test_restore_stack_refuses_existing_branches_without_force(self):
+        with mock.patch('gerrit_util.GetRelatedChanges',
+                        return_value=self._related_changes_common()):
+            self.calls += [
+                ((['git', 'rev-parse', '--verify',
+                   'refs/heads/cl/1001'], ), ''),
+                ((['git', 'rev-parse', '--verify',
+                   'refs/heads/cl/1002'], ), CERR1),
+                ((['git', 'rev-parse', '--verify',
+                   'refs/heads/cl/1003'], ), CERR1),
+            ]
+            self.assertEqual(
+                1,
+                git_cl.main(['restore-stack', '--base', 'origin/main', '1003']))
+        self.assertEqual(
+            'Stack:\n'
+            'origin/main\n'
+            '`- cl/1001 (CL 1001) - Bottom change\n'
+            '   `- cl/1002 (CL 1002) - Middle change\n'
+            '      `- cl/1003 (CL 1003) - Top change\n'
+            '\n'
+            'Refusing to overwrite existing branch(es): cl/1001\n'
+            'Use --force to reset them to the current Gerrit patchsets.\n',
+            sys.stdout.getvalue())
+
+    @unittest.skipIf(gclient_utils.IsEnvCog(),
+                     'not supported in non-git environment')
+    def test_stack_tree_marks_current_branch(self):
+        scm.GIT.SetConfig('', 'branch.cl/1001.gerritissue', '1001')
+        scm.GIT.SetConfig('', 'branch.cl/1002.gerritissue', '1002')
+        scm.GIT.SetConfig('', 'branch.cl/1003.gerritissue', '1003')
+        self.calls += [
+            ((['git', 'branch', '--show-current'], ), 'cl/1002'),
+            (([
+                'git', 'for-each-ref',
+                '--format=%(refname:short) %(upstream:short)', 'refs/heads'
+            ], ), 'cl/1001 origin/main\ncl/1002 cl/1001\ncl/1003 cl/1002\n'),
+        ]
+        self.assertEqual(0, git_cl.main(['stack', 'tree']))
+        self.assertEqual(
+            'Stack:\n'
+            'origin/main\n'
+            '`- cl/1001 (CL 1001)\n'
+            '   `- * cl/1002 (CL 1002)\n'
+            '      `- cl/1003 (CL 1003)\n', sys.stdout.getvalue())
+
+    @unittest.skipIf(gclient_utils.IsEnvCog(),
+                     'not supported in non-git environment')
+    def test_stack_rebuild_rebases_downstream_branches(self):
+        self.calls += [
+            ((['git', 'branch', '--show-current'], ), 'cl/1002'),
+            (([
+                'git', 'for-each-ref',
+                '--format=%(refname:short) %(upstream:short)', 'refs/heads'
+            ], ), 'cl/1001 origin/main\ncl/1002 cl/1001\ncl/1003 cl/1002\n'),
+            ((['git', 'checkout', 'cl/1003'], ), ''),
+            ((['git', 'rebase', 'cl/1002'], ), ''),
+            ((['git', 'checkout', 'cl/1002'], ), ''),
+        ]
+        self.assertEqual(0, git_cl.main(['stack', 'rebuild']))
+        self.assertEqual(
+            'Rebasing cl/1003 onto cl/1002\n'
+            'Rebuilt 1 downstream branch(es).\n', sys.stdout.getvalue())
+
+    @unittest.skipIf(gclient_utils.IsEnvCog(),
+                     'not supported in non-git environment')
+    def test_stack_upload_uploads_current_and_downstream_branches(self):
+        uploaded = []
+
+        def mock_upload(_parser, args):
+            uploaded.append(tuple(args))
+            return 0
+
+        with mock.patch('git_cl.CMDupload', side_effect=mock_upload):
+            self.calls += [
+                ((['git', 'branch', '--show-current'], ), 'cl/1002'),
+                (([
+                    'git', 'for-each-ref',
+                    '--format=%(refname:short) %(upstream:short)', 'refs/heads'
+                ], ), 'cl/1001 origin/main\ncl/1002 cl/1001\n'
+                 'cl/1003 cl/1002\n'),
+                ((['git', 'checkout', '-q', 'cl/1002'], ), ''),
+                ((['git', 'checkout', '-q', 'cl/1003'], ), ''),
+                ((['git', 'checkout', '-q', 'cl/1002'], ), ''),
+            ]
+            self.assertEqual(
+                0, git_cl.main(['stack', 'upload', '--send-mail', '--bypass']))
+        self.assertEqual([('--send-mail', '--bypass'),
+                          ('--send-mail', '--bypass')], uploaded)
+        self.assertEqual(
+            'Uploading cl/1002\nUploading cl/1003\n'
+            'Uploaded 2 branch(es).\n', sys.stdout.getvalue())
+
+    @unittest.skipIf(gclient_utils.IsEnvCog(),
+                     'not supported in non-git environment')
+    def test_stack_upload_all_uploads_ancestors_too(self):
+        uploaded = []
+
+        def mock_upload(_parser, args):
+            uploaded.append(tuple(args))
+            return 0
+
+        with mock.patch('git_cl.CMDupload', side_effect=mock_upload):
+            self.calls += [
+                ((['git', 'branch', '--show-current'], ), 'cl/1002'),
+                (([
+                    'git', 'for-each-ref',
+                    '--format=%(refname:short) %(upstream:short)', 'refs/heads'
+                ], ), 'cl/1001 origin/main\ncl/1002 cl/1001\n'
+                 'cl/1003 cl/1002\n'),
+                ((['git', 'checkout', '-q', 'cl/1001'], ), ''),
+                ((['git', 'checkout', '-q', 'cl/1002'], ), ''),
+                ((['git', 'checkout', '-q', 'cl/1003'], ), ''),
+                ((['git', 'checkout', '-q', 'cl/1002'], ), ''),
+            ]
+            self.assertEqual(0, git_cl.main(['stack', 'upload', '--all']))
+        self.assertEqual([(), (), ()], uploaded)
+        self.assertEqual(
+            'Uploading cl/1001\nUploading cl/1002\n'
+            'Uploading cl/1003\nUploaded 3 branch(es).\n',
+            sys.stdout.getvalue())
+
+    def _restore_stack_change_detail(self, _host, change, o_params=None):
+        del o_params
+        change_num = str(change).rsplit('~', 1)[-1]
+        return {
+            'current_revision': 'sha-%s' % change_num,
+            'revisions': {
+                'sha-%s' % change_num: {
+                    '_number': 7,
+                    'fetch': {
+                        'http': {
+                            'url':
+                            'https://chromium.googlesource.com/my/repo',
+                            'ref':
+                            'refs/changes/%s/%s/7' %
+                            (change_num[-2:], change_num),
+                        }
+                    },
+                },
+            },
+        }
+
+    @unittest.skipIf(gclient_utils.IsEnvCog(),
+                     'not supported in non-git environment')
+    def test_restore_stack_force_restores_branches(self):
+        with mock.patch('gerrit_util.GetRelatedChanges',
+                        return_value=self._related_changes_common()), \
+             mock.patch('gerrit_util.GetChangeDetail',
+                        side_effect=self._restore_stack_change_detail):
+            self.calls += [
+                ((['git', 'rev-parse', '--verify',
+                   'refs/heads/cl/1001'], ), ''),
+                ((['git', 'rev-parse', '--verify',
+                   'refs/heads/cl/1002'], ), CERR1),
+                ((['git', 'rev-parse', '--verify',
+                   'refs/heads/cl/1003'], ), CERR1),
+                ((['git', 'rev-parse', '--verify',
+                   'refs/heads/cl/1001'], ), ''),
+                ((['git', 'checkout', 'cl/1001'], ), ''),
+                (([
+                    'git', 'fetch', 'https://chromium.googlesource.com/my/repo',
+                    'refs/changes/01/1001/7'
+                ], ), ''),
+                ((['git', 'reset', '--hard', 'FETCH_HEAD'], ), ''),
+                (([
+                    'git', 'branch', '--set-upstream-to', 'origin/main',
+                    'cl/1001'
+                ], ), ''),
+                ((['git', 'rev-parse', '--verify',
+                   'refs/heads/cl/1002'], ), CERR1),
+                ((['git', 'checkout', '-b', 'cl/1002', 'cl/1001'], ), ''),
+                (([
+                    'git', 'fetch', 'https://chromium.googlesource.com/my/repo',
+                    'refs/changes/02/1002/7'
+                ], ), ''),
+                ((['git', 'reset', '--hard', 'FETCH_HEAD'], ), ''),
+                ((['git', 'branch', '--set-upstream-to', 'cl/1001',
+                   'cl/1002'], ), ''),
+                ((['git', 'rev-parse', '--verify',
+                   'refs/heads/cl/1003'], ), CERR1),
+                ((['git', 'checkout', '-b', 'cl/1003', 'cl/1002'], ), ''),
+                (([
+                    'git', 'fetch', 'https://chromium.googlesource.com/my/repo',
+                    'refs/changes/03/1003/7'
+                ], ), ''),
+                ((['git', 'reset', '--hard', 'FETCH_HEAD'], ), ''),
+                ((['git', 'branch', '--set-upstream-to', 'cl/1002',
+                   'cl/1003'], ), ''),
+                ((['git', 'checkout', 'cl/1003'], ), ''),
+            ]
+            self.assertEqual(
+                0,
+                git_cl.main([
+                    'restore-stack', '--force', '--base', 'origin/main', '1003'
+                ]))
+        self.assertIn('Restored 3 CL(s); checked out cl/1003.',
+                      sys.stdout.getvalue())
+
+    @unittest.skipIf(gclient_utils.IsEnvCog(),
+                     'not supported in non-git environment')
+    def test_restore_stack_default_base_falls_back_to_origin_main(self):
+        with mock.patch('gerrit_util.GetRelatedChanges',
+                        return_value=self._related_changes_common()):
+            self.calls += [
+                (([
+                    'git', 'rev-parse', '--abbrev-ref', '--symbolic-full-name',
+                    '@{u}'
+                ], ), CERR1),
+                ((['git', 'rev-parse', '--verify',
+                   'refs/heads/cl/1001'], ), CERR1),
+                ((['git', 'rev-parse', '--verify',
+                   'refs/heads/cl/1002'], ), CERR1),
+                ((['git', 'rev-parse', '--verify',
+                   'refs/heads/cl/1003'], ), CERR1),
+                ((['git', 'rev-parse', '--verify',
+                   'refs/heads/cl/1001'], ), CERR1),
+                ((['git', 'rev-parse', '--verify',
+                   'refs/heads/cl/1002'], ), CERR1),
+                ((['git', 'rev-parse', '--verify',
+                   'refs/heads/cl/1003'], ), CERR1),
+            ]
+            self.assertEqual(
+                0, git_cl.main(['restore-stack', '--dry-run', '1003']))
+        self.assertIn('upstream origin/main\n', sys.stdout.getvalue())
+
+    @unittest.skipIf(gclient_utils.IsEnvCog(),
+                     'not supported in non-git environment')
+    @mock.patch('sys.stderr', io.StringIO())
+    def test_restore_stack_rejects_nonlinear_stack(self):
+        related = self._related_changes_common()
+        related['changes'].append({
+            '_change_number': 1004,
+            'status': 'NEW',
+            'commit': {
+                'commit': 'ddd',
+                'parents': [{
+                    'commit': 'aaa'
+                }],
+            },
+        })
+        with mock.patch('gerrit_util.GetRelatedChanges', return_value=related):
+            with self.assertRaises(SystemExitMock):
+                git_cl.main([
+                    'restore-stack', '--dry-run', '--base', 'origin/main',
+                    '1003'
+                ])
+        self.assertIn('only supports linear stacks', sys.stderr.getvalue())
+
     @unittest.skipIf(gclient_utils.IsEnvCog(),
                     'not supported in non-git environment')
     @mock.patch('gerrit_util.GetChangeDetail',
