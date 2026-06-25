@@ -233,6 +233,30 @@
       },
       "revId": "4d90190ec777ef6f4956d42ce4c5d59d50bebac0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a442125e_b5570a25",
+        "filename": "recipes/recipe_modules/tryserver/api.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 367,
+      "author": {
+        "id": 1170419
+      },
+      "writtenOn": "2026-06-25T23:21:28Z",
+      "side": 1,
+      "message": "Sgtm 👍\n\nI wonder if for deleted + new + nested ones we just fallback to being dumb and running everything. But we can figure all that out later from the comfort of our chromium recipe :)",
+      "parentUuid": "e4868064_ed57c248",
+      "range": {
+        "startLine": 366,
+        "startChar": 0,
+        "endLine": 367,
+        "endChar": 61
+      },
+      "revId": "4d90190ec777ef6f4956d42ce4c5d59d50bebac0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
