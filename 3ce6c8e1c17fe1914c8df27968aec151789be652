@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "692948f2_c4a6575d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1577257
+      },
+      "writtenOn": "2026-06-26T09:28:13Z",
+      "side": 1,
+      "message": "This change speeds up \"fetch --git-cache chromium\" on both my corp MacBook as well as my corp Linux PC from before 40 - 60 minutes to now just 6 - 7 minutes 🤯",
+      "revId": "3ce6c8e1c17fe1914c8df27968aec151789be652",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
