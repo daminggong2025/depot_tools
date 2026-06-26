@@ -50,6 +50,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "11410762_57ec1553",
+        "filename": "recipes/recipe_modules/tryserver/api.py",
+        "patchSetId": 12
+      },
+      "lineNbr": 328,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-06-26T21:01:49Z",
+      "side": 1,
+      "message": "as-is the parsing is hard to read. can clean this up and unpack the standard fields into vars so we don\u0027t need to use indexing?",
+      "parentUuid": "ce8c0888_9c0d00c1",
+      "range": {
+        "startLine": 328,
+        "startChar": 16,
+        "endLine": 328,
+        "endChar": 20
+      },
+      "revId": "69a39f8e8e8f8c346b39e6fc4a1d6936d5c2ae56",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "e655bd37_23f88e09",
         "filename": "recipes/recipe_modules/tryserver/api.py",
         "patchSetId": 12
