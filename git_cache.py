@@ -118,13 +118,29 @@ class Mirror(object):
     def _init_sentient_file(self):
         return os.path.join(self.mirror_path, INIT_SENTIENT_FILE)
 
+    # Public googlesource hosts snapshotted into chromium-git-cache by the
+    # git_cache_updater builders; keep in sync with that producer config.
+    # A host with no snapshot for a repo just falls back to a normal clone.
+    BOOTSTRAP_BUCKET_HOSTS = frozenset((
+        'chromium.googlesource.com',
+        'aomedia.googlesource.com',
+        'android.googlesource.com',
+        'boringssl.googlesource.com',
+        'dawn.googlesource.com',
+        'pdfium.googlesource.com',
+        'quiche.googlesource.com',
+        'skia.googlesource.com',
+        'swiftshader.googlesource.com',
+        'webrtc.googlesource.com',
+    ))
+
     @property
     def bootstrap_bucket(self):
         b = os.getenv('OVERRIDE_BOOTSTRAP_BUCKET')
         if b:
             return b
         u = urllib.parse.urlparse(self.url)
-        if u.netloc == 'chromium.googlesource.com':
+        if u.netloc in self.BOOTSTRAP_BUCKET_HOSTS:
             return 'chromium-git-cache'
         # Not recognized.
         return None
@@ -388,9 +404,8 @@ class Mirror(object):
     def supported_project(self):
         """Returns true if this repo is known to have a bootstrap zip file."""
         u = urllib.parse.urlparse(self.url)
-        return u.netloc in [
-            'chromium.googlesource.com', 'chrome-internal.googlesource.com'
-        ]
+        return (u.netloc in self.BOOTSTRAP_BUCKET_HOSTS
+                or u.netloc == 'chrome-internal.googlesource.com')
 
     def _preserve_fetchspec(self):
         """Read and preserve remote.origin.fetch from an existing mirror.
