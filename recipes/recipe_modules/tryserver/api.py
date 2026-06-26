@@ -8,6 +8,8 @@ import hashlib
 from recipe_engine import recipe_api
 
 
+from dataclasses import dataclass, field
+
 class Constants:
   def __init__(self):
     self.NONTRIVIAL_ROLL_FOOTER = 'Recipe-Nontrivial-Roll'
@@ -22,6 +24,26 @@ class Constants:
 
 
 constants = Constants()
+
+
+@dataclass(frozen=True)
+class SubmodulePathsResult:
+  """Holds the results of submodule diff expansion."""
+  # List of all affected files (including both main repository files
+  # and the expanded files inside any checked-out submodules).
+  affected_files: list[str] = field(default_factory=list)
+
+  # Submodules that were not checked out by the builder's gclient config.
+  unchecked_out_submodules: list[str] = field(default_factory=list)
+
+  # Submodules that were deleted by the patch.
+  deleted_submodules: list[str] = field(default_factory=list)
+
+  # Submodules that were newly added by the patch.
+  new_submodules: list[str] = field(default_factory=list)
+
+  # Nested submodules that were detected (and thus skipped from recursion).
+  nested_submodules: list[str] = field(default_factory=list)
 
 
 class TryserverApi(recipe_api.RecipeApi):
@@ -231,7 +253,8 @@ class TryserverApi(recipe_api.RecipeApi):
       )
     self.m.step.empty('not a tryjob', status=status, step_text=step_text)
 
-  def get_files_affected_by_patch(self, patch_root,
+  def get_files_affected_by_patch(self,
+                                  patch_root,
                                   report_files_via_property=None,
                                   **kwargs):
     """Returns list of paths to files affected by the patch.
@@ -268,7 +291,169 @@ class TryserverApi(recipe_api.RecipeApi):
         # and isn't very useful anyway.
         'first_100': paths[:100],
       }
+
     return paths
+
+  def get_files_affected_by_patch_with_submodules(
+      self,
+      patch_root,
+      report_files_via_property=None,
+      **kwargs) -> SubmodulePathsResult:
+    """Returns a SubmodulePathsResult containing affected files and submodule metadata.
+
+    This is an extended version of get_files_affected_by_patch that also detects
+    and expands submodule diffs.
+
+    Args:
+      * patch_root: path relative to api.path['root'], usually obtained from
+        api.gclient.get_gerrit_patch_root().
+      * report_files_via_property: name of the output property to report the
+        list of the files. If None (default), do not report.
+    """
+    affected_files = []
+    unchecked_out_submodules = []
+    deleted_submodules = []
+    new_submodules = []
+    nested_submodules = []
+    submodule_files = []
+    submodules_to_process = []
+
+    def parse_raw_diff(step_result):
+      """Parses 'git diff --raw' output into (new_mode, old_sha, new_sha, path)."""
+      for raw_line in step_result.stdout.splitlines():
+        line = raw_line.decode('utf-8')
+        # each line of a --raw diff is expected to begin with ':' and to have
+        # a tab separating the metadata from the path to the modified file
+        if line.startswith(':') and '\t' in line:
+          meta, path = line.split('\t', 1)
+          parts = meta.split()
+          if len(parts) >= 5 and parts[4][0] in ('R', 'C'):
+            # In Rename or Copy operation the path contains src_path\tdst_path
+            if '\t' in path:
+              src_path, dst_path = path.split('\t', 1)
+              if parts[4][0] == 'R':
+                # Yield src_path as deleted for renames only
+                yield parts[0][1:], parts[2], '0' * 40, src_path
+              # Yield dst_path as added
+              yield parts[1], '0' * 40, parts[3], dst_path
+          else:
+            yield parts[1], parts[2], parts[3], path
+
+    def attach_submodule_log(presentation, files, log_name='submodule_files'):
+      if files:
+        files.sort()
+        if self.m.platform.is_win:
+          files = [path.replace('\\', '/') for path in files]
+        presentation.logs[log_name] = files
+
+    def finalize_and_log(presentation, files):
+      files.sort()
+      if self.m.platform.is_win:
+        files = [path.replace('\\', '/') for path in files]
+
+      if report_files_via_property:
+        presentation.properties[report_files_via_property] = {
+            'total_count': len(files),
+            'first_100': files[:100],
+        }
+      presentation.logs['files'] = files
+      return files
+
+    cwd = self.m.context.cwd or self.m.path.start_dir / patch_root
+    with self.m.context(cwd=cwd):
+      step_result = self.m.git(
+          '-c',
+          'core.quotePath=false',
+          'diff',
+          '--cached',
+          '--raw',
+          name='git diff to analyze patch',
+          stdout=self.m.raw_io.output(add_output_log=True),
+          step_test_data=lambda: self.m.raw_io.test_api.stream_output(''),
+          **kwargs)
+
+    # 1. Single pass to split normal files and submodules
+    for mode, old_sha, new_sha, rel_path in parse_raw_diff(step_result):
+      if mode != '160000':
+        # Normal repository file
+        affected_files.append(self.m.path.join(patch_root, rel_path))
+      else:
+        submodules_to_process.append((old_sha, new_sha, rel_path))
+
+    # 2. Process submodules if there are any
+    if submodules_to_process:
+      with self.m.context(cwd=cwd):
+        with self.m.step.nest('git diff submodules') as presentation:
+          for old_sha, new_sha, rel_path in submodules_to_process:
+            if new_sha.startswith('0' * 7):
+              # If a submodule is deleted (new_commit starts with 0s), we skip
+              # expanding its files.
+              deleted_submodules.append(rel_path)
+              continue
+
+            submodule_dir = cwd / rel_path
+            # If the submodule directory does not contain a .git file/directory,
+            # it means the submodule was not checked out by this builder's
+            # gclient/checkout configuration (e.g. platform-specific or
+            # internal-only deps).
+            if not self.m.path.exists(submodule_dir / '.git'):
+              unchecked_out_submodules.append(rel_path)
+              continue
+
+            if old_sha.startswith('0' * 7):
+              new_submodules.append(rel_path)
+              # 4b825dc642cb6eb9a060e54bf8d69288fbee4904 is Git's empty tree hash.
+              # Used to diff newly added submodules (which have a null old SHA).
+              old_sha = '4b825dc642cb6eb9a060e54bf8d69288fbee4904'
+            # this call to git diff is what actually expands the submodule
+            sub_result = self.m.git(
+                '-C',
+                rel_path,
+                'diff',
+                '--raw',
+                old_sha,
+                new_sha,
+                name='git diff submodule %s' % rel_path,
+                stdout=self.m.raw_io.output(add_output_log=True),
+                step_test_data=lambda: self.m.raw_io.test_api.stream_output(
+                    ':100644 100644 1234567 89abcdef M\tsub_foo.cc'),
+            )
+            step_files = []
+            for sub_mode, _, _, sub_path in parse_raw_diff(sub_result):
+              # Do not recursively expand nested submodules because tryjob checkouts
+              # often perform shallow syncs or only check out the tip commit, meaning older
+              # revisions are missing locally.
+              if sub_mode == '160000':
+                nested_submodules.append('%s/%s' % (rel_path, sub_path))
+              else:
+                sub_file = self.m.path.join(patch_root, rel_path, sub_path)
+                step_files.append(sub_file)
+                submodule_files.append(sub_file)
+                affected_files.append(sub_file)
+
+            attach_submodule_log(sub_result.presentation, step_files)
+
+          attach_submodule_log(presentation, unchecked_out_submodules,
+                               'unchecked_out_submodules')
+          attach_submodule_log(presentation, deleted_submodules,
+                               'deleted_submodules')
+          attach_submodule_log(presentation, new_submodules, 'new_submodules')
+          attach_submodule_log(presentation, nested_submodules,
+                               'nested_submodules')
+          attach_submodule_log(presentation, submodule_files)
+
+          affected_files = finalize_and_log(presentation, affected_files)
+    else:
+      affected_files = finalize_and_log(step_result.presentation,
+                                        affected_files)
+
+    return SubmodulePathsResult(
+        affected_files=affected_files,
+        unchecked_out_submodules=unchecked_out_submodules,
+        deleted_submodules=deleted_submodules,
+        new_submodules=new_submodules,
+        nested_submodules=nested_submodules,
+    )
 
   def set_subproject_tag(self, subproject_tag):
     """Adds a subproject tag to the build.
