@@ -118,13 +118,31 @@ class Mirror(object):
     def _init_sentient_file(self):
         return os.path.join(self.mirror_path, INIT_SENTIENT_FILE)
 
+    # Public googlesource hosts whose repos are snapshotted into
+    # chromium-git-cache by the git_cache_updater builders. A host with no
+    # snapshot for a given repo falls back to a normal clone (the snapshot
+    # lookup just 404s), so listing a host here is safe even before its builder
+    # exists. Keep in sync with the producer (infra git_cache_updater config).
+    BOOTSTRAP_BUCKET_HOSTS = frozenset((
+        'chromium.googlesource.com',
+        'aomedia.googlesource.com',
+        'android.googlesource.com',
+        'boringssl.googlesource.com',
+        'dawn.googlesource.com',
+        'pdfium.googlesource.com',
+        'quiche.googlesource.com',
+        'skia.googlesource.com',
+        'swiftshader.googlesource.com',
+        'webrtc.googlesource.com',
+    ))
+
     @property
     def bootstrap_bucket(self):
         b = os.getenv('OVERRIDE_BOOTSTRAP_BUCKET')
         if b:
             return b
         u = urllib.parse.urlparse(self.url)
-        if u.netloc == 'chromium.googlesource.com':
+        if u.netloc in self.BOOTSTRAP_BUCKET_HOSTS:
             return 'chromium-git-cache'
         # Not recognized.
         return None
