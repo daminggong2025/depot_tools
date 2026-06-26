@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4f18a157_df287281",
+        "filename": "git_cl.py",
+        "patchSetId": 12
+      },
+      "lineNbr": 7740,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-06-26T22:20:55Z",
+      "side": 1,
+      "message": "we should also disallow per-change with --diff or --dry-run",
+      "range": {
+        "startLine": 7740,
+        "startChar": 8,
+        "endLine": 7740,
+        "endChar": 36
+      },
+      "revId": "3a674828227077bfd25bd94892e53aa43d7fbd3d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c1348ee3_06ece8e3",
+        "filename": "git_cl.py",
+        "patchSetId": 12
+      },
+      "lineNbr": 7783,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-06-26T22:20:55Z",
+      "side": 1,
+      "message": "I don\u0027t love this approach (hard to test, feels very brittle). could we at least simplify it by having `git cl format` run these git commands by calling itself with a new `--amend` and `--no-verify` flag? (and regular `RunGit`s that do diff/add/commit)",
+      "range": {
+        "startLine": 7780,
+        "startChar": 0,
+        "endLine": 7783,
+        "endChar": 100
+      },
+      "revId": "3a674828227077bfd25bd94892e53aa43d7fbd3d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
