@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d4ef14a9_d071f245",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1313890
+      },
+      "writtenOn": "2026-06-26T14:26:58Z",
+      "side": 1,
+      "message": "Not sure if it\u0027s considered reasonable to hardcode this workaround, but cargo-culting the way it\u0027s done in `presubmit_canned_checks.py` because the status quo creates an odd sticking point with conflicting instructions and error messages between `gclient gitmodules` and `git cl presubmit`.",
+      "revId": "77320d94a6d3dfa366b6fe434e8425af64312696",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
