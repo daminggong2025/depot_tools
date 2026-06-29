@@ -69,6 +69,24 @@
       "parentUuid": "2a90cb48_cc52a433",
       "revId": "c8f585f8380a43c70fa5682b1a9ae4f84abf820f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b54f2c06_e73c01d6",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-06-29T06:40:34Z",
+      "side": 1,
+      "message": "No, the repository is available publically, direct access is blocked, as expected. However I think I found the bug with the proxy settings propagation, please give me some time to apply it. I will roll this CL back.",
+      "parentUuid": "c3a1f06a_84f54d48",
+      "revId": "c8f585f8380a43c70fa5682b1a9ae4f84abf820f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
