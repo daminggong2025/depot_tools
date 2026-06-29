@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0265ff95_a5f1788d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 4422564
+      },
+      "writtenOn": "2026-06-29T09:09:16Z",
+      "side": 1,
+      "message": "Hi Gavin, one more iteration on making fetch fast 😊\nThank you for reviewing!",
+      "revId": "bb78c4c1576c466642b4d02358d8ced6952a8a14",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
