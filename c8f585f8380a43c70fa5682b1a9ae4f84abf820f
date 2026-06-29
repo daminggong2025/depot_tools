@@ -33,6 +33,24 @@
       "message": "ovsienko@google.com Please expedite this process.",
       "revId": "c8f585f8380a43c70fa5682b1a9ae4f84abf820f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2a90cb48_cc52a433",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-06-29T06:27:26Z",
+      "side": 1,
+      "message": "Hi, please check if https://us-python.pkg.dev/chrome-python-ar/chrome-python-ar is accessible, or make it accessible from your network. Are you accessing it from China? Can you access it at all?",
+      "parentUuid": "21199a83_747510cd",
+      "revId": "c8f585f8380a43c70fa5682b1a9ae4f84abf820f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
