@@ -34,6 +34,24 @@
       "parentUuid": "f56cfd89_05e402fe",
       "revId": "e60076100a73034295dc3e5195a2cda553ea45fd",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d617c0c5_a2c2a408",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2026-06-29T05:20:09Z",
+      "side": 1,
+      "message": "ah, this CL won\u0027t work well...\n\n```\nfailed to initialize credentials: credhelper failed: failed to run helper: exit status 1                                                        stderr: stubby failed: W0629 14:16:03.714288 4075059 corp_credentials_file_reader.cc:99] Could not load insecure-shared-user creds: PERMISSION_DENIED: /usr/shar\ne/com.google.loas/insecure-test-keys/insecure-shared-user.loas2credentials: Dire\nctory containing file is unsafe. [type.googleapis.com/util.ErrorSpacePayload\u003d\u0027ut\nil::PosixErrorSpace::Permission denied\u0027]    \n```",
+      "parentUuid": "a13e74e2_20723bf0",
+      "revId": "e60076100a73034295dc3e5195a2cda553ea45fd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
