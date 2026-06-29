@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "568e9e13_3b3a7674",
+        "filename": "recipes/recipe_modules/tryserver/api.py",
+        "patchSetId": 16
+      },
+      "lineNbr": 456,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-06-29T22:25:40Z",
+      "side": 1,
+      "message": "nit: did you mean to replace the `name\u003d\u0027git diff submodule %s\u0027 % rel_path` from PS16?",
+      "range": {
+        "startLine": 456,
+        "startChar": 16,
+        "endLine": 456,
+        "endChar": 30
+      },
+      "revId": "b45e98f35c429593098575d42d7f1dd50be043eb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
