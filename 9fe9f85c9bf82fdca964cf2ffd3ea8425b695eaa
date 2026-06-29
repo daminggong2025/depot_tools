@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "11509b42_e051f455",
+        "filename": "siso.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 559,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2026-06-29T08:37:29Z",
+      "side": 1,
+      "message": "+1 to use siso proxy. The virtual build flag was added as a community contributed feature. However, it is incomplete and nobody except the Siso team can maintain it.\nIt already passed the point where it should be implemented natively in siso itself.\n\nI don\u0027t think unofficially supporting it with a workaround is the right path forward.",
+      "revId": "9fe9f85c9bf82fdca964cf2ffd3ea8425b695eaa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
