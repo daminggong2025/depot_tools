@@ -52,6 +52,24 @@
       "parentUuid": "a13e74e2_20723bf0",
       "revId": "e60076100a73034295dc3e5195a2cda553ea45fd",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "71561f4a_1ab33d00",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2026-06-29T05:20:12Z",
+      "side": 1,
+      "message": "Thank you! I confirmed that this CL fixed the issue!",
+      "parentUuid": "a13e74e2_20723bf0",
+      "revId": "e60076100a73034295dc3e5195a2cda553ea45fd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
