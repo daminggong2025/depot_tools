@@ -96,6 +96,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "245a501a_a6f29d7c",
+        "filename": "recipes/recipe_modules/tryserver/api.py",
+        "patchSetId": 12
+      },
+      "lineNbr": 328,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-06-29T16:33:20Z",
+      "side": 1,
+      "message": "thanks, resolving",
+      "parentUuid": "5bf2c77b_85ca87a3",
+      "range": {
+        "startLine": 328,
+        "startChar": 16,
+        "endLine": 328,
+        "endChar": 20
+      },
+      "revId": "69a39f8e8e8f8c346b39e6fc4a1d6936d5c2ae56",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e655bd37_23f88e09",
