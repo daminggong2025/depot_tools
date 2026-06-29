@@ -22,6 +22,30 @@
       },
       "revId": "9d35c949c254d35af7d0e5abf8651406c127920e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "71eae497_f26ea2a6",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 14
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1551929
+      },
+      "writtenOn": "2026-06-29T19:38:00Z",
+      "side": 1,
+      "message": "I moved everything to a private `_` prefixed version of the function and in the public version I wrapped everything in try/except. In the except block it adds an empty recipe step called \"[Experimental] submodule expansion failed (ignored)\" with the exception message. But otherwise allows the build to continue.\n\nHere\u0027s an example LED run:\nhttps://ci.chromium.org/ui/p/chromium/builders/try.shadow/mac-rel/165/overview",
+      "parentUuid": "39cb1f8b_87722c38",
+      "range": {
+        "startLine": 29,
+        "startChar": 0,
+        "endLine": 31,
+        "endChar": 8
+      },
+      "revId": "9d35c949c254d35af7d0e5abf8651406c127920e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
