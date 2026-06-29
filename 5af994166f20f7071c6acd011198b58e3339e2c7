@@ -22,6 +22,30 @@
       },
       "revId": "5af994166f20f7071c6acd011198b58e3339e2c7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8801aeb1_75b57f0a",
+        "filename": "cipd_bin_setup.sh",
+        "patchSetId": 2
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-06-29T05:51:22Z",
+      "side": 1,
+      "message": "Yeah that\u0027s a good point but the main issue is that we don\u0027t really know what file the user will send over to ensure command. Then there\u0027s a question how do we store state, and are we allowed to store it. It\u0027s east in case of depot_tools, I know what the state is, but it\u0027s hard in case of infinite other packages that I might not know about.",
+      "parentUuid": "ea1936e4_e6d7ed58",
+      "range": {
+        "startLine": 28,
+        "startChar": 6,
+        "endLine": 28,
+        "endChar": 53
+      },
+      "revId": "5af994166f20f7071c6acd011198b58e3339e2c7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
