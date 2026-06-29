@@ -74,6 +74,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "5bf2c77b_85ca87a3",
+        "filename": "recipes/recipe_modules/tryserver/api.py",
+        "patchSetId": 12
+      },
+      "lineNbr": 328,
+      "author": {
+        "id": 1551929
+      },
+      "writtenOn": "2026-06-29T15:30:15Z",
+      "side": 1,
+      "message": "Good call, I unpacked like:\n`old_mode, new_mode, old_sha, new_sha, status \u003d meta_parts`\nIn the process of doing that I noticed two branches where we wouldn\u0027t yield a tuple in the case that the `git diff` output is unexpectedly formatted. I\u0027m now explicitly raising ValueErrors to loudly fail in those scenarios (since I think they should be pretty unexpected and could cause weird behavior downstream from this code).",
+      "parentUuid": "11410762_57ec1553",
+      "range": {
+        "startLine": 328,
+        "startChar": 16,
+        "endLine": 328,
+        "endChar": 20
+      },
+      "revId": "69a39f8e8e8f8c346b39e6fc4a1d6936d5c2ae56",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "e655bd37_23f88e09",
         "filename": "recipes/recipe_modules/tryserver/api.py",
         "patchSetId": 12
