@@ -16,6 +16,24 @@
       "message": "Does anyone know how to reproduce the reported error reliably?",
       "revId": "e60076100a73034295dc3e5195a2cda553ea45fd",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a13e74e2_20723bf0",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2026-06-29T05:15:29Z",
+      "side": 1,
+      "message": "```\n$ gcertdestory\n$ gcert\n$ siso ninja -C out/siso --virtual-build-path\n```\n?",
+      "parentUuid": "f56cfd89_05e402fe",
+      "revId": "e60076100a73034295dc3e5195a2cda553ea45fd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
