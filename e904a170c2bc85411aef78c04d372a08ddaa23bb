@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "e2fa525d_3cd0e9b8",
+        "filename": "git_cl.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 7563,
+      "author": {
+        "id": 1182404
+      },
+      "writtenOn": "2026-06-29T18:01:56Z",
+      "side": 1,
+      "message": "Done, but note that this does remove the option to opt out without disabling clang format entirely, unless we also add a --no-js flag.",
+      "parentUuid": "d90ac033_3e561eff",
+      "range": {
+        "startLine": 7563,
+        "startChar": 9,
+        "endLine": 7563,
+        "endChar": 16
+      },
+      "revId": "e904a170c2bc85411aef78c04d372a08ddaa23bb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "c2255786_d730050b",
@@ -37,6 +61,30 @@
       "writtenOn": "2026-06-10T20:26:59Z",
       "side": 1,
       "message": "what if we just consistently used uniform 3-tuples instead of making the third value optional? that would simplify the type hint and make the loop on L7691 simpler",
+      "range": {
+        "startLine": 7669,
+        "startChar": 4,
+        "endLine": 7670,
+        "endChar": 71
+      },
+      "revId": "e904a170c2bc85411aef78c04d372a08ddaa23bb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "07086b21_0f70ca5d",
+        "filename": "git_cl.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 7670,
+      "author": {
+        "id": 1182404
+      },
+      "writtenOn": "2026-06-29T18:01:56Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c2255786_d730050b",
       "range": {
         "startLine": 7669,
         "startChar": 4,
