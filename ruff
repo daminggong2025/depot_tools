@@ -1,0 +1,246 @@
+#!/usr/bin/env vpython3
+#
+# [VPYTHON:BEGIN]
+# python_version: "3.11"
+# wheel: <
+#   name: "infra/python/wheels/ruff/${vpython_platform}"
+#   version: "version:0.15.17"
+# >
+# [VPYTHON:END]
+
+# Copyright 2026 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import os
+import sys
+import subprocess
+import tomllib
+from pathlib import PurePath
+
+def match_pattern(file_path, config_dir, pattern):
+    """Checks if file_path matches a given Ruff pattern (glob or prefix)."""
+    if "**" in pattern:
+        return False
+
+    pattern_clean = os.path.normpath(pattern)
+    pattern_rel = pattern_clean.lstrip("/\\")
+    abs_pattern = os.path.join(config_dir, pattern_rel) if config_dir != "." else pattern_rel
+
+    # 1. Directory prefix match (e.g., "third_party" matches "third_party/foo/bar.py")
+    try:
+        rel = os.path.relpath(file_path, abs_pattern)
+        if not rel.startswith("..") and not os.path.isabs(rel):
+            return True
+    except ValueError:
+        pass
+
+    # 2. Filename glob match (pattern has no slashes, e.g., "*.py")
+    if "/" not in pattern_clean and "\\" not in pattern_clean:
+        if PurePath(file_path).match(pattern_clean):
+            return True
+
+    # 3. Simple path glob match (pattern has slashes, e.g., "foo/*.py")
+    if "/" in pattern_clean or "\\" in pattern_clean:
+        if PurePath(file_path).match(abs_pattern):
+            return True
+
+    return False
+
+
+def ruff_should_format(file_path, config_dir, config_bytes, is_pyproject):
+    """Determines if a file should be formatted by Ruff based on TOML config."""
+    try:
+        cfg = tomllib.loads(config_bytes.decode("utf-8"))
+    except Exception:
+        # If TOML is malformed, default to Ruff to let Ruff report syntax error
+        return True
+
+    excludes = []
+    includes = []
+
+    excludes.extend(cfg.get("exclude", []))
+    excludes.extend(cfg.get("extend-exclude", []))
+    excludes.extend(cfg.get("format", {}).get("exclude", []))
+
+    includes.extend(cfg.get("include", []))
+    includes.extend(cfg.get("extend-include", []))
+
+    if is_pyproject:
+        tool_ruff = cfg.get("tool", {}).get("ruff", {})
+        excludes.extend(tool_ruff.get("exclude", []))
+        excludes.extend(tool_ruff.get("extend-exclude", []))
+        excludes.extend(tool_ruff.get("format", {}).get("exclude", []))
+        includes.extend(tool_ruff.get("include", []))
+        includes.extend(tool_ruff.get("extend-include", []))
+
+    # 1. Check inclusion if explicitly defined
+    has_explicit_include = bool(cfg.get("include") or (is_pyproject and cfg.get("tool", {}).get("ruff", {}).get("include")))
+    if has_explicit_include:
+        matched = any(match_pattern(file_path, config_dir, pat) for pat in includes)
+        if not matched:
+            return False
+
+    # 2. Check exclusion
+    for pattern in excludes:
+        if match_pattern(file_path, config_dir, pattern):
+            return False
+
+    return True
+
+
+def find_formatter(target_path):
+    """Returns 'ruff' or 'yapf' based on config file precedence and coverage."""
+    curr = os.path.abspath(target_path)
+    if os.path.isfile(curr) or not os.path.exists(curr):
+        curr = os.path.dirname(curr)
+
+    abs_target = os.path.abspath(target_path)
+
+    while True:
+        # Check .ruff.toml first (highest precedence in same dir)
+        dot_ruff = os.path.join(curr, ".ruff.toml")
+        if os.path.isfile(dot_ruff):
+            try:
+                with open(dot_ruff, "rb") as f:
+                    if ruff_should_format(abs_target, curr, f.read(), False):
+                        return "ruff"
+            except Exception:
+                return "ruff"
+
+        # Check ruff.toml second
+        ruff_toml = os.path.join(curr, "ruff.toml")
+        if os.path.isfile(ruff_toml):
+            try:
+                with open(ruff_toml, "rb") as f:
+                    if ruff_should_format(abs_target, curr, f.read(), False):
+                        return "ruff"
+            except Exception:
+                return "ruff"
+
+        # Check pyproject.toml third
+        pyproject = os.path.join(curr, "pyproject.toml")
+        if os.path.isfile(pyproject):
+            try:
+                with open(pyproject, "rb") as f:
+                    content_bytes = f.read()
+                content_str = content_bytes.decode("utf-8", errors="ignore")
+                if "[tool.ruff]" in content_str:
+                    if "[tool.yapf]" in content_str or "[tool.black]" in content_str or "[tool.pyink]" in content_str:
+                        pass
+                    elif ruff_should_format(abs_target, curr, content_bytes, True):
+                        if os.path.exists(os.path.join(curr, ".style.yapf")):
+                            return "yapf"
+                        return "ruff"
+            except Exception:
+                pass
+
+        # Check for explicit yapf config
+        if os.path.exists(os.path.join(curr, ".style.yapf")):
+            return "yapf"
+
+        parent = os.path.dirname(curr)
+        if parent == curr:
+            break
+        curr = parent
+
+    return "yapf"
+
+
+def translate_args(args):
+    yapf_args = []
+    has_diff = False
+    has_stdin = False
+    files = []
+
+    i = 0
+    while i < len(args):
+        arg = args[i]
+        if arg == "format":
+            i += 1
+            continue
+        elif arg == "--range":
+            val = args[i + 1]
+            try:
+                parts = val.split("-")
+                start_line = parts[0].split(":")[0]
+                end_line = parts[1].split(":")[0]
+                yapf_args.extend(["--line", f"{start_line}-{end_line}"])
+            except Exception:
+                yapf_args.extend(["--range", val])
+            i += 2
+        elif arg.startswith("--range="):
+            val = arg.split("=", 1)[1]
+            try:
+                parts = val.split("-")
+                start_line = parts[0].split(":")[0]
+                end_line = parts[1].split(":")[0]
+                yapf_args.extend(["--line", f"{start_line}-{end_line}"])
+            except Exception:
+                yapf_args.append(arg)
+            i += 1
+        elif arg == "--diff":
+            has_diff = True
+            yapf_args.append(arg)
+            i += 1
+        elif arg == "-":
+            has_stdin = True
+            yapf_args.append(arg)
+            i += 1
+        elif arg.startswith("-"):
+            # Pass through other flags (like --stdin-filename)
+            yapf_args.append(arg)
+            i += 1
+        else:
+            files.append(arg)
+            yapf_args.append(arg)
+            i += 1
+
+    if files and not has_diff and not has_stdin:
+        yapf_args.append("-i")
+
+    return yapf_args
+
+
+def main():
+    args = sys.argv[1:]
+
+    # Determine target path for config detection
+    target_path = os.getcwd()
+    for i, arg in enumerate(args):
+        if arg.startswith("--stdin-filename="):
+            target_path = arg.split("=", 1)[1]
+            break
+        elif arg == "--stdin-filename" and i + 1 < len(args):
+            target_path = args[i + 1]
+            break
+        elif not arg.startswith("-") and arg != "format":
+            target_path = arg
+            break
+
+    formatter = find_formatter(target_path)
+
+    if formatter == "ruff":
+        # Run Ruff from the vpython environment
+        # sys.executable points to the vpython python interpreter
+        cmd = [sys.executable, "-m", "ruff"] + args
+        return subprocess.call(cmd)
+    else:
+        # Fallback to YAPF
+        # Find yapf wrapper in the same directory as this script
+        depot_tools_dir = os.path.dirname(os.path.abspath(__file__))
+        yapf_script = os.path.join(depot_tools_dir, "yapf")
+
+        yapf_args = translate_args(args)
+
+        # We must invoke the yapf wrapper via vpython3 so it gets its own env
+        vpython_bin = "vpython3"
+        if sys.platform == "win32":
+            vpython_bin = "vpython3.bat"
+
+        cmd = [vpython_bin, yapf_script] + yapf_args
+        return subprocess.call(cmd)
+
+
+if __name__ == "__main__":
+    sys.exit(main())
