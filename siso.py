@@ -556,10 +556,15 @@ def main(args: list[str],
 
             os.makedirs(virtual_path, exist_ok=True)
 
-            bash_cmd = f"mount --rbind {shlex.quote(primary_solution_path)} {shlex.quote(virtual_path)} && cd {shlex.quote(virtual_path)} && SISO_PY_IS_ISOLATED=1 python3 {shlex.quote(sys.argv[0])} {shlex.join(args[1:])}"
+            # TODO(b/528372534): run `siso proxy` outside namespace
+            uid = os.getuid()
+            bash_cmd = f"mount --rbind {shlex.quote(primary_solution_path)} {shlex.quote(virtual_path)} && cd {shlex.quote(virtual_path)} && unshare --map-user={uid} python3 {shlex.quote(sys.argv[0])} {shlex.join(args[1:])}"
             unshare_cmd = [
-                "unshare", "--mount", "--map-root-user", "bash", "-c", bash_cmd
+                "luci-auth", "context", "--", "unshare", "--mount",
+                "--map-root-user", "bash", "-c", bash_cmd
             ]
+            env["SISO_PY_IS_ISOLATED"] = "1"
+            env["SISO_CREDENTIAL_HELPER"] = "google-application-default"
 
             return runner(unshare_cmd, env=env)
     gclient_root_path = gclient_paths.FindGclientRoot(out_dir)
