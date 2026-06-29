@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7e34bade_74b89cb4",
+        "filename": "git_cl.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 7766,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-06-29T18:19:17Z",
+      "side": 1,
+      "message": "```suggestion\n        file_types, format_func, exclude_types \u003d item\n```",
+      "range": {
+        "startLine": 7763,
+        "startChar": 8,
+        "endLine": 7766,
+        "endChar": 0
+      },
+      "revId": "f6b3f6cf221c53c87e32c1a47484134c73885aa3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ab92c7fc_fd643af4",
+        "filename": "tests/git_cl_test.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 5456,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-06-29T18:19:17Z",
+      "side": 1,
+      "message": "let\u0027s move this to testJsDefaultAndHtmlTsExempt",
+      "range": {
+        "startLine": 5441,
+        "startChar": 0,
+        "endLine": 5456,
+        "endChar": 4
+      },
+      "revId": "f6b3f6cf221c53c87e32c1a47484134c73885aa3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
