@@ -11,13 +11,15 @@ DEPS = [
     'recipe_engine/path',
     'recipe_engine/platform',
     'recipe_engine/properties',
+    'recipe_engine/raw_io',
 ]
 
 
 def RunSteps(api):
   files = api.tryserver.get_files_affected_by_patch(
       api.properties['patch_root'],
-      report_files_via_property=api.properties.get('report_files_via_property'))
+      report_files_via_property=api.properties.get('report_files_via_property'),
+  )
   api.assertions.assertCountEqual(files, api.properties['expected_files'])
 
 
