@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "23c01814_c189cd6d",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2026-06-29T01:13:01Z",
+      "side": 1,
+      "message": "Please mention that this is going to switch from CIPD repo to the AR repo, and is safe to rollback when AR installation error happens.\nAlternatively, you can include the link to the announcement if you\u0027ve already done.",
+      "revId": "e4080b643a8b4999f46da95532a2ebf508c3f06b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
