@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9c733288_7935d3dd",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1182404
+      },
+      "writtenOn": "2026-06-29T21:20:56Z",
+      "side": 1,
+      "message": "PTAL again as addressing comments invalidated prior +1.",
+      "revId": "7e68984b48bbac2ad6a218e0fed22eeef3875db4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
