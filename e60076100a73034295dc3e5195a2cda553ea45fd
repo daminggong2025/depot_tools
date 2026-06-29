@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f56cfd89_05e402fe",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2026-06-29T05:10:47Z",
+      "side": 1,
+      "message": "Does anyone know how to reproduce the reported error reliably?",
+      "revId": "e60076100a73034295dc3e5195a2cda553ea45fd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
