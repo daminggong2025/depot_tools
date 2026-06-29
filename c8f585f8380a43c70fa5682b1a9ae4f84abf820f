@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "21199a83_747510cd",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3637389
+      },
+      "writtenOn": "2026-06-29T06:26:01Z",
+      "side": 1,
+      "message": "Hello, there is a problem with this submission. We are unable to access these resources in a non-Google network environment, which causes the update to freeze.",
+      "revId": "c8f585f8380a43c70fa5682b1a9ae4f84abf820f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
