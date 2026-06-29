@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ea1936e4_e6d7ed58",
+        "filename": "cipd_bin_setup.sh",
+        "patchSetId": 2
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1577257
+      },
+      "writtenOn": "2026-06-29T05:17:59Z",
+      "side": 1,
+      "message": "I\u0027m curious - do we know why `cipd ensure` doesn\u0027t implement this kind of caching internally? A built-in solution would probably make a lot of other users of that command faster.",
+      "range": {
+        "startLine": 28,
+        "startChar": 6,
+        "endLine": 28,
+        "endChar": 53
+      },
+      "revId": "5af994166f20f7071c6acd011198b58e3339e2c7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
