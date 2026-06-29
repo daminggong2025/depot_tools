@@ -16,6 +16,24 @@
       "message": "Hi Gavin, one more iteration on making fetch fast 😊\nThank you for reviewing!",
       "revId": "bb78c4c1576c466642b4d02358d8ced6952a8a14",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "818f17fe_1fb2793f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-06-29T16:14:38Z",
+      "side": 1,
+      "message": "thanks for the contributions, Neri!",
+      "parentUuid": "0265ff95_a5f1788d",
+      "revId": "bb78c4c1576c466642b4d02358d8ced6952a8a14",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
