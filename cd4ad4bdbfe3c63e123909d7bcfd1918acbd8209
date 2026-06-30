@@ -124,6 +124,24 @@
       "parentUuid": "2a352e3c_defbb09d",
       "revId": "cd4ad4bdbfe3c63e123909d7bcfd1918acbd8209",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7849c2dc_cad2d92d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-06-30T13:57:03Z",
+      "side": 1,
+      "message": "I was able to blackhole the vpython with `http_proxy\u003dhttp://127.0.0.1:9999 https_proxy\u003dhttp://127.0.0.1:9999`, meaning the variables are respected. You really ought to check your configuration. Basically, if you proxy configuration will work on normal Python (that uses Pypi) it will work with the new vpython as well.",
+      "parentUuid": "abf4ffd7_8286295f",
+      "revId": "cd4ad4bdbfe3c63e123909d7bcfd1918acbd8209",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
