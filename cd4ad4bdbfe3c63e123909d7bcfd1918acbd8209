@@ -70,6 +70,24 @@
       "parentUuid": "57f8d8e8_94cd9812",
       "revId": "cd4ad4bdbfe3c63e123909d7bcfd1918acbd8209",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "38ff5e7f_2a45bc17",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3637389
+      },
+      "writtenOn": "2026-06-30T13:43:01Z",
+      "side": 1,
+      "message": "Where is the environment variable VPYTHON_AR_URL: https://us-python.pkg.dev/chrome-python-ar/chrome-python-ar/simple/ injected by default?",
+      "parentUuid": "ce7cc1ba_f7ee4a28",
+      "revId": "cd4ad4bdbfe3c63e123909d7bcfd1918acbd8209",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
