@@ -62,6 +62,30 @@
       },
       "revId": "b45e98f35c429593098575d42d7f1dd50be043eb",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "201fb01e_10b905ef",
+        "filename": "recipes/recipe_modules/tryserver/api.py",
+        "patchSetId": 16
+      },
+      "lineNbr": 456,
+      "author": {
+        "id": 1551929
+      },
+      "writtenOn": "2026-06-30T14:45:09Z",
+      "side": 1,
+      "message": "yeah, that was intentional. repeating \"git diff submodule\" felt redundant, since the outer recipe step has that in its name already. The new naming convention looks like this:\nhttp://screen/72DCh6rn7qFY4SX.png",
+      "parentUuid": "568e9e13_3b3a7674",
+      "range": {
+        "startLine": 456,
+        "startChar": 16,
+        "endLine": 456,
+        "endChar": 30
+      },
+      "revId": "b45e98f35c429593098575d42d7f1dd50be043eb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
