@@ -788,11 +788,14 @@ class GitWrapper(SCMWrapper):
             revision = deps_revision
             managed = False
         if not revision:
-            # Track the default remote branch. Prefer the git cache bootstrap
-            # snapshot's HEAD (cheap) over a full `git ls-remote`, falling back
-            # to the network when there is no snapshot.
-            mirror = self._GetMirror(url, options)
-            branch = mirror.get_bootstrap_default_branch() if mirror else None
+            # Track the default remote branch. An existing checkout has it
+            # locally (refs/remotes/<remote>/HEAD); a fresh one reads the
+            # bootstrap snapshot's HEAD instead of a slow `git ls-remote`.
+            branch = None
+            if not os.path.exists(os.path.join(self.checkout_path, '.git')):
+                mirror = self._GetMirror(url, options)
+                branch = (mirror.get_bootstrap_default_branch()
+                          if mirror else None)
             if branch:
                 revision = 'refs/remotes/%s/%s' % (self.remote, branch)
             else:
