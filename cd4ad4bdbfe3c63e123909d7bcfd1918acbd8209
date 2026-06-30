@@ -213,6 +213,24 @@
       "parentUuid": "5f37606b_162cf8a2",
       "revId": "cd4ad4bdbfe3c63e123909d7bcfd1918acbd8209",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8977b423_920fe53e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3637389
+      },
+      "writtenOn": "2026-06-30T15:11:27Z",
+      "side": 1,
+      "message": "The problem remained unresolved, so I temporarily circumvented it by rolling back the commit and then disabling_depot_tools_update.",
+      "parentUuid": "e2646382_d9f50f12",
+      "revId": "cd4ad4bdbfe3c63e123909d7bcfd1918acbd8209",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
