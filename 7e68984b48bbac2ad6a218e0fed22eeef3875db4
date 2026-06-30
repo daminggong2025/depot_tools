@@ -16,6 +16,23 @@
       "message": "PTAL again as addressing comments invalidated prior +1.",
       "revId": "7e68984b48bbac2ad6a218e0fed22eeef3875db4",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4b4201ef_43ddf4c8",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1182404
+      },
+      "writtenOn": "2026-06-30T21:46:42Z",
+      "side": 1,
+      "message": "yiwzhang@ - can you take another look and +1? It looks like I need 2 +1s for committing to depot_tools.",
+      "revId": "7e68984b48bbac2ad6a218e0fed22eeef3875db4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
