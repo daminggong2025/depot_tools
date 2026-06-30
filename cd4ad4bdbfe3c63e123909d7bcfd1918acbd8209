@@ -88,6 +88,24 @@
       "parentUuid": "ce7cc1ba_f7ee4a28",
       "revId": "cd4ad4bdbfe3c63e123909d7bcfd1918acbd8209",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2a352e3c_defbb09d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3637389
+      },
+      "writtenOn": "2026-06-30T13:46:28Z",
+      "side": 1,
+      "message": "Are you sure this repository (https://us-python.pkg.dev/chrome-python-ar/chrome-python-ar/simple/) is a publicly available Python repository (for non-Google users)?\n\nIf not, wouldn\u0027t it be more reasonable to avoid default injection, since depot_tools is used by people all over the world?",
+      "parentUuid": "38ff5e7f_2a45bc17",
+      "revId": "cd4ad4bdbfe3c63e123909d7bcfd1918acbd8209",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
