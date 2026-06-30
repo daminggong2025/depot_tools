@@ -195,6 +195,24 @@
       "message": "Is there any way I can avoid using the new features? Because I was working fine before.",
       "revId": "cd4ad4bdbfe3c63e123909d7bcfd1918acbd8209",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e2646382_d9f50f12",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-06-30T14:55:20Z",
+      "side": 1,
+      "message": "You may lock the cipd_manifest.txt in the old state and keep it this way for now but I\u0027d like for us to find a solution here as I am planning further changes to the entire codebase that depend on the new AR. \n\nSo you\u0027re saying that simply changing the AR helped? With the testing chinese proxy I have I see that pypi.org actually returns 200s, albeit flaky, so you will need to setup proxy for the new AR.",
+      "parentUuid": "5f37606b_162cf8a2",
+      "revId": "cd4ad4bdbfe3c63e123909d7bcfd1918acbd8209",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
