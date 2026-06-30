@@ -34,6 +34,24 @@
       "parentUuid": "36a69835_d2639b26",
       "revId": "cd4ad4bdbfe3c63e123909d7bcfd1918acbd8209",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "57f8d8e8_94cd9812",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-06-30T04:11:48Z",
+      "side": 1,
+      "message": "I have one additional solution: if Pypi works for you, in the interim while you fix your proxies you can set VPYTHON_AR_URL env variable to https://pypi.org/simple/ and that will override my settings.",
+      "parentUuid": "7c37a7d5_781e318c",
+      "revId": "cd4ad4bdbfe3c63e123909d7bcfd1918acbd8209",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
