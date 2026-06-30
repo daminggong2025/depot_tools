@@ -224,6 +224,15 @@ class SCMWrapper(object):
                 shutil.move(checkout_path, dest_path)
 
 
+def _canonical_git_url(url):
+    """Normalizes a git URL for comparison: drops trailing '/' and '.git'."""
+    # Trailing slashes first, so 'repo.git/' also loses its '.git'.
+    url = url.rstrip('/')
+    if url.endswith('.git'):
+        url = url[:-len('.git')]
+    return url
+
+
 class GitWrapper(SCMWrapper):
     """Wrapper for Git"""
     name = 'git'
@@ -788,16 +797,36 @@ class GitWrapper(SCMWrapper):
             revision = deps_revision
             managed = False
         if not revision:
-            # Track the default remote branch. Prefer the git cache bootstrap
-            # snapshot's HEAD (cheap) over a full `git ls-remote`, falling back
-            # to the network when there is no snapshot.
+            # Track the default remote branch: a checkout pointing at the
+            # requested upstream has it locally; otherwise prefer the
+            # bootstrap snapshot's HEAD over a slow `git ls-remote`.
             mirror = self._GetMirror(url, options)
-            branch = mirror.get_bootstrap_default_branch() if mirror else None
+            git_dir_exists = os.path.exists(
+                os.path.join(self.checkout_path, '.git'))
+            # url_matches is False when a DEPS URL switch is pending: the
+            # local HEAD then describes the old upstream, whose default
+            # branch may differ.
+            url_matches = True
+            if git_dir_exists and url != 'git://foo':
+                # The upstream or its mirror; unmanaged keeps the upstream URL.
+                expected_urls = [_canonical_git_url(url)]
+                if mirror:
+                    expected_urls.append(
+                        _canonical_git_url(mirror.mirror_path))
+                current_url = scm.GIT.GetConfig(self.checkout_path,
+                                                f'remote.{self.remote}.url',
+                                                default='')
+                url_matches = _canonical_git_url(current_url) in expected_urls
+            branch = None
+            if mirror and not (git_dir_exists and url_matches):
+                branch = mirror.get_bootstrap_default_branch()
             if branch:
                 revision = 'refs/remotes/%s/%s' % (self.remote, branch)
             else:
                 revision = scm.GIT.GetRemoteHeadRef(self.checkout_path,
-                                                    self.url, self.remote)
+                                                    self.url,
+                                                    self.remote,
+                                                    use_local=url_matches)
         if revision.startswith('origin/'):
             revision = 'refs/remotes/' + revision
 
@@ -914,10 +943,7 @@ class GitWrapper(SCMWrapper):
         return_early = False
         # TODO(maruel): Delete url != 'git://foo' since it's just to make the
         # unit test pass. (and update the comment above)
-        strp_url = url[:-4] if url.endswith('.git') else url
-        strp_current_url = current_url[:-4] if current_url.endswith(
-            '.git') else current_url
-        if (strp_current_url.rstrip('/') != strp_url.rstrip('/')
+        if (_canonical_git_url(current_url) != _canonical_git_url(url)
                 and url != 'git://foo'):
             self.Print('_____ switching %s from %s to new upstream %s' %
                        (self.relpath, current_url, url))
