@@ -3,6 +3,29 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "296c787e_95e436ba",
+        "filename": "recipes/recipe_modules/tryserver/api.py",
+        "patchSetId": 16
+      },
+      "lineNbr": 396,
+      "author": {
+        "id": 1170419
+      },
+      "writtenOn": "2026-06-30T00:32:40Z",
+      "side": 1,
+      "message": "nit: Can we ensure the submodule path gets added here like it is for builds today? eg: http://screen/6CvybjPADy3JySi (from https://crrev.com/c/8021273)\n\nDon\u0027t need to recurse into the submodule, just listing the link path might be useful for sql analysis. Pretty sure we have a few queries lying around that looks into first_100.",
+      "range": {
+        "startLine": 396,
+        "startChar": 12,
+        "endLine": 396,
+        "endChar": 37
+      },
+      "revId": "b45e98f35c429593098575d42d7f1dd50be043eb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "568e9e13_3b3a7674",
         "filename": "recipes/recipe_modules/tryserver/api.py",
         "patchSetId": 16
