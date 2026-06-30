@@ -142,6 +142,24 @@
       "parentUuid": "abf4ffd7_8286295f",
       "revId": "cd4ad4bdbfe3c63e123909d7bcfd1918acbd8209",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "637b2362_112db52b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3637389
+      },
+      "writtenOn": "2026-06-30T14:23:14Z",
+      "side": 1,
+      "message": "It\u0027s possible that your domain is being blocked by an HTTP proxy. I\u0027ll try configuring the VPYTHON_AR_URL environment variable beforehand.",
+      "parentUuid": "7849c2dc_cad2d92d",
+      "revId": "cd4ad4bdbfe3c63e123909d7bcfd1918acbd8209",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
