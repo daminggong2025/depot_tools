@@ -160,6 +160,24 @@
       "parentUuid": "7849c2dc_cad2d92d",
       "revId": "cd4ad4bdbfe3c63e123909d7bcfd1918acbd8209",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2b5f7c2a_c51b68a0",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3637389
+      },
+      "writtenOn": "2026-06-30T14:42:16Z",
+      "side": 1,
+      "message": "@ovsienko@google.com I have set \"VPYTHON_AR_URL\u003dhttps://pypi.org/simple/\"，However, some Chromium custom libraries cannot be obtained through it. For example:\n\n```\nCollecting pytest-mock\u003d\u003d3.10.0 (from -r /root/.cache/vpython-root.0/store/wheels+qhhh99r5n85lb2amaph7bj90c4/contents/requirements.txt (line 16))\n  Downloading pytest_mock-3.10.0-py3-none-any.whl.metadata (3.5 kB)\nCollecting pytest\u003d\u003d9.0.2 (from -r /root/.cache/vpython-root.0/store/wheels+qhhh99r5n85lb2amaph7bj90c4/contents/requirements.txt (line 17))\n  Downloading pytest-9.0.2-py3-none-any.whl.metadata (7.6 kB)\nCollecting python-dateutil\u003d\u003d2.7.3 (from -r /root/.cache/vpython-root.0/store/wheels+qhhh99r5n85lb2amaph7bj90c4/contents/requirements.txt (line 18))\n  Downloading python_dateutil-2.7.3-py2.py3-none-any.whl.metadata (7.5 kB)\nERROR: Ignored the following yanked versions: 6.0.2rc1\nERROR: Could not find a version that satisfies the requirement pyyaml\u003d\u003d5.4.1+chromium.1 (from versions: 6.0, 6.0.1, 6.0.2, 6.0.3)\nERROR: No matching distribution found for pyyaml\u003d\u003d5.4.1+chromium.1\nIf you see this, it means some python packages are missing from Artifact Registry or installation failed.\nPlease report this issue at https://crbug.com/492362903\n\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\nTraceback (most recent call last):\n  File \"/root/.cache/vpython-root.0/store/bootstrap+9lhsg6lig01l46dj8e8t2ejbpg/contents/bootstrap.py\", line 124, in \u003cmodule\u003e\n    subprocess.check_output(command, env\u003denv, stderr\u003dsubprocess.STDOUT)\n  File \"/root/.cache/vpython-root.0/store/cpython+cg0qc7pasmeotttu249p8shcko/contents/lib/python3.11/subprocess.py\", line 466, in check_output\n    return run(*popenargs, stdout\u003dPIPE, timeout\u003dtimeout, check\u003dTrue,\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/root/.cache/vpython-root.0/store/cpython+cg0qc7pasmeotttu249p8shcko/contents/lib/python3.11/subprocess.py\", line 571, in run\n    raise CalledProcessError(retcode, process.args,\nsubprocess.CalledProcessError: Command \u0027[\u0027/root/.cache/vpython-root.0/store/python_venv-8vmevf4em9gf0euhm2s4tqdudk/contents/bin/pip3.11\u0027, \u0027install\u0027, \u0027--disable-pip-version-check\u0027, \u0027--isolated\u0027, \u0027--compile\u0027, \u0027--only-binary\u003d:all:\u0027, \u0027--index-url\u0027, \u0027https://pypi.org/simple/\u0027, \u0027--requirement\u0027, \u0027/root/.cache/vpython-root.0/store/wheels+qhhh99r5n85lb2amaph7bj90c4/contents/requirements.txt\u0027]\u0027 returned non-zero exit status 1.\nfailed to generate venv derivation: failed to build package: python_venv-8vmevf4em9gf0euhm2s4tqdudk: failed to execute builder: exit status 1\nfailed to build package: python_venv-8vmevf4em9gf0euhm2s4tqdudk: failed to execute builder: exit status 1\n```",
+      "parentUuid": "637b2362_112db52b",
+      "revId": "cd4ad4bdbfe3c63e123909d7bcfd1918acbd8209",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
