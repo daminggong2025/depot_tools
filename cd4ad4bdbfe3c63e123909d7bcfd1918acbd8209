@@ -106,6 +106,24 @@
       "parentUuid": "38ff5e7f_2a45bc17",
       "revId": "cd4ad4bdbfe3c63e123909d7bcfd1918acbd8209",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "abf4ffd7_8286295f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-06-30T13:47:51Z",
+      "side": 1,
+      "message": "It\u0027s public, Microsoft is using it already. I will quickly test if proxy variables are being respected but that\u0027s about as far as I can help you.",
+      "parentUuid": "2a352e3c_defbb09d",
+      "revId": "cd4ad4bdbfe3c63e123909d7bcfd1918acbd8209",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
