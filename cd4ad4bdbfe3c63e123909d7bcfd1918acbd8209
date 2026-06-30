@@ -52,6 +52,24 @@
       "parentUuid": "7c37a7d5_781e318c",
       "revId": "cd4ad4bdbfe3c63e123909d7bcfd1918acbd8209",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ce7cc1ba_f7ee4a28",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3637389
+      },
+      "writtenOn": "2026-06-30T13:41:58Z",
+      "side": 1,
+      "message": "We set environment variables such as http_proxy, https_proxy, and no_proxy.",
+      "parentUuid": "57f8d8e8_94cd9812",
+      "revId": "cd4ad4bdbfe3c63e123909d7bcfd1918acbd8209",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
