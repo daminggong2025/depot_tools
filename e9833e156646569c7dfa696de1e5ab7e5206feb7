@@ -41,6 +41,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "603f0c24_e7fd1da5",
+        "filename": "git_cl.py",
+        "patchSetId": 11
+      },
+      "lineNbr": 311,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2026-07-01T23:11:21Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e88d8a09_b7179492",
+      "range": {
+        "startLine": 310,
+        "startChar": 0,
+        "endLine": 311,
+        "endChar": 12
+      },
+      "revId": "e9833e156646569c7dfa696de1e5ab7e5206feb7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "471a7b87_b7463be8",
@@ -54,6 +78,30 @@
       "writtenOn": "2026-07-01T23:02:55Z",
       "side": 1,
       "message": "```suggestion\n    for s in searches:\n        requests.append({\u0027searchBuilds\u0027: s})\n    for s in schedules:\n        requests.append({\u0027scheduleBuild\u0027: s})\n```",
+      "range": {
+        "startLine": 344,
+        "startChar": 0,
+        "endLine": 347,
+        "endChar": 43
+      },
+      "revId": "e9833e156646569c7dfa696de1e5ab7e5206feb7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2b123324_0cdc7af7",
+        "filename": "git_cl.py",
+        "patchSetId": 11
+      },
+      "lineNbr": 347,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2026-07-01T23:11:21Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "471a7b87_b7463be8",
       "range": {
         "startLine": 344,
         "startChar": 0,
@@ -101,6 +149,30 @@
       "side": 1,
       "message": "I guess it passed fine? but should fix anyway\n\n```suggestion\n                sbr[\u0027gitilesCommit\u0027][\u0027ref\u0027] \u003d ref\n```",
       "parentUuid": "56a03ee6_9523ffb6",
+      "range": {
+        "startLine": 498,
+        "startChar": 12,
+        "endLine": 498,
+        "endChar": 14
+      },
+      "revId": "e9833e156646569c7dfa696de1e5ab7e5206feb7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c4d675c8_1bf61f24",
+        "filename": "git_cl.py",
+        "patchSetId": 11
+      },
+      "lineNbr": 498,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2026-07-01T23:11:21Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5dc7de13_e1471f2e",
       "range": {
         "startLine": 498,
         "startChar": 12,
