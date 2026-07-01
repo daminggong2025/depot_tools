@@ -16,6 +16,23 @@
       "message": "Hi Yiwei, PTAL.",
       "revId": "e3bb1646af021ce66f7553b1abd334d4c53ed863",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b8e0029d_a5f43edd",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002120
+      },
+      "writtenOn": "2026-07-01T00:03:40Z",
+      "side": 1,
+      "message": "Thanks!",
+      "revId": "e3bb1646af021ce66f7553b1abd334d4c53ed863",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
