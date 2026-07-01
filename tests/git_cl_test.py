@@ -663,8 +663,12 @@ class TestGitCl(unittest.TestCase):
 
         oldEnv = dict(os.environ)
         def _resetEnv():
-            os.environ = oldEnv
+            os.environ.clear()
+            os.environ.update(oldEnv)
         self.addCleanup(_resetEnv)
+        for var in ('GEMINI_CLI', 'CLAUDECODE', 'ANTIGRAVITY_AGENT',
+                    'CODEX_SANDBOX', 'CURSOR_AGENT', 'AI_AGENT'):
+            os.environ.pop(var, None)
 
         self.failed = False
         mock.patch('sys.stdout', io.StringIO()).start()
@@ -3620,6 +3624,41 @@ class TestGitCl(unittest.TestCase):
                 'comments', '-i', '10', '--reply-to', 'uuid-123', '-a',
                 'reply msg'
             ]))
+
+    @unittest.skipIf(gclient_utils.IsEnvCog(),
+                     'not supported in non-git environment')
+    def test_git_cl_comments_reply_gerrit_ai(self):
+        git_new_branch.create_new_branch(None)  # hits mock from scm_mock.GIT.
+        scm.GIT.SetConfig('', 'remote.origin.url',
+                          'https://chromium.googlesource.com/infra/infra')
+        self.calls = [
+            (('GetChangeComments', 'chromium-review.googlesource.com',
+              'infra%2Finfra~10'), {
+                  'some/file.py': [
+                      {
+                          'id': 'uuid-123',
+                          'line': 42,
+                          'message': 'some comment',
+                          'patch_set': 2,
+                      },
+                  ],
+              }),
+            (('CreateDraft', 'chromium-review.googlesource.com',
+              'infra%2Finfra~10', 2, {
+                  'in_reply_to': 'uuid-123',
+                  'message': 'reply msg',
+                  'path': 'some/file.py',
+                  'line': 42,
+                  'is_ai': True,
+              }), None),
+        ]
+        with mock.patch.dict(os.environ, {'GEMINI_CLI': '1'}):
+            self.assertEqual(
+                0,
+                git_cl.main([
+                    'comments', '-i', '10', '--reply-to', 'uuid-123', '-a',
+                    'reply msg'
+                ]))
 
     @unittest.skipIf(gclient_utils.IsEnvCog(),
                     'not supported in non-git environment')
