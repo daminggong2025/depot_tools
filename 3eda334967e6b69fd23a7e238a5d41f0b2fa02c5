@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4ebd7a52_99b12029",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1175774
+      },
+      "writtenOn": "2026-07-01T09:33:50Z",
+      "side": 1,
+      "message": "This is causing issues in V8 JS unit tests, since our testing requires enabling \"natives syntax\" in JS files which clang-format mis-formats (also Wasm unit test formatting gets mangled). Can this be reverted until we find a better solution that fits the V8 team\u0027s needs?",
+      "revId": "3eda334967e6b69fd23a7e238a5d41f0b2fa02c5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
