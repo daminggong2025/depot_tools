@@ -16,6 +16,29 @@
       "message": "PTAL - will manually verify shortly as well.",
       "revId": "e9833e156646569c7dfa696de1e5ab7e5206feb7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "56a03ee6_9523ffb6",
+        "filename": "git_cl.py",
+        "patchSetId": 11
+      },
+      "lineNbr": 498,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-07-01T22:46:29Z",
+      "side": 1,
+      "message": "use 4 space indentation (cq dry run will probably fail and tell you to format)",
+      "range": {
+        "startLine": 498,
+        "startChar": 12,
+        "endLine": 498,
+        "endChar": 14
+      },
+      "revId": "e9833e156646569c7dfa696de1e5ab7e5206feb7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
