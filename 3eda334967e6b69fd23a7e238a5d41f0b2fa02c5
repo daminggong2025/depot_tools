@@ -33,6 +33,24 @@
       "message": "This also breaks filecheck expectation files:\n```\n-// CHECK: Considering JS-to-Wasm wrapper for Wasm function [{{[0-9]+}}] trapNoInline of module {{.*}} for inlining\n-// CHECK-NEXT: - inlining wrapper\n-// CHECK-NEXT: Considering Wasm function [{{[0-9]+}}] trapNoInline of module {{.*}} for inlining\n-// CHECK-NEXT: - not inlining: a current catch block is set\n+// CHECK: Considering JS-to-Wasm wrapper for Wasm function [{{[0-9]+}}]\n+// trapNoInline of module {{.*}} for inlining CHECK-NEXT: - inlining wrapper\n+// CHECK-NEXT: Considering Wasm function [{{[0-9]+}}] trapNoInline of\n+// module {{.*}} for inlining CHECK-NEXT: - not inlining: a current catch block\n+// is set\n```",
       "revId": "3eda334967e6b69fd23a7e238a5d41f0b2fa02c5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e52fb2f4_13341c35",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1182404
+      },
+      "writtenOn": "2026-07-01T15:44:51Z",
+      "side": 1,
+      "message": "Do we need to revert the whole thing, or is the .html.ts portion of this okay with v8?\n\nFor the other half of this, would making JS formatting the default but allowing opt-out via --no-js work?",
+      "parentUuid": "4ebd7a52_99b12029",
+      "revId": "3eda334967e6b69fd23a7e238a5d41f0b2fa02c5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
