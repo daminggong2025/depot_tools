@@ -16,6 +16,23 @@
       "message": "Hey Gavin \u0026 Yiwei, I noticed that you touched this logic in https://crrev.com/c/7705375 recently. I\u0027m probably not aware of all the different environments and use cases that \"gclient sync\" has to cover, so wanted to mention it to make sure I\u0027m not breaking anything with this change.",
       "revId": "49be92a6f24f93abd36ebd5dca950a0daa117f1f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4ebefdbe_a1d473ca",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1381059
+      },
+      "writtenOn": "2026-07-01T16:07:54Z",
+      "side": 1,
+      "message": "deferring the review to Gavin",
+      "revId": "49be92a6f24f93abd36ebd5dca950a0daa117f1f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
