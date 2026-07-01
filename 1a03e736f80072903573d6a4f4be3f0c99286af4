@@ -16,6 +16,23 @@
       "message": "Hi Gavin, can we land this temporary workaround to unblock the depot_tools roll in Chromium?\n\nThe edit_monitor OWNERS for the proper fix are all OOO until the middle of next week.",
       "revId": "1a03e736f80072903573d6a4f4be3f0c99286af4",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "46b7e3c1_717d32a6",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002120
+      },
+      "writtenOn": "2026-07-01T18:30:23Z",
+      "side": 1,
+      "message": "Thanks!",
+      "revId": "1a03e736f80072903573d6a4f4be3f0c99286af4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
