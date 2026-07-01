@@ -17,6 +17,25 @@
       "isAi": true,
       "revId": "1e68dcdab8fa580aaa61ce7a5be7f2344040ac70",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ca5550bb_4a143efa",
+        "filename": "gclient_utils.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 1260,
+      "author": {
+        "id": 1175774
+      },
+      "writtenOn": "2026-07-01T11:25:04Z",
+      "side": 1,
+      "message": "And this is a draft reply posted via git cl comments --reply-to, also tagged with is_ai\u003dTrue!",
+      "parentUuid": "7c5a3f75_bb9f2ea1",
+      "isAi": true,
+      "revId": "1e68dcdab8fa580aaa61ce7a5be7f2344040ac70",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
