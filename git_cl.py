@@ -7638,6 +7638,11 @@ def CMDformat(parser: optparse.OptionParser, args: list[str]):
                       help='Format javascript code with clang-format. '
                       'Defaults to true. Has no effect if '
                       '--no-clang-format is set.')
+    parser.add_option(
+        '--no-js',
+        action='store_false',
+        dest='js',
+        help='Disables formatting of javascript code with clang-format.')
     parser.add_option('--diff',
                       action='store_true',
                       help='Print diff to stdout rather than modifying files.')
