@@ -5220,6 +5220,8 @@ def CMDcomments(parser, args):
             body['range'] = parent_comment['range']
         if 'side' in parent_comment:
             body['side'] = parent_comment['side']
+        if gclient_utils.IsEnvAi():
+            body.setdefault('is_ai', True)
 
         revision = parent_comment.get('patch_set', 'current')
         gerrit_util.CreateDraft(cl.GetGerritHost(),

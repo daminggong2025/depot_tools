@@ -416,6 +416,15 @@ class GClientUtilsTest(trial_dir.TestCase):
         self.assertEqual('(foo or bar) and (baz)',
                          gclient_utils.merge_conditions('foo or bar', 'baz'))
 
+    def testIsEnvAi(self):
+        with mock.patch.dict(os.environ, {}, clear=True):
+            self.assertFalse(gclient_utils.IsEnvAi())
+        with mock.patch.dict(os.environ, {'GEMINI_CLI': '1'}, clear=True):
+            self.assertTrue(gclient_utils.IsEnvAi())
+        with mock.patch.dict(os.environ, {'AI_AGENT': '1'}, clear=True):
+            self.assertTrue(gclient_utils.IsEnvAi())
+
+
 if __name__ == '__main__':
     unittest.main()
 
