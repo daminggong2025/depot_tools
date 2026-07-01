@@ -16,6 +16,29 @@
       "message": "ptal",
       "revId": "64e1e92642f44504848bd59b3e0d157a56691cf2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "096be844_33e06517",
+        "filename": "gclient_scm.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 731,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-07-01T21:59:57Z",
+      "side": 1,
+      "message": "```suggestion\n                        f\"for this repository: {checkout_path}\\n\" +\n```",
+      "range": {
+        "startLine": 731,
+        "startChar": 51,
+        "endLine": 731,
+        "endChar": 64
+      },
+      "revId": "64e1e92642f44504848bd59b3e0d157a56691cf2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
