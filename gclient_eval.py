@@ -10,22 +10,23 @@ import string
 import sys
 import tokenize
 
+import gclient_utils
 import os
 
-# Temporarily promote depot_tools to sys.path[0] so that 'from third_party
-# import schema' loads depot_tools/third_party/schema instead of colliding with
-# site-packages/third_party in virtual environments.
+# Temporarily promote depot_tools/third_party to sys.path[0] so that 'import schema'
+# loads depot_tools/third_party/schema without touching sys.modules['third_party']
+# or colliding with site-packages in virtual environments.
 #
 # TODO(b/529940779): Remove this workaround once the proper fix in
 # https://crrev.com/i/9489642 has landed.
 _THIS_DIR = os.path.abspath(os.path.dirname(__file__))
+_third_party_dir = os.path.join(_THIS_DIR, 'third_party')
 _old_path = list(sys.path)
-if _THIS_DIR in sys.path:
-    sys.path.remove(_THIS_DIR)
-sys.path.insert(0, _THIS_DIR)
+if _third_party_dir in sys.path:
+    sys.path.remove(_third_party_dir)
+sys.path.insert(0, _third_party_dir)
 
-import gclient_utils
-from third_party import schema
+import schema
 
 sys.path[:] = _old_path
 
