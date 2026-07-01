@@ -16,6 +16,24 @@
       "message": "I don\u0027t have the ability to vote CR+1 on this, but we are fine to revert for now if this is blocking other work. A couple questions though since we will need to re-land:\n\n(1) Is the .html.ts portion of this also causing problems, or is the revert only needed due to the default change?\n(2) Would providing a --no-js opt-out work to address the v8 case or is v8 requiring that we keep JS formatting opt-in only? WebUI code is pretty widespread in Chromium now so it is a bit unfortunate that developers always need to pass this extra flag.",
       "revId": "6b644a8296f0d05451c90043b28e2bb13ab8798a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "df1fa301_a61d81eb",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1175774
+      },
+      "writtenOn": "2026-07-01T15:58:59Z",
+      "side": 1,
+      "message": "the revert is needed for the default change -- if we can have --no-js as a project configurable setting then it could work for V8, if you are saying that V8 engineers need to always manually pass --no-js then it doesn\u0027t.",
+      "parentUuid": "09396daf_54ae4171",
+      "revId": "6b644a8296f0d05451c90043b28e2bb13ab8798a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
