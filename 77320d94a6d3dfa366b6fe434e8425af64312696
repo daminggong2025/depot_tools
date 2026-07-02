@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "8df8dca3_f7f612b5",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1313890
+      },
+      "writtenOn": "2026-07-02T12:20:01Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "bb11764e_1a08b1fc",
+      "range": {
+        "startLine": 9,
+        "startChar": 38,
+        "endLine": 9,
+        "endChar": 51
+      },
+      "revId": "77320d94a6d3dfa366b6fe434e8425af64312696",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e7a341eb_f96a6856",
@@ -37,6 +61,24 @@
       "writtenOn": "2026-06-26T17:57:07Z",
       "side": 1,
       "message": "is there a bug you could link here? i\u0027m not exactly sure what this commit is trying to fix",
+      "revId": "77320d94a6d3dfa366b6fe434e8425af64312696",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6d030cb9_3e57d609",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1313890
+      },
+      "writtenOn": "2026-07-02T12:20:01Z",
+      "side": 1,
+      "message": "Detailed the issue here: https://crbug.com/529849243",
+      "parentUuid": "e7a341eb_f96a6856",
       "revId": "77320d94a6d3dfa366b6fe434e8425af64312696",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
