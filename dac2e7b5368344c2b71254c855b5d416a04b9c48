@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d1511f91_e66a4c4a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1493367
+      },
+      "writtenOn": "2026-07-02T05:53:30Z",
+      "side": 1,
+      "message": "Had to rebase because of a conflict. PTAL once more? Thanks!",
+      "revId": "dac2e7b5368344c2b71254c855b5d416a04b9c48",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
