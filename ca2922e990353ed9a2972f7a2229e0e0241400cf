@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f8fe8bbf_422cea99",
+        "filename": "git_cache.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 533,
+      "author": {
+        "id": 4733502
+      },
+      "writtenOn": "2026-07-03T06:37:19Z",
+      "side": 1,
+      "message": "The fallback HEAD repair can create an invalid symbolic ref for repositories with ambiguous branch/tag names, so the patch does not reliably heal the broken-HEAD case it targets:\n\nWhen the fallback runs in a repo that has both a branch and another ref with the same name, such as a branch and tag both named `main`, `%(refname:short)` returns `heads/main` to disambiguate. This value is later prefixed with `refs/heads/`, so the code writes HEAD to the nonexistent `refs/heads/heads/main` and leaves the mirror broken instead of healing it.\n\nI’d make the fallback operate on full refnames end to end here:\n\n```diff\n-        branches \u003d self.RunGit([\n+        branch_refs \u003d self.RunGit([\n             \u0027for-each-ref\u0027, \u0027--sort\u003d-committerdate\u0027,\n-            \u0027--format\u003d%(refname:short)\u0027, \u0027refs/heads\u0027\n+            \u0027--format\u003d%(refname)\u0027, \u0027refs/heads\u0027\n         ],\n                                print_stdout\u003dFalse).decode(\u0027utf-8\u0027,\n                                                           \u0027ignore\u0027).split()\n-        if not branches:\n+        if not branch_refs:\n             return\n+        fallback_refs \u003d [\n+            \u0027refs/heads/\u0027 + b for b in self._FALLBACK_HEAD_BRANCHES\n+        ]\n         chosen \u003d next(\n-            (b for b in self._FALLBACK_HEAD_BRANCHES if b in branches),\n-            branches[0])\n+            (r for r in fallback_refs if r in branch_refs),\n+            branch_refs[0])\n         self.print(\u0027remote does not advertise a default branch; pointing \u0027\n-                   \u0027HEAD at refs/heads/%s\u0027 % chosen)\n-        self.RunGit([\u0027symbolic-ref\u0027, \u0027HEAD\u0027, \u0027refs/heads/\u0027 + chosen])\n+                   \u0027HEAD at %s\u0027 % chosen)\n+        self.RunGit([\u0027symbolic-ref\u0027, \u0027HEAD\u0027, chosen])\n```\n\nThen add a regression test in git_cache_test.py that creates both `refs/heads/main` and `refs/tags/main`, dangles origin `HEAD`, runs `populate()`, and asserts mirror `HEAD \u003d\u003d refs/heads/main`.\n\nI’d avoid \"fixing\" this by stripping a leading `heads/`: `refs/heads/heads/main` is a valid branch name, so full refs are the cleaner domain boundary here.",
+      "range": {
+        "startLine": 517,
+        "startChar": 0,
+        "endLine": 533,
+        "endChar": 69
+      },
+      "revId": "ca2922e990353ed9a2972f7a2229e0e0241400cf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
