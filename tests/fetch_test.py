@@ -288,8 +288,11 @@ class TestRunGitCache(unittest.TestCase):
         self.factory.return_value.exists.return_value = False
         self.addCleanup(mock.patch.stopall)
 
-    def _run(self, git_cache):
-        spec = {'type': 'gclient_git', 'gclient_git_spec': {'solutions': []}}
+    def _run(self, git_cache, cache_dir=None):
+        gclient_git_spec = {'solutions': []}
+        if cache_dir:
+            gclient_git_spec['cache_dir'] = cache_dir
+        spec = {'type': 'gclient_git', 'gclient_git_spec': gclient_git_spec}
         opts = argparse.Namespace(git_cache=git_cache,
                                   protocol_override=None,
                                   force=False)
@@ -303,16 +306,24 @@ class TestRunGitCache(unittest.TestCase):
         spec = self._run(git_cache=True)
         self.assertEqual(os.path.join('/cache_root/depot_tools', 'git_cache'),
                          spec['cache_dir'])
+        self.assertEqual('bootstrap', spec['cache_mode'])
 
     @mock.patch.dict(os.environ, {'GIT_CACHE_PATH': '/custom/cache'},
                      clear=False)
     def test_git_cache_respects_env(self):
         spec = self._run(git_cache=True)
         self.assertEqual('/custom/cache', spec['cache_dir'])
+        self.assertEqual('bootstrap', spec['cache_mode'])
 
     def test_no_flag_leaves_cache_dir_unset(self):
         spec = self._run(git_cache=False)
         self.assertNotIn('cache_dir', spec)
+        self.assertNotIn('cache_mode', spec)
+
+    def test_config_with_own_cache_dir_keeps_its_mode(self):
+        spec = self._run(git_cache=True, cache_dir='/config/cache')
+        self.assertEqual('/config/cache', spec['cache_dir'])
+        self.assertNotIn('cache_mode', spec)
 
 
 if __name__ == '__main__':

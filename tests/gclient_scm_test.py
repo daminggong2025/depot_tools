@@ -1433,6 +1433,50 @@ class GerritChangesTest(fake_repos.FakeReposTestBase):
             ['remote', 'get-url', '--push', 'origin'])
         self.assertEqual(push_url, self.url)
 
+    def setUpBootstrapMode(self):
+        self.setUpMirror()
+        gclient_scm.GitWrapper.cache_mode = 'bootstrap'
+        self.addCleanup(setattr, gclient_scm.GitWrapper, 'cache_mode',
+                        'shared')
+
+    def testBootstrapModeDetachesCheckoutFromMirror(self):
+        self.setUpBootstrapMode()
+
+        git_wrapper = gclient_scm.GitWrapper(self.url, self.root_dir, '.')
+        self.assertIsNotNone(git_wrapper._GetMirror(self.url, self.options))
+
+        git_wrapper.update(self.options, None, [])
+
+        # Configured like a checkout made without a cache: both remote URLs
+        # on the real remote, no alternates borrowing from the mirror.
+        fetch_url = git_wrapper._Capture(['remote', 'get-url', 'origin'])
+        self.assertEqual(fetch_url, self.url)
+        push_url = git_wrapper._Capture(
+            ['remote', 'get-url', '--push', 'origin'])
+        self.assertEqual(push_url, self.url)
+        self.assertFalse(
+            os.path.exists(
+                os.path.join(self.root_dir, '.git', 'objects', 'info',
+                             'alternates')))
+
+        # The checkout must survive deletion of the cache.
+        gclient_utils.rmtree(self.mirror)
+        git_wrapper._Capture(['fsck', '--no-progress'])
+
+    def testBootstrapModeExistingCheckoutIgnoresMirror(self):
+        self.setUpBootstrapMode()
+
+        git_wrapper = gclient_scm.GitWrapper(self.url, self.root_dir, '.')
+        git_wrapper.update(self.options, None, [])
+
+        # Only a checkout that does not exist yet may use the mirror.
+        self.assertIsNone(git_wrapper._GetMirror(self.url, self.options))
+
+        # A later sync keeps the detached configuration.
+        git_wrapper.update(self.options, None, [])
+        fetch_url = git_wrapper._Capture(['remote', 'get-url', 'origin'])
+        self.assertEqual(fetch_url, self.url)
+
     def testAppliesPatchOnTopOfMasterByDefault(self):
         """Test the default case, where we apply a patch on top of main."""
         git_wrapper = gclient_scm.GitWrapper(self.url, self.root_dir, '.')
