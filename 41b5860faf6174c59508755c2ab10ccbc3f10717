@@ -16,6 +16,24 @@
       "message": "I think the patch can accidentally resolve the default branch from an existing checkout for a different upstream before the URL switch is handled, regressing cache-backed URL changes where the new repository has a different default branch:\n\nOn an existing checkout whose DEPS URL changes later in `update()`, this branch skips the snapshot for the requested `url` and `GetRemoteHeadRef()` first returns the old checkout\u0027s `refs/remotes/origin/HEAD` before the `current_url/url` switch is detected. With a cache-backed sync, the previous code used the new mirror snapshot\u0027s HEAD; now changing a dependency from a repo whose default is `main` to one whose default is `master` makes `_FetchAndReset()` fetch/reset `refs/heads/main` from the new repo, which can fail or select the wrong branch.\n\nWe can only trust the local HEAD after confirming the existing remote matches the requested URL, otherwise we need to use the requested URL\u0027s default.\n\nI’d probably make the local `origin/HEAD` lookup conditional on the checkout already pointing at the requested upstream:\n\n1. Add an optional arg to `GetRemoteHeadRef` in scm.py:\n\n```python\ndef GetRemoteHeadRef(cwd, url, remote, use_local\u003dTrue):\n    ...\n    if use_local and os.path.exists(cwd):\n        ...\n```\n\n2. In gclient_scm.py where you edited the code, compute whether local HEAD is trustworthy before calling it:\n\n```python\nif not revision:\n    branch \u003d None\n    use_local_head \u003d True\n    git_dir \u003d os.path.join(self.checkout_path, \u0027.git\u0027)\n    mirror \u003d self._GetMirror(url, options)\n\n    if os.path.exists(git_dir) and url !\u003d \u0027git://foo\u0027:\n        expected_url \u003d mirror.mirror_path if mirror else url\n        current_url \u003d scm.GIT.GetConfig(\n            self.checkout_path, f\u0027remote.{self.remote}.url\u0027, default\u003d\u0027\u0027)\n\n        strp_expected_url \u003d expected_url[:-4] if expected_url.endswith(\u0027.git\u0027) else expected_url\n        strp_current_url \u003d current_url[:-4] if current_url.endswith(\u0027.git\u0027) else current_url\n        use_local_head \u003d (\n            strp_current_url.rstrip(\u0027/\u0027) \u003d\u003d strp_expected_url.rstrip(\u0027/\u0027))\n\n    if mirror and not use_local_head:\n        branch \u003d mirror.get_bootstrap_default_branch()\n\n    if branch:\n        revision \u003d \u0027refs/remotes/%s/%s\u0027 % (self.remote, branch)\n    else:\n        revision \u003d scm.GIT.GetRemoteHeadRef(\n            self.checkout_path, self.url, self.remote,\n            use_local\u003duse_local_head)\n```\n\nProbably good to extract the `.git`/slash normalization into a tiny helper and reuse it in the later URL-switch check at gclient_scm.py around line 923, so this logic cannot drift.\n\nRegression test: existing `.git`, cache enabled, current `remote.origin.url` is old mirror, requested URL maps to new mirror, local `origin/HEAD` says `main`, new mirror snapshot says `master`; assert update resolves `refs/remotes/origin/master`.",
       "revId": "41b5860faf6174c59508755c2ab10ccbc3f10717",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f6ff2997_e8f4abfe",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 4422564
+      },
+      "writtenOn": "2026-07-03T07:10:17Z",
+      "side": 1,
+      "message": "Great find! Addressed it.",
+      "parentUuid": "2172b041_e2145e7c",
+      "revId": "41b5860faf6174c59508755c2ab10ccbc3f10717",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
