@@ -28,6 +28,7 @@ metrics_utils.COLLECT_METRICS = False
 
 import gclient
 import gclient_eval
+import gclient_scm
 import gclient_utils
 from testing_support import trial_dir
 
@@ -1767,6 +1768,39 @@ class GclientTest(trial_dir.TestCase):
         client = gclient.GClient.LoadCurrentConfig(options)
         self.assertEqual(expected_skip_sync_revisions,
                          client._EnforceSkipSyncRevisions(patch_refs))
+
+
+class CacheModeTest(unittest.TestCase):
+    """Tests for the cache_mode .gclient setting."""
+
+    def setUp(self):
+        parser = gclient.OptionParser()
+        self.options, _ = parser.parse_args([])
+        self.addCleanup(setattr, gclient_scm.GitWrapper, 'cache_mode',
+                        gclient_scm.GitWrapper.cache_mode)
+
+    def testDefaultsToShared(self):
+        obj = gclient.GClient('foo', self.options)
+        obj.SetConfig('solutions = []\n')
+        self.assertEqual('shared', gclient_scm.GitWrapper.cache_mode)
+
+    def testBootstrapMode(self):
+        obj = gclient.GClient('foo', self.options)
+        obj.SetConfig('solutions = []\ncache_mode = "bootstrap"\n')
+        self.assertEqual('bootstrap', gclient_scm.GitWrapper.cache_mode)
+
+    def testRejectsUnknownMode(self):
+        obj = gclient.GClient('foo', self.options)
+        with self.assertRaises(gclient_utils.Error):
+            obj.SetConfig('solutions = []\ncache_mode = "frobnicate"\n')
+
+    def testOmittedModeResetsProcessGlobal(self):
+        # A second config in the same process must not inherit bootstrap mode.
+        obj = gclient.GClient('foo', self.options)
+        obj.SetConfig('solutions = []\ncache_mode = "bootstrap"\n')
+        obj = gclient.GClient('foo', self.options)
+        obj.SetConfig('solutions = []\n')
+        self.assertEqual('shared', gclient_scm.GitWrapper.cache_mode)
 
 
 class MergeVarsTest(unittest.TestCase):
