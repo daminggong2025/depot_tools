@@ -258,12 +258,36 @@ class GitCacheTest(unittest.TestCase):
         mirror.populate(reset_fetch_config=True)
 
     @mock.patch('gclient_utils.exponential_backoff_retry')
-    def testSetSymbolicRefIgnoreUnknown(self, mock_retry):
+    def testSetSymbolicRefUnknownNoLocalBranches(self, mock_retry):
         mock_retry.return_value = 'HEAD branch: (unknown)'
         mirror = git_cache.Mirror(self.origin_dir)
         with mock.patch.object(mirror, 'RunGit') as mock_rungit:
+            mock_rungit.return_value = b''
             mirror._set_symbolic_ref()
-            mock_rungit.assert_not_called()
+            for call in mock_rungit.call_args_list:
+                self.assertNotIn('symbolic-ref', call.args[0])
+
+    @mock.patch('gclient_utils.exponential_backoff_retry')
+    def testSetSymbolicRefUnknownFallsBackToKnownBranchName(self, mock_retry):
+        mock_retry.return_value = 'HEAD branch: (unknown)'
+        mirror = git_cache.Mirror(self.origin_dir)
+        with mock.patch.object(mirror, 'RunGit') as mock_rungit:
+            mock_rungit.return_value = (b'refs/heads/feature-x\n'
+                                        b'refs/heads/upstream/main\n')
+            mirror._set_symbolic_ref()
+            mock_rungit.assert_called_with(
+                ['symbolic-ref', 'HEAD', 'refs/heads/upstream/main'])
+
+    @mock.patch('gclient_utils.exponential_backoff_retry')
+    def testSetSymbolicRefUnknownFallsBackToNewestBranch(self, mock_retry):
+        mock_retry.return_value = 'HEAD branch: (unknown)'
+        mirror = git_cache.Mirror(self.origin_dir)
+        with mock.patch.object(mirror, 'RunGit') as mock_rungit:
+            mock_rungit.return_value = (b'refs/heads/feature-x\n'
+                                        b'refs/heads/feature-y\n')
+            mirror._set_symbolic_ref()
+            mock_rungit.assert_called_with(
+                ['symbolic-ref', 'HEAD', 'refs/heads/feature-x'])
 
     @mock.patch('gclient_utils.exponential_backoff_retry')
     def testSetSymbolicRefKnown(self, mock_retry):
@@ -273,6 +297,212 @@ class GitCacheTest(unittest.TestCase):
             mirror._set_symbolic_ref()
             mock_rungit.assert_called_once_with(
                 ['symbolic-ref', 'HEAD', 'refs/heads/main'])
+
+    def _mirror_head(self, mirror):
+        cache_dir = os.path.join(self.cache_dir,
+                                 mirror.UrlToCacheDir(self.origin_dir))
+        return subprocess.check_output(
+            ['git', '--git-dir', cache_dir, 'symbolic-ref',
+             'HEAD']).decode('utf-8').strip()
+
+    def testPopulateHealsDanglingHead(self):
+        # The origin renamed its default branch and its own HEAD dangles, so
+        # it advertises no default branch (as happens to GitHub mirrors on
+        # *.googlesource.com). The mirror must still end up with HEAD on a
+        # live branch.
+        self.git(['init', '-q'])
+        with open(os.path.join(self.origin_dir, 'foo'), 'w') as f:
+            f.write('touched\n')
+        self.git(['add', 'foo'])
+        self.git([
+            '-c', 'user.name=Test user', '-c', 'user.email=joj@test.com',
+            'commit', '-m', 'foo'
+        ])
+        self.git(['branch', '-m', 'upstream/main'])
+        self.git(['symbolic-ref', 'HEAD', 'refs/heads/gone'])
+
+        mirror = git_cache.Mirror(self.origin_dir)
+        mirror.populate()
+
+        self.assertEqual(self._mirror_head(mirror), 'refs/heads/upstream/main')
+
+    def testPopulateHealsDanglingHeadWithAmbiguousTag(self):
+        # A tag sharing the branch's name must not derail the fallback:
+        # %(refname:short) would disambiguate the branch as 'heads/main',
+        # which must not be mangled into 'refs/heads/heads/main'.
+        self.git(['init', '-q'])
+        with open(os.path.join(self.origin_dir, 'foo'), 'w') as f:
+            f.write('touched\n')
+        self.git(['add', 'foo'])
+        self.git([
+            '-c', 'user.name=Test user', '-c', 'user.email=joj@test.com',
+            'commit', '-m', 'foo'
+        ])
+        self.git(['branch', '-m', 'main'])
+        self.git(['tag', 'main'])
+        self.git(['symbolic-ref', 'HEAD', 'refs/heads/gone'])
+
+        mirror = git_cache.Mirror(self.origin_dir)
+        mirror.populate()
+
+        self.assertEqual(self._mirror_head(mirror), 'refs/heads/main')
+        cache_dir = os.path.join(self.cache_dir,
+                                 mirror.UrlToCacheDir(self.origin_dir))
+        # HEAD must resolve to a commit again.
+        subprocess.check_output(
+            ['git', '--git-dir', cache_dir, 'rev-parse', '--verify', 'HEAD'])
+
+    def testPopulateHealsStaleHead(self):
+        # The origin renamed its default branch from master to main but kept
+        # the frozen master around. A mirror created before the rename has
+        # HEAD on master, which still resolves, so only the staleness check
+        # can notice that HEAD must be re-verified against the origin.
+        self.git(['init', '-q'])
+        with open(os.path.join(self.origin_dir, 'foo'), 'w') as f:
+            f.write('touched\n')
+        self.git(['add', 'foo'])
+        old_date = '2020-01-01T00:00:00 +0000'
+        env = os.environ.copy()
+        env['GIT_AUTHOR_DATE'] = old_date
+        env['GIT_COMMITTER_DATE'] = old_date
+        subprocess.check_call([
+            'git', '-c', 'user.name=Test user', '-c', 'user.email=joj@test.com',
+            'commit', '-m', 'old'
+        ],
+                              cwd=self.origin_dir,
+                              env=env)
+        self.git(['branch', '-m', 'master'])
+        self.git(['checkout', '-q', '-b', 'main'])
+        with open(os.path.join(self.origin_dir, 'bar'), 'w') as f:
+            f.write('touched\n')
+        self.git(['add', 'bar'])
+        self.git([
+            '-c', 'user.name=Test user', '-c', 'user.email=joj@test.com',
+            'commit', '-m', 'new'
+        ])
+
+        mirror = git_cache.Mirror(self.origin_dir)
+        mirror.populate()
+        # Simulate a mirror created before the rename.
+        cache_dir = os.path.join(self.cache_dir,
+                                 mirror.UrlToCacheDir(self.origin_dir))
+        subprocess.check_call([
+            'git', '--git-dir', cache_dir, 'symbolic-ref', 'HEAD',
+            'refs/heads/master'
+        ])
+
+        mirror.populate()
+
+        self.assertEqual(self._mirror_head(mirror), 'refs/heads/main')
+
+    def testHeadStaleCheckIgnoresFutureDatedBranches(self):
+        # A busy default branch must never look stale, even when some side
+        # branch carries a bogus future committer date. Otherwise a repo
+        # like chromium/src would pay the remote default-branch lookup on
+        # every populate.
+        self.git(['init', '-q'])
+        with open(os.path.join(self.origin_dir, 'foo'), 'w') as f:
+            f.write('touched\n')
+        self.git(['add', 'foo'])
+        self.git([
+            '-c', 'user.name=Test user', '-c', 'user.email=joj@test.com',
+            'commit', '-m', 'current'
+        ])
+        self.git(['branch', '-m', 'main'])
+        self.git(['checkout', '-q', '-b', 'weird'])
+        with open(os.path.join(self.origin_dir, 'bar'), 'w') as f:
+            f.write('touched\n')
+        self.git(['add', 'bar'])
+        future_date = '2090-01-01T00:00:00 +0000'
+        env = os.environ.copy()
+        env['GIT_AUTHOR_DATE'] = future_date
+        env['GIT_COMMITTER_DATE'] = future_date
+        subprocess.check_call([
+            'git', '-c', 'user.name=Test user', '-c', 'user.email=joj@test.com',
+            'commit', '-m', 'future'
+        ],
+                              cwd=self.origin_dir,
+                              env=env)
+        self.git(['checkout', '-q', 'main'])
+
+        mirror = git_cache.Mirror(self.origin_dir)
+        mirror.populate()
+
+        self.assertFalse(mirror._head_looks_stale())
+        self.assertEqual(self._mirror_head(mirror), 'refs/heads/main')
+
+    def testUpdateBootstrapFailsWhenGenNumberFails(self):
+        self.git(['init', '-q'])
+        with open(os.path.join(self.origin_dir, 'foo'), 'w') as f:
+            f.write('touched\n')
+        self.git(['add', 'foo'])
+        self.git([
+            '-c', 'user.name=Test user', '-c', 'user.email=joj@test.com',
+            'commit', '-m', 'foo'
+        ])
+        mirror = git_cache.Mirror(self.origin_dir)
+        mirror.populate()
+
+        with mock.patch('subprocess.check_output',
+                        side_effect=subprocess.CalledProcessError(
+                            1, 'git number')):
+            with mock.patch.object(mirror, '_set_symbolic_ref') as heal:
+                self.assertFalse(mirror.update_bootstrap())
+                heal.assert_called_once()
+
+    def testUpdateBootstrapHealsBrokenHead(self):
+        self.git(['init', '-q'])
+        with open(os.path.join(self.origin_dir, 'foo'), 'w') as f:
+            f.write('touched\n')
+        self.git(['add', 'foo'])
+        self.git([
+            '-c', 'user.name=Test user', '-c', 'user.email=joj@test.com',
+            'commit', '-m', 'foo'
+        ])
+        mirror = git_cache.Mirror(self.origin_dir)
+        mirror.populate()
+        cache_dir = os.path.join(self.cache_dir,
+                                 mirror.UrlToCacheDir(self.origin_dir))
+        # Break the mirror's HEAD the way a default-branch rename does.
+        subprocess.check_call([
+            'git', '--git-dir', cache_dir, 'symbolic-ref', 'HEAD',
+            'refs/heads/gone'
+        ])
+
+        # Repairs HEAD like _set_symbolic_ref (tested on its own) would,
+        # minus the remote lookup.
+        def heal():
+            branch = subprocess.check_output([
+                'git', '--git-dir', cache_dir, 'for-each-ref', '--count=1',
+                '--format=%(refname)', 'refs/heads'
+            ]).decode().strip()
+            subprocess.check_call(
+                ['git', '--git-dir', cache_dir, 'symbolic-ref', 'HEAD', branch])
+
+        real_check_output = subprocess.check_output
+        gen_calls = []
+
+        # git number fails on the broken HEAD, then succeeds after the heal.
+        def fake_check_output(cmd, *args, **kwargs):
+            if 'number' in cmd:
+                gen_calls.append(cmd)
+                if len(gen_calls) == 1:
+                    raise subprocess.CalledProcessError(1, cmd)
+                return b'42\n'
+            return real_check_output(cmd, *args, **kwargs)
+
+        with mock.patch('git_cache.Gsutil') as gsutil_cls:
+            gsutil_cls.return_value.check_call_with_retries.return_value = (0,
+                                                                            '',
+                                                                            '')
+            with mock.patch('subprocess.check_output',
+                            side_effect=fake_check_output):
+                with mock.patch.object(mirror,
+                                       '_set_symbolic_ref',
+                                       side_effect=heal) as heal_mock:
+                    self.assertTrue(mirror.update_bootstrap())
+                    heal_mock.assert_called_once()
+        self.assertEqual(len(gen_calls), 2)
 
 
 class GitCacheDirTest(unittest.TestCase):

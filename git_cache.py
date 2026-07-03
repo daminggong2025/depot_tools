@@ -495,6 +495,13 @@ class Mirror(object):
                     're-bootstrap but failed. Continuing with non-optimized '
                     'repository.' % len(pack_files))
 
+    # Fallback HEAD branches, tried in order, when the remote does not
+    # advertise a default branch. GitHub mirrors keep the upstream's
+    # branches under refs/heads/upstream/.
+    _FALLBACK_HEAD_BRANCHES = [
+        'main', 'master', 'upstream/main', 'upstream/master'
+    ]
+
     def _set_symbolic_ref(self):
         remote_info = gclient_utils.exponential_backoff_retry(
             lambda: subprocess.check_output([
@@ -507,6 +514,28 @@ class Mirror(object):
         m = default_branch_regexp.search(remote_info)
         if m and m.groups()[0] != '(unknown)':
             self.RunGit(['symbolic-ref', 'HEAD', 'refs/heads/' + m.groups()[0]])
+            return
+        # No default branch advertised: keep HEAD on a live local branch
+        # anyway, since the generation number and clones depend on it.
+        # Full refnames throughout: %(refname:short) disambiguates a branch
+        # that shares its name with a tag as 'heads/<name>', which would get
+        # mangled into 'refs/heads/heads/<name>' below.
+        branch_refs = self.RunGit([
+            'for-each-ref', '--sort=-committerdate', '--format=%(refname)',
+            'refs/heads'
+        ],
+                                  print_stdout=False).decode('utf-8',
+                                                             'ignore').split()
+        if not branch_refs:
+            return
+        fallback_refs = [
+            'refs/heads/' + b for b in self._FALLBACK_HEAD_BRANCHES
+        ]
+        chosen = next((r for r in fallback_refs if r in branch_refs),
+                      branch_refs[0])
+        self.print('remote does not advertise a default branch; pointing '
+                   'HEAD at %s' % chosen)
+        self.RunGit(['symbolic-ref', 'HEAD', chosen])
 
 
     def _fetch(self,
@@ -561,6 +590,32 @@ class Mirror(object):
         out = self.RunGit(['rev-parse', 'HEAD'], print_stdout=False)
         if out.startswith(b'HEAD'):
             self._set_symbolic_ref()
+        elif self._head_looks_stale():
+            self._set_symbolic_ref()
+
+    # A HEAD this much older than the mirror's newest branch is re-verified
+    # against the remote (a default-branch rename can leave HEAD frozen).
+    _STALE_HEAD_AGE_SECS = 14 * 24 * 3600
+
+    def _head_looks_stale(self):
+        try:
+            head_time = int(
+                self.RunGit(['log', '-1', '--format=%ct', 'HEAD'],
+                            print_stdout=False).decode('utf-8',
+                                                       'ignore').strip())
+            newest_time = int(
+                self.RunGit([
+                    'for-each-ref', '--sort=-committerdate', '--count=1',
+                    '--format=%(committerdate:unix)', 'refs/heads'
+                ],
+                            print_stdout=False).decode('utf-8',
+                                                       'ignore').strip())
+        except (subprocess.CalledProcessError, ValueError):
+            return False
+        # The absolute-age condition keeps a future-dated side branch from
+        # making a busy repo (e.g. src) look stale.
+        return (time.time() - head_time > self._STALE_HEAD_AGE_SECS
+                and newest_time - head_time > self._STALE_HEAD_AGE_SECS)
 
     def populate(self,
                  depth=None,
@@ -616,15 +671,24 @@ class Mirror(object):
 
         self.DeleteTmpPackFiles(self.mirror_path)
 
-        # The folder is <git number>
-        try:
-            gen_number = subprocess.check_output(
+        def head_gen_number():
+            return subprocess.check_output(
                 [self.git_exe, '--git-dir', self.mirror_path,
                  'number']).decode('utf-8', 'ignore').strip()
+
+        # The folder is <git number>
+        try:
+            gen_number = head_gen_number()
         except subprocess.CalledProcessError:
-            self.print('Could not calculate generation number for HEAD; '
-                       'skipping bootstrap update.')
-            return
+            # HEAD is broken, e.g. after a default-branch rename; repair it
+            # and retry once.
+            self._set_symbolic_ref()
+            try:
+                gen_number = head_gen_number()
+            except subprocess.CalledProcessError:
+                self.print('Could not calculate generation number for HEAD; '
+                           'bootstrap update failed.')
+                return False
         gsutil = Gsutil(path=self.gsutil_exe, boto_path=None)
 
         dest_prefix = '%s/%s' % (self._gs_path, gen_number)
@@ -643,7 +707,7 @@ class Mirror(object):
         if (dest_prefix + '/' in ls_out_set
                 and dest_prefix + '.ready' in ls_out_set):
             print('Cache %s already exists.' % dest_prefix)
-            return
+            return True
 
         # Reduce the number of individual files to download & write on disk.
         self.RunGit(['pack-refs', '--all'])
@@ -687,7 +751,9 @@ class Mirror(object):
         gsutil.call('-m', 'rsync', '-r', '-d', self.mirror_path, dest_prefix)
 
         # Create .ready file and upload
-        _, ready_file_name = tempfile.mkstemp(suffix='.ready')
+        fd, ready_file_name = tempfile.mkstemp(suffix='.ready')
+        # mkstemp returns an open fd; Windows cannot delete an open file.
+        os.close(fd)
         try:
             self.print('running "gsutil cp %s %s.ready"' %
                        (ready_file_name, dest_prefix))
@@ -700,10 +766,10 @@ class Mirror(object):
         # which can be used for bootstrapping while the current one is
         # being uploaded
         if not prune:
-            return
+            return True
         prev_dest_prefix = self._GetMostRecentCacheDirectory(ls_out_set)
         if not prev_dest_prefix:
-            return
+            return True
         for path in ls_out_set:
             if path in (prev_dest_prefix + '/', prev_dest_prefix + '.ready'):
                 continue
@@ -711,6 +777,7 @@ class Mirror(object):
                 gsutil.call('rm', path)
                 continue
             gsutil.call('-m', 'rm', '-r', path)
+        return True
 
     @staticmethod
     def DeleteTmpPackFiles(path):
@@ -783,7 +850,8 @@ def CMDupdate_bootstrap(parser, args):
     _, args2 = parser.parse_args(args)
     url = args2[0]
     mirror = Mirror(url)
-    mirror.update_bootstrap(options.prune, options.gc_aggressive)
+    if not mirror.update_bootstrap(options.prune, options.gc_aggressive):
+        return 1
     return 0
 
 
