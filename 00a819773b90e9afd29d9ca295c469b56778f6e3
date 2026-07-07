@@ -45,6 +45,30 @@
       },
       "revId": "00a819773b90e9afd29d9ca295c469b56778f6e3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "bae04f21_9a10d233",
+        "filename": "tests/ruff_test.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-07-07T09:05:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9faebb72_501a0f81",
+      "range": {
+        "startLine": 65,
+        "startChar": 6,
+        "endLine": 65,
+        "endChar": 26
+      },
+      "revId": "00a819773b90e9afd29d9ca295c469b56778f6e3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

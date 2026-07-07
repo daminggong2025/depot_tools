@@ -436,6 +436,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "6409656f_0462fe85",
+        "filename": "ruff",
+        "patchSetId": 4
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-07-07T09:05:28Z",
+      "side": 1,
+      "message": "I have changed the whole logic right here in the middle, now if anything goes wrong I just go back to YAPF instead of trying ruff.",
+      "parentUuid": "6ef93626_5c7c1ef9",
+      "range": {
+        "startLine": 56,
+        "startChar": 10,
+        "endLine": 56,
+        "endChar": 79
+      },
+      "revId": "de73b633f1e9f92e63b6b0972b9b66d3996c0bf6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "33ed94a5_459025ec",
