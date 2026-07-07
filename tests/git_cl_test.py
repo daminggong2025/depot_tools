@@ -5660,6 +5660,129 @@ class CMDFormatTestCase(unittest.TestCase):
             mock_stdout_write.assert_called_once_with(expected_output)
 
 
+    def testSortObjCProtocols(self):
+        self.assertEqual(
+            git_cl._SortObjCProtocols(
+                "@interface MyClass : NSObject <ProtoB, ProtoA>", None, True),
+            "@interface MyClass : NSObject <ProtoA, ProtoB>")
+        self.assertEqual(
+            git_cl._SortObjCProtocols(
+                "@interface MyClass : NSObject <ProtoB, // comment\nProtoA>",
+                None, True),
+            "@interface MyClass : NSObject <ProtoB, // comment\nProtoA>")
+        self.assertEqual(
+            git_cl._SortObjCProtocols(
+                "@interface AccountMenuMediator () <AuthenticationFlowDelegate,\n"
+                "\n"
+                "IdentityManagerObserverBridgeDelegate,\n"
+                "            AuthenticationServiceObserving,\n"
+                "                                   SyncObserverModelBridge>",
+                None, True),
+            "@interface AccountMenuMediator () <AuthenticationFlowDelegate,\n"
+            "                                   AuthenticationServiceObserving,\n"
+            "                                   IdentityManagerObserverBridgeDelegate,\n"
+            "                                   SyncObserverModelBridge>")
+
+        # Test case-insensitive sorting
+        self.assertEqual(
+            git_cl._SortObjCProtocols(
+                "@interface TabListFromAndroidMediator\n"
+                "    : NSObject <TableViewFaviconDataSource,\n"
+                "                TabListFromAndroidViewControllerDelegate>",
+                None, True), "@interface TabListFromAndroidMediator\n"
+            "    : NSObject <TableViewFaviconDataSource,\n"
+            "                TabListFromAndroidViewControllerDelegate>")
+
+        # Test selective sorting based on diff
+        content = ("@interface UnmodifiedClass : NSObject <ProtoB, ProtoA>\n"
+                   "@end\n"
+                   "\n"
+                   "@interface ModifiedClass : NSObject <ProtoD, ProtoC>\n"
+                   "@end\n")
+        diff_str = (
+            "diff --git a/test.m b/test.m\n"
+            "--- a/test.m\n"
+            "+++ b/test.m\n"
+            "@@ -4,2 +4,2 @@\n"
+            "-@interface ModifiedClass : NSObject <ProtoD, ProtoC>\n"
+            "+@interface ModifiedClass : NSObject <ProtoD, ProtoC> // touched\n"
+        )
+        # With diff, only ModifiedClass should be sorted
+        self.assertEqual(
+            git_cl._SortObjCProtocols(content, diff_str, False),
+            ("@interface UnmodifiedClass : NSObject <ProtoB, ProtoA>\n"
+             "@end\n"
+             "\n"
+             "@interface ModifiedClass : NSObject <ProtoC, ProtoD>\n"
+             "@end\n"))
+        # Test with lightweight generic types (should not sort type parameters or type arguments)
+        self.assertEqual(
+            git_cl._SortObjCProtocols(
+                "@interface DriveFilePickerDataSource<SectionIdentifierType, ItemIdentifierType> :\n"
+                "    UITableViewDiffableDataSource <SectionIdentifierType, ItemIdentifierType>",
+                None, True),
+            "@interface DriveFilePickerDataSource<SectionIdentifierType, ItemIdentifierType> :\n"
+            "    UITableViewDiffableDataSource <SectionIdentifierType, ItemIdentifierType>"
+        )
+
+        # Test with lightweight generics and implemented protocols (should only sort protocols)
+        self.assertEqual(
+            git_cl._SortObjCProtocols(
+                "@interface DriveFilePickerDataSource<SectionIdentifierType, ItemIdentifierType> :\n"
+                "    UITableViewDiffableDataSource <SectionIdentifierType, ItemIdentifierType> <ProtoB, ProtoA>",
+                None, True),
+            "@interface DriveFilePickerDataSource<SectionIdentifierType, ItemIdentifierType> :\n"
+            "    UITableViewDiffableDataSource <SectionIdentifierType, ItemIdentifierType> <ProtoA, ProtoB>"
+        )
+
+        # Test base class generic type arguments with pointer types (should not sort)
+        self.assertEqual(
+            git_cl._SortObjCProtocols(
+                "@interface MyClass : GenericBase <NSString *, NSNumber *>",
+                None, True),
+            "@interface MyClass : GenericBase <NSString *, NSNumber *>")
+
+        # Test base class generic type arguments with id (should not sort)
+        self.assertEqual(
+            git_cl._SortObjCProtocols(
+                "@interface MyClass : GenericBase <id, id>", None, True),
+            "@interface MyClass : GenericBase <id, id>")
+
+        # Test base class generic type arguments with protocol-qualified id (should not sort)
+        self.assertEqual(
+            git_cl._SortObjCProtocols(
+                "@interface MyClass : GenericBase <id<ProtoB>, id<ProtoA>>",
+                None, True),
+            "@interface MyClass : GenericBase <id<ProtoB>, id<ProtoA>>")
+
+    @mock.patch('git_cl._RunClangFormatDiff', return_value=0)
+    def testClangFormatDiffAndSort(self, mock_run_clang):
+        # Test dry-run detect changes
+        fname = os.path.join(self._top_dir, 'test.m')
+        content = "@interface MyClass : NSObject <ProtoB, ProtoA>\n@end\n"
+        self._make_temp_file('test.m', [content])
+        mock_opts = mock.Mock(full=False, dry_run=True, diff=False)
+
+        # When dry_run=True, it should detect the unsorted protocols and return 2,
+        # and should not permanently change the file on disk.
+        ret = git_cl._RunClangFormatDiffAndSort(mock_opts, [fname],
+                                                self._top_dir, None)
+        self.assertEqual(2, ret)
+
+        with open(fname, 'r') as f:
+            self.assertEqual(f.read(), content)
+
+        # Test normal formatting (modifies file on disk)
+        mock_opts = mock.Mock(full=False, dry_run=False, diff=False)
+        ret = git_cl._RunClangFormatDiffAndSort(mock_opts, [fname],
+                                                self._top_dir, None)
+        self.assertEqual(0, ret)
+        with open(fname, 'r') as f:
+            self.assertEqual(
+                f.read(),
+                "@interface MyClass : NSObject <ProtoA, ProtoB>\n@end\n")
+
+
     def testYapfignoreExplicit(self):
         self._make_yapfignore(['foo/bar.py', 'foo/bar/baz.py'])
         files = [
