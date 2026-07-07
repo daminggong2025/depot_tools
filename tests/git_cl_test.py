@@ -5660,6 +5660,51 @@ class CMDFormatTestCase(unittest.TestCase):
             mock_stdout_write.assert_called_once_with(expected_output)
 
 
+    def testSortObjCProtocols(self):
+        self.assertEqual(
+            git_cl._SortObjCProtocols(
+                "@interface MyClass : NSObject <ProtoB, ProtoA>"),
+            "@interface MyClass : NSObject <ProtoA, ProtoB>")
+        self.assertEqual(
+            git_cl._SortObjCProtocols(
+                "@interface MyClass : NSObject <ProtoB, // comment\nProtoA>"),
+            "@interface MyClass : NSObject <ProtoB, // comment\nProtoA>")
+        self.assertEqual(
+            git_cl._SortObjCProtocols(
+                "@interface AccountMenuMediator () <AuthenticationFlowDelegate,\n"
+                "\n"
+                "IdentityManagerObserverBridgeDelegate,\n"
+                "            AuthenticationServiceObserving,\n"
+                "                                   SyncObserverModelBridge>"),
+            "@interface AccountMenuMediator () <AuthenticationFlowDelegate,\n"
+                "                                   AuthenticationServiceObserving,\n"
+                "                                   IdentityManagerObserverBridgeDelegate,\n"
+                "                                   SyncObserverModelBridge>")
+
+    @mock.patch('git_cl._RunClangFormatDiff', return_value=0)
+    def testClangFormatDiffAndSort(self, mock_run_clang):
+        # Test dry-run detect changes
+        fname = os.path.join(self._top_dir, 'test.m')
+        content = "@interface MyClass : NSObject <ProtoB, ProtoA>\n@end\n"
+        self._make_temp_file('test.m', [content])
+        mock_opts = mock.Mock(full=False, dry_run=True, diff=False)
+
+        # When dry_run=True, it should detect the unsorted protocols and return 2,
+        # and should not permanently change the file on disk.
+        ret = git_cl._RunClangFormatDiffAndSort(mock_opts, [fname], self._top_dir, None)
+        self.assertEqual(2, ret)
+
+        with open(fname, 'r') as f:
+            self.assertEqual(f.read(), content)
+
+        # Test normal formatting (modifies file on disk)
+        mock_opts = mock.Mock(full=False, dry_run=False, diff=False)
+        ret = git_cl._RunClangFormatDiffAndSort(mock_opts, [fname], self._top_dir, None)
+        self.assertEqual(0, ret)
+        with open(fname, 'r') as f:
+            self.assertEqual(f.read(), "@interface MyClass : NSObject <ProtoA, ProtoB>\n@end\n")
+
+
     def testYapfignoreExplicit(self):
         self._make_yapfignore(['foo/bar.py', 'foo/bar/baz.py'])
         files = [
