@@ -1256,6 +1256,19 @@ def IsEnvCog():
     return os.getcwd().startswith('/google/cog/cloud')
 
 
+def IsEnvAi():
+    """Returns whether the command is running inside an AI agent."""
+    return any(
+        os.environ.get(v) for v in (
+            'GEMINI_CLI',
+            'CLAUDECODE',
+            'ANTIGRAVITY_AGENT',
+            'CODEX_SANDBOX',
+            'CURSOR_AGENT',
+            'AI_AGENT',
+        ))
+
+
 def UpgradeToHttps(url):
     """Upgrades random urls to https://.
 
