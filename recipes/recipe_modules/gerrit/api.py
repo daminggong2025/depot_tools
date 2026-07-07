@@ -8,7 +8,6 @@ from typing import Callable, Optional
 
 class GerritApi(recipe_api.RecipeApi):
   """Module for interact with Gerrit endpoints"""
-
   def __init__(self, *args, **kwargs):
     super(GerritApi, self).__init__(*args, **kwargs)
     self._changes_target_branch_cache = {}
@@ -207,6 +206,15 @@ class GerritApi(recipe_api.RecipeApi):
         'Error querying for CL description: host:%r change:%r; patchset:%r' % (
             host, change, patchset))
 
+  def _is_us_east_coast(self):
+    bot_dims = self.m.buildbucket.swarming_bot_dimensions
+    if not bot_dims:
+      return False
+    for dim in bot_dims:
+      if dim.key == 'zone' and dim.value in ('us-atl', 'us-iad'):
+        return True
+    return False
+
   def get_changes(self,
                   host,
                   query_params,
@@ -234,30 +242,50 @@ class GerritApi(recipe_api.RecipeApi):
       A list of change dicts as documented here:
           https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#list-changes
     """
-    args = [
-        'changes',
-        '--host', host,
-        '--json_file', self.m.json.output()
-    ]
-    if start:
-      args += ['--start', str(start)]
-    if limit:
-      args += ['--limit', str(limit)]
-    for k, v in query_params:
-      args += ['-p', '%s=%s' % (k, v)]
-    for v in (o_params or []):
-      args += ['-o', v]
-    if verbose:
-      args.append('--verbose')
+    host_mirrors = {
+        'https://chromium-review.googlesource.com': [
+            'https://us1-mirror-chromium-review.googlesource.com',
+            'https://us2-mirror-chromium-review.googlesource.com',
+        ],
+    }
+
+    step_name = kwargs.pop('name', 'changes')
+
     if not step_test_data:
       step_test_data = lambda: self.test_api.get_one_change_response_data()
 
-    return self(
-        kwargs.pop('name', 'changes'),
-        args,
-        step_test_data=step_test_data,
-        **kwargs
-    ).json.output
+    def _run_query(target_host, suffix=""):
+      args = [
+          'changes', '--host', target_host, '--json_file',
+          self.m.json.output()
+      ]
+      if start:
+        args += ['--start', str(start)]
+      if limit:
+        args += ['--limit', str(limit)]
+      for k, v in query_params:
+        args += ['-p', '%s=%s' % (k, v)]
+      for v in (o_params or []):
+        args += ['-o', v]
+      if verbose:
+        args.append('--verbose')
+
+      curr_step_name = step_name
+      if suffix:
+        curr_step_name = f"{step_name} {suffix}"
+
+      return self(curr_step_name, args, step_test_data=step_test_data,
+                  **kwargs).json.output
+
+    res = _run_query(host)
+
+    if not res and self._is_us_east_coast():
+      for i, mirror in enumerate(host_mirrors.get(host, [])):
+        res = _run_query(mirror, suffix=f"(retry {i+1})")
+        if res:
+          break
+
+    return res
 
   def get_file_content(self,
                        host,
