@@ -414,6 +414,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "6ef93626_5c7c1ef9",
+        "filename": "ruff",
+        "patchSetId": 4
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1429892
+      },
+      "writtenOn": "2026-07-07T09:02:47Z",
+      "side": 1,
+      "message": "\"If file is unreadable opt for YAPF.\"\n\nShould this say Ruff instead? Not sure if I\u0027m misreading, I\u0027ll kick off CQ",
+      "parentUuid": "5e8d9235_81d59b6d",
+      "range": {
+        "startLine": 56,
+        "startChar": 10,
+        "endLine": 56,
+        "endChar": 79
+      },
+      "revId": "de73b633f1e9f92e63b6b0972b9b66d3996c0bf6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "33ed94a5_459025ec",
         "filename": "ruff",
         "patchSetId": 4
@@ -684,6 +708,30 @@
       "side": 1,
       "message": "I hope no one needs to know all this, it\u0027s because ruff made such a zoo of files, and I don\u0027t want to leave any toss up situations. Ideally the files will not coexist. I will instruct users to use [tool.ruff]",
       "parentUuid": "64f0c770_10a555b7",
+      "range": {
+        "startLine": 132,
+        "startChar": 0,
+        "endLine": 133,
+        "endChar": 41
+      },
+      "revId": "de73b633f1e9f92e63b6b0972b9b66d3996c0bf6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6922de00_11e34a79",
+        "filename": "ruff",
+        "patchSetId": 4
+      },
+      "lineNbr": 133,
+      "author": {
+        "id": 1429892
+      },
+      "writtenOn": "2026-07-07T09:02:47Z",
+      "side": 1,
+      "message": "Yeah that sounds better, as it otherwise might be confusing to someone tracking down why something unexpected is happening with the formatter choice",
+      "parentUuid": "b6404eb5_274d8d7a",
       "range": {
         "startLine": 132,
         "startChar": 0,

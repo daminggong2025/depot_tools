@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9f013f77_b226d3d8",
+        "filename": "ruff",
+        "patchSetId": 9
+      },
+      "lineNbr": 129,
+      "author": {
+        "id": 1429892
+      },
+      "writtenOn": "2026-07-07T09:02:47Z",
+      "side": 1,
+      "message": "Thank you for this! I forgot to comment that it was not obvious why an infinite loop was being used.",
+      "range": {
+        "startLine": 127,
+        "startChar": 0,
+        "endLine": 129,
+        "endChar": 15
+      },
+      "revId": "00a819773b90e9afd29d9ca295c469b56778f6e3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9faebb72_501a0f81",
+        "filename": "tests/ruff_test.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1429892
+      },
+      "writtenOn": "2026-07-07T09:02:47Z",
+      "side": 1,
+      "message": "Should there be a test for `**`?",
+      "range": {
+        "startLine": 65,
+        "startChar": 6,
+        "endLine": 65,
+        "endChar": 26
+      },
+      "revId": "00a819773b90e9afd29d9ca295c469b56778f6e3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
