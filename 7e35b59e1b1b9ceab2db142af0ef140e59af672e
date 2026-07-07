@@ -16,6 +16,24 @@
       "message": "Even though a revert to the original CL was created https://chromium-review.googlesource.com/c/chromium/tools/depot_tools/+/7891105\n\nthis CL adds ability to disable the formatter if it will be default-enabled again.",
       "revId": "7e35b59e1b1b9ceab2db142af0ef140e59af672e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3d3f7c97_07e4f1b3",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1493367
+      },
+      "writtenOn": "2026-07-07T06:42:45Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "494c7202_3f545019",
+      "revId": "7e35b59e1b1b9ceab2db142af0ef140e59af672e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
