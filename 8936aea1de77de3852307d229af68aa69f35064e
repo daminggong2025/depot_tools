@@ -67,6 +67,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "0cb1205d_4f01e46a",
+        "filename": "gclient_utils.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 1269,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-07-07T17:23:06Z",
+      "side": 1,
+      "message": "I wasn\u0027t aware of that. can we dedupe them so we don\u0027t have to keep separate lists of envvars?\n\nwe don\u0027t need toBoolean if we do something like:\n```\nos.environ.get(v) not in (None, \u0027\u0027, \u00270\u0027, \u0027false\u0027, \u0027FALSE\u0027) for v in  ...\n```",
+      "parentUuid": "ac6a628f_8e12ebf7",
+      "range": {
+        "startLine": 1261,
+        "startChar": 4,
+        "endLine": 1269,
+        "endChar": 10
+      },
+      "revId": "8936aea1de77de3852307d229af68aa69f35064e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "e0d0d815_d658608f",
         "filename": "git_cl.py",
         "patchSetId": 2
