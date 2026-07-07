@@ -43,6 +43,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "ac6a628f_8e12ebf7",
+        "filename": "gclient_utils.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 1269,
+      "author": {
+        "id": 1175774
+      },
+      "writtenOn": "2026-07-07T11:54:59Z",
+      "side": 1,
+      "message": "I was following the precedent in https://chromium.googlesource.com/chromium/tools/depot_tools/+/8936aea1de77de3852307d229af68aa69f35064e/siso.py#634\n\nI could change it in both, but then that\u0027s custom toBoolean logic on environment variables?",
+      "parentUuid": "ae7da0eb_e9aa7878",
+      "range": {
+        "startLine": 1261,
+        "startChar": 4,
+        "endLine": 1269,
+        "endChar": 10
+      },
+      "revId": "8936aea1de77de3852307d229af68aa69f35064e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "e0d0d815_d658608f",
         "filename": "git_cl.py",
         "patchSetId": 2
@@ -54,6 +78,30 @@
       "writtenOn": "2026-07-06T19:47:17Z",
       "side": 1,
       "message": "do we need this? `gerrit_util.CreateDraft` does the same thing right after",
+      "range": {
+        "startLine": 5223,
+        "startChar": 8,
+        "endLine": 5224,
+        "endChar": 42
+      },
+      "revId": "8936aea1de77de3852307d229af68aa69f35064e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "eba76633_f55b9cc5",
+        "filename": "git_cl.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 5224,
+      "author": {
+        "id": 1175774
+      },
+      "writtenOn": "2026-07-07T11:54:59Z",
+      "side": 1,
+      "message": "Good point, removed.",
+      "parentUuid": "e0d0d815_d658608f",
       "range": {
         "startLine": 5223,
         "startChar": 8,
