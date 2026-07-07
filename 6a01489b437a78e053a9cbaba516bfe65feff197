@@ -16,6 +16,47 @@
       "message": "What do you think of this approach? Trying to avoid making changes for v8 since this led to the previous revert, but I think this would allow us, with 1 additional change in Chromium\u0027s configuration, to make formatting JS enabled by default for Chromium CLs. \n\nLet me know if this is not a recommended way to do this however. It sounds like requiring a --no-js flag is a nonstarter for v8.",
       "revId": "6a01489b437a78e053a9cbaba516bfe65feff197",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e80e07fa_a05a873a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-07-07T20:40:24Z",
+      "side": 1,
+      "message": "IIUC you mean update chromium\u0027s codereview.settings to opt-in to default after you land this CL, which SGTM\n\nFYI https://chromium-review.git.corp.google.com/c/chromium/tools/depot_tools/+/8024866 adds a `--no-js`",
+      "parentUuid": "3a2800c2_65c1070a",
+      "revId": "6a01489b437a78e053a9cbaba516bfe65feff197",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8043f2ff_ecad7144",
+        "filename": "git_cl.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 1087,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-07-07T20:40:24Z",
+      "side": 1,
+      "message": "rietveld hasn\u0027t been used in many years, I\u0027m not sure we want to add any new configs under that namespace. maybe `cl.format-js` instead (like the existing `cl.date-order`)? we\u0027ll need to migrate away everything away from rietveld but that\u0027s for another CL",
+      "range": {
+        "startLine": 1087,
+        "startChar": 35,
+        "endLine": 1087,
+        "endChar": 53
+      },
+      "revId": "6a01489b437a78e053a9cbaba516bfe65feff197",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
