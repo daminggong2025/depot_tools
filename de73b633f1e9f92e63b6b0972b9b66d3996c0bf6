@@ -1,0 +1,389 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "26137fa1_7f69a7b7",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 4
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1429892
+      },
+      "writtenOn": "2026-07-07T06:05:54Z",
+      "side": 1,
+      "message": "Why not? :D\n\n(I assume existing presubmits?)",
+      "range": {
+        "startLine": 14,
+        "startChar": 0,
+        "endLine": 14,
+        "endChar": 60
+      },
+      "revId": "de73b633f1e9f92e63b6b0972b9b66d3996c0bf6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2474b30c_11c2a1d1",
+        "filename": "ruff",
+        "patchSetId": 4
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1429892
+      },
+      "writtenOn": "2026-07-07T06:05:54Z",
+      "side": 1,
+      "message": "No syntax highlighting makes this a bit less pleasant to review; was there a reason to avoid the existing siso.py/gn.py/autoninja.py convention?",
+      "revId": "de73b633f1e9f92e63b6b0972b9b66d3996c0bf6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ae9fbd94_53f29a51",
+        "filename": "ruff",
+        "patchSetId": 4
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1429892
+      },
+      "writtenOn": "2026-07-07T06:05:54Z",
+      "side": 1,
+      "message": "What is a Ruff pattern?",
+      "range": {
+        "startLine": 22,
+        "startChar": 43,
+        "endLine": 22,
+        "endChar": 72
+      },
+      "revId": "de73b633f1e9f92e63b6b0972b9b66d3996c0bf6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4a0456d6_9736e772",
+        "filename": "ruff",
+        "patchSetId": 4
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1429892
+      },
+      "writtenOn": "2026-07-07T06:05:54Z",
+      "side": 1,
+      "message": "Comment non-obvious code?",
+      "range": {
+        "startLine": 23,
+        "startChar": 4,
+        "endLine": 23,
+        "endChar": 23
+      },
+      "revId": "de73b633f1e9f92e63b6b0972b9b66d3996c0bf6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "222dd058_07feb607",
+        "filename": "ruff",
+        "patchSetId": 4
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1429892
+      },
+      "writtenOn": "2026-07-07T06:05:54Z",
+      "side": 1,
+      "message": "Nit: would `lstrip(r\"\\/\")` work?",
+      "range": {
+        "startLine": 27,
+        "startChar": 39,
+        "endLine": 27,
+        "endChar": 44
+      },
+      "revId": "de73b633f1e9f92e63b6b0972b9b66d3996c0bf6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "51e2b225_cb6359fc",
+        "filename": "ruff",
+        "patchSetId": 4
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1429892
+      },
+      "writtenOn": "2026-07-07T06:05:54Z",
+      "side": 1,
+      "message": "pydoc the args? I don\u0027t know what config_dir refers to reading this file top-to-bottom.",
+      "range": {
+        "startLine": 28,
+        "startChar": 31,
+        "endLine": 28,
+        "endChar": 54
+      },
+      "revId": "de73b633f1e9f92e63b6b0972b9b66d3996c0bf6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c91bdf44_a2c5a1bc",
+        "filename": "ruff",
+        "patchSetId": 4
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1429892
+      },
+      "writtenOn": "2026-07-07T06:05:54Z",
+      "side": 1,
+      "message": "Doc comment parameters?",
+      "range": {
+        "startLine": 51,
+        "startChar": 23,
+        "endLine": 51,
+        "endChar": 72
+      },
+      "revId": "de73b633f1e9f92e63b6b0972b9b66d3996c0bf6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2745ef45_b75b6876",
+        "filename": "ruff",
+        "patchSetId": 4
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1429892
+      },
+      "writtenOn": "2026-07-07T06:05:54Z",
+      "side": 1,
+      "message": "Of?",
+      "range": {
+        "startLine": 52,
+        "startChar": 65,
+        "endLine": 52,
+        "endChar": 76
+      },
+      "revId": "de73b633f1e9f92e63b6b0972b9b66d3996c0bf6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6cc1fcf0_6abd45c5",
+        "filename": "ruff",
+        "patchSetId": 4
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1429892
+      },
+      "writtenOn": "2026-07-07T06:05:54Z",
+      "side": 1,
+      "message": "This early return sounds like it should be described at function doc level? It impacts the contract of the function.",
+      "range": {
+        "startLine": 56,
+        "startChar": 10,
+        "endLine": 56,
+        "endChar": 79
+      },
+      "revId": "de73b633f1e9f92e63b6b0972b9b66d3996c0bf6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "33ed94a5_459025ec",
+        "filename": "ruff",
+        "patchSetId": 4
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1429892
+      },
+      "writtenOn": "2026-07-07T06:05:54Z",
+      "side": 1,
+      "message": "Document what this block is doing? Too verbose",
+      "range": {
+        "startLine": 59,
+        "startChar": 0,
+        "endLine": 75,
+        "endChar": 60
+      },
+      "revId": "de73b633f1e9f92e63b6b0972b9b66d3996c0bf6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7f8f1f7f_38fcd788",
+        "filename": "ruff",
+        "patchSetId": 4
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1429892
+      },
+      "writtenOn": "2026-07-07T06:05:54Z",
+      "side": 1,
+      "message": "Repetitive? Would list concat work?",
+      "range": {
+        "startLine": 62,
+        "startChar": 0,
+        "endLine": 75,
+        "endChar": 60
+      },
+      "revId": "de73b633f1e9f92e63b6b0972b9b66d3996c0bf6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d406f901_c317b5c3",
+        "filename": "ruff",
+        "patchSetId": 4
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 1429892
+      },
+      "writtenOn": "2026-07-07T06:05:54Z",
+      "side": 1,
+      "message": "abs_target_path?",
+      "range": {
+        "startLine": 94,
+        "startChar": 4,
+        "endLine": 94,
+        "endChar": 8
+      },
+      "revId": "de73b633f1e9f92e63b6b0972b9b66d3996c0bf6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "df09f590_c1716fa9",
+        "filename": "ruff",
+        "patchSetId": 4
+      },
+      "lineNbr": 110,
+      "author": {
+        "id": 1429892
+      },
+      "writtenOn": "2026-07-07T06:05:54Z",
+      "side": 1,
+      "message": "Intended?",
+      "range": {
+        "startLine": 108,
+        "startChar": 0,
+        "endLine": 110,
+        "endChar": 0
+      },
+      "revId": "de73b633f1e9f92e63b6b0972b9b66d3996c0bf6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7ca4592f_8681dd43",
+        "filename": "ruff",
+        "patchSetId": 4
+      },
+      "lineNbr": 119,
+      "author": {
+        "id": 1429892
+      },
+      "writtenOn": "2026-07-07T06:05:54Z",
+      "side": 1,
+      "message": "And here",
+      "range": {
+        "startLine": 118,
+        "startChar": 0,
+        "endLine": 119,
+        "endChar": 29
+      },
+      "revId": "de73b633f1e9f92e63b6b0972b9b66d3996c0bf6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "64f0c770_10a555b7",
+        "filename": "ruff",
+        "patchSetId": 4
+      },
+      "lineNbr": 133,
+      "author": {
+        "id": 1429892
+      },
+      "writtenOn": "2026-07-07T06:05:54Z",
+      "side": 1,
+      "message": "So `.style.yapf` existing will take precedence over ruff, but only if `[tool.ruff]` exists in pyproject.toml and there is no ruff.toml or pyproject.toml, or if there is also no pyproject.toml\n\nShould this decision matrix be documented at all?",
+      "range": {
+        "startLine": 132,
+        "startChar": 0,
+        "endLine": 133,
+        "endChar": 41
+      },
+      "revId": "de73b633f1e9f92e63b6b0972b9b66d3996c0bf6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6003fb50_49488d96",
+        "filename": "ruff",
+        "patchSetId": 4
+      },
+      "lineNbr": 150,
+      "author": {
+        "id": 1429892
+      },
+      "writtenOn": "2026-07-07T06:05:54Z",
+      "side": 1,
+      "message": "From what to what?",
+      "range": {
+        "startLine": 150,
+        "startChar": 4,
+        "endLine": 150,
+        "endChar": 18
+      },
+      "revId": "de73b633f1e9f92e63b6b0972b9b66d3996c0bf6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b000599b_df4013bc",
+        "filename": "ruff",
+        "patchSetId": 4
+      },
+      "lineNbr": 229,
+      "author": {
+        "id": 1429892
+      },
+      "writtenOn": "2026-07-07T06:05:54Z",
+      "side": 1,
+      "message": "Why create a helper function that returns `\"yapf\"` and ignore that value?",
+      "range": {
+        "startLine": 228,
+        "startChar": 0,
+        "endLine": 229,
+        "endChar": 26
+      },
+      "revId": "de73b633f1e9f92e63b6b0972b9b66d3996c0bf6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
