@@ -36,6 +36,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "2155d976_2bff22c4",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1182404
+      },
+      "writtenOn": "2026-07-07T22:17:18Z",
+      "side": 1,
+      "message": "Yes, update codereview.settings to opt-in to default. The goal is to allow Chromium WebUI CLs to be able to avoid the --js, while v8 will not be impacted.",
+      "parentUuid": "e80e07fa_a05a873a",
+      "revId": "6a01489b437a78e053a9cbaba516bfe65feff197",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "8043f2ff_ecad7144",
@@ -49,6 +67,30 @@
       "writtenOn": "2026-07-07T20:40:24Z",
       "side": 1,
       "message": "rietveld hasn\u0027t been used in many years, I\u0027m not sure we want to add any new configs under that namespace. maybe `cl.format-js` instead (like the existing `cl.date-order`)? we\u0027ll need to migrate away everything away from rietveld but that\u0027s for another CL",
+      "range": {
+        "startLine": 1087,
+        "startChar": 35,
+        "endLine": 1087,
+        "endChar": 53
+      },
+      "revId": "6a01489b437a78e053a9cbaba516bfe65feff197",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3a4fc258_9627b4b8",
+        "filename": "git_cl.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 1087,
+      "author": {
+        "id": 1182404
+      },
+      "writtenOn": "2026-07-07T22:17:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8043f2ff_ecad7144",
       "range": {
         "startLine": 1087,
         "startChar": 35,
