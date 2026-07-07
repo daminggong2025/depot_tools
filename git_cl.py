@@ -7243,6 +7243,163 @@ def _RunClangFormatDiff(opts, paths, top_dir, diffs):
     return return_value
 
 
+def _SortObjCProtocols(content: str, diff_string: str | None, full: bool) -> str:
+    # Regex matching Obj-C interface declaration with protocol list
+    regex = re.compile(
+        r'(@interface\s+[a-zA-Z_][a-zA-Z0-9_]*\s*'
+        r'(?::\s*[a-zA-Z_][a-zA-Z0-9_]*\s*)?'
+        r'(?:\(\s*[a-zA-Z0-9_]*\s*\)\s*)?\s*)'  # Group 1: prefix up to <
+        r'<([^>]+)>'                           # Group 2: protocols inside < >
+    )
+
+    modified_lines = set()
+    if not full and diff_string:
+        matches = re.findall(r'^@@ -\d+(?:,\d+)? \+(\d+)(?:,(\d+))? @@', diff_string, re.MULTILINE)
+        for start_str, len_str in matches:
+            start = int(start_str)
+            length = int(len_str) if len_str else 1
+            for line in range(start, start + length):
+                modified_lines.add(line)
+
+    def get_line_number(offset):
+        return content.count('\n', 0, offset) + 1
+
+    def replace(match):
+        prefix = match.group(1)
+        protocols_str = match.group(2)
+        if '//' in protocols_str or '/*' in protocols_str:
+            return match.group(0) # Keep original if there are comments inside
+
+        # Check if this match overlaps with modified lines
+        if not full and diff_string:
+            start_line = get_line_number(match.start())
+            end_line = get_line_number(match.end())
+            match_range = range(start_line, end_line + 1)
+            if not any(l in modified_lines for l in match_range):
+                return match.group(0) # Not modified, keep as is!
+
+        # Extract names and separators
+        names = re.findall(r'[a-zA-Z_][a-zA-Z0-9_]*', protocols_str)
+        if not names:
+            return match.group(0)
+
+        separators = re.split(r'[a-zA-Z_][a-zA-Z0-9_]*', protocols_str)
+        sorted_names = sorted(names, key=str.lower)
+
+        # Compute alignment indentation
+        last_line_of_prefix = prefix.splitlines()[-1] if prefix else ""
+        indent = " " * (len(last_line_of_prefix) + 1)
+
+        # Interleave sorted_names and separators with normalized indentation and removed empty lines
+        reconstructed = []
+        for i in range(len(sorted_names)):
+            sep = separators[i]
+            if '\n' in sep:
+                sep = re.sub(r'\n+', '\n', sep)
+                parts = sep.split('\n')
+                parts[-1] = indent
+                sep = '\n'.join(parts)
+            reconstructed.append(sep)
+            reconstructed.append(sorted_names[i])
+        reconstructed.append(separators[-1])
+
+        return f"{prefix}<{''.join(reconstructed)}>"
+
+    return regex.sub(replace, content)
+
+
+def _RunClangFormatDiffAndSort(opts, paths, top_dir, diffs):
+    objc_paths = [p for p in paths if p.lower().endswith(('.h', '.m', '.mm'))]
+    other_paths = [p for p in paths if not p.lower().endswith(('.h', '.m', '.mm'))]
+
+    # Pre-process all Obj-C files to check and sort
+    sorted_files = {} # path -> (original_content, sorted_content)
+    for path in objc_paths:
+        try:
+            with open(path, 'r', encoding='utf-8') as f:
+                original_content = f.read()
+            sorted_content = _SortObjCProtocols(
+                original_content,
+                diffs.get(path) if diffs else None,
+                getattr(opts, 'full', False))
+            sorted_files[path] = (original_content, sorted_content)
+        except Exception:
+            pass
+
+    return_value = 0
+    modified_objc_paths = [path for path, (orig, sort) in sorted_files.items() if orig != sort]
+
+    if not opts.dry_run and not opts.diff:
+        for path in modified_objc_paths:
+            with open(path, 'w', encoding='utf-8') as f:
+                f.write(sorted_files[path][1])
+        return_value = _RunClangFormatDiff(opts, paths, top_dir, diffs)
+
+    elif opts.dry_run and not opts.diff:
+        if modified_objc_paths:
+            return_value = 2
+        backups = {}
+        for path in modified_objc_paths:
+            backups[path] = sorted_files[path][0]
+            with open(path, 'w', encoding='utf-8') as f:
+                f.write(sorted_files[path][1])
+        try:
+            ret = _RunClangFormatDiff(opts, paths, top_dir, diffs)
+            return_value = return_value or ret
+        finally:
+            for path, orig in backups.items():
+                with open(path, 'w', encoding='utf-8') as f:
+                    f.write(orig)
+
+    elif opts.diff:
+        backups = {}
+        for path in objc_paths:
+            if path in sorted_files:
+                backups[path] = sorted_files[path][0]
+                if path in modified_objc_paths:
+                    with open(path, 'w', encoding='utf-8') as f:
+                        f.write(sorted_files[path][1])
+
+        if other_paths:
+            ret = _RunClangFormatDiff(opts, other_paths, top_dir, diffs)
+            return_value = return_value or ret
+
+        if objc_paths:
+            import copy
+            mock_opts = copy.copy(opts)
+            mock_opts.dry_run = False
+            mock_opts.diff = False
+
+            try:
+                ret = _RunClangFormatDiff(mock_opts, objc_paths, top_dir, diffs)
+                for path in objc_paths:
+                    if path in sorted_files:
+                        with open(path, 'r', encoding='utf-8') as f:
+                            formatted_content = f.read()
+                        orig = sorted_files[path][0]
+                        sort = sorted_files[path][1]
+                        if ret == 2 or sort != orig:
+                            if opts.dry_run:
+                                return_value = 2
+
+                        if orig != formatted_content:
+                            rel_path = os.path.relpath(path, top_dir)
+                            import difflib
+                            diff_lines = difflib.unified_diff(
+                                orig.splitlines(keepends=True),
+                                formatted_content.splitlines(keepends=True),
+                                fromfile='a/' + rel_path,
+                                tofile='b/' + rel_path,
+                            )
+                            sys.stdout.write("".join(diff_lines))
+            finally:
+                for path, orig in backups.items():
+                    with open(path, 'w', encoding='utf-8') as f:
+                        f.write(orig)
+
+    return return_value
+
+
 def _RunGoogleJavaFormat(opts, paths, top_dir, diffs):
     """Runs google-java-format and sets a return value if necessary."""
     tool = google_java_format.FindGoogleJavaFormat()
@@ -7784,7 +7941,7 @@ def CMDformat(parser: optparse.OptionParser, args: list[str]):
     if not opts.no_java:
         formatters.append((['.java'], _RunGoogleJavaFormat))
     if opts.clang_format:
-        formatters.append((clang_exts, _RunClangFormatDiff))
+        formatters.append((clang_exts, _RunClangFormatDiffAndSort))
     if opts.use_rust_fmt:
         formatters.append((['.rs'], _RunRustFmt))
     if opts.use_swift_format:
