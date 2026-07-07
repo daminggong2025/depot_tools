@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4d12249e_0a5c6fad",
+        "filename": "gclient.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 1928,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-07-07T22:24:51Z",
+      "side": 1,
+      "message": "nit: use f strings",
+      "range": {
+        "startLine": 1927,
+        "startChar": 16,
+        "endLine": 1928,
+        "endChar": 44
+      },
+      "revId": "010e9b7a450a29768e9943481e687278e2d80c6d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e3f487e1_e405dcea",
+        "filename": "gclient_scm.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 237,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-07-07T22:24:51Z",
+      "side": 1,
+      "message": "WDYT about making a CacheMode enum?",
+      "range": {
+        "startLine": 237,
+        "startChar": 17,
+        "endLine": 237,
+        "endChar": 25
+      },
+      "revId": "010e9b7a450a29768e9943481e687278e2d80c6d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
