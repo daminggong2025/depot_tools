@@ -6815,6 +6815,102 @@ class BuildbucketBatchTest(unittest.TestCase):
         self.assertIn('search fail', str(cm.exception))
 
 
+class TestRuffIntegration(unittest.TestCase):
+
+    def setUp(self):
+        self.test_dir = tempfile.mkdtemp()
+        self.orig_cwd = os.getcwd()
+        os.chdir(self.test_dir)
+
+    def tearDown(self):
+        os.chdir(self.orig_cwd)
+        shutil.rmtree(self.test_dir)
+
+    def write_file(self, path, content):
+        full_path = os.path.join(self.test_dir, path)
+        os.makedirs(os.path.dirname(full_path), exist_ok=True)
+        with open(full_path, "w", encoding="utf-8") as f:
+            f.write(content)
+        return full_path
+
+    def test_find_python_config_file_ruff(self):
+        cfg = self.write_file("ruff.toml", "")
+        res = git_cl._FindPythonConfigFile(
+            os.path.join(self.test_dir, "foo.py"), {}, self.test_dir)
+        self.assertEqual(res, cfg)
+
+    def test_find_python_config_file_pyproject_ruff(self):
+        cfg = self.write_file("pyproject.toml", "[tool.ruff]\n")
+        res = git_cl._FindPythonConfigFile(
+            os.path.join(self.test_dir, "foo.py"), {}, self.test_dir)
+        self.assertEqual(res, cfg)
+
+    def test_find_python_config_file_yapf(self):
+        cfg = self.write_file(".style.yapf", "")
+        res = git_cl._FindPythonConfigFile(
+            os.path.join(self.test_dir, "foo.py"), {}, self.test_dir)
+        self.assertEqual(res, cfg)
+
+    def test_find_python_config_file_none(self):
+        res = git_cl._FindPythonConfigFile(
+            os.path.join(self.test_dir, "foo.py"), {}, self.test_dir)
+        self.assertIsNone(res)
+
+    @mock.patch("git_cl.RunCommand")
+    def test_run_python_format_ruff_routing(self, mock_run):
+        mock_opts = mock.Mock(python=True, full=True, diff=False, dry_run=False)
+        self.write_file("ruff.toml", "")
+        git_cl._RunPythonFormat(mock_opts, ["foo.py"], self.test_dir, None)
+        depot_tools_path = os.path.dirname(os.path.abspath(git_cl.__file__))
+        expected_tool = os.path.join(depot_tools_path, "ruff_chromium")
+        mock_run.assert_called_once_with(
+            ["vpython3", expected_tool, "format", "foo.py"],
+            cwd=self.test_dir,
+            shell=sys.platform == 'win32')
+
+    @mock.patch("git_cl.RunCommand")
+    def test_run_python_format_yapf_fallback(self, mock_run):
+        mock_opts = mock.Mock(python=True, full=True, diff=False, dry_run=False)
+        style = self.write_file(".style.yapf", "")
+        git_cl._RunPythonFormat(mock_opts, ["foo.py"], self.test_dir, None)
+        depot_tools_path = os.path.dirname(os.path.abspath(git_cl.__file__))
+        expected_tool = os.path.join(depot_tools_path, "yapf")
+        mock_run.assert_called_once_with(
+            ["vpython3", expected_tool, "--style", style, "foo.py", "-i"],
+            cwd=self.test_dir,
+            shell=sys.platform == 'win32')
+
+    @mock.patch("git_cl.RunCommand")
+    def test_run_python_format_excluded_file_routed_to_ruff_chromium(self, mock_run):
+        # When opts.python is None (presubmit default), git_cl filters files using
+        # _FindPythonConfigFile. Even if a file is excluded in ruff.toml, git_cl
+        # discovers the config and routes to ruff_chromium, relying on ruff_chromium
+        # to evaluate exclusions and skip formatting (no-op) when no YAPF config is present.
+        mock_opts = mock.Mock(python=None, full=True, diff=False, dry_run=False)
+        self.write_file("ruff.toml", 'exclude = ["excluded.py"]\n')
+        git_cl._RunPythonFormat(mock_opts, ["excluded.py"], self.test_dir, None)
+        depot_tools_path = os.path.dirname(os.path.abspath(git_cl.__file__))
+        expected_tool = os.path.join(depot_tools_path, "ruff_chromium")
+        mock_run.assert_called_once_with(
+            ["vpython3", expected_tool, "format", "excluded.py"],
+            cwd=self.test_dir,
+            shell=sys.platform == 'win32')
+
+    @mock.patch("git_cl.RunCommand")
+    @mock.patch("git_cl._ComputeFormatDiffLineRanges")
+    def test_run_python_format_ruff_ranges(self, mock_ranges, mock_run):
+        mock_opts = mock.Mock(python=True, full=False, diff=False, dry_run=False)
+        mock_ranges.return_value = {"foo.py": [(10, 12), (20, 25)]}
+        self.write_file("ruff.toml", "")
+        git_cl._RunPythonFormat(mock_opts, ["foo.py"], self.test_dir, {"foo.py": "dummy diff"})
+        depot_tools_path = os.path.dirname(os.path.abspath(git_cl.__file__))
+        expected_tool = os.path.join(depot_tools_path, "ruff_chromium")
+        mock_run.assert_called_once_with(
+            ["vpython3", expected_tool, "format", "foo.py", "--range", "10:1-13:1", "--range", "20:1-26:1"],
+            cwd=self.test_dir,
+            shell=sys.platform == 'win32')
+
+
 if __name__ == '__main__':
     logging.basicConfig(
         level=logging.DEBUG if '-v' in sys.argv else logging.ERROR)

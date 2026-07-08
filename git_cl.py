@@ -740,34 +740,70 @@ def _ComputeFormatDiffLineRanges(files, diffs, expand=0):
     return line_diffs
 
 
-def _FindYapfConfigFile(fpath, yapf_config_cache, top_dir=None):
-    """Checks if a yapf file is in any parent directory of fpath until top_dir.
+def _FindPythonConfigFile(
+    fpath: str,
+    config_cache: dict[str, str | None],
+    top_dir: str | None = None,
+) -> str | None:
+    """Checks if a python formatting config file is in any parent directory of fpath
+    until top_dir.
 
-    Recursively checks parent directories to find yapf file and if no yapf file
-    is found returns None. Uses yapf_config_cache as a cache for previously found
-    configs.
+    Recursively checks ancestor directories from the file's immediate parent upwards
+    to top_dir. The closest ancestor directory containing a valid configuration file
+    takes precedence over parent directories.
+
+    Within a single directory, configuration files are evaluated in the following
+    strict precedence order:
+      1. `.ruff.toml`
+      2. `ruff.toml`
+      3. `.style.yapf`
+      4. `pyproject.toml` (if it contains `[tool.ruff]` or `[tool.yapf]`)
+
+    If `pyproject.toml` specifies both `[tool.ruff]` and `[tool.yapf]`, Ruff takes
+    precedence during formatting dispatch. If no valid config file is found in any
+    ancestor directory, returns None.
+
+    Args:
+        fpath: The absolute or relative path to the file or directory being evaluated.
+        config_cache: Dictionary used to memoize previously discovered configuration
+            file paths for directories and files to avoid repeated filesystem lookups.
+        top_dir: Optional root directory bounding upward directory traversal.
+
+    Returns:
+        The absolute path to the closest governing configuration file, or None if
+        no formatting configuration exists in any ancestor directory up to top_dir.
     """
     fpath = os.path.abspath(fpath)
-    # Return result if we've already computed it.
-    if fpath in yapf_config_cache:
-        return yapf_config_cache[fpath]
+    if fpath in config_cache:
+        return config_cache[fpath]
 
     parent_dir = os.path.dirname(fpath)
     if os.path.isfile(fpath):
-        ret = _FindYapfConfigFile(parent_dir, yapf_config_cache, top_dir)
+        ret = _FindPythonConfigFile(parent_dir, config_cache, top_dir)
     else:
-        # Otherwise fpath is a directory
-        yapf_file = os.path.join(fpath, YAPF_CONFIG_FILENAME)
-        if os.path.isfile(yapf_file):
-            ret = yapf_file
-        elif fpath in (top_dir, parent_dir):
-            # If we're at the top level directory, or if we're at root
-            # there is no provided style.
-            ret = None
+        ret = None
+        for cfg_name in ('.ruff.toml', 'ruff.toml', YAPF_CONFIG_FILENAME):
+            cfg_path = os.path.join(fpath, cfg_name)
+            if os.path.isfile(cfg_path):
+                ret = cfg_path
+                break
         else:
-            # Otherwise recurse on the current directory.
-            ret = _FindYapfConfigFile(parent_dir, yapf_config_cache, top_dir)
-    yapf_config_cache[fpath] = ret
+            pyproject_path = os.path.join(fpath, 'pyproject.toml')
+            if os.path.isfile(pyproject_path):
+                try:
+                    with open(pyproject_path, encoding='utf-8') as f:
+                        content = f.read()
+                    if '[tool.ruff]' in content or '[tool.yapf]' in content:
+                        ret = pyproject_path
+                except Exception:
+                    pass
+
+        if not ret:
+            if fpath in (top_dir, parent_dir):
+                ret = None
+            else:
+                ret = _FindPythonConfigFile(parent_dir, config_cache, top_dir)
+    config_cache[fpath] = ret
     return ret
 
 
@@ -7115,7 +7151,7 @@ def _SplitArgsByCmdLineLimit(args):
     line limit."""
     # The maximum command line length is 32768 characters on Windows and 2097152
     # characters on other platforms. Use a lower limit to be safe.
-    command_line_limit = 30000 if sys.platform.startswith('win32') else 2000000
+    command_line_limit = 30000 if sys.platform == 'win32' else 2000000
 
     batch_args = []
     batch_length = 0
@@ -7228,7 +7264,7 @@ def _RunClangFormatDiff(opts, paths, top_dir, diffs):
                         stdin=input_diff.encode(),
                         cwd=top_dir,
                         env=env,
-                        shell=sys.platform.startswith('win32'))
+                        shell=sys.platform == 'win32')
 
     if stdout:
         # Filter out full-deletion diffs produced by clang-format-diff.py for
@@ -7385,29 +7421,48 @@ def _RunSwiftFormat(opts, paths, top_dir, diffs):
     return 0
 
 
-def _RunYapf(opts, paths, top_dir, diffs):
+def _RunPythonFormat(
+    opts: optparse.Values,
+    paths: list[str],
+    top_dir: str,
+    diffs: Mapping[str, str] | None,
+) -> int:
+    """Formats Python source files using either ruff_chromium or yapf based on
+    governing repository configuration files.
+
+    If a target file is covered by a Ruff configuration (.ruff.toml, ruff.toml, or
+    pyproject.toml with [tool.ruff]), formatting is dispatched to the ruff_chromium
+    wrapper. Otherwise, formatting defaults to YAPF using .style.yapf, pyproject.toml
+    with [tool.yapf], or pep8 fallback style.
+
+    Args:
+        opts: Command-line options parsed by optparse containing format flags
+            such as dry_run, diff, full, and python.
+        paths: List of file paths scheduled for formatting evaluation.
+        top_dir: Absolute path to the top-level repository root directory.
+        diffs: Mapping of modified file paths to their git diff contents, used
+            to compute partial line range formatting when opts.full is False.
+
+    Returns:
+        Exit code indicating presubmit or format status (0 for success or clean
+        check, 2 when dry_run formatting diffs exist or tool failures occur).
+    """
     depot_tools_path = os.path.dirname(os.path.abspath(__file__))
+    ruff_chromium_tool = os.path.join(depot_tools_path, 'ruff_chromium')
     yapf_tool = os.path.join(depot_tools_path, 'yapf')
 
     # Used for caching.
-    yapf_configs = {}
+    python_configs = {}
     for p in paths:
-        # Find the yapf style config for the current file, defaults to depot
-        # tools default.
-        _FindYapfConfigFile(p, yapf_configs, top_dir)
+        _FindPythonConfigFile(p, python_configs, top_dir)
 
-    # Turn on python formatting by default if a yapf config is specified.
-    # This breaks in the case of this repo though since the specified
-    # style file is also the global default.
     if opts.python is None:
         paths = [
             p for p in paths
-            if _FindYapfConfigFile(p, yapf_configs, top_dir) is not None
+            if _FindPythonConfigFile(p, python_configs, top_dir) is not None
         ]
 
-    # Note: yapf still seems to fix indentation of the entire file
-    # even if line ranges are specified.
-    # See https://github.com/google/yapf/issues/499
+    line_diffs = {}
     if paths and diffs:
         line_diffs = _ComputeFormatDiffLineRanges(paths, diffs)
 
@@ -7416,36 +7471,74 @@ def _RunYapf(opts, paths, top_dir, diffs):
 
     return_value = 0
     for path in paths:
-        yapf_style = _FindYapfConfigFile(path, yapf_configs, top_dir)
-        # Default to pep8 if not .style.yapf is found.
-        if not yapf_style:
-            yapf_style = 'pep8'
+        config_file = _FindPythonConfigFile(path, python_configs, top_dir)
+        is_ruff = False
+        if config_file:
+            if config_file.endswith('ruff.toml'):
+                is_ruff = True
+            elif config_file.endswith('pyproject.toml'):
+                try:
+                    with open(config_file, encoding='utf-8') as f:
+                        if '[tool.ruff]' in f.read():
+                            is_ruff = True
+                except Exception:
+                    pass
 
-        cmd = ['vpython3', yapf_tool, '--style', yapf_style, path]
-
-        if not opts.full:
-            ranges = line_diffs.get(path)
-            if not ranges:
-                continue
-            # Only run yapf over changed line ranges.
-            for diff_start, diff_end in ranges:
-                cmd += ['-l', '{}-{}'.format(diff_start, diff_end)]
-
-        if opts.diff or opts.dry_run:
-            cmd += ['--diff']
-            # Will return non-zero exit code if non-empty diff.
-            stdout = RunCommand(cmd,
-                                error_ok=True,
-                                stderr=subprocess2.PIPE,
-                                cwd=top_dir,
-                                shell=sys.platform.startswith('win32'))
-            if opts.diff:
-                sys.stdout.write(stdout)
-            if opts.dry_run and len(stdout) > 0:
-                return_value = 2
+        if is_ruff:
+            cmd = ['vpython3', ruff_chromium_tool, 'format', path]
+            if not opts.full:
+                ranges = line_diffs.get(path) if line_diffs else None
+                if not ranges:
+                    continue
+                for diff_start, diff_end in ranges:
+                    cmd += ['--range', f'{diff_start}:1-{diff_end + 1}:1']
+            if opts.diff or opts.dry_run:
+                cmd += ['--diff']
+                stdout = RunCommand(cmd,
+                                    error_ok=True,
+                                    stderr=subprocess2.PIPE,
+                                    cwd=top_dir,
+                                    shell=sys.platform == 'win32')
+                if opts.diff:
+                    sys.stdout.write(stdout)
+                if opts.dry_run and len(stdout) > 0:
+                    return_value = 2
+            else:
+                RunCommand(cmd,
+                           cwd=top_dir,
+                           shell=sys.platform == 'win32')
         else:
-            cmd += ['-i']
-            RunCommand(cmd, cwd=top_dir, shell=sys.platform.startswith('win32'))
+            yapf_style = config_file
+            if not yapf_style:
+                yapf_style = 'pep8'
+
+            cmd = ['vpython3', yapf_tool, '--style', yapf_style, path]
+
+            if not opts.full:
+                ranges = line_diffs.get(path) if line_diffs else None
+                if not ranges:
+                    continue
+                # Only run yapf over changed line ranges.
+                for diff_start, diff_end in ranges:
+                    cmd += ['-l', '{}-{}'.format(diff_start, diff_end)]
+
+            if opts.diff or opts.dry_run:
+                cmd += ['--diff']
+                # Will return non-zero exit code if non-empty diff.
+                stdout = RunCommand(cmd,
+                                    error_ok=True,
+                                    stderr=subprocess2.PIPE,
+                                    cwd=top_dir,
+                                    shell=sys.platform == 'win32')
+                if opts.diff:
+                    sys.stdout.write(stdout)
+                if opts.dry_run and len(stdout) > 0:
+                    return_value = 2
+            else:
+                cmd += ['-i']
+                RunCommand(cmd,
+                           cwd=top_dir,
+                           shell=sys.platform == 'win32')
     return return_value
 
 
@@ -7488,7 +7581,7 @@ def _RunGnFormat(opts, paths, top_dir, diffs):
     return_value = 0
     for path in paths:
         gn_ret = subprocess2.call(cmd + [path],
-                                  shell=sys.platform.startswith('win'),
+                                  shell=sys.platform == 'win32',
                                   cwd=top_dir)
         if opts.diff and gn_ret == 2:
             # TODO this should compute and print the actual diff.
@@ -7809,7 +7902,7 @@ def CMDformat(parser: optparse.OptionParser, args: list[str]):
     if opts.use_swift_format:
         formatters.append((['.swift'], _RunSwiftFormat, []))
     if opts.python is not False:
-        formatters.append((['.py'], _RunYapf, []))
+        formatters.append((['.py'], _RunPythonFormat, []))
     if opts.mojom:
         formatters.append((['.mojom', '.test-mojom'], _RunMojomFormat, []))
     if opts.lucicfg:
