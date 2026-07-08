@@ -16,7 +16,7 @@ import importlib.util
 from importlib.machinery import SourceFileLoader
 import os
 import unittest
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 import tempfile
 import shutil
 
@@ -37,6 +37,11 @@ ruff_should_format = depot_tools_ruff.ruff_should_format
 match_pattern = depot_tools_ruff.match_pattern
 translate_args = depot_tools_ruff.translate_args
 has_yapf_config = depot_tools_ruff.has_yapf_config
+LineRange = depot_tools_ruff.LineRange
+parse_range = depot_tools_ruff.parse_range
+merge_ranges = depot_tools_ruff.merge_ranges
+insert_range_arg = depot_tools_ruff.insert_range_arg
+run_ruff_with_ranges = depot_tools_ruff.run_ruff_with_ranges
 
 
 class TestHasYapfConfig(unittest.TestCase):
@@ -229,6 +234,97 @@ class TestTranslateArgs(unittest.TestCase):
     def test_translate_diff_and_stdin(self):
         got = translate_args(["format", "--diff", "--range=1:10-3:20", "-"])
         self.assertEqual(got, ["--diff", "--line", "1-3", "-"])
+
+
+class TestParseRange(unittest.TestCase):
+
+    def test_valid_ranges(self):
+        self.assertEqual(parse_range("5:1-10:20"), LineRange(5, 10))
+        self.assertEqual(parse_range("1-10"), LineRange(1, 10))
+
+    def test_invalid_ranges(self):
+        with self.assertRaises(ValueError):
+            parse_range("5:1")
+        with self.assertRaises(ValueError):
+            parse_range("0:1-5:1")
+        with self.assertRaises(ValueError):
+            parse_range("10:1-5:1")
+        with self.assertRaises(ValueError):
+            parse_range("abc-def")
+
+
+class TestMergeRanges(unittest.TestCase):
+
+    def test_merge(self):
+        self.assertEqual(
+            merge_ranges([LineRange(10, 15), LineRange(1, 5)]),
+            [LineRange(10, 15), LineRange(1, 5)],
+        )
+        self.assertEqual(
+            merge_ranges([LineRange(5, 10), LineRange(1, 6)]),
+            [LineRange(1, 10)],
+        )
+        self.assertEqual(
+            merge_ranges([LineRange(5, 10), LineRange(1, 4)]),
+            [LineRange(1, 10)],
+        )
+
+
+class TestInsertRangeArg(unittest.TestCase):
+
+    def test_insert(self):
+        self.assertEqual(
+            insert_range_arg(["format", "-"], "--range=1:1-5:1"),
+            ["format", "--range=1:1-5:1", "-"],
+        )
+        self.assertEqual(
+            insert_range_arg(["--config", "foo", "-"], "--range=1:1-5:1"),
+            ["--config", "foo", "--range=1:1-5:1", "-"],
+        )
+
+
+class TestRunRuffWithRanges(unittest.TestCase):
+
+    def test_invalid_multi_range_invocations(self):
+        # Multiple ranges require format and stdin (-)
+        self.assertEqual(
+            run_ruff_with_ranges(
+                ["format", "--range=1:1-2:1", "--range=5:1-6:1", "file.py"]),
+            1,
+        )
+        self.assertEqual(
+            run_ruff_with_ranges(
+                ["check", "--range=1:1-2:1", "--range=5:1-6:1", "-"]),
+            1,
+        )
+        self.assertEqual(
+            run_ruff_with_ranges(
+                ["format", "--range=1:1-2:1", "--range=5:1-6:1", "--diff",
+                 "-"]),
+            1,
+        )
+
+    @patch("subprocess.run")
+    @patch("sys.stdout")
+    @patch("sys.stdin")
+    def test_sequential_chaining(self, mock_stdin, mock_stdout, mock_run):
+        mock_stdin.buffer.read.return_value = b"line1\nline2\nline3\nline4\nline5\nline6\nline7\n"
+        # 1st call (5:1-7:1) returns intermediate output, 2nd call (1:1-3:1) returns final output
+        proc1 = Mock(returncode=0, stdout=b"int_out\n")
+        proc2 = Mock(returncode=0, stdout=b"final_out\n")
+        mock_run.side_effect = [proc1, proc2]
+
+        ret = run_ruff_with_ranges(
+            ["format", "--range=1:1-3:1", "--range=5:1-7:1", "-"])
+        self.assertEqual(ret, 0)
+        self.assertEqual(mock_run.call_count, 2)
+        # Verify bottom-up execution (5:1-7:1 first, then 1:1-3:1)
+        self.assertIn("--range=5:1-7:1", mock_run.call_args_list[0][0][0])
+        self.assertEqual(mock_run.call_args_list[0][1]["input"],
+                         b"line1\nline2\nline3\nline4\nline5\nline6\nline7\n")
+        self.assertIn("--range=1:1-3:1", mock_run.call_args_list[1][0][0])
+        self.assertEqual(mock_run.call_args_list[1][1]["input"], b"int_out\n")
+        mock_stdout.buffer.write.assert_called_once_with(b"final_out\n")
 
 
 if __name__ == "__main__":
