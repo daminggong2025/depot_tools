@@ -16,6 +16,7 @@ import os
 import sys
 import subprocess
 import tomllib
+import difflib
 from pathlib import PurePath
 
 
@@ -217,6 +218,255 @@ def has_yapf_config(target_path: str) -> bool:
     return False
 
 
+class LineRange:
+    """Represents a 1-based line range [start, end] inclusive."""
+    def __init__(self, start: int, end: int):
+        self.start = start
+        self.end = end
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, LineRange):
+            return False
+        return self.start == other.start and self.end == other.end
+
+    def __repr__(self) -> str:
+        return f"LineRange({self.start}, {self.end})"
+
+
+def parse_range(s: str) -> LineRange:
+    """Parses a range string 'startLine:startCol-endLine:endCol' or 'startLine-endLine'.
+
+    Args:
+        s: Range argument string.
+
+    Returns:
+        A LineRange instance with 1-based start and end line numbers.
+
+    Raises:
+        ValueError: If range format is invalid or start/end line numbers are invalid.
+    """
+    parts = s.split("-")
+    if len(parts) != 2:
+        raise ValueError(f"invalid range format (missing '-'): {s!r}")
+    start_parts = parts[0].split(":")
+    end_parts = parts[1].split(":")
+
+    try:
+        start_line = int(start_parts[0])
+    except ValueError as e:
+        raise ValueError(f"invalid start line: {e}") from e
+    if start_line < 1:
+        raise ValueError(f"start line {start_line} must be >= 1")
+    if len(start_parts) > 1:
+        int(start_parts[1])  # Validate start col is int
+
+    try:
+        end_line = int(end_parts[0])
+    except ValueError as e:
+        raise ValueError(f"invalid end line: {e}") from e
+    if len(end_parts) > 1:
+        int(end_parts[1])  # Validate end col is int
+
+    if start_line > end_line:
+        raise ValueError(f"start line {start_line} is greater than end line {end_line}")
+    return LineRange(start_line, end_line)
+
+
+def merge_ranges(ranges: list[LineRange]) -> list[LineRange]:
+    """Merges overlapping or adjacent line ranges.
+
+    Assumes the input list is already sorted descending by start line.
+    Merging adjacent ranges (e.g. 1-5 and 6-10) prevents redundant formatting calls.
+
+    Args:
+        ranges: List of LineRange objects sorted descending by start line.
+
+    Returns:
+        List of merged LineRange objects.
+    """
+    if len(ranges) <= 1:
+        return list(ranges)
+    merged: list[LineRange] = []
+    current = LineRange(ranges[0].start, ranges[0].end)
+    for i in range(1, len(ranges)):
+        nxt = ranges[i]
+        if nxt.end >= current.start - 1:
+            current.start = nxt.start
+            if nxt.end > current.end:
+                current.end = nxt.end
+        else:
+            merged.append(current)
+            current = LineRange(nxt.start, nxt.end)
+    merged.append(current)
+    return merged
+
+
+def insert_range_arg(pass_through: list[str], range_arg: str) -> list[str]:
+    """Inserts range_arg after the 'format' subcommand in pass_through arguments.
+
+    If 'format' is not found, falls back to inserting after the first non-flag argument.
+
+    Args:
+        pass_through: List of arguments without any --range flags.
+        range_arg: The formatted --range=start:1-end:1 argument to insert.
+
+    Returns:
+        New list of arguments with range_arg inserted.
+    """
+    subcmd_idx = -1
+    for i, arg in enumerate(pass_through):
+        if arg == "format":
+            subcmd_idx = i
+            break
+    if subcmd_idx == -1:
+        for i, arg in enumerate(pass_through):
+            if not arg.startswith("-"):
+                subcmd_idx = i
+                break
+    if subcmd_idx == -1:
+        return [range_arg] + pass_through
+    return pass_through[:subcmd_idx + 1] + [range_arg] + pass_through[subcmd_idx + 1:]
+
+
+def run_ruff_with_ranges(args: list[str]) -> int:
+    """Executes Ruff formatting, supporting multiple --range flags by sequential chaining.
+
+    When >= 2 ranges are specified, merges overlapping/adjacent ranges, sorts them
+    bottom-up (descending by start line), and executes Ruff sequentially over stdin/stdout
+    to prevent formatting earlier hunks from shifting line numbers for subsequent hunks.
+
+    Args:
+        args: Command-line arguments passed to ruff_chromium.
+
+    Returns:
+        Exit code of the Ruff subprocess(es).
+    """
+    ranges: list[LineRange] = []
+    pass_through_args: list[str] = []
+
+    i = 0
+    while i < len(args):
+        arg = args[i]
+        if arg.startswith("--range="):
+            try:
+                rng = parse_range(arg.split("=", 1)[1])
+                ranges.append(rng)
+            except ValueError as e:
+                sys.stderr.write(f"invalid --range flag {arg!r}: {e}\n")
+                return 1
+            i += 1
+        elif arg == "--range":
+            if i + 1 >= len(args):
+                sys.stderr.write("missing value for --range flag\n")
+                return 1
+            try:
+                rng = parse_range(args[i + 1])
+                ranges.append(rng)
+            except ValueError as e:
+                sys.stderr.write(f"invalid --range value {args[i + 1]!r}: {e}\n")
+                return 1
+            i += 2
+        else:
+            pass_through_args.append(arg)
+            i += 1
+
+    if len(ranges) < 2:
+        cmd = [sys.executable, "-m", "ruff"] + args
+        return subprocess.call(cmd)
+
+    has_format = False
+    has_diff = False
+    has_check = False
+    target_files: list[str] = []
+    is_stdin = False
+
+    for arg in pass_through_args:
+        if arg == "format":
+            has_format = True
+        elif arg == "-":
+            is_stdin = True
+        elif arg == "--diff":
+            has_diff = True
+        elif arg == "--check":
+            has_check = True
+        elif arg in ("-i", "--in-place"):
+            pass
+        elif not arg.startswith("-"):
+            target_files.append(arg)
+
+    if not has_format:
+        sys.stderr.write("multiple ranges are only supported for the 'format' subcommand\n")
+        return 1
+    if len(target_files) > 1:
+        sys.stderr.write("multiple ranges are not supported when formatting multiple files simultaneously\n")
+        return 1
+    if not is_stdin and not target_files:
+        sys.stderr.write("no target file or stdin specified for multi-range formatting\n")
+        return 1
+
+    target = "-" if is_stdin else target_files[0]
+
+    try:
+        if is_stdin:
+            original_val = sys.stdin.buffer.read()
+        else:
+            with open(target, "rb") as f:
+                original_val = f.read()
+    except Exception as e:
+        sys.stderr.write(f"failed to read {target}: {e}\n")
+        return 1
+
+    # Prepare base arguments for intermediate in-memory chaining over stdin ("-")
+    chain_base_args: list[str] = []
+    for arg in pass_through_args:
+        if arg in ("--diff", "--check", "-i", "--in-place", target):
+            continue
+        chain_base_args.append(arg)
+    chain_base_args.append("-")
+
+    current_val = original_val
+    ranges.sort(key=lambda r: r.start, reverse=True)
+    merged = merge_ranges(ranges)
+
+    for rng in merged:
+        range_arg = f"--range={rng.start}:1-{rng.end}:1"
+        step_args = insert_range_arg(chain_base_args, range_arg)
+        cmd = [sys.executable, "-m", "ruff"] + step_args
+        proc = subprocess.run(cmd, input=current_val, capture_output=True)
+        if proc.returncode != 0:
+            sys.stderr.buffer.write(proc.stderr)
+            sys.stderr.write(f"ruff failed on range {rng.start}-{rng.end}\n")
+            return proc.returncode
+        current_val = proc.stdout
+
+    if has_check:
+        return 1 if current_val != original_val else 0
+
+    if has_diff:
+        orig_lines = original_val.decode("utf-8", errors="replace").splitlines(keepends=True)
+        curr_lines = current_val.decode("utf-8", errors="replace").splitlines(keepends=True)
+        diff_name = target if not is_stdin else "-"
+        diff_lines = difflib.unified_diff(orig_lines, curr_lines, fromfile=diff_name, tofile=diff_name)
+        diff_bytes = "".join(diff_lines).encode("utf-8")
+        sys.stdout.buffer.write(diff_bytes)
+        sys.stdout.buffer.flush()
+        return 0
+
+    if not is_stdin:
+        if current_val != original_val:
+            try:
+                with open(target, "wb") as f:
+                    f.write(current_val)
+            except Exception as e:
+                sys.stderr.write(f"failed to write {target}: {e}\n")
+                return 1
+        return 0
+
+    sys.stdout.buffer.write(current_val)
+    sys.stdout.buffer.flush()
+    return 0
+
+
 def translate_args(args: list[str]) -> list[str]:
     """Translates Ruff command-line arguments into YAPF command-line arguments.
 
@@ -306,10 +556,9 @@ def main() -> int:
             break
 
     if should_use_ruff(target_path):
-        # Run Ruff from the vpython environment
-        # sys.executable points to the vpython python interpreter
-        cmd = [sys.executable, "-m", "ruff"] + args
-        return subprocess.call(cmd)
+        # Run Ruff from the vpython environment, supporting multi-range chaining
+        # when >= 2 --range flags are provided over stdin.
+        return run_ruff_with_ranges(args)
     else:
         # Before attempting YAPF as a backoff, ascertain that a YAPF formatter/config
         # is present. If the file was rejected by Ruff (e.g. excluded in ruff.toml)
