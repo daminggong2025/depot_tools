@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "eb6f7d5c_f01b1ca5",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 8
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-07-08T20:30:31Z",
+      "side": 1,
+      "message": "nit: use a consistent formatting for git trailers (TAG\u003dAGY doesn\u0027t fit here)\n\n```suggestion\ndeclarations in alphabetical order. Preserves spacing, newlines,\nalignment, and removes empty lines.\n\nTAG\u003dAGY\n\nFixed: 532103652\nChange-Id: Ie450c500d8a2504727587c536652d9f9bbc30fc3\n```",
+      "range": {
+        "startLine": 10,
+        "startChar": 52,
+        "endLine": 15,
+        "endChar": 52
+      },
+      "revId": "30f1427d6153218988f3f875435291bde2ae655b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9d55d910_651a556c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 8
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-07-08T20:30:31Z",
+      "side": 1,
+      "message": "please remove the .DS_Store file from this CL",
+      "revId": "30f1427d6153218988f3f875435291bde2ae655b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
