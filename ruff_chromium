@@ -180,6 +180,43 @@ def should_use_ruff(target_path: str) -> bool:
     return False
 
 
+def has_yapf_config(target_path: str) -> bool:
+    """Determines whether a YAPF formatting configuration governs target_path.
+
+    Args:
+        target_path: Path to the file or directory being evaluated.
+
+    Returns:
+        True if .style.yapf or pyproject.toml with [tool.yapf] exists in any
+        ancestor directory, False otherwise.
+    """
+    abs_target = os.path.abspath(target_path)
+    search_dir = (os.path.dirname(abs_target) if
+                  (os.path.isfile(abs_target)
+                   or not os.path.exists(abs_target)) else abs_target)
+
+    while True:
+        if os.path.isfile(os.path.join(search_dir, ".style.yapf")):
+            return True
+
+        pyproject = os.path.join(search_dir, "pyproject.toml")
+        if os.path.isfile(pyproject):
+            try:
+                with open(pyproject, "rb") as f:
+                    content = f.read().decode("utf-8", errors="ignore")
+                if "[tool.yapf]" in content:
+                    return True
+            except Exception:
+                pass
+
+        parent_dir = os.path.dirname(search_dir)
+        if parent_dir == search_dir:
+            break
+        search_dir = parent_dir
+
+    return False
+
+
 def translate_args(args: list[str]) -> list[str]:
     """Translates Ruff command-line arguments into YAPF command-line arguments.
 
@@ -274,6 +311,12 @@ def main() -> int:
         cmd = [sys.executable, "-m", "ruff"] + args
         return subprocess.call(cmd)
     else:
+        # Before attempting YAPF as a backoff, ascertain that a YAPF formatter/config
+        # is present. If the file was rejected by Ruff (e.g. excluded in ruff.toml)
+        # and no YAPF config governs the directory, return 0 (no-op).
+        if not has_yapf_config(target_path):
+            return 0
+
         # Fallback to YAPF
         # Find yapf wrapper in the same directory as this script
         depot_tools_dir = os.path.dirname(os.path.abspath(__file__))
