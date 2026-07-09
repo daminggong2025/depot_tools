@@ -7243,6 +7243,204 @@ def _RunClangFormatDiff(opts, paths, top_dir, diffs):
     return return_value
 
 
+def _SortObjCProtocols(content: str, diff_string: str | None,
+                       full: bool) -> str:
+    # An Objective-C identifier (e.g., class name, category name, type parameter name)
+    IDENTIFIER = r'[a-zA-Z_]\w*'
+
+    # Optional class type parameters: e.g., <SectionIdentifierType, ItemIdentifierType>
+    # Captures the content of the parameters in a named group `class_type_params`.
+    CLASS_TYPE_PARAMS = r'(?:<\s*(?P<class_type_params>[^>]*)\s*>\s*)?'
+
+    # Optional base class name and its optional generic type arguments:
+    # e.g., : UITableViewDiffableDataSource <SectionIdentifierType, ItemIdentifierType>
+    BASE_CLASS = rf'(?::\s*{IDENTIFIER}\s*(?:<\s*[^>]*\s*>\s*)?)?'
+
+    # Optional category name or empty extension: e.g., (MyCategory) or ()
+    CATEGORY = rf'(?:\(\s*(?:{IDENTIFIER})?\s*\)\s*)?\s*'
+
+    # The entire prefix before the conformed protocol list. Captured in a named group `prefix`.
+    PREFIX = rf'(?P<prefix>@interface\s+{IDENTIFIER}\s*{CLASS_TYPE_PARAMS}{BASE_CLASS}{CATEGORY})'
+
+    # The conformed protocols list at the end of the declaration header: e.g., <ProtoA, ProtoB>
+    # Captures the content of the protocols list in a named group `protocols`.
+    PROTOCOLS = r'<(?P<protocols>[^>]+)>'
+
+    regex = re.compile(PREFIX + PROTOCOLS, re.ASCII)
+
+    modified_lines = set()
+    if not full and diff_string:
+        matches = re.findall(r'^@@ -\d+(?:,\d+)? \+(\d+)(?:,(\d+))? @@',
+                             diff_string, re.MULTILINE)
+        for start_str, len_str in matches:
+            start = int(start_str)
+            length = int(len_str) if len_str else 1
+            for line in range(start, start + length):
+                modified_lines.add(line)
+
+    def get_line_number(offset):
+        return content.count('\n', 0, offset) + 1
+
+    def replace(match):
+        prefix = match.group('prefix')
+        class_type_params = match.group('class_type_params')
+        protocols_str = match.group('protocols')
+
+        if '*' in protocols_str:
+            return match.group(0)
+
+        identifiers = re.findall(r'[a-zA-Z_][a-zA-Z0-9_]*', protocols_str)
+        if 'id' in identifiers:
+            return match.group(0)
+
+        if class_type_params:
+            type_vars = set(
+                re.findall(r'[a-zA-Z_][a-zA-Z0-9_]*', class_type_params))
+            if any(ident in type_vars for ident in identifiers):
+                return match.group(0)
+
+        if '//' in protocols_str or '/*' in protocols_str:
+            return match.group(0)  # Keep original if there are comments inside
+
+        # Check if this match overlaps with modified lines
+        if not full and diff_string:
+            start_line = get_line_number(match.start())
+            end_line = get_line_number(match.end())
+            match_range = range(start_line, end_line + 1)
+            if not any(l in modified_lines for l in match_range):
+                return match.group(0)  # Not modified, keep as is!
+
+        # Extract names and separators
+        names = re.findall(r'[a-zA-Z_][a-zA-Z0-9_]*', protocols_str)
+        if not names:
+            return match.group(0)
+
+        separators = re.split(r'[a-zA-Z_][a-zA-Z0-9_]*', protocols_str)
+        sorted_names = sorted(names, key=str.lower)
+
+        # Compute alignment indentation
+        last_line_of_prefix = prefix.splitlines()[-1] if prefix else ""
+        indent = " " * (len(last_line_of_prefix) + 1)
+
+        # Interleave sorted_names and separators with normalized indentation and removed empty lines
+        reconstructed = []
+        for i in range(len(sorted_names)):
+            sep = separators[i]
+            if '\n' in sep:
+                sep = re.sub(r'\n+', '\n', sep)
+                parts = sep.split('\n')
+                parts[-1] = indent
+                sep = '\n'.join(parts)
+            reconstructed.append(sep)
+            reconstructed.append(sorted_names[i])
+        reconstructed.append(separators[-1])
+
+        return f"{prefix}<{''.join(reconstructed)}>"
+
+    return regex.sub(replace, content)
+
+
+def _RunClangFormatDiffAndSort(opts, paths, top_dir, diffs):
+    """Orchestrates running clang-format and sorting Objective-C protocols.
+
+    Since clang-format doesn't sort Objective-C protocols (e.g., `<ProtoA, ProtoB>`),
+    we handle that manually using `_SortObjCProtocols` before running clang-format.
+    To combine these two formatting passes and handle dry-runs and diff outputs
+    correctly, we need to carefully manage file backups, temporary writes, and
+    custom unified diff generation.
+    """
+    objc_paths = [p for p in paths if p.lower().endswith(('.h', '.m', '.mm'))]
+
+    # CASE 1: Normal formatting mode (modifying files directly).
+    if not opts.dry_run and not opts.diff:
+        # Write the protocol-sorted content to disk first.
+        for path in objc_paths:
+            try:
+                with open(path, 'r', encoding='utf-8') as f:
+                    content = f.read()
+                sorted_content = _SortObjCProtocols(
+                    content,
+                    diffs.get(path) if diffs else None,
+                    getattr(opts, 'full', False))
+                if content != sorted_content:
+                    with open(path, 'w', encoding='utf-8') as f:
+                        f.write(sorted_content)
+            except Exception:
+                pass
+        # Run clang-format on all files in-place.
+        return _RunClangFormatDiff(opts, paths, top_dir, diffs)
+
+    # CASE 2 & 3: Dry-run check and Diff modes (no permanent changes to disk).
+    # We run both formatting steps in-place on backed-up files, compare the
+    # final result with the backups, and then restore original contents.
+    backups = {}
+    return_value = 0
+    try:
+        # 1. Back up all files we might modify.
+        for path in paths:
+            try:
+                with open(path, 'r', encoding='utf-8') as f:
+                    backups[path] = f.read()
+            except Exception:
+                pass
+
+        # 2. Apply protocol sorting in-place to Obj-C files.
+        for path in objc_paths:
+            if path in backups:
+                sorted_content = _SortObjCProtocols(
+                    backups[path],
+                    diffs.get(path) if diffs else None,
+                    getattr(opts, 'full', False))
+                if backups[path] != sorted_content:
+                    with open(path, 'w', encoding='utf-8') as f:
+                        f.write(sorted_content)
+
+        # 3. Run clang-format in-place.
+        import copy
+        mock_opts = copy.copy(opts)
+        mock_opts.dry_run = False
+        mock_opts.diff = False
+        ret = _RunClangFormatDiff(mock_opts, paths, top_dir, diffs)
+        if ret == 2:
+            return_value = 2
+
+        # 4. Compare post-formatted files with backups to detect changes and generate diffs.
+        for path in paths:
+            if path not in backups:
+                continue
+            try:
+                with open(path, 'r', encoding='utf-8') as f:
+                    formatted_content = f.read()
+            except Exception:
+                continue
+
+            orig_content = backups[path]
+            if orig_content != formatted_content:
+                if opts.dry_run:
+                    return_value = 2
+                if opts.diff:
+                    rel_path = os.path.relpath(path, top_dir)
+                    import difflib
+                    diff_lines = difflib.unified_diff(
+                        orig_content.splitlines(keepends=True),
+                        formatted_content.splitlines(keepends=True),
+                        fromfile='a/' + rel_path,
+                        tofile='b/' + rel_path,
+                    )
+                    sys.stdout.write("".join(diff_lines))
+
+    finally:
+        # Restore all files to their original state.
+        for path, orig in backups.items():
+            try:
+                with open(path, 'w', encoding='utf-8') as f:
+                    f.write(orig)
+            except Exception:
+                pass
+
+    return return_value
+
+
 def _RunGoogleJavaFormat(opts, paths, top_dir, diffs):
     """Runs google-java-format and sets a return value if necessary."""
     tool = google_java_format.FindGoogleJavaFormat()
@@ -7789,7 +7987,7 @@ def CMDformat(parser: optparse.OptionParser, args: list[str]):
     if not opts.no_java:
         formatters.append((['.java'], _RunGoogleJavaFormat))
     if opts.clang_format:
-        formatters.append((clang_exts, _RunClangFormatDiff))
+        formatters.append((clang_exts, _RunClangFormatDiffAndSort))
     if opts.use_rust_fmt:
         formatters.append((['.rs'], _RunRustFmt))
     if opts.use_swift_format:
