@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7dc27601_1851cd80",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 10
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-07-09T19:16:58Z",
+      "side": 1,
+      "message": "I don\u0027t think `git_cl.py` is the right place for this. `git cl format`\u0027s main purpose is to shell out to existing formatters (eg clang-format, yapf, rustfmt, etc), and not to contain language-specific custom formatting logic. this CL would also make the tool even more bloated and difficult to maintain. \n\nalso the regex-based approach seems fragile compared to a proper AST parser? eg handling macros/preprocessor directives\n\nideally this could be upstreamed to `clang-format` itself",
+      "revId": "bc3a8352d0716fd91b5922d111f5cea1057af0f5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
