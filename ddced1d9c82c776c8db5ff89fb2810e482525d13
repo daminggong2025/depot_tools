@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e08bf9d7_3c85146c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1182404
+      },
+      "writtenOn": "2026-07-09T14:42:35Z",
+      "side": 1,
+      "message": "yiwzhang@ - same as original CL, I need 2 approvals here to be able to land (in case you were deferring to gavinmak@).",
+      "revId": "ddced1d9c82c776c8db5ff89fb2810e482525d13",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
