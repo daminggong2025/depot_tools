@@ -70,6 +70,30 @@
       },
       "revId": "6c4e27af86f714bed34aea27bd514eb41aa73647",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "319ae0f8_dbc4b706",
+        "filename": "ruff_chromium",
+        "patchSetId": 2
+      },
+      "lineNbr": 209,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-07-10T16:52:06Z",
+      "side": 1,
+      "message": "If we want to work conservatively then we can stop only at .gclient, that\u0027s the chromium border. So chromium root will order everything under it, even submodules.",
+      "parentUuid": "e000e643_fa6dabea",
+      "range": {
+        "startLine": 207,
+        "startChar": 8,
+        "endLine": 209,
+        "endChar": 0
+      },
+      "revId": "6c4e27af86f714bed34aea27bd514eb41aa73647",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
