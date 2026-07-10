@@ -668,7 +668,7 @@ def _print_tryjobs(options, builds):
     print('Total: %d tryjobs' % total)
 
 
-def _ComputeFormatDiffLineRanges(files, diffs, expand=0):
+def _ComputeFormatDiffLineRanges(files, diffs, expand=0, prev_end=1):
     """Gets the changed line ranges for each file.
 
     Parses a git diff on provided files and returns a dict that maps a file name
@@ -681,6 +681,8 @@ def _ComputeFormatDiffLineRanges(files, diffs, expand=0):
           and the value is the diff generated for the corresponding file.
           Note that the hunks in the diffs contain prefxies, such as a/.., b/..
         expand: Expand diff ranges by this many lines before & after.
+        prev_end: Initial end line of the previous hunk (default 1; set to 0
+          to include diff ranges starting at line 1 without expansion).
 
     Returns:
         A dict of path->[(start_line, end_line), ...]
@@ -706,7 +708,7 @@ def _ComputeFormatDiffLineRanges(files, diffs, expand=0):
         if not diff:
             continue
 
-        prev_end = 1
+        curr_prev_end = prev_end
         for match in re.findall(pattern, diff, flags=re.MULTILINE):
             if not match:
                 continue
@@ -729,9 +731,9 @@ def _ComputeFormatDiffLineRanges(files, diffs, expand=0):
             diff_start = int(diff_start)
             diff_count = int(diff_count)
             diff_end = diff_start + diff_count - 1 + expand
-            diff_start = max(prev_end + 1, diff_start - expand)
+            diff_start = max(curr_prev_end + 1, diff_start - expand)
             if diff_start <= diff_end:
-                prev_end = diff_end
+                curr_prev_end = diff_end
                 line_diffs[file].append((diff_start, diff_end))
 
     return line_diffs
@@ -7380,7 +7382,7 @@ def _RunPythonFormat(
 
     line_diffs = {}
     if paths and diffs:
-        line_diffs = _ComputeFormatDiffLineRanges(paths, diffs)
+        line_diffs = _ComputeFormatDiffLineRanges(paths, diffs, prev_end=0)
 
     yapfignore_patterns = _GetYapfIgnorePatterns(top_dir)
     paths = _FilterYapfIgnoredFiles(paths, yapfignore_patterns)
