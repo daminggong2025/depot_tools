@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c9aab83b_0977e856",
+        "filename": "ruff_chromium",
+        "patchSetId": 16
+      },
+      "lineNbr": 175,
+      "author": {
+        "id": 1557773
+      },
+      "writtenOn": "2026-07-10T14:40:34Z",
+      "side": 1,
+      "message": "This has caused me to bang my head against the wall for the last 3 hours. I have this CL: https://chromium-review.git.corp.google.com/c/chromium/src/+/8064563?tab\u003dchecks which is failing presubmit because of the formatter but when I do run `git cl format --python` locally and on cider. Nothing happens at all. I deployed AI to investigate this and apparently, there\u0027s some cases where YAPF is used locally / cider but ruff is used in the CI.\n\nThe parent_dir should stop at the chromium root otherwise there\u0027s a chance where the formatter used for CI is different than the one used for local checkout due to some differences outside the root.\n\nNote: PRESUBMIT.py in components/cronet is an ERROR for linter problems and not a warning.",
+      "range": {
+        "startLine": 175,
+        "startChar": 8,
+        "endLine": 175,
+        "endChar": 48
+      },
+      "revId": "020e532ce1cf45f00a76f85c8c1c650b6b7cd867",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
