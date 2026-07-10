@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "40cde98f_3c02e377",
+        "filename": "git_cl.py",
+        "patchSetId": 18
+      },
+      "lineNbr": 7379,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-07-10T03:33:53Z",
+      "side": 1,
+      "message": "The reason is because the user might have ruff installed already, and we enforce config flies presence in the path. So by overriding ruff for the user we are liable to break their own workflows silently (files will suddently stop formatting).",
+      "parentUuid": "2de220d8_9c7c489c",
+      "range": {
+        "startLine": 7379,
+        "startChar": 57,
+        "endLine": 7379,
+        "endChar": 70
+      },
+      "revId": "e663851efb4bb1e9a2a6820a21c9c4869a882276",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "0867e8f3_0f60e38b",
