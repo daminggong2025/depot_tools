@@ -22,6 +22,30 @@
       },
       "revId": "6c4e27af86f714bed34aea27bd514eb41aa73647",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "47964e1c_1a59349c",
+        "filename": "ruff_chromium",
+        "patchSetId": 2
+      },
+      "lineNbr": 209,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-07-10T16:41:22Z",
+      "side": 1,
+      "message": "I don\u0027t think it\u0027s an issue however if the submodule halts at the submodule\u0027s root, no? Or do you mean it will jump out of the submodule?",
+      "parentUuid": "e417d8f6_5d89666e",
+      "range": {
+        "startLine": 207,
+        "startChar": 8,
+        "endLine": 209,
+        "endChar": 0
+      },
+      "revId": "6c4e27af86f714bed34aea27bd514eb41aa73647",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
