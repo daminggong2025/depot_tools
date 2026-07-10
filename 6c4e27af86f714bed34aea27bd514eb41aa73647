@@ -46,6 +46,30 @@
       },
       "revId": "6c4e27af86f714bed34aea27bd514eb41aa73647",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e000e643_fa6dabea",
+        "filename": "ruff_chromium",
+        "patchSetId": 2
+      },
+      "lineNbr": 209,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-07-10T16:44:39Z",
+      "side": 1,
+      "message": "So basically even if someone decides to modify a submodule, it will reach out into the chromium code and in the worst scenario .gclient should stop it. Additionally I am planning to simple exclude the entire third_party folder from root folder so that ruff won\u0027t attempt formatting anything, however right now it should not do anything regardless as there\u0027s no config at all.",
+      "parentUuid": "47964e1c_1a59349c",
+      "range": {
+        "startLine": 207,
+        "startChar": 8,
+        "endLine": 209,
+        "endChar": 0
+      },
+      "revId": "6c4e27af86f714bed34aea27bd514eb41aa73647",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
