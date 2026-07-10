@@ -94,6 +94,30 @@
       },
       "revId": "6c4e27af86f714bed34aea27bd514eb41aa73647",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7786f8cb_95b29fbf",
+        "filename": "ruff_chromium",
+        "patchSetId": 2
+      },
+      "lineNbr": 209,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-07-10T17:17:46Z",
+      "side": 1,
+      "message": "Ok I was actually overthinking it - git_cl.py solved the problem already by passing over `top_dir` parameter which I have ignored until now. Now if the parameter is present (meaning `git cl format` was called) we respect it. If it\u0027s not present, we search everything just like yapf did before, but that will happen only if the python is called directly, and that means the caller knows what they are doing, that should not happen normally.\n\nI will prepare the change.",
+      "parentUuid": "319ae0f8_dbc4b706",
+      "range": {
+        "startLine": 207,
+        "startChar": 8,
+        "endLine": 209,
+        "endChar": 0
+      },
+      "revId": "6c4e27af86f714bed34aea27bd514eb41aa73647",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
