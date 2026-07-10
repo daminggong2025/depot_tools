@@ -16,6 +16,24 @@
       "message": "might also be worth updating OWNERS to include this config",
       "revId": "1548afa288db1372fe7ba8c54924cf87ff457b2a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a5ce51c3_d2bbf397",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-07-10T16:45:54Z",
+      "side": 1,
+      "message": "Sounds good, done",
+      "parentUuid": "69e81e7a_5a29a3b6",
+      "revId": "1548afa288db1372fe7ba8c54924cf87ff457b2a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
