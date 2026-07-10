@@ -120,6 +120,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "bf7be07e_e0f7b962",
+        "filename": "git_cl.py",
+        "patchSetId": 18
+      },
+      "lineNbr": 7379,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2026-07-10T05:44:37Z",
+      "side": 1,
+      "message": "Hmm, it needs to be executable to install the ruff wheel with the embedded vpython spec.",
+      "parentUuid": "0f13b0e8_e1ecb10f",
+      "range": {
+        "startLine": 7379,
+        "startChar": 57,
+        "endLine": 7379,
+        "endChar": 70
+      },
+      "revId": "e663851efb4bb1e9a2a6820a21c9c4869a882276",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "0867e8f3_0f60e38b",
