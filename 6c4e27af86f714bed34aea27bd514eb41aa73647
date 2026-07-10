@@ -118,6 +118,30 @@
       },
       "revId": "6c4e27af86f714bed34aea27bd514eb41aa73647",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4e025f51_ed40441b",
+        "filename": "ruff_chromium",
+        "patchSetId": 2
+      },
+      "lineNbr": 209,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-07-10T17:20:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7786f8cb_95b29fbf",
+      "range": {
+        "startLine": 207,
+        "startChar": 8,
+        "endLine": 209,
+        "endChar": 0
+      },
+      "revId": "6c4e27af86f714bed34aea27bd514eb41aa73647",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
