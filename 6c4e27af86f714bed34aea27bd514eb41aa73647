@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e417d8f6_5d89666e",
+        "filename": "ruff_chromium",
+        "patchSetId": 2
+      },
+      "lineNbr": 209,
+      "author": {
+        "id": 1557773
+      },
+      "writtenOn": "2026-07-10T16:25:32Z",
+      "side": 1,
+      "message": "This would break with git submodules as they would have their own vcs root. Realistically, I don\u0027t think that anyone would be trying to submit / format a commit that is created in a sub module as it should be committed in the submodule\u0027s repo first. However, there may be other edge cases.\n\nIs there truly no way to detect whether this is a chromium root or not?",
+      "range": {
+        "startLine": 207,
+        "startChar": 8,
+        "endLine": 209,
+        "endChar": 0
+      },
+      "revId": "6c4e27af86f714bed34aea27bd514eb41aa73647",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
