@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0867e8f3_0f60e38b",
+        "filename": "git_cl.py",
+        "patchSetId": 18
+      },
+      "lineNbr": 7403,
+      "author": {
+        "id": 1429892
+      },
+      "writtenOn": "2026-07-10T03:04:40Z",
+      "side": 1,
+      "message": "Any particular reason why this change (and below) is bundled in?",
+      "range": {
+        "startLine": 7403,
+        "startChar": 38,
+        "endLine": 7403,
+        "endChar": 61
+      },
+      "revId": "e663851efb4bb1e9a2a6820a21c9c4869a882276",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
