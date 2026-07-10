@@ -134,6 +134,14 @@ def ruff_should_format(file_path: str, config_dir: str, config_bytes: bytes,
     return True
 
 
+def _is_vcs_root(dir_path: str) -> bool:
+    """Returns True if dir_path is a repository or workspace root boundary."""
+    for boundary in (".git", ".hg", ".jj", ".svn", ".gclient"):
+        if os.path.exists(os.path.join(dir_path, boundary)):
+            return True
+    return False
+
+
 def should_use_ruff(target_path: str) -> bool:
     """Determines whether to format target_path using Ruff or fall back to YAPF.
 
@@ -196,6 +204,9 @@ def should_use_ruff(target_path: str) -> bool:
         if os.path.exists(os.path.join(search_dir, ".style.yapf")):
             return False
 
+        if _is_vcs_root(search_dir):
+            break
+
         parent_dir = os.path.dirname(search_dir)
         if parent_dir == search_dir:
             break
@@ -232,6 +243,9 @@ def has_yapf_config(target_path: str) -> bool:
                     return True
             except Exception:
                 pass
+
+        if _is_vcs_root(search_dir):
+            break
 
         parent_dir = os.path.dirname(search_dir)
         if parent_dir == search_dir:

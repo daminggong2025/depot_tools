@@ -223,6 +223,13 @@ class TestShouldUseRuffRouting(unittest.TestCase):
                    side_effect=PermissionError("Permission denied")):
             self.assertFalse(should_use_ruff("foo.py"))
 
+    def test_vcs_root_boundary_stops_traversal(self):
+        self.write_file("ruff.toml", "")
+        self.write_file(".style.yapf", "")
+        self.write_file("subrepo/.git", "")
+        self.assertFalse(should_use_ruff("subrepo/foo.py"))
+        self.assertFalse(has_yapf_config("subrepo/foo.py"))
+
 
 class TestTranslateArgs(unittest.TestCase):
 
