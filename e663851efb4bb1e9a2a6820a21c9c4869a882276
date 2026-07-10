@@ -96,6 +96,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "0f13b0e8_e1ecb10f",
+        "filename": "git_cl.py",
+        "patchSetId": 18
+      },
+      "lineNbr": 7379,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-07-10T03:45:26Z",
+      "side": 1,
+      "message": "That\u0027s right, the changes are too big to simply override ruff as is for the user. I didn\u0027t really come up with any better name but then again I don\u0027t expect user to ever use it directly besides `git cl format` and chromium extensions.",
+      "parentUuid": "0a86c63f_ae322697",
+      "range": {
+        "startLine": 7379,
+        "startChar": 57,
+        "endLine": 7379,
+        "endChar": 70
+      },
+      "revId": "e663851efb4bb1e9a2a6820a21c9c4869a882276",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "0867e8f3_0f60e38b",
