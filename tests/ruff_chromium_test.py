@@ -45,6 +45,7 @@ FormattingOptions = depot_tools_ruff.FormattingOptions
 ParsedArguments = depot_tools_ruff.ParsedArguments
 LineRange = depot_tools_ruff.LineRange
 run_ruff_with_ranges = depot_tools_ruff.run_ruff_with_ranges
+extract_root_flag = depot_tools_ruff.extract_root_flag
 
 
 class TestHasYapfConfig(unittest.TestCase):
@@ -222,6 +223,25 @@ class TestShouldUseRuffRouting(unittest.TestCase):
         with patch("builtins.open",
                    side_effect=PermissionError("Permission denied")):
             self.assertFalse(should_use_ruff("foo.py"))
+
+    def test_root_dir_boundary_stops_traversal(self):
+        self.write_file("ruff.toml", "")
+        self.write_file(".style.yapf", "")
+        sub_dir = os.path.join(self.test_dir, "subrepo")
+        os.makedirs(sub_dir, exist_ok=True)
+        self.assertFalse(should_use_ruff("subrepo/foo.py", root_dir=sub_dir))
+        self.assertFalse(has_yapf_config("subrepo/foo.py", root_dir=sub_dir))
+
+    def test_extract_root_flag(self):
+        root, remaining = extract_root_flag(
+            ["--root", "/foo/bar", "format", "baz.py"])
+        self.assertEqual(root, "/foo/bar")
+        self.assertEqual(remaining, ["format", "baz.py"])
+
+        root2, remaining2 = extract_root_flag(
+            ["--top-dir=/foo/bar", "format", "baz.py"])
+        self.assertEqual(root2, "/foo/bar")
+        self.assertEqual(remaining2, ["format", "baz.py"])
 
 
 class TestTranslateArgs(unittest.TestCase):
