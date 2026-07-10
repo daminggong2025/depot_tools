@@ -22,6 +22,30 @@
       },
       "revId": "020e532ce1cf45f00a76f85c8c1c650b6b7cd867",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7f273688_8880749e",
+        "filename": "ruff_chromium",
+        "patchSetId": 16
+      },
+      "lineNbr": 175,
+      "author": {
+        "id": 1557773
+      },
+      "writtenOn": "2026-07-10T14:44:16Z",
+      "side": 1,
+      "message": "Note: The analysis for why it broke is purely driven by AI 😄. It could potentially be wrong too.",
+      "parentUuid": "c9aab83b_0977e856",
+      "range": {
+        "startLine": 175,
+        "startChar": 8,
+        "endLine": 175,
+        "endChar": 48
+      },
+      "revId": "020e532ce1cf45f00a76f85c8c1c650b6b7cd867",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
