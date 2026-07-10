@@ -46,6 +46,30 @@
       },
       "revId": "020e532ce1cf45f00a76f85c8c1c650b6b7cd867",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1503846a_1b719d7e",
+        "filename": "ruff_chromium",
+        "patchSetId": 16
+      },
+      "lineNbr": 175,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-07-10T14:45:32Z",
+      "side": 1,
+      "message": "I have rolled the git cl CL back: https://chromium-review.git.corp.google.com/c/chromium/tools/depot_tools/+/8075238. I hope this will get fixed once the depot_tools DEPS rolls up. In the meantime I will check your theory!",
+      "parentUuid": "7f273688_8880749e",
+      "range": {
+        "startLine": 175,
+        "startChar": 8,
+        "endLine": 175,
+        "endChar": 48
+      },
+      "revId": "020e532ce1cf45f00a76f85c8c1c650b6b7cd867",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
