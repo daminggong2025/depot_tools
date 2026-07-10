@@ -26,6 +26,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "b87ebf26_5527b77d",
+        "filename": ".ruff.toml",
+        "patchSetId": 2
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-07-10T16:53:55Z",
+      "side": 1,
+      "message": "Thanks for checking! I will check git history for the rest.",
+      "parentUuid": "d2351374_8dc7e643",
+      "range": {
+        "startLine": 19,
+        "startChar": 0,
+        "endLine": 19,
+        "endChar": 20
+      },
+      "revId": "1548afa288db1372fe7ba8c54924cf87ff457b2a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "69e81e7a_5a29a3b6",
         "filename": "/PATCHSET_LEVEL",
         "patchSetId": 2
