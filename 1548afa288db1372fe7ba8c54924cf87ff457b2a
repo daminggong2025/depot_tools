@@ -72,6 +72,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "b6d135cb_aea152d5",
+        "filename": ".ruff.toml",
+        "patchSetId": 2
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-07-10T17:03:27Z",
+      "side": 1,
+      "message": "ack",
+      "parentUuid": "bb9e9d1a_e8a717c0",
+      "range": {
+        "startLine": 19,
+        "startChar": 0,
+        "endLine": 19,
+        "endChar": 20
+      },
+      "revId": "1548afa288db1372fe7ba8c54924cf87ff457b2a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "69e81e7a_5a29a3b6",
