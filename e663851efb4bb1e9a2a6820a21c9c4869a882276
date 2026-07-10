@@ -144,6 +144,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "4dbad78f_c6c42b7a",
+        "filename": "git_cl.py",
+        "patchSetId": 18
+      },
+      "lineNbr": 7379,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-07-10T05:45:18Z",
+      "side": 1,
+      "message": "The file has executable bit, feel free to double check it.",
+      "parentUuid": "bf7be07e_e0f7b962",
+      "range": {
+        "startLine": 7379,
+        "startChar": 57,
+        "endLine": 7379,
+        "endChar": 70
+      },
+      "revId": "e663851efb4bb1e9a2a6820a21c9c4869a882276",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "0867e8f3_0f60e38b",
