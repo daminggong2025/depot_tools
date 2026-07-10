@@ -70,6 +70,30 @@
       },
       "revId": "020e532ce1cf45f00a76f85c8c1c650b6b7cd867",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d5121ba6_ab48f414",
+        "filename": "ruff_chromium",
+        "patchSetId": 16
+      },
+      "lineNbr": 175,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-07-10T14:58:00Z",
+      "side": 1,
+      "message": "Ok this is exactly right. Sending fix shortly, but I have already rolled back the checker so this should pass already.",
+      "parentUuid": "1503846a_1b719d7e",
+      "range": {
+        "startLine": 175,
+        "startChar": 8,
+        "endLine": 175,
+        "endChar": 48
+      },
+      "revId": "020e532ce1cf45f00a76f85c8c1c650b6b7cd867",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
