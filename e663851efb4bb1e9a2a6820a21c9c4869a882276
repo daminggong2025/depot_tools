@@ -168,6 +168,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "e1203d69_3340c289",
+        "filename": "git_cl.py",
+        "patchSetId": 18
+      },
+      "lineNbr": 7379,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2026-07-10T07:23:59Z",
+      "side": 1,
+      "message": "Yeah, I wondered why it\u0027s executable if it\u0027s not for users to run, and realized that for installing the ruff wheel by vpython.",
+      "parentUuid": "4dbad78f_c6c42b7a",
+      "range": {
+        "startLine": 7379,
+        "startChar": 57,
+        "endLine": 7379,
+        "endChar": 70
+      },
+      "revId": "e663851efb4bb1e9a2a6820a21c9c4869a882276",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "0867e8f3_0f60e38b",
