@@ -7977,6 +7977,68 @@ class OptionParser(optparse.OptionParser):
         return options, argslist
 
 
+def _ResolveGitPath(git_path, base_dir):
+    if not os.path.exists(git_path):
+        return None
+    if os.path.isdir(git_path):
+        return git_path
+    if not os.path.isfile(git_path):
+        return None
+
+    try:
+        with open(git_path, 'r') as f:
+            content = f.read().strip()
+    except OSError as e:
+        logging.debug('Failed to read .git file %s: %s', git_path, e)
+        return None
+
+    if not content.startswith('gitdir:'):
+        return None
+
+    path = content.split(':', 1)[1].strip()
+    if not os.path.isabs(path):
+        path = os.path.abspath(os.path.join(base_dir, path))
+    return path
+
+
+def FindGitDir(start_dir='.'):
+    curr = os.path.abspath(start_dir)
+    while True:
+        git_dir = _ResolveGitPath(os.path.join(curr, '.git'), curr)
+        if git_dir:
+            return git_dir
+        parent = os.path.dirname(curr)
+        if parent == curr:
+            break
+        curr = parent
+    return None
+
+
+def GetUntrackedCacheRecoveryMsg():
+    try:
+        git_dir = scm.GIT.Capture(['rev-parse', '--git-dir'], cwd='.')
+        if isinstance(git_dir, bytes):
+            git_dir = git_dir.decode('utf-8', 'ignore')
+        git_dir = os.path.abspath(git_dir.strip())
+    except (subprocess2.CalledProcessError, OSError):
+        git_dir = FindGitDir('.')
+
+    if git_dir:
+        lock_path = os.path.join(git_dir, 'index.lock')
+        index_path = os.path.join(git_dir, 'index')
+    else:
+        lock_path = '$(git rev-parse --git-dir)/index.lock'
+        index_path = '$(git rev-parse --git-dir)/index'
+
+    return ('Git encountered a bug with the untracked cache.\n'
+            'To fix this, please rebuild your git index by running:\n'
+            '  rm -f %s\n'
+            '  rm -f %s\n'
+            '  git reset\n'
+            'Note: This will unstage any staged changes.' %
+            (lock_path, index_path))
+
+
 def main(argv):
     colorize_CMDstatus_doc()
     dispatcher = subcommand.CommandDispatcher(__name__)
@@ -7998,10 +8060,15 @@ def main(argv):
         stderr = e.stderr
         if isinstance(stderr, bytes):
             stderr = stderr.decode('utf-8', 'ignore')
-        if stderr and 'not a git repository' in stderr:
+        if not stderr:
+            raise
+
+        if 'not a git repository' in stderr:
             DieWithError(
                 'fatal: not a git repository (or any of the parent directories): .git'
             )
+        if 'untracked_cache_invalidate_trimmed_path' in stderr:
+            DieWithError(GetUntrackedCacheRecoveryMsg())
         raise
     return 0
 
