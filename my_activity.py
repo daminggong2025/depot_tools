@@ -32,11 +32,9 @@ To add additional gerrit instances, one can pass a JSON file as parameter:
 # check those details to determine if there was activity in the given period.
 # This means that query time scales mostly with (today() - begin).
 
-import collections
 import contextlib
 from datetime import datetime
 from datetime import timedelta
-import httplib2
 import itertools
 import json
 import logging
@@ -45,10 +43,8 @@ import optparse
 import os
 from string import Formatter
 import sys
-import urllib
 import re
 
-import auth
 import gclient_utils
 import gerrit_util
 
@@ -105,30 +101,6 @@ gerrit_instances = [
     },
 ]
 
-monorail_projects = {
-    'angleproject': {
-        'shorturl': 'anglebug.com',
-        'short_url_protocol': 'http',
-    },
-    'chromium': {
-        'shorturl': 'crbug.com',
-        'short_url_protocol': 'https',
-    },
-    'dawn': {},
-    'google-breakpad': {},
-    'gyp': {},
-    'pdfium': {
-        'shorturl': 'crbug.com/pdfium',
-        'short_url_protocol': 'https',
-    },
-    'skia': {},
-    'tint': {},
-    'v8': {
-        'shorturl': 'crbug.com/v8',
-        'short_url_protocol': 'https',
-    },
-}
-
 
 def username(email):
     """Keeps the username of an email address."""
@@ -173,10 +145,6 @@ def datetime_from_gerrit(date_string):
     return datetime.strptime(date_string, '%Y-%m-%d %H:%M:%S.%f000')
 
 
-def datetime_from_monorail(date_string):
-    return datetime.strptime(date_string, '%Y-%m-%dT%H:%M:%S')
-
-
 def extract_bug_numbers_from_description(issue):
     # Getting the description for REST Gerrit
     revision = issue['revisions'][issue['current_revision']]
@@ -206,8 +174,6 @@ class MyActivity(object):
         self.user = options.user
         self.changes = []
         self.reviews = []
-        self.issues = []
-        self.referenced_issues = []
         self.google_code_auth_token = None
         self.access_errors = set()
         self.skip_servers = (options.skip_servers.split(','))
@@ -306,135 +272,6 @@ class MyActivity(object):
             })
         return ret
 
-    def monorail_get_auth_http(self):
-        # Manually use a long timeout (10m); for some users who have a
-        # long history on the issue tracker, whatever the default timeout
-        # is is reached.
-        return auth.Authenticator().authorize(httplib2.Http(timeout=600))
-
-    def filter_modified_monorail_issue(self, issue):
-        """Precisely checks if an issue has been modified in the time range.
-
-        This fetches all issue comments to check if the issue has been modified
-        in the time range specified by user. This is needed because monorail
-        only allows filtering by last updated and published dates, which is not
-        sufficient to tell whether a given issue has been modified at some
-        specific time range. Any update to the issue is a reported as comment
-        on Monorail.
-
-        Args:
-            issue: Issue dict as returned by monorail_query_issues method. In
-                particular, must have a key 'uid' formatted as
-                'project:issue_id'.
-
-        Returns:
-            Passed issue if modified, None otherwise.
-        """
-        http = self.monorail_get_auth_http()
-        project, issue_id = issue['uid'].split(':')
-        url = ('https://monorail-prod.appspot.com/_ah/api/monorail/v1/projects'
-               '/%s/issues/%s/comments?maxResults=10000') % (project, issue_id)
-        _, body = http.request(url)
-        self.show_progress()
-        content = json.loads(body)
-        if not content:
-            logging.error('Unable to parse %s response from monorail.', project)
-            return issue
-
-        for item in content.get('items', []):
-            comment_published = datetime_from_monorail(item['published'])
-            if self.filter_modified(comment_published):
-                return issue
-
-        return None
-
-    def monorail_query_issues(self, project, query):
-        http = self.monorail_get_auth_http()
-        url = ('https://monorail-prod.appspot.com/_ah/api/monorail/v1/projects'
-               '/%s/issues') % project
-        query_data = urllib.parse.urlencode(query)
-        url = url + '?' + query_data
-        _, body = http.request(url)
-        self.show_progress()
-        try:
-          content = json.loads(body)
-        except json.JSONDecodeError:
-          content = None
-        if not content:
-            logging.error('Unable to parse %s response from monorail.', project)
-            return []
-
-        issues = []
-        project_config = monorail_projects.get(project, {})
-        for item in content.get('items', []):
-            if project_config.get('shorturl'):
-                protocol = project_config.get('short_url_protocol', 'http')
-                item_url = '%s://%s/%d' % (protocol, project_config['shorturl'],
-                                           item['id'])
-            else:
-                item_url = (
-                    'https://bugs.chromium.org/p/%s/issues/detail?id=%d' %
-                    (project, item['id']))
-            issue = {
-                'uid': '%s:%s' % (project, item['id']),
-                'header': item['title'],
-                'created': datetime_from_monorail(item['published']),
-                'modified': datetime_from_monorail(item['updated']),
-                'author': item['author']['name'],
-                'url': item_url,
-                'comments': [],
-                'status': item['status'],
-                'labels': [],
-                'components': []
-            }
-            if 'owner' in item:
-                issue['owner'] = item['owner']['name']
-            else:
-                issue['owner'] = 'None'
-            if 'labels' in item:
-                issue['labels'] = item['labels']
-            if 'components' in item:
-                issue['components'] = item['components']
-            issues.append(issue)
-
-        return issues
-
-    def monorail_issue_search(self, project):
-        epoch = datetime.utcfromtimestamp(0)
-        # Defaults to @chromium.org email if one wasn't provided on -u option.
-        user_str = (self.options.email if self.options.email.find('@') >= 0 else
-                    '%s@chromium.org' % self.user)
-
-        issues = self.monorail_query_issues(
-            project, {
-                'maxResults':
-                10000,
-                'q':
-                user_str,
-                'publishedMax':
-                '%d' % (self.modified_before - epoch).total_seconds(),
-                'updatedMin':
-                '%d' % (self.modified_after - epoch).total_seconds(),
-            })
-
-        if self.options.completed_issues:
-            return [
-                issue for issue in issues
-                if (self.match(issue['owner']) and issue['status'].lower() in (
-                    'verified', 'fixed'))
-            ]
-
-        return [
-            issue for issue in issues
-            if user_str in (issue['author'], issue['owner'])
-        ]
-
-    def monorail_get_issues(self, project, issue_ids):
-        return self.monorail_query_issues(project, {
-            'maxResults': 10000,
-            'q': 'id:%s' % ','.join(issue_ids)
-        })
-
     def print_heading(self, heading):
         print()
         print(self.options.output_format_heading.format(heading=heading))
@@ -463,18 +300,6 @@ class MyActivity(object):
                            change['review_url'], change['author'],
                            change['created'], change['modified'],
                            optional_values)
-
-    def print_issue(self, issue):
-        optional_values = {
-            'created': issue['created'].date().isoformat(),
-            'modified': issue['modified'].date().isoformat(),
-            'owner': issue['owner'],
-            'status': issue['status'],
-        }
-        self.print_generic(self.options.output_format,
-                           self.options.output_format_issues, issue['header'],
-                           issue['url'], issue['author'], issue['created'],
-                           issue['modified'], optional_values)
 
     def print_review(self, review):
         activity = len([
@@ -588,105 +413,6 @@ class MyActivity(object):
             for review in self.reviews:
                 self.print_review(review)
 
-    def get_issues(self):
-        with contextlib.closing(ThreadPool(len(monorail_projects))) as pool:
-            monorail_issues = pool.map(self.monorail_issue_search,
-                                       monorail_projects.keys())
-            monorail_issues = list(
-                itertools.chain.from_iterable(monorail_issues))
-
-        if not monorail_issues:
-            return
-
-        with contextlib.closing(ThreadPool(len(monorail_issues))) as pool:
-            filtered_issues = pool.map(self.filter_modified_monorail_issue,
-                                       monorail_issues)
-            self.issues = [issue for issue in filtered_issues if issue]
-
-    def get_referenced_issues(self):
-        if not self.issues:
-            self.get_issues()
-
-        if not self.changes:
-            self.get_changes()
-
-        referenced_issue_uids = set(
-            itertools.chain.from_iterable(change['bugs']
-                                          for change in self.changes))
-        fetched_issue_uids = set(issue['uid'] for issue in self.issues)
-        missing_issue_uids = referenced_issue_uids - fetched_issue_uids
-
-        missing_issues_by_project = collections.defaultdict(list)
-        for issue_uid in missing_issue_uids:
-            project, issue_id = issue_uid.split(':')
-            missing_issues_by_project[project].append(issue_id)
-
-        for project, issue_ids in missing_issues_by_project.items():
-            self.referenced_issues += self.monorail_get_issues(
-                project, issue_ids)
-
-    def print_issues(self):
-        if self.issues:
-            self.print_heading('Issues')
-            for issue in self.issues:
-                self.print_issue(issue)
-
-    def print_changes_by_issue(self, skip_empty_own):
-        if not self.issues or not self.changes:
-            return
-
-        self.print_heading('Changes by referenced issue(s)')
-        issues = {issue['uid']: issue for issue in self.issues}
-        ref_issues = {issue['uid']: issue for issue in self.referenced_issues}
-        changes_by_issue_uid = collections.defaultdict(list)
-        changes_by_ref_issue_uid = collections.defaultdict(list)
-        changes_without_issue = []
-        for change in self.changes:
-            added = False
-            for issue_uid in change['bugs']:
-                if issue_uid in issues:
-                    changes_by_issue_uid[issue_uid].append(change)
-                    added = True
-                if issue_uid in ref_issues:
-                    changes_by_ref_issue_uid[issue_uid].append(change)
-                    added = True
-            if not added:
-                changes_without_issue.append(change)
-
-        # Changes referencing own issues.
-        for issue_uid in issues:
-            if changes_by_issue_uid[issue_uid] or not skip_empty_own:
-                self.print_issue(issues[issue_uid])
-            if changes_by_issue_uid[issue_uid]:
-                print()
-                for change in changes_by_issue_uid[issue_uid]:
-                    print('    ', end='')  # this prints no newline
-                    self.print_change(change)
-                print()
-
-        # Changes referencing others' issues.
-        for issue_uid in ref_issues:
-            assert changes_by_ref_issue_uid[issue_uid]
-            self.print_issue(ref_issues[issue_uid])
-            for change in changes_by_ref_issue_uid[issue_uid]:
-                print('', end=' '
-                      )  # this prints one space due to comma, but no newline
-                self.print_change(change)
-
-        # Changes referencing no issues.
-        if changes_without_issue:
-            print(
-                self.options.output_format_no_url.format(title='Other changes'))
-            for change in changes_without_issue:
-                print('', end=' '
-                      )  # this prints one space due to comma, but no newline
-                self.print_change(change)
-
-    def print_activity(self):
-        self.print_changes()
-        self.print_reviews()
-        self.print_issues()
-
     def dump_json(self, ignore_keys=None):
         if ignore_keys is None:
             ignore_keys = ['replies']
@@ -712,8 +438,7 @@ class MyActivity(object):
 
         output = {
             'reviews': format_for_json_dump(self.reviews),
-            'changes': format_for_json_dump(self.changes),
-            'issues': format_for_json_dump(self.issues)
+            'changes': format_for_json_dump(self.changes)
         }
         print(json.dumps(output, indent=2, cls=PythonObjectEncoder))
 
@@ -766,22 +491,10 @@ def main():
                       action='store_true',
                       help='Fetch deltas for changes.')
     parser.add_option(
-        '--no-referenced-issues',
-        action='store_true',
-        help='Do not fetch issues referenced by owned changes. Useful in '
-        'combination with --changes-by-issue when you only want to list '
-        'issues that have also been modified in the same time period.')
-    parser.add_option(
         '--skip_servers',
         action='store',
         default='',
         help='A comma separated list of gerrit and rietveld servers to ignore')
-    parser.add_option(
-        '--skip-own-issues-without-changes',
-        action='store_true',
-        help='Skips listing own issues without changes when showing changes '
-        'grouped by referenced issue(s). See --changes-by-issue for more '
-        'details.')
     parser.add_option(
         '-F',
         '--config_file',
@@ -798,18 +511,10 @@ def main():
                                     '--changes',
                                     action='store_true',
                                     help='Show changes.')
-    activity_types_group.add_option('-i',
-                                    '--issues',
-                                    action='store_true',
-                                    help='Show issues.')
     activity_types_group.add_option('-r',
                                     '--reviews',
                                     action='store_true',
                                     help='Show reviews.')
-    activity_types_group.add_option(
-        '--changes-by-issue',
-        action='store_true',
-        help='Show changes grouped by referenced issue(s).')
     parser.add_option_group(activity_types_group)
 
     output_format_group = optparse.OptionGroup(
@@ -836,12 +541,6 @@ def main():
         default=None,
         help='Specifies the format to use when printing changes. Supports the '
         'additional variable {reviewers}')
-    output_format_group.add_option(
-        '--output-format-issues',
-        metavar='<format>',
-        default=None,
-        help='Specifies the format to use when printing issues. Supports the '
-        'additional variable {owner}.')
     output_format_group.add_option(
         '--output-format-reviews',
         metavar='<format>',
@@ -889,14 +588,6 @@ def main():
                       dest='merged_only',
                       default=False,
                       help='Shows only changes that have been merged.')
-    parser.add_option(
-        '-C',
-        '--completed-issues',
-        action='store_true',
-        dest='completed_issues',
-        default=False,
-        help='Shows only monorail issues that have completed (Fixed|Verified) '
-        'by the user.')
     parser.add_option(
         '-o',
         '--output',
@@ -970,8 +661,6 @@ def main():
                         # Use property name as URL
                         dic['url'] = repo
                         gerrit_instances.append(dic)
-                elif item == 'monorail_projects':
-                    monorail_projects.append(entries)
                 else:
                     logging.error('Invalid entry in config file.')
                     return 1
@@ -979,32 +668,23 @@ def main():
     my_activity = MyActivity(options)
     my_activity.show_progress('Loading data')
 
-    if not (options.changes or options.reviews or options.issues
-            or options.changes_by_issue):
+    if not (options.changes or options.reviews):
         options.changes = True
-        options.issues = True
         options.reviews = True
 
     # First do any required authentication so none of the user interaction has
     # to wait for actual work.
-    if options.changes or options.changes_by_issue:
+    if options.changes:
         my_activity.auth_for_changes()
     if options.reviews:
         my_activity.auth_for_reviews()
 
     logging.info('Looking up activity.....')
 
-    try:
-        if options.changes or options.changes_by_issue:
-            my_activity.get_changes()
-        if options.reviews:
-            my_activity.get_reviews()
-        if options.issues or options.changes_by_issue:
-            my_activity.get_issues()
-        if not options.no_referenced_issues:
-            my_activity.get_referenced_issues()
-    except auth.LoginRequiredError as e:
-        logging.error('auth.LoginRequiredError: %s', e)
+    if options.changes:
+        my_activity.get_changes()
+    if options.reviews:
+        my_activity.get_reviews()
 
     my_activity.show_progress('\n')
 
@@ -1026,11 +706,6 @@ def main():
                 my_activity.print_changes()
             if options.reviews:
                 my_activity.print_reviews()
-            if options.issues:
-                my_activity.print_issues()
-            if options.changes_by_issue:
-                my_activity.print_changes_by_issue(
-                    options.skip_own_issues_without_changes)
     finally:
         if output_file:
             logging.info('Done printing to file.')
