@@ -456,30 +456,6 @@ def gclient_sync(with_branch_heads,
     raise GclientSyncFailed(e.message, e.code, e.output)
 
 
-def normalize_git_url(url):
-  """Normalize a git url to be consistent.
-
-  This recognizes urls to the googlesoruce.com domain.  It ensures that
-  the url:
-  * Do not end in .git
-  * Do not contain /a/ in their path.
-  """
-  try:
-    p = urlparse(url)
-  except Exception:
-    # Not a url, just return it back.
-    return url
-  if not p.netloc.endswith('.googlesource.com'):
-    # Not a googlesource.com URL, can't normalize this, just return as is.
-    return url
-  upath = p.path
-  if upath.startswith('/a'):
-    upath = upath[len('/a'):]
-  if upath.endswith('.git'):
-    upath = upath[:-len('.git')]
-  return 'https://%s%s' % (p.netloc, upath)
-
-
 def create_manifest():
   fd, fname = tempfile.mkstemp()
   os.close(fd)

@@ -348,29 +348,5 @@ class GetTargetBranchAndRevisionTest(unittest.TestCase):
             ('refs/remotes/origin/main', 'HEAD'))
 
 
-class NormalizeGitUrlTest(unittest.TestCase):
-    # normalize_git_url currently has no callers in this repo; these tests
-    # pin its behavior anyway.
-
-    def testNonGooglesourceUnchanged(self):
-        self.assertEqual(
-            bot_update.normalize_git_url('https://github.com/foo/bar.git'),
-            'https://github.com/foo/bar.git')
-
-    def testStripsDotGitAndAuthPrefix(self):
-        self.assertEqual(
-            bot_update.normalize_git_url(
-                'https://chromium.googlesource.com/a/chromium/src.git'),
-            'https://chromium.googlesource.com/chromium/src')
-
-    def testAuthPrefixOverMatches(self):
-        # Suspicious: the check is startswith('/a'), not startswith('/a/'),
-        # so any repo path starting with 'a' is mangled.
-        self.assertEqual(
-            bot_update.normalize_git_url(
-                'https://chromium.googlesource.com/angle/angle'),
-            'https://chromium.googlesource.comngle/angle')
-
-
 if __name__ == '__main__':
     unittest.main()
