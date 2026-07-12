@@ -189,8 +189,8 @@ index fe3de7b..54ae6e1 100755
         mock.patch('os.path.isfile').start()
         mock.patch('os.remove').start()
         mock.patch('presubmit_support._parse_files').start()
-        mock.patch('presubmit_support.rdb_wrapper.client',
-                   return_value=self.rdb_client).start()
+        # rdb_wrapper is imported lazily, so patch the module directly.
+        mock.patch('rdb_wrapper.client', return_value=self.rdb_client).start()
         mock.patch('presubmit_support.sigint_handler').start()
         mock.patch('presubmit_support.time_time', return_value=0).start()
         mock.patch('presubmit_support.warn').start()
