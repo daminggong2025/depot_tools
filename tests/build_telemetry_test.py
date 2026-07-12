@@ -19,6 +19,35 @@ import build_telemetry
 
 class BuildTelemetryTest(unittest.TestCase):
 
+    def test_main_windows_bat_no_args(self):
+        # On Windows, build_telemetry.bat passes the arguments enclosed in
+        # double quotes ("%*"). A bare invocation therefore delivers a single
+        # empty-string argument, which must be treated like no arguments.
+        with unittest.mock.patch('sys.platform', 'win32'), \
+                unittest.mock.patch('sys.argv', ['build_telemetry.py', '']), \
+                unittest.mock.patch(
+                    'build_telemetry.load_config') as load_config:
+            cfg = unittest.mock.Mock()
+            cfg.is_googler = False
+            load_config.return_value = cfg
+            try:
+                build_telemetry.main()
+            except SystemExit as e:
+                self.fail('bare invocation exited with code %s' % e.code)
+            cfg.save.assert_called_once_with()
+
+    def test_main_windows_bat_single_arg(self):
+        with unittest.mock.patch('sys.platform', 'win32'), \
+                unittest.mock.patch('sys.argv',
+                                    ['build_telemetry.py', 'opt-in']), \
+                unittest.mock.patch(
+                    'build_telemetry.load_config') as load_config:
+            cfg = unittest.mock.Mock()
+            cfg.is_googler = True
+            load_config.return_value = cfg
+            build_telemetry.main()
+            cfg.opt_in.assert_called_once_with()
+
     def test_check_auth(self):
         with unittest.mock.patch('subprocess.check_output') as run_mock:
             auth = {'email': 'bob@google.com'}
