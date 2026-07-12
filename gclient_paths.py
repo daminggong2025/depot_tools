@@ -6,16 +6,14 @@
 # so it's meant to import very quickly. To keep it that way don't add more
 # code, and even more importantly don't add more toplevel import statements,
 # particularly for modules that are not builtin (see sys.builtin_modules_names,
-# os isn't built in, but it's essential to this file).
+# os isn't built in, but it's essential to this file). Non-stdlib modules
+# (gclient_eval, gclient_utils, subprocess2) are imported lazily inside the
+# functions that need them.
 
 import functools
 import logging
 import os
 import sys
-
-import gclient_eval
-import gclient_utils
-import subprocess2
 
 # TODO: Should fix these warnings.
 # pylint: disable=line-too-long
@@ -41,6 +39,7 @@ def FindGclientRoot(from_dir, filename='.gclient'):
     # a sub directory that is controlled by this configuration.
     entries_filename = os.path.join(path, filename + '_entries')
     if not os.path.exists(entries_filename):
+        import gclient_utils
         if not gclient_utils.IsEnvCog():
             # If .gclient_entries does not exist, a previous call to
             # gclient sync might have failed. In that case, we cannot verify
@@ -52,6 +51,9 @@ def FindGclientRoot(from_dir, filename='.gclient'):
                   (entries_filename, filename, path),
                   file=sys.stderr)
         return path
+
+    import gclient_eval
+    import gclient_utils
 
     entries_content = gclient_utils.FileRead(entries_filename)
     scope = gclient_eval.ParseLocalConfig(entries_content, entries_filename)
@@ -81,6 +83,8 @@ def _GetPrimarySolutionPathInternal(cwd):
     # Some projects might not use .gclient. Try to see whether we're in a git
     # checkout that contains a "buildtools" directory or "codereview.settings"
     # file.
+    import subprocess2
+
     top_dir = cwd
     try:
         top_dir = subprocess2.check_output(
@@ -155,6 +159,7 @@ def GetBuildtoolsPlatformBinaryPath():
     elif sys.platform.startswith('linux'):
         subdir = 'linux64'
     else:
+        import gclient_utils
         raise gclient_utils.Error('Unknown platform: ' + sys.platform)
     return os.path.join(buildtools_path, subdir)
 
@@ -168,6 +173,9 @@ def GetExeSuffix():
 
 @functools.lru_cache
 def _GetGClientSolutions(gclient_root_dir_path):
+    import gclient_eval
+    import gclient_utils
+
     gclient_config_file = os.path.join(gclient_root_dir_path, '.gclient')
     gclient_config_contents = gclient_utils.FileRead(gclient_config_file)
     env = gclient_eval.ParseLocalConfig(gclient_config_contents,
