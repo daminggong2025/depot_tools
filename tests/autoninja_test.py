@@ -203,6 +203,75 @@ class AutoninjaTest(trial_dir.TestCase):
         ])
         self.assertEqual(reclient_helper_calls[0][1], 'autosiso')
 
+    def test_collect_log_paths(self):
+        """
+        Test that _collect_log_paths returns only existing log files and
+        resolves the newest reproxy log directory.
+        """
+        out_dir = os.path.join('out', 'dir')
+        write(os.path.join(out_dir, '.ninja_log'), '')
+        write(os.path.join(out_dir, 'siso.INFO'), '')
+        write(os.path.join(out_dir, 'siso_output'), '')
+        reproxy_logs = os.path.join(out_dir, '.reproxy_tmp', 'logs')
+        old_run = os.path.join(reproxy_logs,
+                               '20240101T000000.000000_build-id-1')
+        new_run = os.path.join(reproxy_logs,
+                               '20250101T000000.000000_build-id-2')
+        write(os.path.join(old_run, 'reproxy.INFO'), '')
+        write(os.path.join(new_run, 'reproxy.INFO'), '')
+        log_paths = autoninja._collect_log_paths(out_dir)
+        self.assertIn(os.path.join(out_dir, '.ninja_log'), log_paths)
+        self.assertIn(os.path.join(out_dir, 'siso.INFO'), log_paths)
+        self.assertIn(os.path.join(out_dir, 'siso_output'), log_paths)
+        self.assertNotIn(os.path.join(out_dir, 'siso_localexec'), log_paths)
+        self.assertNotIn(os.path.join(out_dir, 'siso_metrics.json'), log_paths)
+        self.assertIn(new_run, log_paths)
+        self.assertNotIn(old_run, log_paths)
+
+    def test_collect_log_paths_no_logs(self):
+        """Test that _collect_log_paths returns nothing without log files."""
+        out_dir = os.path.join('out', 'dir')
+        write(os.path.join(out_dir, 'args.gn'), '')
+        self.assertEqual(autoninja._collect_log_paths(out_dir), [])
+
+    def test_autoninja_show_logs(self):
+        """Test that --show-logs prints the log files and does not build."""
+        out_dir = os.path.join('out', 'dir')
+        write(os.path.join(out_dir, 'args.gn'), '')
+        write(os.path.join(out_dir, 'siso.INFO'), '')
+        with mock.patch('ninja.main', return_value=0) as ninja_main, \
+                mock.patch('siso.main', return_value=0) as siso_main, \
+                contextlib.redirect_stdout(io.StringIO()) as f:
+            exit_code = autoninja.main(
+                ['autoninja.py', '-C', out_dir, '--show-logs'])
+        self.assertEqual(exit_code, 0)
+        ninja_main.assert_not_called()
+        siso_main.assert_not_called()
+        self.assertIn(os.path.join(out_dir, 'siso.INFO'), f.getvalue())
+
+    def test_autoninja_prints_logs_on_failure(self):
+        """Test that a failed build prints existing log paths to stderr."""
+        out_dir = os.path.join('out', 'dir')
+        write(os.path.join(out_dir, 'args.gn'), '')
+        write(os.path.join(out_dir, '.ninja_log'), '')
+        with mock.patch('ninja.main', return_value=1), \
+                contextlib.redirect_stderr(io.StringIO()) as f:
+            exit_code = autoninja.main(['autoninja.py', '-C', out_dir])
+        self.assertEqual(exit_code, 1)
+        self.assertIn('Build logs:', f.getvalue())
+        self.assertIn(os.path.join(out_dir, '.ninja_log'), f.getvalue())
+
+    def test_autoninja_no_logs_on_success(self):
+        """Test that a successful build does not print log paths."""
+        out_dir = os.path.join('out', 'dir')
+        write(os.path.join(out_dir, 'args.gn'), '')
+        write(os.path.join(out_dir, '.ninja_log'), '')
+        with mock.patch('ninja.main', return_value=0), \
+                contextlib.redirect_stderr(io.StringIO()) as f:
+            exit_code = autoninja.main(['autoninja.py', '-C', out_dir])
+        self.assertEqual(exit_code, 0)
+        self.assertNotIn('Build logs:', f.getvalue())
+
     @mock.patch('sys.platform', 'win32')
     def test_print_cmd_windows(self):
         args = [
