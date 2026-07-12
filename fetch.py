@@ -21,6 +21,7 @@ import json
 import argparse
 import os
 import shlex
+import shutil
 import subprocess
 import sys
 
@@ -28,8 +29,6 @@ import caffeinate
 import gclient_utils
 import git_common
 import utils
-
-from distutils import spawn
 
 SCRIPT_PATH = os.path.dirname(os.path.abspath(__file__))
 
@@ -81,7 +80,7 @@ class Checkout(object):
 
 class GclientCheckout(Checkout):
     def run_gclient(self, *cmd, **kwargs):
-        if not spawn.find_executable('gclient'):
+        if not shutil.which('gclient'):
             cmd_prefix = (sys.executable, os.path.join(SCRIPT_PATH,
                                                        'gclient.py'))
         else:
@@ -254,6 +253,28 @@ def handle_args(argv):
     return args
 
 
+def run_config_command(config, cmd):
+    """Run a config subprocess and return its json output as a python object.
+
+    If the subprocess fails or prints something that is not JSON, print its
+    captured stdout followed by a terse error and bail out without a stack
+    trace, in the same spirit as Checkout.run.
+    """
+    proc = subprocess.run(cmd, stdout=subprocess.PIPE, check=False)
+    output = proc.stdout.decode('utf-8')
+    if proc.returncode != 0:
+        sys.stdout.write(output)
+        print('Config "%s" failed with return code %d.' %
+              (config, proc.returncode))
+        sys.exit(proc.returncode)
+    try:
+        return json.loads(output)
+    except ValueError:
+        sys.stdout.write(output)
+        print('Config "%s" did not print valid JSON.' % config)
+        sys.exit(1)
+
+
 def run_config_fetch(config, props, aliased=False):
     """Invoke a config's fetch method with the passed-through args
     and return its json output as a python object."""
@@ -264,17 +285,14 @@ def run_config_fetch(config, props, aliased=False):
         sys.exit(1)
 
     cmd = [sys.executable, config_path + '.py', 'fetch'] + props
-    result = subprocess.Popen(cmd, stdout=subprocess.PIPE).communicate()[0]
-
-    spec = json.loads(result.decode("utf-8"))
+    spec = run_config_command(config, cmd)
     if 'alias' in spec:
         assert not aliased
         return run_config_fetch(spec['alias']['config'],
                                 spec['alias']['props'] + props,
                                 aliased=True)
     cmd = [sys.executable, config_path + '.py', 'root']
-    result = subprocess.Popen(cmd, stdout=subprocess.PIPE).communicate()[0]
-    root = json.loads(result.decode("utf-8"))
+    root = run_config_command(config, cmd)
     return spec, root
 
 
