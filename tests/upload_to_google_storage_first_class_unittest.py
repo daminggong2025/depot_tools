@@ -14,6 +14,7 @@ import sys
 import tarfile
 import tempfile
 import unittest
+from unittest import mock
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -180,6 +181,64 @@ class UploadTests(unittest.TestCase):
                            ('ls', '%s/%s' % (self.base_url, object_name))),
                           ('check_call', ('ls', '-L', '%s/%s' %
                                           (self.base_url, object_name)))])
+
+    def test_main_dry_run(self):
+        file = self.lorem_ipsum
+        object_name = 'gs_object_name/version123'
+        argv = [
+            'upload_to_google_storage_first_class.py', '--bucket',
+            'sometesturl', '--object-name', object_name, '--dry-run', file
+        ]
+
+        with mock.patch.object(sys, 'argv', argv), \
+                mock.patch.object(upload_to_google_storage_first_class,
+                                  'Gsutil', return_value=self.gsutil), \
+                mock.patch('sys.stdout', new_callable=StringIO) as stdout:
+            ret = upload_to_google_storage_first_class.main()
+
+        self.assertFalse(ret)
+        self.assertEqual(self.gsutil.history,
+                         [('check_call',
+                           ('ls', '%s/%s' % (self.base_url, object_name))),
+                          ('check_call', ('ls', '-L', '%s/%s' %
+                                          (self.base_url, object_name)))])
+        output = stdout.getvalue()
+        self.assertIn('dry run', output.lower())
+        self.assertIn('"bucket": "sometesturl"', output)
+        self.assertIn('"object_name": "gs_object_name/version123"', output)
+        self.assertIn('"generation": 0', output)
+
+    def test_main_missing_generation(self):
+        file = self.lorem_ipsum
+        object_name = 'gs_object_name/version123'
+        argv = [
+            'upload_to_google_storage_first_class.py', '--bucket',
+            'sometesturl', '--object-name', object_name, file
+        ]
+        self.gsutil.add_expected(0, '', '')  # ls call
+        self.gsutil.add_expected(0, '', '')  # ls -L call
+        self.gsutil.add_expected(0, '', 'weird output')  # cp call
+
+        with mock.patch.object(sys, 'argv', argv), \
+                mock.patch.object(upload_to_google_storage_first_class,
+                                  'Gsutil', return_value=self.gsutil), \
+                mock.patch('sys.stdout', new_callable=StringIO) as stdout:
+            ret = upload_to_google_storage_first_class.main()
+
+        self.assertFalse(ret)
+        output = stdout.getvalue()
+        self.assertIn(
+            upload_to_google_storage_first_class.MISSING_GENERATION_MSG, output)
+        self.assertIn('"generation": 0', output)
+
+    def test_main_missing_bucket(self):
+        argv = ['upload_to_google_storage_first_class.py', self.lorem_ipsum]
+        with mock.patch.object(sys, 'argv', argv), \
+                mock.patch.object(upload_to_google_storage_first_class,
+                                  'Gsutil', return_value=self.gsutil):
+            with self.assertRaises(SystemExit) as cm:
+                upload_to_google_storage_first_class.main()
+        self.assertEqual(cm.exception.code, 2)
 
     def test_get_targets_no_args(self):
         try:

@@ -228,6 +228,9 @@ def main():
     # Enumerate our inputs.
     input_filenames = get_targets(args, parser, options.use_null_terminator)
 
+    if not options.bucket:
+        parser.error('Missing bucket.  Specify bucket with --bucket.')
+
     # Allow uploading the entire directory
     if len(input_filenames) == 1 and input_filenames[0] in ('.', './'):
         input_filenames = next(os.walk('.'))[1]
@@ -280,10 +283,22 @@ def main():
     generation = upload_to_google_storage(file, base_url, object_name, gsutil,
                                           options.force, options.gzip,
                                           options.dry_run)
+    if options.dry_run:
+        # A dry run does not upload, so no generation number exists yet.
+        print('This is a dry run, nothing was uploaded. The generation in '
+              'the DEPS blob below is a placeholder, the real value is only '
+              'assigned when the file is uploaded.')
+        generation = 0
+    elif generation == MISSING_GENERATION_MSG:
+        # The upload succeeded but gsutil did not report a generation
+        # number. Print the DEPS blob with a placeholder instead.
+        print(MISSING_GENERATION_MSG)
+        generation = 0
     print(
         json.dumps(construct_deps_blob(options.bucket, object_name, file,
                                        generation),
                    indent=2))
+    return 0
 
 
 if __name__ == '__main__':
