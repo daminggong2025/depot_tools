@@ -542,6 +542,20 @@ class SplitClTest(unittest.TestCase):
              ("A", "c.h"), ("D", "d.h")])
         mock_emit_warning.assert_called_once()
 
+    @mock.patch("split_cl.EmitWarning")
+    @mock.patch("split_cl.Emit")
+    def testValidateUnmentionedFilesWarningNamesFile(self, _,
+                                                     mock_emit_warning):
+        """ The unmentioned-files warning must name the splitting file. """
+        cl = split_cl.CLInfo(reviewers={"a@example.com"},
+                             files=[("M", "foo/a.cc")])
+        split_cl.ValidateSplitting([cl], "my_splitting.txt",
+                                   [("M", "foo/a.cc"), ("M", "foo/b.cc")])
+        mock_emit_warning.assert_called_once()
+        warning_text = " ".join(
+            str(arg) for arg in mock_emit_warning.call_args[0])
+        self.assertIn("my_splitting.txt", warning_text)
+
     @mock.patch("split_cl.Emit")
     @mock.patch("gclient_utils.FileWrite")
     def testParsingRoundTrip(self, mock_file_write, _):

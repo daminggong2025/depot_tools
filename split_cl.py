@@ -869,7 +869,7 @@ def ValidateSplitting(cl_infos: List[CLInfo], filename: str,
     unmentioned_files = files_on_disk.difference(files_in_loaded_cls)
     if (unmentioned_files):
         EmitWarning(
-            "the following files are not included in any CL in {filename}. "
+            f"the following files are not included in any CL in {filename}. "
             "They will not be uploaded:")
         for file in unmentioned_files:
             Emit(file)

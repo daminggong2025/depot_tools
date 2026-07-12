@@ -582,7 +582,7 @@ def _filter_failed_for_retry(all_builds):
             print(
                 'WARNING: Not scheduling %s. Triggered bots require an initial job '
                 'from a parent. Please schedule a manual job for the parent '
-                'instead.')
+                'instead.' % builder)
             continue
         if any(b['status'] in ('STARTED', 'SCHEDULED') for b in builds):
             # Don't retry if any are running.
@@ -1662,8 +1662,7 @@ class Changelist(object):
                     remote = 'origin'
                     logging.warning(
                         'Could not determine which remote this change is '
-                        'associated with, so defaulting to "%s".' %
-                        self._remote)
+                        'associated with, so defaulting to "%s".' % remote)
                 else:
                     logging.warning(
                         'Could not determine which remote this change is '
@@ -2622,7 +2621,8 @@ class Changelist(object):
         emails = gerrit_util.GetAccountEmails(self.GetGerritHost(), 'self')
         if not emails:
             print('WARNING: Gerrit does not have a record for your account.')
-            print('Please browse to https://{self.GetGerritHost()} and log in.')
+            print(
+                f'Please browse to https://{self.GetGerritHost()} and log in.')
             return
 
         # If the issue owner is one of the emails for the currently

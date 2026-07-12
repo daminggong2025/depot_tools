@@ -4982,6 +4982,22 @@ class CMDTryResultsTestCase(CMDTestCaseBase):
             ('chromium', 'try', 'sometimes-experimental'),
         ], git_cl._filter_failed_for_retry(builds))
 
+    def test_filter_failed_for_retry_skips_triggered(self):
+        builds = [{
+            'id': '112112',
+            'builder': {
+                'project': 'chromium',
+                'bucket': 'try',
+                'builder': 'triggered_bot',
+            },
+            'createTime': '2019-10-09T08:00:01.854286Z',
+            'status': 'FAILURE',
+            'tags': [],
+        }]
+        self.assertEqual([], git_cl._filter_failed_for_retry(builds))
+        self.assertIn('WARNING: Not scheduling triggered_bot.',
+                      sys.stdout.getvalue())
+
 
 class CMDTryTestCase(CMDTestCaseBase):
     @unittest.skipIf(gclient_utils.IsEnvCog(),
