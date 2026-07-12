@@ -54,8 +54,10 @@ TAGS_REFSPEC = '+refs/tags/*'
 # merely start with hex characters (e.g. 'badc0de-branch') as revisions.
 COMMIT_HASH_RE = re.compile(r'[0-9a-f]{5,40}', re.IGNORECASE)
 
-# Regular expression that matches a single commit footer line.
-COMMIT_FOOTER_ENTRY_RE = re.compile(r'([^:]+):\s*(.*)')
+# Regular expression that matches a single commit footer line: a key without
+# whitespace, a colon, and a value. Whitespace around the key is not part of
+# the key, matching git footer conventions (see git_footers.py).
+COMMIT_FOOTER_ENTRY_RE = re.compile(r'([^\s:]+)\s*:\s*(.*)')
 
 # Footer metadata keys for regular and gsubtreed mirrored commit positions.
 COMMIT_POSITION_FOOTER_KEY = 'Cr-Commit-Position'
@@ -483,14 +485,22 @@ def get_commit_message_footer_map(message):
   """
   footers = {}
 
-  # Extract the lines in the footer block.
+  # Extract the lines in the footer block: the last paragraph of the message.
   lines = []
+  found_paragraph_break = False
   for line in message.strip().splitlines():
     line = line.strip()
     if len(line) == 0:
+      found_paragraph_break = True
       del lines[:]
       continue
     lines.append(line)
+
+  # A message without a paragraph break has no footer block: its only
+  # paragraph is the subject, and a subject is not a footer (see
+  # git_footers.py for the same rule).
+  if not found_paragraph_break:
+    return footers
 
   # Parse the footer
   for line in lines:

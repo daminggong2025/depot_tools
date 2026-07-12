@@ -103,29 +103,49 @@ class CommitMessageFootersTest(unittest.TestCase):
         self.assertEqual(bot_update.get_commit_message_footer_map(message),
                          {'Key': 'first'})
 
-    def testKeyIsNotStripped(self):
-        # Suspicious: a space before the colon becomes part of the key, so
-        # a lookup for 'Key' misses this footer.
+    def testKeyWhitespaceStripped(self):
+        # Whitespace before the colon is not part of the key, so a lookup
+        # for 'Key' finds this footer.
         message = 'Subject\n\nKey : value\n'
         self.assertEqual(bot_update.get_commit_message_footer_map(message),
-                         {'Key ': 'value'})
-        self.assertIsNone(bot_update.get_commit_message_footer(message, 'Key'))
+                         {'Key': 'value'})
+        self.assertEqual(bot_update.get_commit_message_footer(message, 'Key'),
+                         'value')
 
-    def testSubjectOnlyMessageParsedAsFooter(self):
-        # Suspicious: with no separate footer paragraph, a subject line
-        # containing a colon is parsed as a footer.
+    def testSubjectOnlyMessageHasNoFooters(self):
+        # Without a separate footer paragraph, a subject line containing a
+        # colon is not a footer (same rule as git_footers.py).
         self.assertEqual(
             bot_update.get_commit_message_footer_map('Revert: broken change'),
-            {'Revert': 'broken change'})
+            {})
+        # Ported from git_footers_test.py testFootersBasic.
+        self.assertEqual(
+            bot_update.get_commit_message_footer_map('Not-A: footer'), {})
 
-    def testUrlInFooterParagraphBecomesFooter(self):
-        # Suspicious: a URL line in the last paragraph matches the footer
-        # regex on the scheme's colon.
+    def testUrlInFooterParagraphIsNotAFooter(self):
+        # A key must not contain whitespace, so a URL line in the last
+        # paragraph does not match on the scheme's colon.
         message = 'Subject\n\nSee https://crbug.com/123\nBug: 123\n'
-        self.assertEqual(bot_update.get_commit_message_footer_map(message), {
-            'See https': '//crbug.com/123',
-            'Bug': '123',
-        })
+        self.assertEqual(bot_update.get_commit_message_footer_map(message),
+                         {'Bug': '123'})
+
+    def testBadLinesInFooterParagraphSkipped(self):
+        # Ported from git_footers_test.py testSkippingBadFooterLines.
+        message = ('Title.\n'
+                   '\n'
+                   'Last: paragraph starts\n'
+                   'It-may: contain\n'
+                   'bad lines, which should be skipped\n'
+                   'For: example\n'
+                   '(cherry picked from)\n'
+                   'And-only-valid: footers taken')
+        self.assertEqual(
+            bot_update.get_commit_message_footer_map(message), {
+                'Last': 'paragraph starts',
+                'It-may': 'contain',
+                'For': 'example',
+                'And-only-valid': 'footers taken',
+            })
 
     def testCrlfMessage(self):
         message = 'Subject\r\n\r\nBug: 123\r\n'
