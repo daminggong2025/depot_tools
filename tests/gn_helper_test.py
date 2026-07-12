@@ -3,9 +3,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import ntpath
 import os
 import sys
 import unittest
+from unittest import mock
 
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT_DIR)
@@ -85,6 +87,21 @@ class GnHelperTest(trial_dir.TestCase):
         self.assertListEqual(lines, [
             ('use_remoteexec', 'true'),
         ])
+
+    def test_import_os_absolute_path_raises(self):
+        write('.gn', '')
+        out_dir = os.path.join('out', 'dir')
+        # GN requires absolute paths to start with "/", so an OS-absolute
+        # path like C:/foo/common.gni must be rejected. os.path.isabs only
+        # returns True for it under Windows path semantics, so substitute
+        # ntpath.isabs to cover this branch on any host OS.
+        write(os.path.join(out_dir, 'args.gn'), 'import("C:/foo/common.gni")')
+        with mock.patch('gn_helper.os.path.isabs', ntpath.isabs):
+            with self.assertRaisesRegex(
+                    Exception,
+                    'Absolute path "C:/foo/common.gni" should start with '
+                    '"/" in GN'):
+                list(gn_helper.lines(out_dir))
 
 if __name__ == '__main__':
     unittest.main()
