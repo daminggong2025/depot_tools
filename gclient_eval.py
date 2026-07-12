@@ -11,7 +11,6 @@ import sys
 import tokenize
 
 import gclient_utils
-from third_party import schema
 
 # TODO: Should fix these warnings.
 # pylint: disable=line-too-long
@@ -114,15 +113,6 @@ class _NodeDict(collections.abc.MutableMapping):
         self.data[key] = (value, node)
 
 
-def _NodeDictSchema(dict_schema):
-    """Validate dict_schema after converting _NodeDict to a regular dict."""
-    def validate(d):
-        schema.Schema(dict_schema).validate(dict(d))
-        return True
-
-    return validate
-
-
 def _IsConstant(node):
     return isinstance(node, ast.Constant)
 
@@ -141,219 +131,335 @@ def _IsNumericConstant(node):
         and isinstance(node.value, (int, float, complex)) \
         and not isinstance(node.value, bool)
 
-# See https://github.com/keleshev/schema for docs how to configure schema.
-# NOTE: If you change this schema, you may need to update other sites that
-# implement their own DEPS-parsing. These include:
+# Hand-written validation of the DEPS file grammar. Error messages are
+# user-facing, so they always name the offending key (as a path like
+# deps['a_dep']['url']) and the expected type.
+# NOTE: If you change the accepted grammar, you may need to update other
+# sites that implement their own DEPS-parsing. These include:
 # - http://shortn/_kyy6neydiv
 # - https://skia.googlesource.com/buildbot/+/main/go/depot_tools/deps_parser/
 # - https://chromium.googlesource.com/chromium/tools/build/+/main/recipes/recipe_modules/v8_auto_roller/
-_GCLIENT_DEPS_SCHEMA = _NodeDictSchema({
-    schema.Optional(str):
-    schema.Or(
-        None,
-        str,
-        _NodeDictSchema({
-            # Repo and revision to check out under the path
-            # (same as if no dict was used).
-            'url':
-            schema.Or(None, str),
 
-            # Optional condition string. The dep will only be processed
-            # if the condition evaluates to True.
-            schema.Optional('condition'):
-            str,
-            schema.Optional('dep_type', default='git'):
-            str,
-        }),
-        # CIPD package.
-        _NodeDictSchema({
-            'packages': [
-                schema.Or(
-                    _NodeDictSchema({
-                        'package': str,
-                        'version': str
-                    }),
-                    _NodeDictSchema({
-                        'package': str,
-                        'version_file': str
-                    }),
-                ),
-            ],
-            schema.Optional('condition'):
-            str,
-            schema.Optional('dep_type', default='cipd'):
-            str,
-        }),
+
+def _BadType(path, value, expected):
+    """Returns an error for a value that doesn't have the expected type."""
+    return gclient_utils.Error("%s: %r should be instance of '%s'" %
+                               (path, value, expected))
+
+
+def _ValidateStr(value, path):
+    if not isinstance(value, str):
+        raise _BadType(path, value, 'str')
+
+
+def _ValidateInt(value, path):
+    if not isinstance(value, int):
+        raise _BadType(path, value, 'int')
+
+
+def _ValidateBool(value, path):
+    if not isinstance(value, bool):
+        raise _BadType(path, value, 'bool')
+
+
+def _ValidateStrList(value, path):
+    if not isinstance(value, list):
+        raise _BadType(path, value, 'list')
+    for i, item in enumerate(value):
+        _ValidateStr(item, '%s[%d]' % (path, i))
+
+
+def _ValidateKeys(value, path, required, optional):
+    """Validates that a dict has all required and no unexpected keys."""
+    missing = [k for k in required if k not in value]
+    if missing:
+        raise gclient_utils.Error('%s: missing keys: %s' %
+                                  (path, ', '.join(repr(k) for k in missing)))
+    allowed = required + optional
+    unexpected = [k for k in value if k not in allowed]
+    if unexpected:
+        raise gclient_utils.Error(
+            '%s: unexpected keys: %s (allowed keys: %s)' % (path, ', '.join(
+                repr(k)
+                for k in unexpected), ', '.join(repr(k) for k in allowed)))
+
+
+def _ValidateStrKeyedDict(value, path, validate_value):
+    """Validates a dict with arbitrary string keys, e.g. 'deps' or 'vars'."""
+    if not isinstance(value, collections.abc.Mapping):
+        raise _BadType(path, value, 'dict')
+    for key, item in value.items():
+        if not isinstance(key, str):
+            raise gclient_utils.Error("%s: key %r should be instance of 'str'" %
+                                      (path, key))
+        validate_value(item, '%s[%r]' % (path, key))
+
+
+def _ValidateDep(value, path):
+    # A dep is None, a "url" or "url@revision" string, or one of three dict
+    # forms, distinguished by their required keys: git ('url'), CIPD
+    # ('packages'), or GCS ('bucket' and 'objects').
+    if value is None or isinstance(value, str):
+        return
+    if not isinstance(value, collections.abc.Mapping):
+        raise gclient_utils.Error('%s: %r should be None, a string, or a dict' %
+                                  (path, value))
+    if 'packages' in value:
+        # CIPD packages.
+        _ValidateKeys(value,
+                      path,
+                      required=('packages', ),
+                      optional=('condition', 'dep_type'))
+        packages = value['packages']
+        if not isinstance(packages, list):
+            raise _BadType('%s[%r]' % (path, 'packages'), packages, 'list')
+        for i, package in enumerate(packages):
+            package_path = "%s['packages'][%d]" % (path, i)
+            if not isinstance(package, collections.abc.Mapping):
+                raise _BadType(package_path, package, 'dict')
+            # Version to install: either directly ('version'), or read from
+            # a file in the checkout ('version_file').
+            if 'version_file' in package:
+                _ValidateKeys(package,
+                              package_path,
+                              required=('package', 'version_file'),
+                              optional=())
+                _ValidateStr(package['version_file'],
+                             "%s['version_file']" % package_path)
+            else:
+                _ValidateKeys(package,
+                              package_path,
+                              required=('package', 'version'),
+                              optional=())
+                _ValidateStr(package['version'], "%s['version']" % package_path)
+            _ValidateStr(package['package'], "%s['package']" % package_path)
+    elif 'bucket' in value or 'objects' in value:
         # GCS content.
-        _NodeDictSchema({
-            'bucket':
-            str,
-            'objects': [
-                _NodeDictSchema({
-                    'object_name':
-                    str,
-                    'sha256sum':
-                    str,
-                    'size_bytes':
-                    int,
-                    'generation':
-                    int,
-                    schema.Optional('output_file'):
-                    str,
-                    # The object will only be processed if the condition
-                    # evaluates to True. This is AND with the parent condition.
-                    schema.Optional('condition'):
-                    str,
-                })
-            ],
-            schema.Optional('condition'):
-            str,
-            schema.Optional('dep_type', default='gcs'):
-            str,
-        }),
-    ),
-})
+        _ValidateKeys(value,
+                      path,
+                      required=('bucket', 'objects'),
+                      optional=('condition', 'dep_type'))
+        _ValidateStr(value['bucket'], "%s['bucket']" % path)
+        objects = value['objects']
+        if not isinstance(objects, list):
+            raise _BadType("%s['objects']" % path, objects, 'list')
+        for i, obj in enumerate(objects):
+            object_path = "%s['objects'][%d]" % (path, i)
+            if not isinstance(obj, collections.abc.Mapping):
+                raise _BadType(object_path, obj, 'dict')
+            # The object will only be processed if the condition evaluates
+            # to True. This is AND with the parent condition.
+            _ValidateKeys(obj,
+                          object_path,
+                          required=('object_name', 'sha256sum', 'size_bytes',
+                                    'generation'),
+                          optional=('output_file', 'condition'))
+            _ValidateStr(obj['object_name'], "%s['object_name']" % object_path)
+            _ValidateStr(obj['sha256sum'], "%s['sha256sum']" % object_path)
+            _ValidateInt(obj['size_bytes'], "%s['size_bytes']" % object_path)
+            _ValidateInt(obj['generation'], "%s['generation']" % object_path)
+            for key in ('output_file', 'condition'):
+                if key in obj:
+                    _ValidateStr(obj[key], '%s[%r]' % (object_path, key))
+    else:
+        # Repo and revision to check out under the path
+        # (same as if no dict was used).
+        _ValidateKeys(value,
+                      path,
+                      required=('url', ),
+                      optional=('condition', 'dep_type'))
+        if value['url'] is not None:
+            _ValidateStr(value['url'], "%s['url']" % path)
+    # Optional condition string. The dep will only be processed
+    # if the condition evaluates to True.
+    if 'condition' in value:
+        _ValidateStr(value['condition'], "%s['condition']" % path)
+    if 'dep_type' in value:
+        _ValidateStr(value['dep_type'], "%s['dep_type']" % path)
 
-_GCLIENT_HOOKS_SCHEMA = [
-    _NodeDictSchema({
-        # Hook action: list of command-line arguments to invoke.
-        'action': [schema.Or(str)],
 
-        # Name of the hook. Doesn't affect operation.
-        schema.Optional('name'):
-        str,
+def _ValidateDeps(value, path):
+    _ValidateStrKeyedDict(value, path, _ValidateDep)
 
-        # Hook pattern (regex). Originally intended to limit some hooks to run
-        # only when files matching the pattern have changed. In practice, with
-        # git, gclient runs all the hooks regardless of this field.
-        schema.Optional('pattern'):
-        str,
 
-        # Working directory where to execute the hook.
-        schema.Optional('cwd'):
-        str,
+def _ValidateDepsOs(value, path):
+    _ValidateStrKeyedDict(value, path, _ValidateDeps)
 
-        # Optional condition string. The hook will only be run
-        # if the condition evaluates to True.
-        schema.Optional('condition'):
-        str,
-    })
-]
 
-_GCLIENT_SCHEMA = schema.Schema(
-    _NodeDictSchema({
-        # Current state of the git submodule migration.
-        # git_dependencies = [DEPS (default) | SUBMODULES | SYNC]
-        schema.Optional('git_dependencies'):
-        schema.Or(DEPS, SYNC, SUBMODULES),
+def _ValidateHooks(value, path):
+    if not isinstance(value, list):
+        raise _BadType(path, value, 'list')
+    for i, hook in enumerate(value):
+        hook_path = '%s[%d]' % (path, i)
+        if not isinstance(hook, collections.abc.Mapping):
+            raise _BadType(hook_path, hook, 'dict')
+        # 'action' (list of command-line arguments to invoke) is required.
+        # 'name' doesn't affect operation. 'pattern' (regex) was originally
+        # intended to limit some hooks to run only when files matching the
+        # pattern have changed; in practice, with git, gclient runs all the
+        # hooks regardless of this field. 'cwd' is the working directory
+        # where to execute the hook. The hook will only be run if the
+        # optional 'condition' string evaluates to True.
+        _ValidateKeys(hook,
+                      hook_path,
+                      required=('action', ),
+                      optional=('name', 'pattern', 'cwd', 'condition'))
+        _ValidateStrList(hook['action'], "%s['action']" % hook_path)
+        for key in ('name', 'pattern', 'cwd', 'condition'):
+            if key in hook:
+                _ValidateStr(hook[key], '%s[%r]' % (hook_path, key))
 
-        # List of host names from which dependencies are allowed (allowlist).
-        # NOTE: when not present, all hosts are allowed.
-        # NOTE: scoped to current DEPS file, not recursive.
-        schema.Optional('allowed_hosts'): [schema.Optional(str)],
 
-        # Mapping from paths to repo and revision to check out under that path.
-        # Applying this mapping to the on-disk checkout is the main purpose
-        # of gclient, and also why the config file is called DEPS.
-        #
-        # The following functions are allowed:
-        #
-        #   Var(): allows variable substitution (either from 'vars' dict below,
-        #          or command-line override)
-        schema.Optional('deps'):
-        _GCLIENT_DEPS_SCHEMA,
+def _ValidateHooksOs(value, path):
+    _ValidateStrKeyedDict(value, path, _ValidateHooks)
 
-        # Similar to 'deps' (see above) - also keyed by OS (e.g. 'linux').
-        # Also see 'target_os'.
-        schema.Optional('deps_os'):
-        _NodeDictSchema({
-            schema.Optional(str): _GCLIENT_DEPS_SCHEMA,
-        }),
 
-        # Dependency to get gclient_gn_args* settings from. This allows these
-        # values to be set in a recursedeps file, rather than requiring that
-        # they exist in the top-level solution.
-        schema.Optional('gclient_gn_args_from'):
-        str,
+def _ValidateGitDependencies(value, path):
+    if value not in (DEPS, SYNC, SUBMODULES):
+        raise gclient_utils.Error('%s: %r should be one of %r, %r, %r' %
+                                  (path, value, DEPS, SYNC, SUBMODULES))
 
-        # Path to GN args file to write selected variables.
-        schema.Optional('gclient_gn_args_file'):
-        str,
 
-        # Subset of variables to write to the GN args file (see above).
-        schema.Optional('gclient_gn_args'): [schema.Optional(str)],
+def _ValidateRecursedeps(value, path):
+    if not isinstance(value, list):
+        raise _BadType(path, value, 'list')
+    for i, entry in enumerate(value):
+        entry_path = '%s[%d]' % (path, i)
+        if isinstance(entry, str):
+            continue
+        if isinstance(entry, (tuple, list)):
+            for j, item in enumerate(entry):
+                _ValidateStr(item, '%s[%d]' % (entry_path, j))
+            continue
+        raise gclient_utils.Error(
+            '%s: %r should be a string, or a (path, DEPS file) pair' %
+            (entry_path, entry))
 
-        # Hooks executed after gclient sync (unless suppressed), or explicitly
-        # on gclient hooks. See _GCLIENT_HOOKS_SCHEMA for details.
-        # Also see 'pre_deps_hooks'.
-        schema.Optional('hooks'):
-        _GCLIENT_HOOKS_SCHEMA,
 
-        # Similar to 'hooks', also keyed by OS.
-        schema.Optional('hooks_os'):
-        _NodeDictSchema({schema.Optional(str): _GCLIENT_HOOKS_SCHEMA}),
+def _ValidateSpecificIncludeRules(value, path):
+    _ValidateStrKeyedDict(value, path, _ValidateStrList)
 
-        # Rules which #includes are allowed in the directory.
-        # Also see 'skip_child_includes' and 'specific_include_rules'.
-        schema.Optional('include_rules'): [schema.Optional(str)],
 
-        # Commits that add include_rules entries on the paths with this set
-        # will require an OWNERS review from them.
-        schema.Optional('new_usages_require_review'):
-        bool,
+def _ValidateVarValue(value, path):
+    # Var() also accepts booleans (for use in conditions) and Str()
+    # (for strings that must not be expanded).
+    if not isinstance(value, (ConstantString, str, bool)):
+        raise gclient_utils.Error(
+            '%s: %r should be a string, boolean, or Str()' % (path, value))
 
-        # Optionally discards rules from parent directories, similar to
-        # "noparent" in OWNERS files. For example, if
-        # //base/allocator/partition_allocator has "noparent = True" then it
-        # will not inherit rules from //base/DEPS and //base/allocator/DEPS,
-        # forcing each //base/allocator/partition_allocator/{foo,bar,...} to
-        # declare all its dependencies.
-        schema.Optional('noparent'):
-        bool,
 
-        # Hooks executed before processing DEPS. See 'hooks' for more details.
-        schema.Optional('pre_deps_hooks'):
-        _GCLIENT_HOOKS_SCHEMA,
+def _ValidateVars(value, path):
+    _ValidateStrKeyedDict(value, path, _ValidateVarValue)
 
-        # Recursion limit for nested DEPS.
-        schema.Optional('recursion'):
-        int,
 
-        # Allowlists deps for which recursion should be enabled.
-        schema.Optional('recursedeps'): [
-            schema.Optional(schema.Or(str, (str, str), [str, str])),
-        ],
+# Validators for each supported top-level variable in a DEPS file, keyed by
+# variable name. All top-level variables are optional.
+_GCLIENT_SCHEMA = {
+    # Current state of the git submodule migration.
+    # git_dependencies = [DEPS (default) | SUBMODULES | SYNC]
+    'git_dependencies': _ValidateGitDependencies,
 
-        # Blocklists directories for checking 'include_rules'.
-        schema.Optional('skip_child_includes'): [schema.Optional(str)],
+    # List of host names from which dependencies are allowed (allowlist).
+    # NOTE: when not present, all hosts are allowed.
+    # NOTE: scoped to current DEPS file, not recursive.
+    'allowed_hosts': _ValidateStrList,
 
-        # Mapping from paths to include rules specific for that path.
-        # See 'include_rules' for more details.
-        schema.Optional('specific_include_rules'):
-        _NodeDictSchema({schema.Optional(str): [str]}),
+    # Mapping from paths to repo and revision to check out under that path.
+    # Applying this mapping to the on-disk checkout is the main purpose
+    # of gclient, and also why the config file is called DEPS.
+    #
+    # The following functions are allowed:
+    #
+    #   Var(): allows variable substitution (either from 'vars' dict below,
+    #          or command-line override)
+    'deps': _ValidateDeps,
 
-        # List of additional OS names to consider when selecting dependencies
-        # from deps_os.
-        schema.Optional('target_os'): [schema.Optional(str)],
+    # Similar to 'deps' (see above) - also keyed by OS (e.g. 'linux').
+    # Also see 'target_os'.
+    'deps_os': _ValidateDepsOs,
 
-        # For recursed-upon sub-dependencies, check out their own dependencies
-        # relative to the parent's path, rather than relative to the .gclient
-        # file.
-        schema.Optional('use_relative_paths'):
-        bool,
+    # Dependency to get gclient_gn_args* settings from. This allows these
+    # values to be set in a recursedeps file, rather than requiring that
+    # they exist in the top-level solution.
+    'gclient_gn_args_from': _ValidateStr,
 
-        # For recursed-upon sub-dependencies, run their hooks relative to the
-        # parent's path instead of relative to the .gclient file.
-        schema.Optional('use_relative_hooks'):
-        bool,
+    # Path to GN args file to write selected variables.
+    'gclient_gn_args_file': _ValidateStr,
 
-        # Variables that can be referenced using Var() - see 'deps'.
-        schema.Optional('vars'):
-        _NodeDictSchema({
-            schema.Optional(str):
-            schema.Or(ConstantString, str, bool),
-        }),
-    }))
+    # Subset of variables to write to the GN args file (see above).
+    'gclient_gn_args': _ValidateStrList,
+
+    # Hooks executed after gclient sync (unless suppressed), or explicitly
+    # on gclient hooks. See _ValidateHooks for details.
+    # Also see 'pre_deps_hooks'.
+    'hooks': _ValidateHooks,
+
+    # Similar to 'hooks', also keyed by OS.
+    'hooks_os': _ValidateHooksOs,
+
+    # Rules which #includes are allowed in the directory.
+    # Also see 'skip_child_includes' and 'specific_include_rules'.
+    'include_rules': _ValidateStrList,
+
+    # Commits that add include_rules entries on the paths with this set
+    # will require an OWNERS review from them.
+    'new_usages_require_review': _ValidateBool,
+
+    # Optionally discards rules from parent directories, similar to
+    # "noparent" in OWNERS files. For example, if
+    # //base/allocator/partition_allocator has "noparent = True" then it
+    # will not inherit rules from //base/DEPS and //base/allocator/DEPS,
+    # forcing each //base/allocator/partition_allocator/{foo,bar,...} to
+    # declare all its dependencies.
+    'noparent': _ValidateBool,
+
+    # Hooks executed before processing DEPS. See 'hooks' for more details.
+    'pre_deps_hooks': _ValidateHooks,
+
+    # Recursion limit for nested DEPS.
+    'recursion': _ValidateInt,
+
+    # Allowlists deps for which recursion should be enabled.
+    'recursedeps': _ValidateRecursedeps,
+
+    # Blocklists directories for checking 'include_rules'.
+    'skip_child_includes': _ValidateStrList,
+
+    # Mapping from paths to include rules specific for that path.
+    # See 'include_rules' for more details.
+    'specific_include_rules': _ValidateSpecificIncludeRules,
+
+    # List of additional OS names to consider when selecting dependencies
+    # from deps_os.
+    'target_os': _ValidateStrList,
+
+    # For recursed-upon sub-dependencies, check out their own dependencies
+    # relative to the parent's path, rather than relative to the .gclient
+    # file.
+    'use_relative_paths': _ValidateBool,
+
+    # For recursed-upon sub-dependencies, run their hooks relative to the
+    # parent's path instead of relative to the .gclient file.
+    'use_relative_hooks': _ValidateBool,
+
+    # Variables that can be referenced using Var() - see 'deps'.
+    'vars': _ValidateVars,
+}
+
+
+def _ValidateGclientDict(local_scope):
+    """Validates the parsed contents of a DEPS file against the grammar above.
+
+    Raises gclient_utils.Error naming the offending key and the expected type
+    if the contents don't match.
+    """
+    for key, value in local_scope.items():
+        validator = _GCLIENT_SCHEMA.get(key)
+        if validator is None:
+            raise gclient_utils.Error(
+                'unexpected top-level key %r (allowed keys: %s)' %
+                (key, ', '.join(repr(k) for k in sorted(_GCLIENT_SCHEMA))))
+        validator(value, key)
 
 
 def _gclient_eval(node_or_string, filename='<unknown>', vars_dict=None):
@@ -517,10 +623,8 @@ def Exec(content, filename='<unknown>', vars_override=None, builtin_vars=None):
         value = _gclient_eval(node, filename, vars_dict)
         local_scope.SetNode(name, value, node)
 
-    try:
-        return _GCLIENT_SCHEMA.validate(local_scope)
-    except schema.SchemaError as e:
-        raise gclient_utils.Error(str(e))
+    _ValidateGclientDict(local_scope)
+    return local_scope
 
 
 def _StandardizeDeps(deps_dict, vars_dict):

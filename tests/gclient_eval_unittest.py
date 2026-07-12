@@ -253,6 +253,163 @@ class ExecTest(unittest.TestCase):
         self.assertIn('duplicate key in dictionary: a_dep', str(cm.exception))
 
 
+class ExecValidationTest(unittest.TestCase):
+    """Tests validation of DEPS file contents in Exec.
+
+    Error message assertions are deliberately loose: they only require that
+    the offending key and the expected type are mentioned.
+    """
+
+    def assert_rejects(self, content, *snippets):
+        with self.assertRaises(gclient_utils.Error) as cm:
+            gclient_eval.Exec(content)
+        for snippet in snippets:
+            self.assertIn(snippet, str(cm.exception))
+
+    def test_rejects_unknown_toplevel_key(self):
+        self.assert_rejects('foo = "bar"', "'foo'")
+
+    def test_rejects_toplevel_key_wrong_type(self):
+        self.assert_rejects('include_rules = {}', 'include_rules',
+                            "should be instance of 'list'")
+
+    def test_rejects_bad_deps_value(self):
+        self.assert_rejects('deps = {"a_dep": 1}', "'a_dep'")
+
+    def test_rejects_unexpected_key_in_git_dep(self):
+        self.assert_rejects('deps = {"a_dep": {"url": "u", "bogus": "x"}}',
+                            "'bogus'")
+
+    def test_rejects_dep_dict_without_required_keys(self):
+        self.assert_rejects('deps = {"a_dep": {"condition": "c"}}', "'a_dep'")
+
+    def test_rejects_hooks_not_list(self):
+        self.assert_rejects('hooks = {}', 'hooks',
+                            "should be instance of 'list'")
+
+    def test_rejects_bad_hook_action(self):
+        self.assert_rejects('hooks = [{"action": "foo"}]', 'action',
+                            "should be instance of 'list'")
+
+    def test_rejects_unexpected_key_in_hook(self):
+        self.assert_rejects('hooks = [{"action": ["a"], "bogus": "x"}]',
+                            "'bogus'")
+
+    def test_rejects_hook_without_action(self):
+        self.assert_rejects('hooks = [{"name": "n"}]', "'action'")
+
+    def test_rejects_bad_vars_value(self):
+        self.assert_rejects('vars = {"a": 1}', 'vars', "'a'")
+
+    def test_rejects_bad_recursion(self):
+        self.assert_rejects('recursion = "1"', 'recursion',
+                            "should be instance of 'int'")
+
+    def test_rejects_bad_git_dependencies(self):
+        self.assert_rejects('git_dependencies = "WRONG"', 'git_dependencies',
+                            "'WRONG'")
+
+    def test_rejects_bad_gcs_object(self):
+        self.assert_rejects(
+            'deps = {"a_dep": {"bucket": "b", "objects": ['
+            '{"object_name": "o", "sha256sum": "s", "size_bytes": "x", '
+            '"generation": 1}]}}', 'size_bytes', "should be instance of 'int'")
+
+    def test_rejects_cipd_package_with_version_and_version_file(self):
+        self.assert_rejects(
+            'deps = {"a_dep": {"packages": [{"package": "p", "version": "v", '
+            '"version_file": "f"}], "dep_type": "cipd"}}', "'version_file'")
+
+    def test_rejects_bad_recursedeps_entry(self):
+        self.assert_rejects('recursedeps = [1]', 'recursedeps')
+
+    def test_rejects_deps_os_not_dict(self):
+        self.assert_rejects('deps_os = ["mac"]', 'deps_os')
+
+    def test_rejects_bad_specific_include_rules(self):
+        self.assert_rejects('specific_include_rules = {"foo": "bar"}', "'foo'",
+                            "should be instance of 'list'")
+
+    def test_accepts_dep_none(self):
+        local_scope = gclient_eval.Exec('deps = {"a_dep": None}')
+        self.assertEqual({'deps': {'a_dep': None}}, local_scope)
+
+    def test_accepts_dep_dict_with_none_url(self):
+        local_scope = gclient_eval.Exec('deps = {"a_dep": {"url": None}}')
+        self.assertEqual({'deps': {'a_dep': {'url': None}}}, local_scope)
+
+    def test_accepts_gcs_dep(self):
+        gclient_eval.Exec(
+            file_join([
+                'deps = {',
+                '  "a_dep": {',
+                '    "bucket": "a_bucket",',
+                '    "objects": [',
+                '      {',
+                '        "object_name": "an_object",',
+                '        "sha256sum": "deadbeef",',
+                '        "size_bytes": 100,',
+                '        "generation": 1234,',
+                '        "output_file": "an_output_file",',
+                '        "condition": "checkout_linux",',
+                '      },',
+                '    ],',
+                '    "condition": "checkout_linux",',
+                '    "dep_type": "gcs",',
+                '  },',
+                '}',
+            ]))
+
+    def test_accepts_cipd_dep_with_version_file(self):
+        gclient_eval.Exec(
+            file_join([
+                'deps = {',
+                '  "a_dep": {',
+                '    "packages": [',
+                '      {',
+                '        "package": "a_package",',
+                '        "version_file": "a_version_file",',
+                '      },',
+                '    ],',
+                '    "dep_type": "cipd",',
+                '  },',
+                '}',
+            ]))
+
+    def test_accepts_git_dependencies_values(self):
+        for value in ('DEPS', 'SYNC', 'SUBMODULES'):
+            gclient_eval.Exec('git_dependencies = "%s"' % value)
+
+    def test_accepts_all_toplevel_keys(self):
+        gclient_eval.Exec(
+            file_join([
+                'git_dependencies = "SUBMODULES"',
+                'allowed_hosts = ["a.example.com"]',
+                'gclient_gn_args_from = "src/dep"',
+                'gclient_gn_args_file = "src/args.gni"',
+                'gclient_gn_args = ["a_var"]',
+                'include_rules = ["+base"]',
+                'new_usages_require_review = True',
+                'noparent = False',
+                'pre_deps_hooks = [{',
+                '  "action": ["do", "something"],',
+                '  "name": "a_name",',
+                '  "pattern": ".",',
+                '  "cwd": ".",',
+                '  "condition": "checkout_linux",',
+                '}]',
+                'recursion = 1',
+                'recursedeps = ["a", ("b", "DEPS.b"), ["c", "DEPS.c"]]',
+                'skip_child_includes = ["a_dir"]',
+                'specific_include_rules = {"a_dir": ["+base"]}',
+                'target_os = ["android"]',
+                'use_relative_paths = True',
+                'use_relative_hooks = False',
+                'vars = {"str_var": "s", "bool_var": True, '
+                '"const_var": Str("c")}',
+            ]))
+
+
 class ParseLocalConfigTest(unittest.TestCase):
 
     def test_parse_gclient(self):

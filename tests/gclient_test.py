@@ -1140,7 +1140,8 @@ class GclientTest(trial_dir.TestCase):
             obj.RunOnDeps('None', [])
             self.fail()
         except gclient_utils.Error as e:
-            self.assertIn('Key \'allowed_hosts\' error:', str(e))
+            self.assertIn('allowed_hosts', str(e))
+            self.assertIn("should be instance of 'list'", str(e))
         finally:
             self._get_processed()
 
