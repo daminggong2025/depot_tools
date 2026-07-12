@@ -200,6 +200,7 @@ def enumerate_input(input_filename, directory, recursive, ignore_errors, output,
                     '{} not found when attempting enumerate files to download.'.
                     format(input_filename))
             print('%s not found.' % input_filename, file=sys.stderr)
+            return
         with open(input_filename, 'rb') as f:
             sha1_match = re.match(b'^([A-Za-z0-9]{40})$', f.read(1024).rstrip())
             if sha1_match:
@@ -287,10 +288,8 @@ def _downloader_worker_thread(thread_num,
         input_sha1_sum, output_filename = q.get()
         if input_sha1_sum is None:
             return
-        working_dir = os.path.dirname(output_filename)
-        if not working_dir:
-            raise Exception(
-                'Unable to construct a working_dir from the output_filename.')
+        # An empty dirname means the output goes into the current directory.
+        working_dir = os.path.dirname(output_filename) or '.'
         migration_file_name = os.path.join(
             working_dir, construct_migration_file_name(input_sha1_sum))
         extract_dir = None
@@ -484,8 +483,9 @@ def download_from_google_storage(input_filename, base_url, gsutil, num_threads,
     # early before making any slow calls to gsutil.
     if directory:
         working_dir = input_filename
-    elif os.path.dirname(output):
-        working_dir = os.path.dirname(output)
+    else:
+        # An empty dirname means the output goes into the current directory.
+        working_dir = os.path.dirname(output) or '.'
 
     if not working_dir:
         raise Exception(
@@ -650,7 +650,7 @@ def main(args):
                       '--verbose',
                       action='store_true',
                       default=True,
-                      help='DEPRECATED: Defaults to True.  Use --no-verbose '
+                      help='DEPRECATED: Defaults to True.  Use -q/--quiet '
                       'to suppress.')
     parser.add_option('-q',
                       '--quiet',
