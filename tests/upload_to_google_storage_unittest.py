@@ -16,6 +16,7 @@ import tarfile
 import tempfile
 import threading
 import unittest
+from unittest import mock
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -154,6 +155,26 @@ class UploadTests(unittest.TestCase):
         self.assertEqual(open(output_filename, 'rb').read().decode(), fake_hash)
         os.remove(output_filename)
         self.assertEqual(code, 0)
+
+    def test_main_missing_bucket(self):
+        argv = ['upload_to_google_storage.py', self.lorem_ipsum]
+        with mock.patch.object(sys, 'argv', argv), \
+                mock.patch.object(upload_to_google_storage, 'Gsutil',
+                                  return_value=self.gsutil):
+            with self.assertRaises(SystemExit) as cm:
+                upload_to_google_storage.main()
+        self.assertEqual(cm.exception.code, 2)
+
+    def test_get_md5_cached_corrupt_md5_file(self):
+        md5_filename = '%s.md5' % self.lorem_ipsum
+        with open(md5_filename, 'w') as f:
+            f.write('not a valid md5 sum')
+        # An invalid cached sum must be recomputed and rewritten.
+        self.assertEqual(
+            upload_to_google_storage.get_md5_cached(self.lorem_ipsum),
+            '634d7c1ed3545383837428f031840a1e')
+        with open(md5_filename, 'r') as f:
+            self.assertEqual(f.read(), '634d7c1ed3545383837428f031840a1e')
 
     def test_get_targets_no_args(self):
         try:
