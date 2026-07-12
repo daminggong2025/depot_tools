@@ -59,7 +59,7 @@ def main(args):
                 print(prompt + r)
             else:
                 r = gclient_utils.AskForData(prompt).strip() or '0'
-            if not r.isdigit() or (0 > int(r) > high):
+            if not r.isdigit() or int(r) > high:
                 print("Invalid choice.")
             else:
                 run('checkout',
