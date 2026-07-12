@@ -328,8 +328,8 @@ def CheckChangeLintsClean(input_api,
         else:
             level = 4
 
-        verbose_level = verbose_level or level
-        cpplint.ProcessFile(file_name, verbose_level)
+        effective_level = verbose_level or level
+        cpplint.ProcessFile(file_name, effective_level)
 
     if cpplint._cpplint_state.error_count > 0:
         # cpplint errors currently cannot be counted as errors during upload
