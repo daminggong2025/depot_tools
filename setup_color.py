@@ -4,6 +4,7 @@
 # found in the LICENSE file.
 
 import ctypes
+import os
 import platform
 import subprocess
 import sys
@@ -117,6 +118,21 @@ def init():
     else:
         # This is non-windows, so we trust isatty.
         OUT_TYPE = 'pipe or file'
+
+    # Follow the https://no-color.org convention: NO_COLOR set to any
+    # non-empty value disables color, and CLICOLOR_FORCE set to a non-empty
+    # value other than '0' forces color on even when stdout is not a
+    # terminal. NO_COLOR wins when both are set, which matches most
+    # implementations of the convention. OUT_TYPE keeps describing what
+    # stdout actually is; IS_TTY is what tools use to decide about color.
+    if os.environ.get('NO_COLOR'):
+        IS_TTY = False
+        # Strip ANSI sequences from the output, so that color is also
+        # disabled for tools that emit them without checking IS_TTY.
+        colorama.init(strip=True)
+        return
+    if os.environ.get('CLICOLOR_FORCE', '0') not in ('', '0'):
+        IS_TTY = True
 
     if IS_TTY and is_windows:
         # Wrapping may cause errors on some Windows versions
