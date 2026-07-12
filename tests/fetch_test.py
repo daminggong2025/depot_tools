@@ -100,6 +100,50 @@ class TestUtilityFunctions(unittest.TestCase):
         stdout = sys.stdout.getvalue()
         self.assertEqual('Could not find a config for foo\n', stdout)
 
+    @contextlib.contextmanager
+    def _fake_config(self, name, body):
+        """Creates a temporary config and points fetch.SCRIPT_PATH at it."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            configs_dir = os.path.join(tmpdir, 'fetch_configs')
+            os.mkdir(configs_dir)
+            with open(os.path.join(configs_dir, name + '.py'), 'w') as f:
+                f.write(body)
+            with mock.patch('fetch.SCRIPT_PATH', tmpdir):
+                yield
+
+    @mock.patch('sys.stdout', StringIO())
+    @mock.patch('sys.exit', side_effect=SystemExitMock)
+    def test_run_config_fetch_subprocess_fails(self, exit_mock):
+        # A config that fails prints its error to stdout and exits nonzero,
+        # like config_util.py's handle_args does for bad arguments.
+        body = ('import sys\n'
+                'print("Got bad arguments [\'--nonsense\']")\n'
+                'sys.exit(1)\n')
+        with self._fake_config('badconfig', body):
+            with self.assertRaises(SystemExitMock):
+                fetch.run_config_fetch('badconfig', [])
+        exit_mock.assert_called_once_with(1)
+
+        stdout = sys.stdout.getvalue()
+        # The config's own error text must be surfaced, followed by a terse
+        # one-line error naming the config and the exit status.
+        self.assertIn("Got bad arguments ['--nonsense']", stdout)
+        self.assertIn('Config "badconfig" failed with return code 1.', stdout)
+
+    @mock.patch('sys.stdout', StringIO())
+    @mock.patch('sys.exit', side_effect=SystemExitMock)
+    def test_run_config_fetch_bad_json(self, exit_mock):
+        # A config that exits 0 but prints something that is not JSON.
+        body = 'print("this is not json")\n'
+        with self._fake_config('badjson', body):
+            with self.assertRaises(SystemExitMock):
+                fetch.run_config_fetch('badjson', [])
+        exit_mock.assert_called_once_with(1)
+
+        stdout = sys.stdout.getvalue()
+        self.assertIn('this is not json', stdout)
+        self.assertIn('Config "badjson" did not print valid JSON.', stdout)
+
     def test_run_config_fetch_integration(self):
         config = fetch.run_config_fetch('depot_tools', [])
         url = 'https://chromium.googlesource.com/chromium/tools/depot_tools.git'
@@ -214,16 +258,16 @@ class TestGClientCheckout(unittest.TestCase):
 
         self.addCleanup(mock.patch.stopall)
 
-    @mock.patch('distutils.spawn.find_executable', return_value=True)
-    def test_run_gclient_executable_found(self, find_executable):
+    @mock.patch('shutil.which', return_value=True)
+    def test_run_gclient_executable_found(self, which):
         self.checkout.run_gclient('foo', 'bar', baz='qux')
-        find_executable.assert_called_once_with('gclient')
+        which.assert_called_once_with('gclient')
         self.run.assert_called_once_with(('gclient', 'foo', 'bar'), baz='qux')
 
-    @mock.patch('distutils.spawn.find_executable', return_value=False)
-    def test_run_gclient_executable_not_found(self, find_executable):
+    @mock.patch('shutil.which', return_value=False)
+    def test_run_gclient_executable_not_found(self, which):
         self.checkout.run_gclient('foo', 'bar', baz='qux')
-        find_executable.assert_called_once_with('gclient')
+        which.assert_called_once_with('gclient')
         args = self.run.call_args[0][0]
         kargs = self.run.call_args[1]
 
