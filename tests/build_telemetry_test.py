@@ -34,8 +34,10 @@ class BuildTelemetryTest(unittest.TestCase):
             run_mock.return_value = ''
             self.assertEqual(build_telemetry.check_auth(), {})
 
-    def test_load_and_save_config(self):
+    @unittest.mock.patch('shutil.which')
+    def test_load_and_save_config(self, mock_shutil):
         test_countdown = 2
+        mock_shutil.return_value = "path"
         with tempfile.TemporaryDirectory() as tmpdir:
             cfg_path = os.path.join(tmpdir, "build_telemetry.cfg")
             with unittest.mock.patch(
@@ -61,6 +63,23 @@ class BuildTelemetryTest(unittest.TestCase):
                 # build_telemetry.check_auth() is an expensive call.
                 # The cached result should be reused.
                 check_auth.assert_called_once()
+
+    def test_load_config_no_auth_check_on_non_corp_machine(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            cfg_path = os.path.join(tmpdir, "build_telemetry.cfg")
+            with unittest.mock.patch('shutil.which', return_value=None), \
+                    unittest.mock.patch(
+                        'build_telemetry.check_auth') as check_auth:
+                # Initial config load.
+                cfg = build_telemetry.load_config(cfg_path)
+                check_auth.assert_not_called()
+                self.assertFalse(cfg.enabled())
+                cfg.save()
+
+                # Reload with the saved empty user.
+                cfg = build_telemetry.load_config(cfg_path)
+                check_auth.assert_not_called()
+                self.assertFalse(cfg.enabled())
 
     @unittest.mock.patch('shutil.which')
     def test_enabled(self, mock_shutil):

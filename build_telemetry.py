@@ -38,12 +38,14 @@ class Config:
 
         if not config:
             config = {
-                "user": check_auth().get("email", ""),
+                "user": "",
                 "status": None,
                 "countdown": countdown,
                 "version": VERSION,
             }
-        if not config.get("user"):
+        # Telemetry can only be enabled on corp machines, so skip the slow
+        # auth check elsewhere; its result could not make enabled() true.
+        if not config.get("user") and self.is_corp_machine:
             config["user"] = check_auth().get("email", "")
         self._config = config
 
