@@ -121,7 +121,7 @@ class GitUnknownError(Exception):
     def __init__(self):
         msg = ('Unknown error from git-credential-luci. Try logging in? Run:\n'
                '  %s' % self.login_command)
-        super(GitLoginRequiredError, self).__init__(msg)
+        super().__init__(msg)
 
     @property
     def login_command(self) -> str:

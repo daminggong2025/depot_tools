@@ -331,6 +331,21 @@ class GerritAuthenticatorTest(unittest.TestCase):
         with self.assertRaises(auth.GitLoginRequiredError):
             self.authenticator.get_authorization_header(context)
 
+    def testGetAccessTokenUnknownError(self):
+        self._set_gcl_result(exitcode=0, stdout=b"", stderr=b"")
+
+        with self.assertRaises(auth.GitUnknownError) as cm:
+            self.authenticator.get_access_token()
+
+        self.assertIn('git credential-luci login', str(cm.exception))
+
+    def testGetAuthorizationHeader_UnknownError(self):
+        self._set_gcl_result(exitcode=0, stdout=b"", stderr=b"")
+
+        context = auth.ReAuthContext(host="chromium", project="infra/infra")
+        with self.assertRaises(auth.GitUnknownError):
+            self.authenticator.get_authorization_header(context)
+
 
 if __name__ == '__main__':
     if '-v' in sys.argv:
