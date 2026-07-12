@@ -64,6 +64,7 @@ _ALL_META_CHARS = _UNSAFE_FOR_CMD.union(set('"'))
 _HELP_MESSAGE = """\
 autoninja:
   -o/--offline  temporary disable remote execution
+  --show-logs  show the log files of the most recent build in the output directory and exit without building
   --virtual-build-path  virtualize paths to /tmp/siso_virtual_build_path to share the local build cache state across workspaces (Linux only). Can also be applied by setting SISO_USE_VIRTUAL_BUILD_PATH=1
 """
 
@@ -153,6 +154,42 @@ def _print_cmd(cmd):
     if sys.platform == "win32":
         shell_quoter = _quote_for_cmd
     print(*[shell_quoter(arg) for arg in cmd], file=sys.stderr)
+
+
+# Log files that the build tools create in the output directory.
+_BUILD_LOG_FILES = [
+    ".ninja_log",
+    "siso.INFO",
+    "siso_output",
+    "siso_localexec",
+    "siso_metrics.json",
+]
+
+
+def _collect_log_paths(output_dir):
+    """Returns the paths of existing build log files in output_dir.
+
+    Also includes the log directory of the most recent reclient run, if
+    there is one.
+    """
+    log_paths = []
+    for name in _BUILD_LOG_FILES:
+        path = os.path.join(output_dir, name)
+        if os.path.exists(path):
+            log_paths.append(path)
+    reproxy_log_root = os.path.join(output_dir, ".reproxy_tmp", "logs")
+    if os.path.isdir(reproxy_log_root):
+        run_dirs = [
+            d for d in os.listdir(reproxy_log_root)
+            if os.path.isdir(os.path.join(reproxy_log_root, d))
+        ]
+        if run_dirs:
+            # Run directories are named <timestamp>_<build id>. Sort them
+            # the same way as the log rotation in reclient_helper.py and
+            # take the newest one.
+            run_dirs.sort(key=lambda d: d.split("_"), reverse=True)
+            log_paths.append(os.path.join(reproxy_log_root, run_dirs[0]))
+    return log_paths
 
 
 # `use_siso` value is used to determine whether siso or ninja is used,
@@ -294,6 +331,7 @@ def _main_inner(input_args,
     t_specified = False
     j_value = None
     offline = False
+    show_logs = False
     output_dir = "."
     summarize_build = os.environ.get("NINJA_SUMMARIZE_BUILD") == "1"
     project = None
@@ -317,6 +355,8 @@ def _main_inner(input_args,
             output_dir = arg[2:]
         elif arg in ("-o", "--offline"):
             offline = True
+        elif arg == "--show-logs":
+            show_logs = True
         elif arg in ("--project", "-project"):
             project = input_args[index + 2]
         elif arg.startswith("--project="):
@@ -325,6 +365,14 @@ def _main_inner(input_args,
             project = arg[len("-project="):]
         elif arg in ("-h", "--help"):
             print(_HELP_MESSAGE, file=sys.stderr)
+
+    if show_logs:
+        log_paths = _collect_log_paths(output_dir)
+        if not log_paths:
+            print("No build logs found in %s" % output_dir)
+        for log_path in log_paths:
+            print(log_path)
+        return 0
 
     is_android = False
     use_remoteexec = False
@@ -702,6 +750,11 @@ def main(args):
             elapsed = time.time() - start
             _upload_ninjalog(input_args, exit_code, elapsed)
             _upload_sisolog(input_args, build_id)
+    if exit_code != 0:
+        # Point the user (or an AI agent) at the logs of the failed build.
+        _, out_dir = ninja.parse_args(input_args)
+        for log_path in _collect_log_paths(out_dir):
+            print("Build logs: %s" % log_path, file=sys.stderr)
     return exit_code
 
 
