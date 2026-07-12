@@ -235,6 +235,19 @@ class DownloadTests(unittest.TestCase):
         ]
         self.assertEqual(sorted(expected_queue), sorted(self.queue.queue))
 
+    def test_enumerate_files_missing_sha1_ignore_errors(self):
+        missing_filename = os.path.join(self.base_path, 'missing.txt.sha1')
+        # Without ignore_errors, a missing .sha1 file is an error.
+        with self.assertRaises(FileNotFoundError):
+            list(
+                download_from_google_storage.enumerate_input(
+                    missing_filename, False, False, False, None, True, False))
+        # With ignore_errors, the missing .sha1 file is skipped.
+        result = list(
+            download_from_google_storage.enumerate_input(
+                missing_filename, False, False, True, None, True, False))
+        self.assertEqual(result, [])
+
     def test_download_worker_single_file(self):
         sha1_hash = self.lorem_ipsum_sha1
         input_filename = '%s/%s' % (self.base_url, sha1_hash)
@@ -456,6 +469,36 @@ class DownloadTests(unittest.TestCase):
         self.assertEqual(ret_codes.get(), (20, msg))
         self.assertTrue(out_q.empty())
         self.assertTrue(ret_codes.empty())
+
+    def test_download_bare_sha1_in_cwd(self):
+        # A bare sha1 target with no --output downloads into the current
+        # directory, so the output filename has an empty dirname.
+        sha1_hash = self.lorem_ipsum_sha1
+        file_url = '%s/%s' % (self.base_url, sha1_hash)
+        self.gsutil.add_expected(
+            0, '', '',
+            lambda: shutil.copyfile(self.lorem_ipsum, sha1_hash))  # cp
+        with ChangedWorkingDirectory(self.base_path):
+            code = download_from_google_storage.download_from_google_storage(
+                input_filename=sha1_hash,
+                base_url=self.base_url,
+                gsutil=self.gsutil,
+                num_threads=1,
+                directory=False,
+                recursive=False,
+                force=False,
+                output=sha1_hash,
+                ignore_errors=False,
+                sha1_file=False,
+                verbose=True,
+                auto_platform=False,
+                extract=False)
+        expected_calls = [('check_call', ('cp', file_url, sha1_hash))]
+        if sys.platform != 'win32':
+            expected_calls.append(('check_call', ('stat', file_url)))
+        self.assertEqual(self.gsutil.history, expected_calls)
+        self.assertEqual(code, 0)
+        self.assertTrue(os.path.exists(os.path.join(self.base_path, sha1_hash)))
 
     def test_download_directory_no_recursive_non_force(self):
         sha1_hash = '7871c8e24da15bad8b0be2c36edc9dc77e37727f'
