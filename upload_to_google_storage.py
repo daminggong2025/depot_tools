@@ -59,11 +59,12 @@ def get_md5_cached(filename):
             md5_match = re.search('([a-z0-9]{32})', f.read().decode())
             if md5_match:
                 return md5_match.group(1)
-    else:
-        md5_hash = get_md5(filename)
-        with open('%s.md5' % filename, 'wb') as f:
-            f.write(md5_hash.encode())
-        return md5_hash
+    # There is no .md5 file or its content is not a valid MD5 sum:
+    # calculate the MD5 and (re)write the file.
+    md5_hash = get_md5(filename)
+    with open('%s.md5' % filename, 'wb') as f:
+        f.write(md5_hash.encode())
+    return md5_hash
 
 
 def _upload_worker(thread_num, upload_queue, base_url, gsutil, md5_lock, force,
@@ -289,6 +290,9 @@ def main():
 
     # Enumerate our inputs.
     input_filenames = get_targets(args, parser, options.use_null_terminator)
+
+    if not options.bucket:
+        parser.error('Missing bucket.  Specify bucket with --bucket.')
 
     if options.archive:
         if not validate_archive_dirs(input_filenames):
