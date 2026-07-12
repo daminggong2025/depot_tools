@@ -125,6 +125,29 @@ class AutoninjaTest(trial_dir.TestCase):
         parallel_j = int(args[args.index('-j') + 1])
         self.assertGreater(parallel_j, multiprocessing.cpu_count() * 2)
 
+    def test_reclient_rbe_project_from_env(self):
+        """
+        Test that the RBE_instance environment variable overrides the
+        project parsed from reproxy.cfg.
+        """
+        write(os.path.join('buildtools', 'reclient_cfgs', 'reproxy.cfg'),
+              'instance=projects/cfg-project/instances/default_instance')
+        with mock.patch.dict(
+                os.environ,
+            {'RBE_instance': 'projects/env-project/instances/default_instance'
+             }):
+            self.assertEqual(autoninja._reclient_rbe_project(), 'env-project')
+
+    def test_reclient_rbe_project_from_env_unexpected_format(self):
+        """
+        Test that an RBE_instance value in an unexpected format does not
+        crash and falls back to the project from reproxy.cfg.
+        """
+        write(os.path.join('buildtools', 'reclient_cfgs', 'reproxy.cfg'),
+              'instance=projects/cfg-project/instances/default_instance')
+        with mock.patch.dict(os.environ, {'RBE_instance': 'projects/'}):
+            self.assertEqual(autoninja._reclient_rbe_project(), 'cfg-project')
+
     def test_autoninja_siso(self):
         """
         Test that when specifying use_siso=true, autoninja delegates to siso.
