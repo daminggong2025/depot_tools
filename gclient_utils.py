@@ -999,11 +999,13 @@ class ExecutionQueue(object):
                         break
 
                     # Check for new tasks to start.
+                    # self.ran only changes on this thread, so build the set
+                    # once per scan pass instead of once per queued item.
+                    ran = set(self.ran)
                     for i in range(len(self.queued)):
                         # Verify its requirements.
-                        if (self.ignore_requirements
-                                or not (set(self.queued[i].requirements) -
-                                        set(self.ran))):
+                        if (self.ignore_requirements or
+                                not (set(self.queued[i].requirements) - ran)):
                             if not self._is_conflict(self.queued[i]):
                                 # Start one work item: all its requirements are
                                 # satisfied.

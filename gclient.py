@@ -492,6 +492,13 @@ class Dependency(gclient_utils.WorkItem, DependencySettings):
         self._known_dependency_diff = None
         self._dependency_index_state = None
 
+        # Cached requirements tuple, stored together with the root's subtree
+        # version it was computed at. See the requirements property.
+        self._requirements_cache = None
+        # Incremented on the root node whenever a dependency is added anywhere
+        # in the tree. Used to invalidate _requirements_cache.
+        self._subtree_version = 0
+
         self._OverrideUrl()
         # This is inherited from WorkItem.  We want the URL to be a resource.
         if self.url and isinstance(self.url, str):
@@ -606,6 +613,16 @@ class Dependency(gclient_utils.WorkItem, DependencySettings):
     @property
     def requirements(self):
         """Calculate the list of requirements."""
+        # ExecutionQueue.flush evaluates the requirements of every queued item
+        # on every scheduling pass, and the computation below walks the whole
+        # dependency tree, so cache the result. It can only change when a
+        # dependency is added to the tree, which bumps the root's subtree
+        # version (see add_dependency).
+        version = self.root._subtree_version
+        cached = self._requirements_cache
+        if cached is not None and cached[0] == version:
+            return cached[1]
+
         requirements = set()
         # self.parent is implicitly a requirement. This will be recursive by
         # definition.
@@ -631,6 +648,7 @@ class Dependency(gclient_utils.WorkItem, DependencySettings):
                 if (obj is not self and obj.name
                     and self.name.startswith(posixpath.join(obj.name, ''))))
         requirements = tuple(sorted(requirements))
+        self._requirements_cache = (version, requirements)
         logging.info('Dependency(%s).requirements = %s' %
                      (self.name, requirements))
         return requirements
@@ -1523,6 +1541,9 @@ class Dependency(gclient_utils.WorkItem, DependencySettings):
     @gclient_utils.lockedmethod
     def add_dependency(self, new_dep):
         self._dependencies.append(new_dep)
+        # A new node changes the result of subtree() and therefore possibly
+        # the requirements of any dependency, so invalidate their caches.
+        self.root._subtree_version += 1
 
     @gclient_utils.lockedmethod
     def _mark_as_parsed(self, new_hooks):
@@ -2625,7 +2646,9 @@ it or fix the checkout.
                 keys = sorted(entries.keys())
                 for x in keys:
                     print('%s: %s' % (x, entries[x]))
-        logging.info(str(self))
+        # Lazy formatting: str(self) walks the whole dependency tree and is
+        # expensive, so only compute it when INFO logging is enabled.
+        logging.info('%s', self)
 
     def ParseDepsFile(self):
         """No DEPS to parse for a .gclient file."""
