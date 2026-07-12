@@ -687,6 +687,7 @@ class BotUpdateApi(recipe_api.RecipeApi):
 
     # Ah hah! Now that everything is in place, lets run bot_update!
     step_result = None
+    result = None
     ok_ret = (0, 88)
     try:
       # Error code 88 is the 'patch failure' code for patch apply failure.
@@ -820,6 +821,13 @@ class BotUpdateApi(recipe_api.RecipeApi):
           co_root = result['root']
           cwd = self.m.context.cwd or self.m.path.start_dir
           self.m.path.checkout_dir = cwd / co_root
+
+    if result is None:
+      # The step exited with an ok retcode but the engine could not read or
+      # parse its json output, e.g. while the build is shutting down (see
+      # the comment in the finally block above).
+      raise self.m.step.InfraFailure(
+          'bot_update did not emit valid json output')
 
     assert result.get('did_run') and result.get('root')
     checkout_dir = self.m.context.cwd or self.m.path.start_dir
