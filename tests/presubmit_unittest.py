@@ -2416,6 +2416,40 @@ class CannedChecksUnittest(PresubmitTestsBase):
                              'they said', None, gendered, None,
                              presubmit.OutputApi.PresubmitPromptWarning)
 
+    def testCannedCheckChangeLintsCleanVerbosity(self):
+
+        def run_lint(file_names, verbose_level=None):
+            change = presubmit.Change('foo', 'foo\n', self.fake_root_dir, None,
+                                      0, 0, None)
+            input_api = self.MockInputApi(change, False)
+            input_api.cpplint = mock.MagicMock()
+            input_api.cpplint._cpplint_state.error_count = 0
+            affected_files = []
+            for name in file_names:
+                affected_file = mock.MagicMock(presubmit.GitAffectedFile)
+                affected_file.AbsoluteLocalPath.return_value = name
+                affected_files.append(affected_file)
+            input_api.AffectedSourceFiles.return_value = affected_files
+            results = presubmit_canned_checks.CheckChangeLintsClean(
+                input_api,
+                presubmit.OutputApi,
+                source_file_filter=lambda f: True,
+                verbose_level=verbose_level)
+            self.assertEqual(results, [])
+            return [
+                call[0][1]
+                for call in input_api.cpplint.ProcessFile.call_args_list
+            ]
+
+        # The verbosity level is chosen per file: 5 for test files, 4 for
+        # everything else, regardless of iteration order.
+        self.assertEqual(run_lint(['/src/foo_test.cc', '/src/bar.cc']), [5, 4])
+        self.assertEqual(run_lint(['/src/bar.cc', '/src/foo_test.cc']), [4, 5])
+        # An explicit verbose_level applies to all files.
+        self.assertEqual(
+            run_lint(['/src/foo_test.cc', '/src/bar.cc'], verbose_level=2),
+            [2, 2])
+
     @mock.patch('git_cl.Changelist')
     @mock.patch('auth.Authenticator')
     def testCannedCheckChangedLUCIConfigsRoot(self, mockGetAuth, mockCl):
