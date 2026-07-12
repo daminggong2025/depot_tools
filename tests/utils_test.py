@@ -18,7 +18,7 @@ from testing_support import coverage_utils
 import utils
 
 
-class GitCacheTest(unittest.TestCase):
+class DepotToolsVersionTest(unittest.TestCase):
     def setUp(self):
         pass
 
@@ -29,7 +29,7 @@ class GitCacheTest(unittest.TestCase):
 
     @mock.patch('subprocess.check_output')
     @mock.patch('os.path.getmtime', lambda x: 42)
-    def testVersionWithNoGit(self, mock_subprocess):
+    def testVersionWithNoGitMtimeFallback(self, mock_subprocess):
         mock_subprocess.side_effect = Exception
         version = utils.depot_tools_version()
         self.assertEqual(version, 'recipes.cfg-42')

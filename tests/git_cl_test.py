@@ -6169,7 +6169,7 @@ class CMDStatusTestCase(CMDTestCaseBase):
     @mock.patch('git_cl.Settings.GetRoot', return_value='')
     @mock.patch('git_cl.Settings.IsStatusCommitOrderByDate', return_value=False)
     @mock.patch('scm.GIT.GetBranch', return_value='a')
-    def testStatusByDate(self, *_mocks):
+    def testStatusByDateFlag(self, *_mocks):
         self.assertEqual(
             0, git_cl.main(['status', '--no-branch-color', '--date-order']))
         self.maxDiff = None
