@@ -1571,21 +1571,6 @@ def GetChangeRevisions(host, change):
     return QueryChanges(host, [], change, o_params=('ALL_REVISIONS', ))
 
 
-def GetChangeReview(host, change, revision=None):
-    """Gets the current review information for a change."""
-    if not revision:
-        jmsg = GetChangeRevisions(host, change)
-        if not jmsg:
-            return None
-
-        if len(jmsg) > 1:
-            raise GerritError(
-                200, 'Multiple changes found for ChangeId %s.' % change)
-        revision = jmsg[0]['current_revision']
-    path = 'changes/%s/revisions/%s/review'
-    return ReadHttpJsonResponse(CreateHttpConn(host, path))
-
-
 def GetChangeComments(host, change):
     """Get the line- and file-level comments on a change."""
     path = 'changes/%s/comments' % change
@@ -1957,7 +1942,7 @@ def SetReview(host,
     if labels:
         for key, val in labels.items():
             if ('labels' not in response or key not in response['labels']
-                    or int(response['labels'][key] != int(val))):
+                    or int(response['labels'][key]) != int(val)):
                 raise GerritError(
                     200,
                     'Unable to set "%s" label on change %s.' % (key, change))
