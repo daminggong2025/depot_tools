@@ -14,7 +14,6 @@ __version__ = '2.0.0'
 import argparse
 import ast  # Exposed through the API.
 import contextlib
-import cpplint
 import fnmatch  # Exposed through the API.
 import glob
 import inspect
@@ -32,7 +31,6 @@ import tempfile  # Exposed through the API.
 import threading
 import time
 import traceback
-import unittest  # Exposed through the API.
 import urllib.parse as urlparse
 import urllib.request as urllib_request
 import urllib.error as urllib_error
@@ -51,7 +49,6 @@ import owners_client
 import owners_finder
 import presubmit_canned_checks
 import presubmit_diff
-import rdb_wrapper
 import scm
 import subprocess2 as subprocess  # Exposed through the API.
 
@@ -752,6 +749,9 @@ class InputApi(object):
 
         # We expose various modules and functions as attributes of the input_api
         # so that presubmit scripts don't have to import them.
+        # Imported lazily because cpplint and unittest are slow to import.
+        import cpplint
+        import unittest
         self.ast = ast
         self.basename = os.path.basename
         self.cpplint = cpplint
@@ -1937,6 +1937,10 @@ class PresubmitExecuter(object):
         # Perform all the desired presubmit checks.
         results = []
 
+        # Imported lazily: rdb_wrapper pulls in the requests library, which
+        # is slow to import.
+        import rdb_wrapper
+
         try:
             version = [
                 int(x)
@@ -2059,6 +2063,10 @@ class PresubmitExecuter(object):
 
 def RDBStatusFrom(result):
     """Returns the status and failure reason for a PresubmitResult."""
+    # Imported lazily: rdb_wrapper pulls in the requests library, which is
+    # slow to import.
+    import rdb_wrapper
+
     failure_reason = None
     status = rdb_wrapper.STATUS_PASS
     if any(r.fatal for r in result):

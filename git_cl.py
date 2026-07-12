@@ -65,7 +65,6 @@ import newauth
 import owners_client
 import owners_finder
 import presubmit_canned_checks
-import presubmit_support
 import rustfmt
 import scm
 import setup_color
@@ -1414,6 +1413,9 @@ class ChangeDescription(object):
         Gerrit's footers in the form of "Footer-Key: footer any value" and ensures
         that Gerrit footers are always at the end.
         """
+        # Imported lazily: presubmit_support is slow to import.
+        import presubmit_support
+
         parsed_footer_line = git_footers.parse_footer(line)
         if parsed_footer_line:
             # Line is a gerrit footer in the form: Footer-Key: any value.
