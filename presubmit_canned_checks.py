@@ -418,7 +418,7 @@ def CheckGenderNeutral(input_api, output_api, source_file_filter=None):
         return []
 
     gendered_re = input_api.re.compile(
-        r'(^|\s|\(|\[)([Hh]e|[Hh]is|[Hh]ers?|[Hh]im|[Ss]he|[Gg]uys?)\\b')
+        r'(^|\s|\(|\[)([Hh]e|[Hh]is|[Hh]ers?|[Hh]im|[Ss]he|[Gg]uys?)\b')
 
     errors = []
     for f in input_api.AffectedFiles(include_deletes=False,
