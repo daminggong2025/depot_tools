@@ -23,7 +23,6 @@ DEPOT_TOOLS_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, DEPOT_TOOLS_ROOT)
 
 import subprocess2
-from testing_support import coverage_utils
 from testing_support import git_test_utils
 
 GitRepo = git_test_utils.GitRepo
@@ -1392,6 +1391,4 @@ class ExtractGitPathFromGitBatTest(GitCommonTestBase):
 
 
 if __name__ == '__main__':
-    sys.exit(
-        coverage_utils.covered_main(
-            os.path.join(DEPOT_TOOLS_ROOT, 'git_common.py')))
+    unittest.main()

@@ -6,12 +6,12 @@
 
 import os
 import sys
+import unittest
 from unittest import mock
 
 DEPOT_TOOLS_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, DEPOT_TOOLS_ROOT)
 
-from testing_support import coverage_utils
 from testing_support import git_test_utils
 
 # TODO: Should fix these warnings.
@@ -453,9 +453,4 @@ branch refs/heads/empty_branch_in_worktree
 
 
 if __name__ == '__main__':
-    sys.exit(
-        coverage_utils.covered_main(
-            (os.path.join(DEPOT_TOOLS_ROOT, 'git_rebase_update.py'),
-             os.path.join(DEPOT_TOOLS_ROOT, 'git_new_branch.py'),
-             os.path.join(DEPOT_TOOLS_ROOT, 'git_reparent_branch.py'),
-             os.path.join(DEPOT_TOOLS_ROOT, 'git_rename_branch.py'))))
+    unittest.main()
