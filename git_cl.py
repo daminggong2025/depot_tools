@@ -76,8 +76,6 @@ import utils
 import swift_format
 import watchlists
 
-from third_party import colorama
-
 
 __version__ = '2.0'
 
@@ -154,7 +152,7 @@ GERRIT_SQUASH_HASH_CONFIG_KEY = 'gerritsquashhash'
 LAST_UPLOAD_HASH_CONFIG_KEY = 'last-upload-hash'
 
 # Shortcut since it quickly becomes repetitive.
-Fore = colorama.Fore
+Fore = setup_color.Fore
 
 # Used by tests/git_cl_test.py to add extra logging.
 # Inside the weirdly failing test, add this:
@@ -5902,9 +5900,9 @@ def CMDupload(parser, args):
     # Check whether git should be updated.
     recommendation = git_common.check_git_version()
     if recommendation:
-        print(colorama.Fore.RED)
+        print(setup_color.Fore.RED)
         print(f'WARNING: {recommendation}')
-        print(colorama.Style.RESET_ALL)
+        print(setup_color.Style.RESET_ALL)
 
     # TODO(crbug.com/1475405): Warn users if the project uses submodules and
     # they have fsmonitor enabled.

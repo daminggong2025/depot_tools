@@ -83,12 +83,11 @@ def CMDhelp(parser: optparse.OptionParser, args: list[str]) -> NoReturn:
 
 
 def _get_color_module():
-    """Returns the colorama module if available.
+    """Returns the setup_color module if the main script imported it.
 
     If so, assumes colors are supported and return the module handle.
     """
-    return sys.modules.get('colorama') or sys.modules.get(
-        'third_party.colorama')
+    return sys.modules.get('setup_color')
 
 
 def _function_to_name(name: str) -> str:

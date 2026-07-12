@@ -24,19 +24,18 @@ import git_common
 import setup_color
 import subprocess2
 
-from third_party import colorama
+RESET = (setup_color.Fore.RESET + setup_color.Back.RESET +
+         setup_color.Style.RESET_ALL)
+BRIGHT = setup_color.Style.BRIGHT
 
-RESET = colorama.Fore.RESET + colorama.Back.RESET + colorama.Style.RESET_ALL
-BRIGHT = colorama.Style.BRIGHT
-
-BLUE_BACK = colorama.Back.BLUE + BRIGHT
-BRIGHT_RED = colorama.Fore.RED + BRIGHT
-CYAN = colorama.Fore.CYAN + BRIGHT
-GREEN = colorama.Fore.GREEN + BRIGHT
-MAGENTA = colorama.Fore.MAGENTA + BRIGHT
-RED = colorama.Fore.RED
-WHITE = colorama.Fore.WHITE + BRIGHT
-YELLOW = colorama.Fore.YELLOW
+BLUE_BACK = setup_color.Back.BLUE + BRIGHT
+BRIGHT_RED = setup_color.Fore.RED + BRIGHT
+CYAN = setup_color.Fore.CYAN + BRIGHT
+GREEN = setup_color.Fore.GREEN + BRIGHT
+MAGENTA = setup_color.Fore.MAGENTA + BRIGHT
+RED = setup_color.Fore.RED
+WHITE = setup_color.Fore.WHITE + BRIGHT
+YELLOW = setup_color.Fore.YELLOW
 
 
 def _print_help(outbuf):

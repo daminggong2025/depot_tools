@@ -37,7 +37,7 @@ import gclient_utils
 import git_common
 import setup_color
 
-from third_party.colorama import Fore, Style
+from setup_color import Fore, Style
 
 DEFAULT_SEPARATOR = ' ' * 4
 

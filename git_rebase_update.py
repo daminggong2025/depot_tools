@@ -20,13 +20,12 @@ import gclient_utils
 import git_common as git
 import setup_color
 
-from third_party import colorama
-
 STARTING_BRANCH_KEY = 'depot-tools.rebase-update.starting-branch'
 STARTING_WORKDIR_KEY = 'depot-tools.rebase-update.starting-workdir'
 
-RESET = colorama.Fore.RESET + colorama.Back.RESET + colorama.Style.RESET_ALL
-BRIGHT = colorama.Style.BRIGHT
+RESET = (setup_color.Fore.RESET + setup_color.Back.RESET +
+         setup_color.Style.RESET_ALL)
+BRIGHT = setup_color.Style.BRIGHT
 
 def find_return_branch_workdir():
     """Finds the branch and working directory which we should return to after

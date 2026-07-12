@@ -10,8 +10,6 @@ import threading
 
 from multiprocessing.pool import IMapIterator
 
-from third_party import colorama
-
 
 def wrapper(func):
     def wrap(self, timeout=None):
@@ -483,14 +481,14 @@ def warn_submodule():
         if version_tuple >= (2, 43):
             return
 
-        print(colorama.Fore.RED)
+        print(setup_color.Fore.RED)
         print('WARNING: You have fsmonitor enabled. There is a major issue '
               'resulting in git diff-index returning wrong results. Please '
               'either disable it by running:')
         print('    git config core.fsmonitor false')
         print('or upgrade git to version >= 2.43.')
         print('See https://crbug.com/1475405 for details.')
-        print(colorama.Style.RESET_ALL)
+        print(setup_color.Style.RESET_ALL)
 
 
 def current_branch():

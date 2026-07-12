@@ -4,14 +4,91 @@
 # found in the LICENSE file.
 
 import ctypes
+import ctypes.wintypes
 import os
 import platform
+import re
 import subprocess
 import sys
-from third_party import colorama
 
 IS_TTY = None
 OUT_TYPE = 'unknown'
+
+
+class _AnsiCodes:
+    """Base class for the ANSI escape sequence constants below.
+
+    Subclasses declare class attributes with numeric ANSI codes. On
+    instantiation, each attribute is replaced by the escape sequence for
+    that code, e.g. RED = 31 becomes the string ESC + '[31m'.
+    """
+
+    def __init__(self):
+        for name in dir(self):
+            if not name.startswith('_'):
+                setattr(self, name, '\033[%dm' % getattr(self, name))
+
+
+class _AnsiFore(_AnsiCodes):
+    BLACK = 30
+    RED = 31
+    GREEN = 32
+    YELLOW = 33
+    BLUE = 34
+    MAGENTA = 35
+    CYAN = 36
+    WHITE = 37
+    RESET = 39
+
+
+class _AnsiBack(_AnsiCodes):
+    BLACK = 40
+    RED = 41
+    GREEN = 42
+    YELLOW = 43
+    BLUE = 44
+    MAGENTA = 45
+    CYAN = 46
+    WHITE = 47
+    RESET = 49
+
+
+class _AnsiStyle(_AnsiCodes):
+    BRIGHT = 1
+    DIM = 2
+    NORMAL = 22
+    RESET_ALL = 0
+
+
+# ANSI escape sequences for terminal colors and styles, e.g. Fore.RED
+# switches the foreground color to red and Style.RESET_ALL resets all
+# colors and styles back to the default.
+Fore = _AnsiFore()
+Back = _AnsiBack()
+Style = _AnsiStyle()
+
+# ANSI escape sequences in their CSI (colors, cursor movement) and OSC
+# (window title) forms, optionally surrounded by the \x01/\x02 invisible-text
+# markers used by readline.
+_ANSI_CSI_RE = re.compile(r'\x01?\x1b\[(?:\d|;)*[a-zA-Z]\x02?')
+_ANSI_OSC_RE = re.compile(r'\x01?\x1b\](?:.|;)*?\x07\x02?')
+
+
+class StripAnsiWriter:
+    """Wraps a stream and removes ANSI escape sequences from write() calls.
+
+    All other attribute accesses go directly to the wrapped stream.
+    """
+
+    def __init__(self, wrapped):
+        self._wrapped = wrapped
+
+    def __getattr__(self, name):
+        return getattr(self._wrapped, name)
+
+    def write(self, text):
+        text = _ANSI_OSC_RE.sub('', text)
+        return self._wrapped.write(_ANSI_CSI_RE.sub('', text))
 
 
 def enable_native_ansi():
@@ -41,11 +118,6 @@ def enable_native_ansi():
 
 
 def init():
-    # should_wrap instructs colorama to wrap stdout/stderr with an ANSI
-    # colorcode interpreter that converts them to SetConsoleTextAttribute calls.
-    # This only should be True in cases where we're connected to cmd.exe's
-    # console. Setting this to True on non-windows systems has no effect.
-    should_wrap = False
     global IS_TTY, OUT_TYPE
     IS_TTY = sys.stdout.isatty()
     is_windows = sys.platform.startswith('win')
@@ -53,7 +125,6 @@ def init():
         # Yay! We detected a console in the normal way. It doesn't really matter
         # if it's windows or not, we win.
         OUT_TYPE = 'console'
-        should_wrap = True
     elif is_windows:
         # assume this is some sort of file
         OUT_TYPE = 'file (win)'
@@ -68,7 +139,6 @@ def init():
             # git->bash->command. Not sure why isatty doesn't detect this case.
             OUT_TYPE = 'console (cmd via msys)'
             IS_TTY = True
-            should_wrap = True
         elif ftype == 3:  # FILE_TYPE_PIPE
             OUT_TYPE = 'pipe (win)'
 
@@ -129,18 +199,17 @@ def init():
         IS_TTY = False
         # Strip ANSI sequences from the output, so that color is also
         # disabled for tools that emit them without checking IS_TTY.
-        colorama.init(strip=True)
+        sys.stdout = StripAnsiWriter(sys.stdout)
+        sys.stderr = StripAnsiWriter(sys.stderr)
         return
     if os.environ.get('CLICOLOR_FORCE', '0') not in ('', '0'):
         IS_TTY = True
 
-    if IS_TTY and is_windows:
-        # Wrapping may cause errors on some Windows versions
-        # (crbug.com/1114548).
-        if platform.release() != '10' or enable_native_ansi():
-            should_wrap = False
-
-    colorama.init(wrap=should_wrap)
+    if IS_TTY and is_windows and platform.release() == '10':
+        # Windows 10 consoles don't interpret ANSI sequences unless native
+        # ANSI processing is switched on; later Windows versions enable it
+        # by default (crbug.com/1114548).
+        enable_native_ansi()
 
 
 if __name__ == '__main__':

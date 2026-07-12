@@ -52,7 +52,6 @@ from typing import Iterable, Optional
 import mdformat
 import setup_color
 import utils
-from third_party import colorama
 
 # Internal formatting rules.
 _WRAP_WIDTH = '80'
@@ -69,14 +68,14 @@ def _get_colored_diff(diff: Iterable[str]) -> str:
         if line.startswith('---') or line.startswith('+++'):
             colored_lines.append(line)
         elif line.startswith('-'):
-            colored_lines.append(colorama.Fore.RED + line +
-                                 colorama.Style.RESET_ALL)
+            colored_lines.append(setup_color.Fore.RED + line +
+                                 setup_color.Style.RESET_ALL)
         elif line.startswith('+'):
-            colored_lines.append(colorama.Fore.GREEN + line +
-                                 colorama.Style.RESET_ALL)
+            colored_lines.append(setup_color.Fore.GREEN + line +
+                                 setup_color.Style.RESET_ALL)
         elif line.startswith('@@'):
-            colored_lines.append(colorama.Fore.CYAN + line +
-                                 colorama.Style.RESET_ALL)
+            colored_lines.append(setup_color.Fore.CYAN + line +
+                                 setup_color.Style.RESET_ALL)
         else:
             colored_lines.append(line)
     return ''.join(colored_lines)
