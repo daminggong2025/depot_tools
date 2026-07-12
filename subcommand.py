@@ -234,7 +234,8 @@ class CommandDispatcher(object):
     def execute(self, parser: optparse.OptionParser, args: list[str]) -> int:
         """Dispatches execution to the right command.
 
-        Fallbacks to 'help' if not disabled.
+        Fallbacks to 'help' if not disabled. An unknown command still shows
+        the help text, but exits 2 (usage error) instead of 0.
         """
         # Unconditionally disable format_description() and format_epilog().
         # Technically, a formatter should be used but it's not worth (yet) the
@@ -267,7 +268,23 @@ class CommandDispatcher(object):
             self._add_command_usage(parser, cmdhelp)
             # Don't pass list of arguments as those may not be supported by
             # cmdhelp. See: https://crbug.com/1352093
-            return cmdhelp(parser, [])
+            if not args or args[0] in ('-h', '--help'):
+                # No command or an explicit help request: keep the exit
+                # status of the help command (0 for the default CMDhelp).
+                return cmdhelp(parser, [])
+
+            # An unknown command is a usage error: print an error, still
+            # show the help text, but exit 2 following the optparse
+            # convention.
+            print('%s: unknown command %r' % (parser.get_prog_name(), args[0]),
+                  file=sys.stderr)
+            try:
+                cmdhelp(parser, [])
+            except SystemExit as e:
+                # The default CMDhelp exits 0 through optparse's help action.
+                if e.code:
+                    raise
+            sys.exit(2)
 
         # Nothing can be done.
         return 2

@@ -3,6 +3,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import contextlib
+import io
+import optparse
 import os
 import sys
 import unittest
@@ -129,7 +132,10 @@ class SubcommandTest(unittest.TestCase):
     def testExecute_CommandNotFound(self):
         self._setUpTestCommands()
 
-        self.assertEqual(0, self.sc.execute(self.parser, ['not-found']))
+        with contextlib.redirect_stderr(io.StringIO()):
+            with self.assertRaises(SystemExit) as cm:
+                self.sc.execute(self.parser, ['not-found'])
+        self.assertEqual(2, cm.exception.code)
         self.module.CMDhelp.assert_called_once_with(self.parser, [])
         self.assertEqual(
             'Module documentation\n\n'
@@ -145,6 +151,53 @@ class SubcommandTest(unittest.TestCase):
         self.module.CMDhelp = None
 
         self.assertEqual(2, self.sc.execute(self.parser, ['not-found']))
+
+    def _setUpRealCommands(self):
+        """Sets up real commands so the default CMDhelp is used unmocked."""
+
+        def CMDfoo(parser, args):
+            """foo documentation."""
+            return 0
+
+        def CMDbar(parser, args):
+            """bar documentation."""
+            return 0
+
+        self.module.CMDfoo = CMDfoo
+        self.module.CMDbar = CMDbar
+
+    def _executeReal(self, args):
+        """Runs execute() with a real parser, capturing output and exit."""
+        parser = optparse.OptionParser()
+        stdout = io.StringIO()
+        stderr = io.StringIO()
+        with contextlib.redirect_stdout(stdout), \
+                contextlib.redirect_stderr(stderr):
+            try:
+                code = self.sc.execute(parser, args)
+            except SystemExit as e:
+                code = e.code
+        return code, stdout.getvalue(), stderr.getvalue()
+
+    def testExecute_UnknownCommandExitsWithUsageError(self):
+        self._setUpRealCommands()
+
+        for args in (['thisisnotacommand'], ['--badflag']):
+            with self.subTest(args=args):
+                code, stdout, stderr = self._executeReal(args)
+                self.assertEqual(2, code)
+                self.assertIn("unknown command '%s'" % args[0], stderr)
+                self.assertIn('Commands are:', stdout)
+
+    def testExecute_ExplicitHelpExitsZero(self):
+        self._setUpRealCommands()
+
+        for args in (['help'], ['--help'], ['-h']):
+            with self.subTest(args=args):
+                code, stdout, stderr = self._executeReal(args)
+                self.assertFalse(code)
+                self.assertEqual('', stderr)
+                self.assertIn('Commands are:', stdout)
 
 
 if __name__ == '__main__':
