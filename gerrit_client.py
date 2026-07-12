@@ -34,6 +34,7 @@ def CMDmovechanges(parser, args):
                       '--param',
                       dest='params',
                       action='append',
+                      default=[],
                       help='repeatable query parameter, format: -p key=value')
     parser.add_option('--destination_branch',
                       dest='destination_branch',
@@ -287,6 +288,7 @@ def CMDcreatechange(parser, args):
         '--param',
         dest='params',
         action='append',
+        default=[],
         help='repeatable field value parameter, format: -p key=value')
 
     parser.add_option('--cc',
@@ -336,12 +338,23 @@ def CMDchangeedit(parser, args):
 def CMDpublishchangeedit(parser, args):
     """Publish a Gerrit change edit."""
     parser.add_option('-c', '--change', type=int, help='change number')
-    parser.add_option('--notify', help='whether to notify')
+    parser.add_option('--notify',
+                      help='whether to notify, one of: yes, true, no, false '
+                      '(default: yes)')
 
     (opt, args) = parser.parse_args(args)
 
+    if opt.notify is None:
+        notify = True
+    elif opt.notify.lower() in ('yes', 'true'):
+        notify = True
+    elif opt.notify.lower() in ('no', 'false'):
+        notify = False
+    else:
+        parser.error('invalid --notify value: "%s"' % opt.notify)
+
     result = gerrit_util.PublishChangeEdit(
-        urllib.parse.urlparse(opt.host).netloc, opt.change, opt.notify)
+        urllib.parse.urlparse(opt.host).netloc, opt.change, notify)
     logging.info(result)
     write_result(result, opt)
 

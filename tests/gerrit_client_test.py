@@ -92,6 +92,16 @@ class TestGerritClient(unittest.TestCase):
                                           start=20,
                                           o_params=None)
 
+    @mock.patch('gerrit_util.MoveChange', return_value='')
+    @mock.patch('gerrit_util.QueryChanges', return_value=[])
+    def test_movechanges_no_params(self, query_mock, move_mock):
+        gerrit_client.main([
+            'movechanges', '--host', 'https://example.org/foo',
+            '--destination_branch', 'main'
+        ])
+        query_mock.assert_called_once_with('example.org', [], limit=100)
+        move_mock.assert_not_called()
+
     @mock.patch('gerrit_util.GetRelatedChanges', return_value='')
     def test_relatedchanges(self, util_mock):
         gerrit_client.main([
@@ -115,6 +125,18 @@ class TestGerritClient(unittest.TestCase):
                                           subject='subject',
                                           params=[('work_in_progress', 'true')])
 
+    @mock.patch('gerrit_util.CreateChange', return_value={})
+    def test_createchange_no_params(self, util_mock):
+        gerrit_client.main([
+            'createchange', '--host', 'https://example.org/foo', '--project',
+            'project', '--branch', 'main', '--subject', 'subject'
+        ])
+        util_mock.assert_called_once_with('example.org',
+                                          'project',
+                                          branch='main',
+                                          subject='subject',
+                                          params=[])
+
     @mock.patch('builtins.open', mock.mock_open())
     @mock.patch('gerrit_util.ChangeEdit', return_value='')
     def test_changeedit(self, util_mock):
@@ -132,7 +154,23 @@ class TestGerritClient(unittest.TestCase):
             'publishchangeedit', '--host', 'https://example.org/foo',
             '--change', '1', '--notify', 'yes'
         ])
-        util_mock.assert_called_once_with('example.org', 1, 'yes')
+        util_mock.assert_called_once_with('example.org', 1, True)
+
+    @mock.patch('gerrit_util.PublishChangeEdit', return_value='')
+    def test_publishchangeedit_notify_false(self, util_mock):
+        gerrit_client.main([
+            'publishchangeedit', '--host', 'https://example.org/foo',
+            '--change', '1', '--notify', 'false'
+        ])
+        util_mock.assert_called_once_with('example.org', 1, False)
+
+    @mock.patch('gerrit_util.PublishChangeEdit', return_value='')
+    def test_publishchangeedit_notify_omitted(self, util_mock):
+        gerrit_client.main([
+            'publishchangeedit', '--host', 'https://example.org/foo',
+            '--change', '1'
+        ])
+        util_mock.assert_called_once_with('example.org', 1, True)
 
     @mock.patch('gerrit_util.AbandonChange', return_value='')
     def test_abandon(self, util_mock):
