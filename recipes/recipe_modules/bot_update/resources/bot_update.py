@@ -49,7 +49,9 @@ CHROMIUM_SRC_URL = CHROMIUM_GIT_HOST + '/chromium/src.git'
 BRANCH_HEADS_REFSPEC = '+refs/branch-heads/*'
 TAGS_REFSPEC = '+refs/tags/*'
 
-# Regular expression to match sha1 git revision.
+# Regular expression to match a full or abbreviated sha1 git revision.
+# Use fullmatch: a prefix match would misclassify branch or tag names that
+# merely start with hex characters (e.g. 'badc0de-branch') as revisions.
 COMMIT_HASH_RE = re.compile(r'[0-9a-f]{5,40}', re.IGNORECASE)
 
 # Regular expression that matches a single commit footer line.
@@ -563,7 +565,7 @@ def get_target_branch_and_revision(solution_name, git_url, revisions):
   solution_name = solution_name.strip('/')
   configured = revisions.get(solution_name) or revisions.get(git_url)
 
-  if configured is None or COMMIT_HASH_RE.match(configured):
+  if configured is None or COMMIT_HASH_RE.fullmatch(configured):
     # TODO(crbug.com/1104182): Get the default branch instead of assuming
     # 'main'.
     branch = 'refs/remotes/origin/main'
@@ -661,7 +663,7 @@ def _git_checkout(sln, sln_dir, revisions, refs, no_fetch_tags, no_history,
   url = sln['url']
 
   branch, revision = get_target_branch_and_revision(name, url, revisions)
-  pin = revision if COMMIT_HASH_RE.match(revision) else None
+  pin = revision if COMMIT_HASH_RE.fullmatch(revision) else None
 
   populate_cmd = (['cache', 'populate', '-v', '--cache-dir', git_cache_dir, url,
                    '--reset-fetch-config'])

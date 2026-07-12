@@ -262,14 +262,32 @@ class GetTargetBranchAndRevisionTest(unittest.TestCase):
                                                       {'src': 'abcd'}),
             ('refs/remotes/origin/abcd', 'HEAD'))
 
-    def testHexPrefixedBranchTreatedAsRevision(self):
-        # Suspicious: COMMIT_HASH_RE.match only anchors at the start, so a
-        # branch name starting with 5+ hex chars is treated as a pinned
-        # revision on main instead of as a branch.
+    def testHexPrefixedBranchIsBranch(self):
+        # A branch name that merely starts with 5+ hex chars is a branch,
+        # not a pinned revision.
+        for branch in ('badc0de-branch', 'deadbeef/nested', 'cafe123.4'):
+            self.assertEqual(
+                bot_update.get_target_branch_and_revision(
+                    'src', self.URL, {'src': branch}),
+                ('refs/remotes/origin/' + branch, 'HEAD'))
+
+    def testHexLengthBoundaries(self):
+        # 5 to 40 all-hex chars classify as a revision; 41 do not.
+        for n in (39, 40):
+            self.assertEqual(
+                bot_update.get_target_branch_and_revision(
+                    'src', self.URL, {'src': 'a' * n}),
+                ('refs/remotes/origin/main', 'a' * n))
         self.assertEqual(
-            bot_update.get_target_branch_and_revision(
-                'src', self.URL, {'src': 'badc0de-branch'}),
-            ('refs/remotes/origin/main', 'badc0de-branch'))
+            bot_update.get_target_branch_and_revision('src', self.URL,
+                                                      {'src': 'a' * 41}),
+            ('refs/remotes/origin/' + 'a' * 41, 'HEAD'))
+
+    def testMixedCaseHexIsRevision(self):
+        self.assertEqual(
+            bot_update.get_target_branch_and_revision('src', self.URL,
+                                                      {'src': 'DeadBeef00'}),
+            ('refs/remotes/origin/main', 'DeadBeef00'))
 
     def testBranchName(self):
         self.assertEqual(
