@@ -2409,6 +2409,13 @@ class CannedChecksUnittest(PresubmitTestsBase):
                          "TODO(foo): bar", None, "TODO: bar", None,
                          presubmit.OutputApi.PresubmitPromptWarning)
 
+    def testCannedCheckGenderNeutral(self):
+        for gendered in ('he said', 'she went home', 'his code, not hers',
+                         'hey guys!'):
+            self.ContentTest(presubmit_canned_checks.CheckGenderNeutral,
+                             'they said', None, gendered, None,
+                             presubmit.OutputApi.PresubmitPromptWarning)
+
     @mock.patch('git_cl.Changelist')
     @mock.patch('auth.Authenticator')
     def testCannedCheckChangedLUCIConfigsRoot(self, mockGetAuth, mockCl):
