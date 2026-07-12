@@ -1,0 +1,9 @@
+$ git_cl.py help
+Usage: git cl <command> [options]
+
+A git-command for integrating reviews on Gerrit.
+
+Commands are:
+  archive       archives and deletes branches associated with closed changelists
+...
+[exit: 0]

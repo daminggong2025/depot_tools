@@ -1,0 +1,9 @@
+$ git_cache.py --help
+Usage: git cache <command> [options]
+
+A git command for managing a local cache of git repositories.
+
+Commands are:
+  exists           check to see if there already is a cache of the given repo
+...
+[exit: 0]

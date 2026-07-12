@@ -1,0 +1,6 @@
+# known-bug: an unknown git cl flag falls back to help and exits 0
+$ git_cl.py --badflag
+git cl: unknown command '--badflag'
+Usage: git cl <command> [options]
+...
+[exit: 2]

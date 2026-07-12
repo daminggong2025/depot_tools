@@ -1,0 +1,6 @@
+# known-bug: an unknown gclient subcommand falls back to help and exits 0
+$ gclient.py thisisnotacommand
+gclient.py: unknown command 'thisisnotacommand'
+Usage: gclient.py <command> [options]
+...
+[exit: 2]

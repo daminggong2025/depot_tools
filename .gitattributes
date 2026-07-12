@@ -69,3 +69,7 @@ COPYING        -recipes
 MANIFEST.in    -recipes
 OWNERS         -recipes
 PKG-INFO       -recipes
+
+# Transcript golden tests compare expected lines byte-for-byte, so they
+# must be checked out with LF line endings on every platform.
+/tests/transcripts/*.txt text eol=lf

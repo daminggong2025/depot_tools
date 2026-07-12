@@ -1,0 +1,8 @@
+$ download_from_google_storage.py --help
+Usage: download_from_google_storage.py [options] target
+Target must be:
+  (default) a sha1 sum ([A-Za-z0-9]{40}).
+  (-s or --sha1_file) a .sha1 file, containing a sha1 sum on the first line.
+  (-d or --directory) A directory to scan for .sha1 files.
+...
+[exit: 0]

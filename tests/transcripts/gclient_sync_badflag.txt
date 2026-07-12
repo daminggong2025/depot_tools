@@ -1,0 +1,5 @@
+$ gclient.py sync --badflag
+Usage: gclient.py sync [options]
+
+gclient.py: error: no such option: --badflag
+[exit: 2]

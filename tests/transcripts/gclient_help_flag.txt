@@ -1,0 +1,9 @@
+$ gclient.py --help
+Usage: gclient.py <command> [options]
+
+Meta checkout dependency manager for Git.
+
+Commands are:
+  config       creates a .gclient file in the current directory
+...
+[exit: 0]

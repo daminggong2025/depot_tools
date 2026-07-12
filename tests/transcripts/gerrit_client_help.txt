@@ -1,0 +1,11 @@
+$ gerrit_client.py help
+Usage: gerrit_client.py <command> [options]
+
+Simple client for the Gerrit REST API.
+
+Example usage:
+    ./gerrit_client.py [command] [args]
+
+Commands are:
+...
+[exit: 0]
