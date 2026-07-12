@@ -163,12 +163,23 @@ def print_status(cfg):
     print("")
 
 
-def main():
+def main(argv=None):
+    if argv is None:
+        argv = sys.argv[1:]
+
+    # On Windows the build_telemetry.bat script passes along the arguments
+    # enclosed in double quotes, like the other wrapper scripts (see
+    # ninja.py). A bare invocation then arrives as a single empty-string
+    # argument, which argparse would reject. Split the argument to undo the
+    # quoting; arguments containing actual spaces are not needed here.
+    if sys.platform.startswith("win") and len(argv) == 1:
+        argv = argv[0].split()
+
     parser = argparse.ArgumentParser(prog="build_telemetry")
     parser.add_argument('status',
                         nargs='?',
                         choices=["opt-in", "opt-out", "status"])
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
     cfg = load_config()
 
