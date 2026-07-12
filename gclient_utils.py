@@ -26,7 +26,6 @@ import threading
 import time
 import urllib.parse
 
-import gclient_eval
 import subprocess2
 
 # Git wrapper retries on a transient error, and some callees do retries too,
@@ -822,6 +821,11 @@ def GetOperatingSystem():
 
 def GetGClientRootAndEntries(path=None):
     """Returns the gclient root and the dict of entries."""
+    # Imported on demand: gclient_eval imports gclient_utils back, and loads
+    # the vendored schema library. Keeping it out of the module-level imports
+    # avoids that cycle and the extra import cost for every gclient_utils
+    # user.
+    import gclient_eval
     config_file = '.gclient_entries'
     root = FindFileUpwards(config_file, path)
     if not root:

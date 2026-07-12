@@ -451,6 +451,18 @@ class GClientUtilsTest(trial_dir.TestCase):
             }), ['AI_AGENT'])
 
 
+class LazyImportTest(unittest.TestCase):
+
+    def testImportDoesNotLoadGClientEval(self):
+        # gclient_utils only needs gclient_eval inside
+        # GetGClientRootAndEntries, so importing gclient_utils alone must not
+        # load gclient_eval (or the vendored schema library it depends on).
+        root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        code = ('import sys; sys.path.insert(0, %r); import gclient_utils; '
+                "sys.exit('gclient_eval' in sys.modules)" % root)
+        subprocess2.check_call([sys.executable, '-c', code])
+
+
 if __name__ == '__main__':
     unittest.main()
 
