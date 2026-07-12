@@ -786,6 +786,27 @@ class GerritUtilTest(unittest.TestCase):
     @mock.patch('gerrit_util.CreateHttpConn')
     @mock.patch('gerrit_util.ReadHttpJsonResponse')
     @mock.patch('gerrit_util.GetChangeDetail')
+    def testSetReview_StringLabelValue(self, mockGetChangeDetail,
+                                       mockJsonResponse, mockCreateHttpConn):
+        # Gerrit reports label values as JSON numbers, but a string value
+        # must also be accepted as long as it matches the requested vote.
+        mockJsonResponse.return_value = {"labels": {"Code-Review": "1"}}
+        mockGetChangeDetail.return_value = {
+            "project": "infra/infra",
+        }
+
+        response = gerrit_util.SetReview('chromium',
+                                         123456,
+                                         labels={'Code-Review': 1})
+
+        self.assertEqual(response, {"labels": {"Code-Review": "1"}})
+        httpConnKwargs = mockCreateHttpConn.call_args[1]
+        self.assertEqual({'Code-Review': 1},
+                         httpConnKwargs.get('body', {}).get('labels'))
+
+    @mock.patch('gerrit_util.CreateHttpConn')
+    @mock.patch('gerrit_util.ReadHttpJsonResponse')
+    @mock.patch('gerrit_util.GetChangeDetail')
     def testSetReview_ReAuth_WithProject(self, mockGetChangeDetail,
                                          mockJsonResponse, mockCreateHttpConn):
         mockJsonResponse.return_value = {"labels": {"Code-Review": 1}}
