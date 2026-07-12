@@ -190,6 +190,15 @@ def GenTests(api):
       api.post_process(post_process.DropExpectation),
       status='INFRA_FAILURE')
 
+  yield api.test('invalid_bot_update_json_on_success_retcode',
+                 try_build(),
+                 api.step_data('bot_update', api.json.invalid(None), retcode=0),
+                 api.post_process(post_process.SummaryMarkdownRE,
+                                  'bot_update did not emit valid json output'),
+                 api.post_process(post_process.StatusException),
+                 api.post_process(post_process.DropExpectation),
+                 status='INFRA_FAILURE')
+
   yield (
       api.test('clobber') +
       api.properties(clobber=1)
