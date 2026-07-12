@@ -7,6 +7,7 @@ import json
 import os
 import sys
 import unittest
+import urllib.error
 from unittest import mock
 
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -117,6 +118,38 @@ class MetricsCollectorTest(unittest.TestCase):
         mock_response = mock.Mock()
         self.urllib_request.urlopen.side_effect = [mock_response]
         mock_response.getcode.side_effect = [403]
+
+        self.assertFalse(self.collector.config.is_googler)
+        self.assertIsNone(self.collector.config.opted_in)
+        self.assertEqual(self.collector.config.countdown, 10)
+
+        self.assert_writes_file(self.config_file, {
+            'is-googler': False,
+            'countdown': 10,
+            'opt-in': None,
+            'version': 0
+        })
+
+    def test_checks_googler_with_a_timeout(self):
+        self.FileRead.side_effect = [IOError(2, "No such file or directory")]
+        mock_response = mock.Mock()
+        self.urllib_request.urlopen.side_effect = [mock_response]
+        mock_response.getcode.side_effect = [200]
+
+        self.assertTrue(self.collector.config.is_googler)
+
+        self.urllib_request.urlopen.assert_called_once()
+        _, kwargs = self.urllib_request.urlopen.call_args
+        self.assertIn('timeout', kwargs)
+        self.assertGreater(kwargs['timeout'], 0)
+
+    def test_handles_timeout_checking_googler(self):
+        self.FileRead.side_effect = [IOError(2, "No such file or directory")]
+        # The tests replace the whole urllib.request module with a mock, so
+        # restore the real exception classes referenced by metrics.py.
+        self.urllib_request.URLError = urllib.error.URLError
+        self.urllib_request.HTTPError = urllib.error.HTTPError
+        self.urllib_request.urlopen.side_effect = TimeoutError('timed out')
 
         self.assertFalse(self.collector.config.is_googler)
         self.assertIsNone(self.collector.config.opted_in)
