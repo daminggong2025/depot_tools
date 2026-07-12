@@ -131,8 +131,6 @@ UNSET_CACHE_DIR = object()
 PREVIOUS_CUSTOM_VARS_FILE = '.gclient_previous_custom_vars'
 PREVIOUS_SYNC_COMMITS_FILE = '.gclient_previous_sync_commits'
 
-PREVIOUS_SYNC_COMMITS = 'GCLIENT_PREVIOUS_SYNC_COMMITS'
-
 NO_SYNC_EXPERIMENT = 'no-sync'
 
 PRECOMMIT_HOOK_VAR = 'GCLIENT_PRECOMMIT'
@@ -469,6 +467,11 @@ class Dependency(gclient_utils.WorkItem, DependencySettings):
         # The actual revision we ended up getting, or None if that information
         # is unavailable
         self._got_revision = None
+        # The commit this dependency was synced to by the last 'update'
+        # command, or None. GClient.RunOnDeps collects these values from
+        # all dependencies after syncing and persists them for the no-sync
+        # experiment.
+        self._latest_synced_commit = None
         # Whether this dependency should use relative paths.
         self._use_relative_paths = False
 
@@ -1275,11 +1278,7 @@ class Dependency(gclient_utils.WorkItem, DependencySettings):
                         file_list)
                 elif latest_commit is None:
                     latest_commit = self._used_scm.revinfo(None, None, None)
-                existing_sync_commits = json.loads(
-                    os.environ.get(PREVIOUS_SYNC_COMMITS, '{}'))
-                existing_sync_commits[self.name] = latest_commit
-                os.environ[PREVIOUS_SYNC_COMMITS] = json.dumps(
-                    existing_sync_commits)
+                self._latest_synced_commit = latest_commit
 
             if file_list:
                 file_list = [
@@ -2427,16 +2426,16 @@ it or fix the checkout.
             if NO_SYNC_EXPERIMENT in self._options.experiments:
                 skip_sync_revisions = self._EnforceSkipSyncRevisions(patch_refs)
 
-        # Store solutions' custom_vars on memory to compare in the next run.
-        # All dependencies added later are inherited from the current
-        # self.dependencies.
-        custom_vars = {
-            dep.name: dep.custom_vars
-            for dep in self.dependencies if dep.custom_vars
-        }
-        if custom_vars:
-            self._WriteFileContents(PREVIOUS_CUSTOM_VARS_FILE,
-                                    json.dumps(custom_vars))
+            # Store solutions' custom_vars to compare in the next 'update'
+            # run. All dependencies added later are inherited from the
+            # current self.dependencies.
+            custom_vars = {
+                dep.name: dep.custom_vars
+                for dep in self.dependencies if dep.custom_vars
+            }
+            if custom_vars:
+                self._WriteFileContents(PREVIOUS_CUSTOM_VARS_FILE,
+                                        json.dumps(custom_vars))
 
         # Disable progress for non-tty stdout.
         should_show_progress = (setup_color.IS_TTY and not self._options.verbose
@@ -2538,8 +2537,13 @@ it or fix the checkout.
                 pm = Progress('Running hooks', 1)
             self.RunHooksRecursively(self._options, pm)
 
-        self._WriteFileContents(PREVIOUS_SYNC_COMMITS_FILE,
-                                os.environ.get(PREVIOUS_SYNC_COMMITS, '{}'))
+        if command == 'update':
+            synced_commits = {
+                dep.name: dep._latest_synced_commit
+                for dep in self.subtree(False) if dep._latest_synced_commit
+            }
+            self._WriteFileContents(PREVIOUS_SYNC_COMMITS_FILE,
+                                    json.dumps(synced_commits))
 
         return 0
 
