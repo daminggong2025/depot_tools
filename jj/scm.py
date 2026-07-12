@@ -106,10 +106,6 @@ class JjWrapper(gclient_scm.GitWrapper):
         pass
 
     @prefer_git_wrapper
-    def pack(self, options, args, file_list):
-        pass
-
-    @prefer_git_wrapper
     def revinfo(self, options, args, file_list):
         return subprocess.run(['jj', 'log', '-r', '@-', '-T', 'commit_id'],
                     cwd=self.checkout_path,

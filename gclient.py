@@ -3790,38 +3790,6 @@ def CMDconfig(parser, args):
     return 0
 
 
-@subcommand.epilog("""Example:
-  gclient pack > patch.txt
-    generate simple patch for configured client and dependences
-""")
-@metrics.collector.collect_metrics('gclient pack')
-def CMDpack(parser, args):
-    """Generates a patch which can be applied at the root of the tree.
-
-    Internally, runs 'git diff' on each checked out module and
-    dependencies, and performs minimal postprocessing of the output. The
-    resulting patch is printed to stdout and can be applied to a freshly
-    checked out tree via 'patch -p0 < patchfile'.
-    """
-    parser.add_option('--deps',
-                      dest='deps_os',
-                      metavar='OS_LIST',
-                      help='override deps for the specified (comma-separated) '
-                      'platform(s); \'all\' will process all deps_os '
-                      'references')
-    parser.remove_option('--jobs')
-    (options, args) = parser.parse_args(args)
-    # Force jobs to 1 so the stdout is not annotated with the thread ids
-    options.jobs = 1
-    client = GClient.LoadCurrentConfig(options)
-    if not client:
-        raise gclient_utils.Error(
-            'client not configured; see \'gclient config\'')
-    if options.verbose:
-        client.PrintLocationAndContents()
-    return client.RunOnDeps('pack', args)
-
-
 @metrics.collector.collect_metrics('gclient status')
 def CMDstatus(parser, args):
     """Shows modification status for every dependencies."""
