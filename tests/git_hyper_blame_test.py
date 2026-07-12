@@ -10,12 +10,12 @@ import re
 import shutil
 import sys
 import tempfile
+import unittest
 from unittest import mock
 
 DEPOT_TOOLS_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, DEPOT_TOOLS_ROOT)
 
-from testing_support import coverage_utils
 from testing_support import git_test_utils
 
 import gclient_utils
@@ -714,6 +714,4 @@ class GitHyperBlameUnicodeTest(GitHyperBlameTestBase):
 
 
 if __name__ == '__main__':
-    sys.exit(
-        coverage_utils.covered_main(
-            os.path.join(DEPOT_TOOLS_ROOT, 'git_hyper_blame.py')))
+    unittest.main()

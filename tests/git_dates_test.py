@@ -12,8 +12,6 @@ import unittest
 DEPOT_TOOLS_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, DEPOT_TOOLS_ROOT)
 
-from testing_support import coverage_utils
-
 
 class GitDatesTestBase(unittest.TestCase):
     @classmethod
@@ -90,6 +88,4 @@ class GitDatesTest(GitDatesTestBase):
 
 
 if __name__ == '__main__':
-    sys.exit(
-        coverage_utils.covered_main(
-            os.path.join(DEPOT_TOOLS_ROOT, 'git_dates.py')))
+    unittest.main()
