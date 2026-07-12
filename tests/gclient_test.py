@@ -72,7 +72,7 @@ class SCMMock(object):
         self.url = parsed_url
 
     def RunCommand(self, command, options, args, file_list):
-        self.unit_test.assertEqual('None', command)
+        self.unit_test.assertIn(command, ('None', 'status', 'update'))
         self.unit_test.processed.put((self.name, self.url))
 
     # pylint: disable=no-self-use
@@ -1767,6 +1767,57 @@ class GclientTest(trial_dir.TestCase):
         client = gclient.GClient.LoadCurrentConfig(options)
         self.assertEqual(expected_skip_sync_revisions,
                          client._EnforceSkipSyncRevisions(patch_refs))
+
+    def testNonUpdateCommandKeepsPreviousSyncState(self):
+        """Non-update commands leave the no-sync experiment state alone."""
+        write(
+            '.gclient', 'solutions = [\n'
+            '  { "name": "foo", "url": "svn://example.com/foo",\n'
+            '    "custom_vars": { "checkout_foo": "true" },\n'
+            '  },\n'
+            ']')
+        write(os.path.join('foo', 'DEPS'), 'deps = {\n}')
+        previous_sync_commits = {'foo': '10001'}
+        write(gclient.PREVIOUS_SYNC_COMMITS_FILE,
+              json.dumps(previous_sync_commits))
+
+        options, _ = gclient.OptionParser().parse_args([])
+        client = gclient.GClient.LoadCurrentConfig(options)
+        client.RunOnDeps('status', [])
+        self._get_processed()
+
+        with open(gclient.PREVIOUS_SYNC_COMMITS_FILE) as f:
+            self.assertEqual(previous_sync_commits, json.load(f))
+        self.assertFalse(os.path.exists(gclient.PREVIOUS_CUSTOM_VARS_FILE))
+
+    def testUpdatePersistsSyncCommitsForAllDeps(self):
+        """An update run records the synced commit of every dep."""
+        write(
+            '.gclient', 'solutions = [\n'
+            '  { "name": "foo", "url": "svn://example.com/foo" },\n'
+            '  { "name": "bar", "url": "svn://example.com/bar" },\n'
+            ']')
+        write(os.path.join('foo', 'DEPS'), 'deps = {\n'
+              '  "foo/dir1": "/dir1",\n'
+              '}')
+        write(os.path.join('bar', 'DEPS'), 'deps = {\n}')
+        # Stale environment state must not leak into the persisted map.
+        os.environ['GCLIENT_PREVIOUS_SYNC_COMMITS'] = json.dumps(
+            {'stale_dep': 'deadbeef'})
+
+        options, _ = gclient.OptionParser().parse_args([])
+        options.patch_refs = None
+        client = gclient.GClient.LoadCurrentConfig(options)
+        client.RunOnDeps('update', [])
+        self._get_processed()
+
+        rev = 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbb'
+        with open(gclient.PREVIOUS_SYNC_COMMITS_FILE) as f:
+            self.assertEqual({
+                'foo': rev,
+                'bar': rev,
+                'foo/dir1': rev
+            }, json.load(f))
 
 
 class MergeVarsTest(unittest.TestCase):
