@@ -193,12 +193,19 @@ class ParseRevisionsTest(unittest.TestCase):
             bot_update.parse_revisions(['ftp://foo.example.com/bar@1'], 'src'),
             {'src': 'HEAD'})
 
-    def testWindowsPathTreatedAsUrlSchemeAndIgnored(self):
-        # Suspicious: the drive letter of a Windows absolute path parses as
-        # a URL scheme, so the whole revision spec is silently dropped.
+    def testWindowsPathRootIsLocalPath(self):
+        # A drive letter is not a URL scheme; the path is kept as a root.
         self.assertEqual(
-            bot_update.parse_revisions(['C:\\build\\src@deadbeef'], 'src'),
-            {'src': 'HEAD'})
+            bot_update.parse_revisions(['C:\\build\\src@deadbeef'], 'src'), {
+                'src': 'HEAD',
+                'C:\\build\\src': 'deadbeef',
+            })
+        # Drive letter with forward slashes.
+        self.assertEqual(
+            bot_update.parse_revisions(['c:/build/src@deadbeef'], 'src'), {
+                'src': 'HEAD',
+                'c:/build/src': 'deadbeef',
+            })
 
     def testRevisionMayContainAtSign(self):
         self.assertEqual(
@@ -222,13 +229,18 @@ class ParseRevisionsTest(unittest.TestCase):
         self.assertEqual(bot_update.parse_revisions(['src@'], 'src'),
                          {'src': ''})
 
-    def testRootWithTrailingSlashIsInconsistent(self):
-        # Suspicious: the default entry uses root.strip('/') but a plain
-        # revision is stored under the raw root, producing two entries.
-        self.assertEqual(bot_update.parse_revisions(['deadbeef'], 'src/'), {
-            'src': 'HEAD',
-            'src/': 'deadbeef',
-        })
+    def testRootWithTrailingSlashIsStripped(self):
+        # A plain revision is stored under the same stripped key as the
+        # default entry, so there is only one entry for the root.
+        self.assertEqual(bot_update.parse_revisions(['deadbeef'], 'src/'),
+                         {'src': 'deadbeef'})
+
+    def testAltRootWithTrailingSlashIsStripped(self):
+        self.assertEqual(bot_update.parse_revisions(['src/v8/@abc123'], 'src'),
+                         {
+                             'src': 'HEAD',
+                             'src/v8': 'abc123',
+                         })
 
 
 class GetTargetBranchAndRevisionTest(unittest.TestCase):

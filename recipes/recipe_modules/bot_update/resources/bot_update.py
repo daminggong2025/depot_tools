@@ -882,13 +882,18 @@ def parse_revisions(revisions, root):
     split_revision = revision.split('@', 1)
     if len(split_revision) == 1:
       # This is just a plain revision, set it as the revision for root.
-      results[root] = split_revision[0]
+      results[root.strip('/')] = split_revision[0]
     else:
       # This is an alt_root@revision argument.
       current_root, current_rev = split_revision
 
       parsed_root = urlparse(current_root)
-      if parsed_root.scheme in ['http', 'https']:
+      if re.match(r'^[a-zA-Z]:[/\\]', current_root):
+        # A Windows absolute path. urlparse would take the drive letter for
+        # a URL scheme, so check for it before the scheme dispatch and treat
+        # it like other local paths.
+        normalized_root = current_root.strip('/')
+      elif parsed_root.scheme in ['http', 'https']:
         # We want to normalize git urls into .git urls.
         normalized_root = 'https://' + parsed_root.netloc + parsed_root.path
         if not normalized_root.endswith('.git'):
