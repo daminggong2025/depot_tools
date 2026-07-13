@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0595cfc2_845cbe7f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002120
+      },
+      "writtenOn": "2026-07-13T19:39:55Z",
+      "side": 1,
+      "message": "PTAL\n\nThe roll revert happened because of the same `sys.path` conflict on importing from the local `third_party` module, but this time in Chromium\u0027s `PRESUBMIT.py`.\n\nThis CL attempts to fix the `third_party` path conflicts for good, and in a way that doesn\u0027t require `depot_tools` importers to know about or do anything special with the import paths.",
+      "revId": "27661651210efecdbd7cf4ce7aa8a6ee66ac2516",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
