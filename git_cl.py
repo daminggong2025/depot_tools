@@ -24,6 +24,8 @@ import re
 import shutil
 import stat
 import sys
+import importlib.util
+from importlib.machinery import SourceFileLoader
 import tempfile
 import textwrap
 import time
@@ -7351,6 +7353,25 @@ def _RunSwiftFormat(opts, paths, top_dir, diffs):
     return 0
 
 
+_ruff_chromium_module = None
+
+
+def _GetRuffChromium():
+    global _ruff_chromium_module
+    if _ruff_chromium_module is None:
+        try:
+            depot_tools_path = os.path.dirname(os.path.abspath(__file__))
+            ruff_chromium_path = os.path.join(depot_tools_path, 'ruff_chromium')
+            loader = SourceFileLoader('ruff_chromium', ruff_chromium_path)
+            spec = importlib.util.spec_from_loader('ruff_chromium', loader)
+            if spec:
+                _ruff_chromium_module = importlib.util.module_from_spec(spec)
+                loader.exec_module(_ruff_chromium_module)
+        except Exception as e:
+            logging.warning("Failed to load ruff_chromium module: %s", e)
+    return _ruff_chromium_module
+
+
 def _RunPythonFormat(
     opts: optparse.Values,
     paths: list[str],
@@ -7389,11 +7410,17 @@ def _RunPythonFormat(
     for path in paths:
         cmd = ['vpython3', ruff_chromium_tool, '--root', top_dir, 'format', path]
         if not opts.full:
-            ranges = line_diffs.get(path)
-            if not ranges:
-                continue
-            for diff_start, diff_end in ranges:
-                cmd += ['--range', f'{diff_start}:1-{diff_end + 1}:1']
+            ruff_chromium = _GetRuffChromium()
+            is_ruff = (ruff_chromium and
+                       ruff_chromium.should_use_ruff(path, top_dir))
+            if is_ruff:
+                pass
+            else:
+                ranges = line_diffs.get(path)
+                if not ranges:
+                    continue
+                for diff_start, diff_end in ranges:
+                    cmd += ['--range', f'{diff_start}:1-{diff_end + 1}:1']
         if opts.diff or opts.dry_run:
             cmd += ['--diff']
             stdout = RunCommand(cmd,
