@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1f59923e_02d61d76",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 4456454
+      },
+      "writtenOn": "2026-07-14T16:49:55Z",
+      "side": 1,
+      "message": "I no longer work on alint, adding a couple of people from the team instead!",
+      "revId": "3ba148a211ab60f35c7d7a9fa32893d353fc49f2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
