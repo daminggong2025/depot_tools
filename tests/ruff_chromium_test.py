@@ -999,6 +999,29 @@ class TestRunRuffWithRanges(unittest.TestCase):
             if os.path.exists(temp_path):
                 os.unlink(temp_path)
 
+    @patch("subprocess.call")
+    def test_run_ruff_direct_with_format(self, mock_call):
+        mock_call.return_value = 0
+        ret = run_ruff_with_ranges(["format", "file.py"])
+        self.assertEqual(ret, 0)
+        mock_call.assert_called_once()
+        args_passed = mock_call.call_args[0][0]
+        self.assertEqual(args_passed[1], "format")
+        self.assertEqual(args_passed[2], "file.py")
+        self.assertIn("--force-exclude", args_passed)
+
+    @patch("subprocess.call")
+    def test_run_ruff_direct_without_format(self, mock_call):
+        mock_call.return_value = 0
+        ret = run_ruff_with_ranges(["file.py"])
+        self.assertEqual(ret, 0)
+        mock_call.assert_called_once()
+        args_passed = mock_call.call_args[0][0]
+        # Verify 'format' was inserted
+        self.assertEqual(args_passed[1], "format")
+        self.assertEqual(args_passed[2], "file.py")
+        self.assertIn("--force-exclude", args_passed)
+
 
 if __name__ == "__main__":
     unittest.main()

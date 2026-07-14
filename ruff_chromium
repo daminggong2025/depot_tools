@@ -463,7 +463,10 @@ def run_ruff_with_ranges(args: list[str]) -> int:
 
     # We are calling ruff as is if there is only one or no ranges.
     if len(parsed_args.ranges) < 2:
-        cmd = [get_ruff_bin()] + args + ["--force-exclude"]
+        ruff_args = list(args)
+        if "format" not in ruff_args:
+            ruff_args.insert(0, "format")
+        cmd = [get_ruff_bin()] + ruff_args + ["--force-exclude"]
         return subprocess.call(cmd)
 
     opts = parse_formatting_options(parsed_args.pass_through_args)
