@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "09960d2d_389342b2",
+        "filename": "git_common.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 1442,
+      "author": {
+        "id": 4995882
+      },
+      "writtenOn": "2026-07-14T20:22:30Z",
+      "side": 1,
+      "message": "have you tried this: git rev-parse --show-ref-format",
+      "range": {
+        "startLine": 1427,
+        "startChar": 3,
+        "endLine": 1442,
+        "endChar": 0
+      },
+      "revId": "84f8a524129beba87606c6364abe1c8b1d07739b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
