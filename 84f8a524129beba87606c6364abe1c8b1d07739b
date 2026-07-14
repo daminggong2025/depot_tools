@@ -22,6 +22,30 @@
       },
       "revId": "84f8a524129beba87606c6364abe1c8b1d07739b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "57f26130_2ae6e66b",
+        "filename": "git_common.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 1442,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-07-14T23:06:27Z",
+      "side": 1,
+      "message": "that would also work, but this approach has the advantage of not needing to open the repo (e.g. an old version of git that doesn\u0027t know about reftable), it just parses the config. added a comment to clarify",
+      "parentUuid": "09960d2d_389342b2",
+      "range": {
+        "startLine": 1427,
+        "startChar": 3,
+        "endLine": 1442,
+        "endChar": 0
+      },
+      "revId": "84f8a524129beba87606c6364abe1c8b1d07739b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
