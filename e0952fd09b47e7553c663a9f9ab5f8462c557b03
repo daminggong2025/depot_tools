@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e88e31f8_dc90e26b",
+        "filename": "cipd_manifest.txt",
+        "patchSetId": 1
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1392253
+      },
+      "writtenOn": "2026-07-14T01:28:49Z",
+      "side": 1,
+      "message": "Matthew, is it intentional that no Windows platforms are included for infra/tools/luci/luci, even though a luci.bat file is being added?\n\nWe can add them later if needed when you\u0027re back. Let\u0027s submit this CL for now so that I can verify the process this week.",
+      "range": {
+        "startLine": 66,
+        "startChar": 24,
+        "endLine": 66,
+        "endChar": 76
+      },
+      "revId": "e0952fd09b47e7553c663a9f9ab5f8462c557b03",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
