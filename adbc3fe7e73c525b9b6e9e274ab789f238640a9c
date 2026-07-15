@@ -16,6 +16,24 @@
       "message": "Removing these changes the behavior of alint in this context. Is that intended? If so, why?",
       "revId": "adbc3fe7e73c525b9b6e9e274ab789f238640a9c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c60faa4b_1f31e146",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 3038,
+      "author": {
+        "id": 1126674
+      },
+      "writtenOn": "2026-07-15T16:54:58Z",
+      "side": 0,
+      "message": "I wasn\u0027t sure if the stripping was to check for ERROR: vs WARNING: or if we just didn\u0027t like the color.\n\nAdded back the ansii stripping for now.",
+      "parentUuid": "933a2274_fc02d860",
+      "revId": "adbc3fe7e73c525b9b6e9e274ab789f238640a9c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
