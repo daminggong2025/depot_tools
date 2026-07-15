@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "933a2274_fc02d860",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 3038,
+      "author": {
+        "id": 4455911
+      },
+      "writtenOn": "2026-07-15T11:45:35Z",
+      "side": 0,
+      "message": "Removing these changes the behavior of alint in this context. Is that intended? If so, why?",
+      "revId": "adbc3fe7e73c525b9b6e9e274ab789f238640a9c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
