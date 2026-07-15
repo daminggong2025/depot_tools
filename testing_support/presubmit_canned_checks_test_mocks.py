@@ -54,6 +54,15 @@ class MockCannedChecks(object):
         return errors
 
 
+class MockCommand(object):
+
+    def __init__(self, name, cmd, kwargs, message, **_dummy):
+        self.name = name
+        self.cmd = cmd
+        self.kwargs = kwargs or {}
+        self.message = message
+
+
 class MockInputApi(object):
     """Mock class for the InputApi class.
 
@@ -80,6 +89,8 @@ class MockInputApi(object):
         self.change = MockChange([])
         self.presubmit_local_path = os.path.dirname(__file__)
         self.logging = logging.getLogger('PRESUBMIT')
+        self.Command = MockCommand
+        self.python3_executable = 'vpython3'
 
     @property
     def is_windows(self):
@@ -139,6 +150,21 @@ class MockInputApi(object):
                 return '\n'.join(file_.NewContents())
         # Otherwise, file is not in our mock API.
         raise IOError("No such file or directory: '%s'" % filename)
+
+    def RunTests(self, tests, parallel=True):
+        results = []
+        for test in tests:
+            try:
+                p = self.subprocess.Popen(test.cmd, **test.kwargs)
+                stdout, _ = p.communicate()
+                if p.returncode:
+                    results.append(
+                        test.message(f"{test.name}\n{stdout.decode()}"))
+            except Exception as e:
+                results.append(
+                    test.message(f"Unexpected error in {test.name}: {e}"))
+        return results
+
 
 
 class MockOutputApi(object):
