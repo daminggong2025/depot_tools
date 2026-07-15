@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0f936ab5_02dfc958",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1001917
+      },
+      "writtenOn": "2026-07-15T20:57:11Z",
+      "side": 1,
+      "message": "Question - is this something that will automatically happen when I run autoninja based on my env variables? If not, then this doesn\u0027t work for me.",
+      "revId": "d1708c176a000406ed3fd77e84ba5640d6ba32ab",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
