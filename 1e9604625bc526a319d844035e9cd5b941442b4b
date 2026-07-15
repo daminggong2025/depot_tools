@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c7de4eab_8a3a4fb3",
+        "filename": "run_alint.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-07-15T17:59:00Z",
+      "side": 1,
+      "message": "will `alint` ever output anything (info messages) on success? if it does, this script will exit with non-0. I see the `test_ayeaye_no_findings` test was modified to remove the text that was previously printed",
+      "range": {
+        "startLine": 40,
+        "startChar": 8,
+        "endLine": 41,
+        "endChar": 20
+      },
+      "revId": "1e9604625bc526a319d844035e9cd5b941442b4b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
