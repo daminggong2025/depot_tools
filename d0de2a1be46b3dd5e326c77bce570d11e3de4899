@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "75262000_20c4c04d",
+        "filename": "tests/presubmit_canned_checks_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 958,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-07-16T23:31:19Z",
+      "side": 1,
+      "message": "do these lines need to be updated too?",
+      "range": {
+        "startLine": 957,
+        "startChar": 54,
+        "endLine": 958,
+        "endChar": 55
+      },
+      "revId": "d0de2a1be46b3dd5e326c77bce570d11e3de4899",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
