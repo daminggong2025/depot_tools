@@ -34,6 +34,29 @@
       "parentUuid": "a02f21fb_6bbfa719",
       "revId": "d2be2cd83253b889bc08b75c21c1c1dfec5a798c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "dba18b1f_28b274fd",
+        "filename": "recipes/.ruff.toml",
+        "patchSetId": 3
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-07-16T23:42:19Z",
+      "side": 1,
+      "message": "shouldn\u0027t this be `recipes.py`? since this file is in recipes/ already",
+      "range": {
+        "startLine": 7,
+        "startChar": 19,
+        "endLine": 7,
+        "endChar": 37
+      },
+      "revId": "d2be2cd83253b889bc08b75c21c1c1dfec5a798c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
