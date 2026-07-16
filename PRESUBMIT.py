@@ -29,43 +29,14 @@ $VerifiedPlatform linux-mips64 linux-mips64le linux-mipsle
 TEST_TIMEOUT_S = 450  # 7m 30s
 
 
-def CheckPylint2(input_api, output_api):
-    """Gather all the pylint logic into one place to make it self-contained."""
+def CheckPylint(input_api, output_api):
+    """Run Pylint 3.X on supported python files."""
     files_to_check = [
+        r'^mcp/.*\.py$',
         r'^[^/]*\.py$',
         r'^testing_support/[^/]*\.py$',
         r'^tests/[^/]*\.py$',
         r'^recipe_modules/.*\.py$',  # Allow recursive search in recipe modules.
-    ]
-    disabled_warnings = [
-        'R0401',  # Cyclic import
-        'W0613',  # Unused argument
-        'C0415',  # import-outside-toplevel
-        'R1710',  # inconsistent-return-statements
-        'E1101',  # no-member
-        'E1120',  # no-value-for-parameter
-        'R1708',  # stop-iteration-return
-        'W1510',  # subprocess-run-check
-        # Checks which should be re-enabled after Python 2 support is removed.
-        'R0205',  # useless-object-inheritance
-        'R1725',  # super-with-arguments
-        'W0707',  # raise-missing-from
-        'W1113',  # keyword-arg-before-vararg
-    ]
-    return input_api.RunTests(input_api.canned_checks.GetPylint(
-        input_api,
-        output_api,
-        files_to_check=files_to_check,
-        files_to_skip=_GetPylintFilesToSkip(input_api),
-        disabled_warnings=disabled_warnings,
-        version='2.7'),
-                              parallel=False)
-
-
-def CheckPylint3(input_api, output_api):
-    """Like CheckPylint2, but using Pylint 3.X"""
-    files_to_check = [
-        r'^mcp/.*\.py$',
     ]
     disabled_warnings = [
         'duplicate-code',  # Tends to flag false positives.
