@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "a547ff65_c729a8b8",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 4323820
+      },
+      "writtenOn": "2026-07-16T01:00:14Z",
+      "side": 1,
+      "message": "Oh you\u0027re right \u003e_\u003e. I added it back. Ty!",
+      "parentUuid": "6e0fb4d1_03f5fcf1",
+      "range": {
+        "startLine": 22,
+        "startChar": 0,
+        "endLine": 22,
+        "endChar": 68
+      },
+      "revId": "6e8d2a55769123189cab96c8c4b8ae38bfcbe5a2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "2e8ee890_f0918e5d",
@@ -47,6 +71,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "dfd3f184_8094346a",
+        "filename": "git_cl.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 8034,
+      "author": {
+        "id": 4323820
+      },
+      "writtenOn": "2026-07-16T01:00:14Z",
+      "side": 1,
+      "message": "It\u0027s true... unfortunately git doesn\u0027t use flock or anything similar to tie the lock to the process. I added to the message.",
+      "parentUuid": "2e8ee890_f0918e5d",
+      "range": {
+        "startLine": 8034,
+        "startChar": 13,
+        "endLine": 8034,
+        "endChar": 66
+      },
+      "revId": "6e8d2a55769123189cab96c8c4b8ae38bfcbe5a2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "eac5ff6b_bb49c890",
@@ -60,6 +108,30 @@
       "writtenOn": "2026-07-13T17:56:45Z",
       "side": 1,
       "message": "nit: use f strings",
+      "range": {
+        "startLine": 8035,
+        "startChar": 12,
+        "endLine": 8039,
+        "endChar": 36
+      },
+      "revId": "6e8d2a55769123189cab96c8c4b8ae38bfcbe5a2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "eda0cd85_0b646d8f",
+        "filename": "git_cl.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 8039,
+      "author": {
+        "id": 4323820
+      },
+      "writtenOn": "2026-07-16T01:00:14Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "eac5ff6b_bb49c890",
       "range": {
         "startLine": 8035,
         "startChar": 12,
