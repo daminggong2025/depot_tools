@@ -16,6 +16,47 @@
       "message": "WDYT 👀",
       "revId": "4e8a86bd9599d28b27ef62ca290933653445cc56",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "bb4e1e8c_77b1b216",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-07-16T00:12:04Z",
+      "side": 1,
+      "message": "i think this is fine, the two repos use the same git objects",
+      "parentUuid": "05ae34d9_5c84182c",
+      "revId": "4e8a86bd9599d28b27ef62ca290933653445cc56",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6cc5588f_3d1ffd03",
+        "filename": "git_cache.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 159,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-07-16T00:12:04Z",
+      "side": 1,
+      "message": "since `self.basedir \u003d self.UrlToCacheDir(url)`, `CacheDirToUrl(self.basedir)` gets the canonical URL for both aliased/unaliased repos, we should be able to just remove the first host check\n```suggestion\n        # The URL might be an alias from URL_ALIASES. So need to check the URL\n        # of its cache dir too, which should point to a canonical URL.\n        cache_dir_url \u003d self.CacheDirToUrl(self.basedir)\n        u \u003d urllib.parse.urlparse(cache_dir_url)\n        if u.netloc in self.BOOTSTRAP_BUCKET_HOSTS:\n            return \u0027chromium-git-cache\u0027\n```",
+      "range": {
+        "startLine": 150,
+        "startChar": 0,
+        "endLine": 159,
+        "endChar": 39
+      },
+      "revId": "4e8a86bd9599d28b27ef62ca290933653445cc56",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
