@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "af37e714_c4561120",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 3053,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-07-16T19:00:39Z",
+      "side": 1,
+      "message": "should this also catch the `Error running alint wrapper` case from run_alint.py rc\u003d2?",
+      "range": {
+        "startLine": 3053,
+        "startChar": 12,
+        "endLine": 3053,
+        "endChar": 77
+      },
+      "revId": "4281afad244ccab8930eabfd685545095a2fe450",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5415ba36_8f35a95a",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 3061,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-07-16T19:00:39Z",
+      "side": 1,
+      "message": "this used to error with `Could not determine repository root` when wasn\u0027t found, we should probably keep that",
+      "range": {
+        "startLine": 3061,
+        "startChar": 41,
+        "endLine": 3061,
+        "endChar": 74
+      },
+      "revId": "4281afad244ccab8930eabfd685545095a2fe450",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0fd251eb_aae8343f",
+        "filename": "run_alint.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-07-16T19:00:39Z",
+      "side": 1,
+      "message": "we should also probably check returncode too\n```suggestion\n        if p.returncode !\u003d 0 or \u0027ERROR:\u0027 in clean_output or \u0027WARNING:\u0027 in clean_output:\n```",
+      "range": {
+        "startLine": 42,
+        "startChar": 8,
+        "endLine": 42,
+        "endChar": 66
+      },
+      "revId": "4281afad244ccab8930eabfd685545095a2fe450",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
