@@ -70,6 +70,24 @@
       "parentUuid": "465dde15_4bbb7e9f",
       "revId": "d1708c176a000406ed3fd77e84ba5640d6ba32ab",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "17d68943_45373d4b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1001917
+      },
+      "writtenOn": "2026-07-16T16:59:06Z",
+      "side": 1,
+      "message": "\u003e btw, if it\u0027s for agent (b/535371222), do we really need to integrate it in autoninja? why not just telling agent to use run_in_virtual_path explicitly?\n\nI would say:\n1) this isn\u0027t ONLY for agents, I want this in my day-to-day, and I want all engineers to be able to easily use this if they want to try it. And it seems weird to customize all of my build commands to use this. This also means tools like autotest.py don\u0027t work? or would I have to wrap then\n2) In my experience this is never very consistent - autotest.py example, etc. Just like we now have to detect ai env to use --quiet for building, there are so many times AI forgets, isn\u0027t told, or is using some tool that builds for it, that it\u0027s not really going to work.\n\nI chatted with jwata@ yesterday and we liked the idea of making the message here very obvious, something like \"Using virtual build paths is a community contribution and not officially supported by the chrome build infra team. The team cannot fix issues here. For now, any bugs can be reported and discussed in crbug.com/535371222.\"",
+      "parentUuid": "3240d95a_73cbc51d",
+      "revId": "d1708c176a000406ed3fd77e84ba5640d6ba32ab",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
