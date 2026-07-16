@@ -36,6 +36,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "5d8fca4c_131ea680",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1170419
+      },
+      "writtenOn": "2026-07-16T21:30:42Z",
+      "side": 1,
+      "message": "Just to circle back: I think this landed safely. I see builds checking out the real chromium/src and successfully using chromium/src\u0027s git cache:\nhttps://luci-milo.appspot.com/ui/p/chromium/builders/try/linux-rel-compilator/2106958/infra\n\nAnd I also see builds checking out out the internal mirror of src and successfully re-using the cache from the upstream repo:\nhttps://ci.chromium.org/b/8676086789608035873/infra\n\nSo should be in the clear, I think",
+      "parentUuid": "bb4e1e8c_77b1b216",
+      "revId": "4e8a86bd9599d28b27ef62ca290933653445cc56",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "6cc5588f_3d1ffd03",
