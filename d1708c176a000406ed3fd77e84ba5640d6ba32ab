@@ -34,6 +34,24 @@
       "parentUuid": "0f936ab5_02dfc958",
       "revId": "d1708c176a000406ed3fd77e84ba5640d6ba32ab",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "465dde15_4bbb7e9f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2026-07-16T02:02:19Z",
+      "side": 1,
+      "message": "\u003e as some target depend on ../.gclient_entries b/527765051\n\nOh, that\u0027s really bad. Can we fix the target to not access gclient_entries...?",
+      "parentUuid": "3d06f6a7_c05cff22",
+      "revId": "d1708c176a000406ed3fd77e84ba5640d6ba32ab",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
