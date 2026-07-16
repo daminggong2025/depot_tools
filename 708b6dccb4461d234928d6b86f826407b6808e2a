@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2fec6ed0_f1ec8e92",
+        "filename": "PRESUBMIT.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-07-16T19:05:07Z",
+      "side": 1,
+      "message": "please update this list to also include files from `CheckPylint2`",
+      "range": {
+        "startLine": 35,
+        "startChar": 9,
+        "endLine": 35,
+        "endChar": 24
+      },
+      "revId": "708b6dccb4461d234928d6b86f826407b6808e2a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
