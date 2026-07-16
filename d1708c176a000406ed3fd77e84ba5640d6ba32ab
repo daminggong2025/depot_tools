@@ -16,6 +16,24 @@
       "message": "Question - is this something that will automatically happen when I run autoninja based on my env variables? If not, then this doesn\u0027t work for me.",
       "revId": "d1708c176a000406ed3fd77e84ba5640d6ba32ab",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3d06f6a7_c05cff22",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2026-07-16T01:42:50Z",
+      "side": 1,
+      "message": "how about this?\n\nalso noticed that we need to use gclient_root, not primary_solution_path\nas some target depend on ../.gclient_entries b/527765051",
+      "parentUuid": "0f936ab5_02dfc958",
+      "revId": "d1708c176a000406ed3fd77e84ba5640d6ba32ab",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
