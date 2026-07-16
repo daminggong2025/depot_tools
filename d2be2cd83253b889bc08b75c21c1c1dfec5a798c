@@ -57,6 +57,30 @@
       },
       "revId": "d2be2cd83253b889bc08b75c21c1c1dfec5a798c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f7b2dcf3_02bac90c",
+        "filename": "recipes/.ruff.toml",
+        "patchSetId": 3
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-07-16T23:45:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "dba18b1f_28b274fd",
+      "range": {
+        "startLine": 7,
+        "startChar": 19,
+        "endLine": 7,
+        "endChar": 37
+      },
+      "revId": "d2be2cd83253b889bc08b75c21c1c1dfec5a798c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
