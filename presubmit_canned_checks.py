@@ -3031,62 +3031,36 @@ def CheckValidHostsInDEPSOnUpload(input_api, output_api):
 
 
 def CheckAyeAye(input_api, output_api):
+    """Runs AyeAye analyzers.
     """
-    Runs AyeAye analyzers.
-    """
-
-    def strip_ansi_codes(text):
-        ansi_escape = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
-        return ansi_escape.sub('', text)
-
-    def strip_severity_prefix(text):
-        for prefix in ["ERROR:", "WARNING:", "INFO:"]:
-            if text.startswith(prefix):
-                return text[len(prefix):].strip()
-        return text
-
     alint_path = '/google/bin/releases/alint/alint'
-    command = [alint_path, '--', '-t=30s']
     if not _os.path.exists(alint_path):
         return []
 
-    # Determine the git repository root
-    repo_root = input_api.change.RepositoryRoot()
-    if not repo_root:
-        return [
-            output_api.PresubmitError("Could not determine repository root.")
-        ]
+    wrapper_path = _os.path.join(_HERE, 'run_alint.py')
+    python3_executable = getattr(input_api, 'python3_executable', 'vpython3')
+    cmd = [
+        python3_executable, wrapper_path, alint_path,
+        input_api.change.RepositoryRoot(), '-t=30s'
+    ]
 
-    try:
-        process = input_api.subprocess.Popen(command,
-                                             stdout=input_api.subprocess.PIPE,
-                                             stderr=input_api.subprocess.STDOUT,
-                                             cwd=repo_root)
-        stdout, _ = process.communicate()
-        output_str = stdout.decode('utf-8', 'ignore')
+    # |message| must be a subcliass of PresubmitResult (enforced with an
+    # issubclass assert).
+    class AyeAyeResult(output_api.PresubmitResult):
 
-        if not output_str.strip():
-            return []
+        def __init__(self, message, **kwargs):
+            super(AyeAyeResult, self).__init__(message, **kwargs)
+            self.fatal = 'ERROR:' in message or 'Unexpected error' in message
+            self.should_prompt = not self.fatal
 
-        results = []
-        for line in output_str.splitlines():
-            clean_line = strip_ansi_codes(line).strip()
-            if not clean_line:
-                continue
-            if clean_line.startswith("ERROR:"):
-                results.append(
-                    output_api.PresubmitError(
-                        strip_severity_prefix(clean_line)))
-            elif clean_line.startswith("WARNING:"):
-                results.append(
-                    output_api.PresubmitPromptWarning(
-                        strip_severity_prefix(clean_line)))
-        return results
-    except Exception as e:
-        return [
-            output_api.PresubmitError(
-                f"Unexpected error in CheckAyeAye: {type(e).__name__} - {e}")
-        ]
+    # Use input_api.Command so that the check can run concurrently with other
+    # checks when "git cl presubmit --parallel" is used.
+    return input_api.RunTests([
+        input_api.Command(name='AyeAye (alint)',
+                          cmd=cmd,
+                          kwargs={'cwd': input_api.change.RepositoryRoot()},
+                          message=AyeAyeResult)
+    ])
 
 
 def CheckSkillFiles(input_api, output_api):
