@@ -16,6 +16,24 @@
       "message": "@ovsienko@google.com can you update the format of the upstream recipes.py script to make this removable? The autoroller will roll it out everywhere as part of regular recipe rolls.",
       "revId": "d2be2cd83253b889bc08b75c21c1c1dfec5a798c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "33c2c0b5_f118f4a1",
+        "filename": "recipes/.ruff.toml",
+        "patchSetId": 3
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-07-16T23:02:32Z",
+      "side": 1,
+      "message": "Makes sense, I will remove this configuration. The upstream will be upgraded later.",
+      "parentUuid": "a02f21fb_6bbfa719",
+      "revId": "d2be2cd83253b889bc08b75c21c1c1dfec5a798c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
