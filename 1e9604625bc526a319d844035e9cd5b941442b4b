@@ -22,6 +22,30 @@
       },
       "revId": "1e9604625bc526a319d844035e9cd5b941442b4b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "90e2ff12_7f922b73",
+        "filename": "run_alint.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1126674
+      },
+      "writtenOn": "2026-07-16T01:59:11Z",
+      "side": 1,
+      "message": "Fixed. Also noticed another issue, which is that we were no longer reporting warnings as warnings. That\u0027s fixed too now.",
+      "parentUuid": "c7de4eab_8a3a4fb3",
+      "range": {
+        "startLine": 40,
+        "startChar": 8,
+        "endLine": 41,
+        "endChar": 20
+      },
+      "revId": "1e9604625bc526a319d844035e9cd5b941442b4b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
