@@ -35,6 +35,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "c9f8e323_79b0bc19",
+        "filename": "gclient-new-workdir.py",
+        "patchSetId": 13
+      },
+      "lineNbr": 253,
+      "author": {
+        "id": 4323820
+      },
+      "writtenOn": "2026-07-18T00:45:45Z",
+      "side": 1,
+      "message": "If this CL ever becomes relevant again, as an update, Rift no longer uses gclient-new-workdir.py so rift concerns are not relevant.",
+      "parentUuid": "a0affe95_b7304038",
+      "revId": "001deccf83804d5a2c1e21613d18067a065e644b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "f28f9333_8f428e1b",
