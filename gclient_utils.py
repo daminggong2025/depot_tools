@@ -29,6 +29,8 @@ import urllib.parse
 import gclient_eval
 import subprocess2
 
+NETWORK_TIMEOUT = int(os.environ.get('DEPOT_TOOLS_NETWORK_TIMEOUT', '30'))
+
 # Git wrapper retries on a transient error, and some callees do retries too,
 # such as GitWrapper.update (doing clone). One retry attempt should be
 # sufficient to help with any transient errors at this level.

@@ -10,6 +10,7 @@ import os as _os
 import time
 import re
 
+import gclient_utils
 import metadata.discover
 import metadata.validate
 
@@ -1119,7 +1120,8 @@ def CheckTreeIsOpen(input_api,
         return []
     try:
         if json_url:
-            connection = input_api.urllib_request.urlopen(json_url)
+            connection = input_api.urllib_request.urlopen(json_url,
+                                                          timeout=gclient_utils.NETWORK_TIMEOUT)
             status = input_api.json.loads(connection.read())
             connection.close()
             if not status['can_commit_freely']:
@@ -1135,7 +1137,7 @@ def CheckTreeIsOpen(input_api,
                 ]
         else:
             # TODO(bradnelson): drop this once all users are gone.
-            connection = input_api.urllib_request.urlopen(url)
+            connection = input_api.urllib_request.urlopen(url, timeout=gclient_utils.NETWORK_TIMEOUT)
             status = connection.read()
             connection.close()
             if input_api.re.match(closed, status):
@@ -2627,7 +2629,7 @@ def CheckChangedLUCIConfigs(input_api, output_api):
         time_to_sleep = 1
         while True:
             try:
-                res = input_api.urllib_request.urlopen(req)
+                res = input_api.urllib_request.urlopen(req, timeout=gclient_utils.NETWORK_TIMEOUT)
                 break
             except input_api.urllib_error.HTTPError as e:
                 if attempt < max_attempts and e.code >= 500:
