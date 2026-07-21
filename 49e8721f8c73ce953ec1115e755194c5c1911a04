@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "280950db_459f8c52",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1001917
+      },
+      "writtenOn": "2026-07-21T17:21:24Z",
+      "side": 1,
+      "message": "LGTM-ing - but again this is up to your team",
+      "revId": "49e8721f8c73ce953ec1115e755194c5c1911a04",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
