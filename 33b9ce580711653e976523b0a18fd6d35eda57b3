@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3a4fc632_ce6ec9b0",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1116294
+      },
+      "writtenOn": "2026-07-21T16:07:00Z",
+      "side": 1,
+      "message": "There\u0027s a massive diff if I run `git cl format` in this repo.  I\u0027m not sure what to do about that...",
+      "revId": "33b9ce580711653e976523b0a18fd6d35eda57b3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
