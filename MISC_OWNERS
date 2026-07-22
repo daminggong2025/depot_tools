@@ -1,0 +1,8 @@
+# Owners for very basic or boring files that have no real impact.
+# go/keep-sorted start
+include /BUILD_OWNERS
+include /CROS_OWNERS
+include /LUCI_OWNERS
+include /RECLIENT_OWNERS
+include /SECURITY_TEAM_OWNERS
+# go/keep-sorted end
