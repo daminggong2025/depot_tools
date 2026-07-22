@@ -37,7 +37,6 @@ per-file caffeinate.py=file://BUILD_OWNERS
 per-file pylint*=vapier@chromium.org
 
 # ChromeOS related tooling
-per-file cbuildbot=file://CROS_OWNERS
 per-file cros=file://CROS_OWNERS
 per-file *cros_python2*=file://CROS_OWNERS
 per-file cros_sdk=file://CROS_OWNERS
