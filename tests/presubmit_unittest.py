@@ -1,5 +1,5 @@
 #!/usr/bin/env vpython3
-# Copyright (c) 2012 The Chromium Authors. All rights reserved.
+# Copyright 2012 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Unit tests for presubmit_support.py and presubmit_canned_checks.py."""
@@ -3710,7 +3710,7 @@ the current line as well!
         current_year = int(time.strftime("%Y"))
         text = (
             "#!/bin/python\n"
-            "# Copyright (c) %d The Chromium Authors\n"
+            "# Copyright %d The Chromium Authors\n"
             "# Use of this source code is governed by a BSD-style license that can "
             "be\n"
             "# found in the LICENSE file.\n"
@@ -3730,7 +3730,7 @@ the current line as well!
         current_year = int(time.strftime("%Y"))
         text = (
             "#!/bin/python\n"
-            "# Copyright (c) %d The Chromium Authors\n"
+            "# Copyright %d The Chromium Authors\n"
             "# Use of this source code is governed by a BSD-style license that can "
             "be\n"
             "# found in the LICENSE file.\n"
