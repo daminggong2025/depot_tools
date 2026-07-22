@@ -41,7 +41,7 @@
 #
 # wheel: <
 #   name: "infra/python/wheels/black-py3"
-#   version: "version:22.3.0"
+#   version: "version:25.1.0"
 # >
 #
 # [VPYTHON:END]
