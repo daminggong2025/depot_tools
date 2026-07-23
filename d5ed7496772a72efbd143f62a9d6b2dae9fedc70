@@ -22,6 +22,30 @@
       },
       "revId": "d5ed7496772a72efbd143f62a9d6b2dae9fedc70",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b10561db_f667e294",
+        "filename": "verify_lockfile.py.vpython3",
+        "patchSetId": 50
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-07-23T05:56:53Z",
+      "side": 1,
+      "message": "Good catch",
+      "parentUuid": "33485589_7fe18c9c",
+      "range": {
+        "startLine": 5,
+        "startChar": 12,
+        "endLine": 5,
+        "endChar": 24
+      },
+      "revId": "d5ed7496772a72efbd143f62a9d6b2dae9fedc70",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
