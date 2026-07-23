@@ -39,6 +39,30 @@
       },
       "revId": "3d166b0c8a54be762e700e4a36336898580b4c11",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4c9a3e16_4b1fa0f1",
+        "filename": "OWNERS",
+        "patchSetId": 1
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1000768
+      },
+      "writtenOn": "2026-07-23T21:29:03Z",
+      "side": 1,
+      "message": "i\u0027d be fine with that since we also have Review-Enforcement active which requires 2 Googlers",
+      "parentUuid": "77e8d3b7_a3edf740",
+      "range": {
+        "startLine": 14,
+        "startChar": 0,
+        "endLine": 15,
+        "endChar": 38
+      },
+      "revId": "3d166b0c8a54be762e700e4a36336898580b4c11",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
