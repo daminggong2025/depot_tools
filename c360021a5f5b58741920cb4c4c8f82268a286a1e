@@ -16,6 +16,24 @@
       "message": "This is a big change. I\u0027m no longer the official owner of depot tools. Could this be wait until Gavin\u0027s return from OOO?",
       "revId": "c360021a5f5b58741920cb4c4c8f82268a286a1e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2f4dd86a_982fc158",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 56
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-07-23T21:36:02Z",
+      "side": 1,
+      "message": "I guess it would have to wait then :)",
+      "parentUuid": "eb3fa61a_1b4a4437",
+      "revId": "c360021a5f5b58741920cb4c4c8f82268a286a1e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
