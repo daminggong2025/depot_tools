@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9ac70a48_3d5f576d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1170419
+      },
+      "writtenOn": "2026-07-23T22:22:59Z",
+      "side": 1,
+      "message": "Just FYI: an external dev in slack mentioned that they\u0027ve tried using this arg for a local fetch and are running into issues with updating that checkout after it\u0027s been initialized. ie: How do they update the shared git cache?\n\nSomeone else also pointed out that https://www.chromium.org/developers/git-cache/ would naturally be expected to have some answers, but the page is blank. Maybe we should fill that out with more details on usage if we want to support humans using git caches?",
+      "revId": "e21955f712eec607f7074dfdc02cd8340e12674d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
