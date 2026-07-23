@@ -3,6 +3,29 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "b61676df_e6d77a3b",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 45
+      },
+      "lineNbr": 2790,
+      "author": {
+        "id": 1429892
+      },
+      "writtenOn": "2026-07-23T05:45:42Z",
+      "side": 1,
+      "message": "Unnecessary DRY?\n\nDuplicate this, move under `if path.endswith(uv_lock_suffix):` and `if local_path.endswith(uv_lock_suffix):`?",
+      "range": {
+        "startLine": 2790,
+        "startChar": 4,
+        "endLine": 2790,
+        "endChar": 34
+      },
+      "revId": "a98f84e24baa618c39736c37bbdc8d5c04bc52c1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "ac5cdab6_a5d353bd",
         "filename": "verify_lockfile.py",
         "patchSetId": 45

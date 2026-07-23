@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "58b71f74_81f6e0b7",
+        "filename": "verify_lockfile.py",
+        "patchSetId": 48
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 1429892
+      },
+      "writtenOn": "2026-07-23T05:45:42Z",
+      "side": 1,
+      "message": "This would catch `# ///` appearing elsewhere including not at the start of a line?\n\nIs this additional strictness in addition to the PEP 723 reference implementation worth it?",
+      "range": {
+        "startLine": 121,
+        "startChar": 21,
+        "endLine": 121,
+        "endChar": 28
+      },
+      "revId": "ed8972eebd9f861b4b85a56df641dbcb93625cf1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "59433914_02771bbe",
+        "filename": "verify_lockfile.py",
+        "patchSetId": 48
+      },
+      "lineNbr": 148,
+      "author": {
+        "id": 1429892
+      },
+      "writtenOn": "2026-07-23T05:45:42Z",
+      "side": 1,
+      "message": "Do these blocks come before the copyright headers?\n\nSame comment as above re additional strictness to the PEP 723 reference implementation.",
+      "range": {
+        "startLine": 142,
+        "startChar": 0,
+        "endLine": 148,
+        "endChar": 17
+      },
+      "revId": "ed8972eebd9f861b4b85a56df641dbcb93625cf1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
