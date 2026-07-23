@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ac5cdab6_a5d353bd",
+        "filename": "verify_lockfile.py",
+        "patchSetId": 45
+      },
+      "lineNbr": 224,
+      "author": {
+        "id": 1429892
+      },
+      "writtenOn": "2026-07-23T03:53:17Z",
+      "side": 1,
+      "message": "Was there something that stops the reference implementation from being an option?\n\n- https://peps.python.org/pep-0723/#reference-implementation\n- https://peps.python.org/pep-0723/#copyright",
+      "range": {
+        "startLine": 100,
+        "startChar": 0,
+        "endLine": 224,
+        "endChar": 19
+      },
+      "revId": "a98f84e24baa618c39736c37bbdc8d5c04bc52c1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
