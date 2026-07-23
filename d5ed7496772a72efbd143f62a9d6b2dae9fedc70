@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "33485589_7fe18c9c",
+        "filename": "verify_lockfile.py.vpython3",
+        "patchSetId": 50
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1429892
+      },
+      "writtenOn": "2026-07-23T05:55:35Z",
+      "side": 1,
+      "message": "The root .vpython3 uses 25.0, any particular reason why the older version?",
+      "range": {
+        "startLine": 5,
+        "startChar": 12,
+        "endLine": 5,
+        "endChar": 24
+      },
+      "revId": "d5ed7496772a72efbd143f62a9d6b2dae9fedc70",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
