@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "2728ccb6_059f2cd7",
+        "filename": "verify_lockfile.py",
+        "patchSetId": 48
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-07-23T05:52:17Z",
+      "side": 1,
+      "message": "Yeah I have simplified the pep 723 parsing greatly now, just relying that hopefully vpython did a correct job already.",
+      "parentUuid": "58b71f74_81f6e0b7",
+      "range": {
+        "startLine": 121,
+        "startChar": 21,
+        "endLine": 121,
+        "endChar": 28
+      },
+      "revId": "ed8972eebd9f861b4b85a56df641dbcb93625cf1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "59433914_02771bbe",
@@ -37,6 +61,30 @@
       "writtenOn": "2026-07-23T05:45:42Z",
       "side": 1,
       "message": "Do these blocks come before the copyright headers?\n\nSame comment as above re additional strictness to the PEP 723 reference implementation.",
+      "range": {
+        "startLine": 142,
+        "startChar": 0,
+        "endLine": 148,
+        "endChar": 17
+      },
+      "revId": "ed8972eebd9f861b4b85a56df641dbcb93625cf1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "46a261bb_d77260c3",
+        "filename": "verify_lockfile.py",
+        "patchSetId": 48
+      },
+      "lineNbr": 148,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-07-23T05:52:17Z",
+      "side": 1,
+      "message": "Done, pushed copyrighted code into a separate function",
+      "parentUuid": "59433914_02771bbe",
       "range": {
         "startLine": 142,
         "startChar": 0,
