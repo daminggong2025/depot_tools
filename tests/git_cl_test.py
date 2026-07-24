@@ -5956,6 +5956,15 @@ class ChangelistTest(unittest.TestCase):
                     git_cl.Changelist._GerritURLRepoIdentity(x), want
                 )
 
+    def testAddChangeIdToCommitMessage_staged_files_fails(self):
+        mock.patch(
+            "git_cl.RunGitWithCode", return_value=(0, "M  file.txt\n")
+        ).start()
+
+        cl = git_cl.Changelist()
+        with self.assertRaises(SystemExitMock):
+            cl._AddChangeIdToCommitMessage("desc", ["arg1"])
+
 
 class CMDTestCaseBase(unittest.TestCase):
     _STATUSES = [
@@ -6702,11 +6711,100 @@ class CMDUploadTestCase(CMDTestCaseBase):
         mock.patch("git_cl._fetch_tryjobs").start()
         mock.patch("git_cl._trigger_tryjobs", return_value={}).start()
         mock.patch("git_cl.Changelist.CMDUpload", return_value=0).start()
+        mock.patch("git_cl.Changelist.EnsureAuthenticated").start()
+        mock.patch(
+            "gerrit_util.GetAccountDetails",
+            return_value={},
+        ).start()
         mock.patch("git_cl.Settings.GetRoot", return_value="").start()
         mock.patch(
             "git_cl.Settings.GetSquashGerritUploads", return_value=True
         ).start()
+        mock.patch("sys.exit", side_effect=SystemExitMock).start()
         self.addCleanup(mock.patch.stopall)
+
+    def test_upload_dirty_cwd_default_fail(self):
+        mock.patch(
+            "git_common.get_dirty_files", return_value="M  file.txt\n"
+        ).start()
+        mock.patch("git_common.is_dirty_git_tree", return_value=True).start()
+        mock.patch(
+            "git_cl.Settings.GetAllowDirtyUpload", return_value=False
+        ).start()
+
+        self.assertEqual(1, git_cl.CMDupload(git_cl.OptionParser(), []))
+
+    def test_allow_dirty_upload_squash_mutually_exclusive(self):
+        mock.patch(
+            "git_common.get_dirty_files", return_value="M  file.txt\n"
+        ).start()
+        mock.patch(
+            "git_cl.Settings.GetAllowDirtyUpload", return_value=True
+        ).start()
+        mock.patch(
+            "git_cl.Settings.GetSquashGerritUploads", return_value=True
+        ).start()
+
+        with self.assertRaises(SystemExitMock):
+            git_cl.CMDupload(git_cl.OptionParser(), [])
+
+    def test_upload_dirty_cwd_config_allow_no_squash(self):
+        mock.patch(
+            "git_common.get_dirty_files", return_value="M  file.txt\n"
+        ).start()
+        mock.patch(
+            "git_cl.Settings.GetAllowDirtyUpload", return_value=True
+        ).start()
+        mock.patch(
+            "git_cl.Settings.GetSquashGerritUploads", return_value=True
+        ).start()
+        mock.patch("git_cl.Changelist.CMDUpload", return_value=0).start()
+
+        self.assertEqual(
+            0, git_cl.CMDupload(git_cl.OptionParser(), ["--no-squash"])
+        )
+
+    def test_upload_dirty_cwd_config_allow_override_by_cli_fail(self):
+        mock.patch(
+            "git_common.get_dirty_files", return_value="M  file.txt\n"
+        ).start()
+        mock.patch("git_common.is_dirty_git_tree", return_value=True).start()
+        mock.patch(
+            "git_cl.Settings.GetAllowDirtyUpload", return_value=True
+        ).start()
+
+        self.assertEqual(
+            1,
+            git_cl.CMDupload(
+                git_cl.OptionParser(), ["--squash", "--no-allow-dirty"]
+            ),
+        )
+
+    def test_upload_clean_cwd_config_allow_squash_succeed(self):
+        mock.patch("git_common.get_dirty_files", return_value="").start()
+        mock.patch(
+            "git_cl.Settings.GetAllowDirtyUpload", return_value=True
+        ).start()
+        mock.patch("git_cl.UploadAllSquashed", return_value=0).start()
+
+        self.assertEqual(
+            0, git_cl.CMDupload(git_cl.OptionParser(), ["--squash"])
+        )
+
+    def test_upload_dirty_cwd_cli_allow(self):
+        mock.patch(
+            "git_common.get_dirty_files", return_value="M  file.txt\n"
+        ).start()
+        mock.patch(
+            "git_cl.Settings.GetAllowDirtyUpload", return_value=False
+        ).start()
+
+        self.assertEqual(
+            0,
+            git_cl.CMDupload(
+                git_cl.OptionParser(), ["--no-squash", "--allow-dirty"]
+            ),
+        )
 
 
 class MakeRequestsHelperTestCase(unittest.TestCase):
