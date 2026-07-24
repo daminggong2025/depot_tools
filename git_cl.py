@@ -742,7 +742,7 @@ def _ComputeFormatDiffLineRanges(files, diffs, expand=0):
     if len(files) == 0:
         return {}
 
-    pattern = r"^@@.*\+(.*) @@"
+    pattern = r"^@@ -\d+(?:,\d+)? \+([0-9,]+) @@"
     # 2 capture groups
     # 0 == fname of diff file
     # 1 == 'diff_start,diff_count' or 'diff_start'
