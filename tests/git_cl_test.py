@@ -5148,6 +5148,109 @@ class TestGitCl(unittest.TestCase):
         cl = git_cl.Changelist(issue=123456)
         self.assertEqual(cl._GerritChangeIdentifier(), "123456")
 
+    def test_upload_dirty_cwd_default_fail(self):
+        mock.patch(
+            "git_common.get_dirty_files", return_value="M  file.txt\n"
+        ).start()
+        mock.patch("git_common.is_dirty_git_tree", return_value=True).start()
+        mock.patch(
+            "git_cl.Settings.GetAllowDirtyUpload", return_value=False
+        ).start()
+        mock.patch("git_cl.Changelist.GetGerritHost", lambda _: "host").start()
+        mock.patch(
+            "gerrit_util.GetAccountDetails",
+            return_value={},
+        ).start()
+
+        self.assertEqual(1, git_cl.main(["upload"]))
+
+    def test_allow_dirty_upload_squash_mutually_exclusive(self):
+        mock.patch(
+            "git_common.get_dirty_files", return_value="M  file.txt\n"
+        ).start()
+        mock.patch(
+            "git_cl.Settings.GetAllowDirtyUpload", return_value=True
+        ).start()
+        mock.patch(
+            "git_cl.Settings.GetSquashGerritUploads", return_value=True
+        ).start()
+        mock.patch("git_cl.Changelist.GetGerritHost", lambda _: "host").start()
+        mock.patch(
+            "gerrit_util.GetAccountDetails",
+            return_value={},
+        ).start()
+        mock.patch(
+            "git_cl.OptionParser.error", side_effect=ParserErrorMock
+        ).start()
+
+        self.assertRaises(ParserErrorMock, git_cl.main, ["upload"])
+
+    def test_upload_dirty_cwd_config_allow_no_squash(self):
+        mock.patch(
+            "git_common.get_dirty_files", return_value="M  file.txt\n"
+        ).start()
+        mock.patch(
+            "git_cl.Settings.GetAllowDirtyUpload", return_value=True
+        ).start()
+        mock.patch("git_cl.Changelist.CMDUpload", return_value=0).start()
+        mock.patch("git_cl.Changelist.GetGerritHost", lambda _: "host").start()
+        mock.patch(
+            "gerrit_util.GetAccountDetails",
+            return_value={},
+        ).start()
+
+        self.assertEqual(0, git_cl.main(["upload", "--no-squash"]))
+
+    def test_upload_dirty_cwd_config_allow_override_by_cli_fail(self):
+        mock.patch(
+            "git_common.get_dirty_files", return_value="M  file.txt\n"
+        ).start()
+        mock.patch("git_common.is_dirty_git_tree", return_value=True).start()
+        mock.patch(
+            "git_cl.Settings.GetAllowDirtyUpload", return_value=True
+        ).start()
+        mock.patch("git_cl.Changelist.GetGerritHost", lambda _: "host").start()
+        mock.patch(
+            "gerrit_util.GetAccountDetails",
+            return_value={},
+        ).start()
+
+        self.assertEqual(
+            1, git_cl.main(["upload", "--squash", "--no-allow-dirty"])
+        )
+
+    def test_upload_clean_cwd_config_allow_squash_succeed(self):
+        mock.patch("git_common.get_dirty_files", return_value="").start()
+        mock.patch(
+            "git_cl.Settings.GetAllowDirtyUpload", return_value=True
+        ).start()
+        mock.patch("git_cl.UploadAllSquashed", return_value=0).start()
+        mock.patch("git_cl.Changelist.GetGerritHost", lambda _: "host").start()
+        mock.patch(
+            "gerrit_util.GetAccountDetails",
+            return_value={},
+        ).start()
+
+        self.assertEqual(0, git_cl.main(["upload", "--squash"]))
+
+    def test_upload_dirty_cwd_cli_allow(self):
+        mock.patch(
+            "git_common.get_dirty_files", return_value="M  file.txt\n"
+        ).start()
+        mock.patch(
+            "git_cl.Settings.GetAllowDirtyUpload", return_value=False
+        ).start()
+        mock.patch("git_cl.Changelist.CMDUpload", return_value=0).start()
+        mock.patch("git_cl.Changelist.GetGerritHost", lambda _: "host").start()
+        mock.patch(
+            "gerrit_util.GetAccountDetails",
+            return_value={},
+        ).start()
+
+        self.assertEqual(
+            0, git_cl.main(["upload", "--no-squash", "--allow-dirty"])
+        )
+
 
 class ChangelistTest(unittest.TestCase):
     LAST_COMMIT_SUBJECT = "Fixes goat teleporter destination to be Australia"

@@ -1161,6 +1161,12 @@ class Settings(object):
             return False
         return None
 
+    def GetAllowDirtyUpload(self):
+        """Returns True if dirty working directory should be ignored on upload.
+
+        This only works if squash upload is disabled."""
+        return self._GetConfigBool("gerrit.allow-dirty-uploads")
+
     def GetIsGerrit(self):
         """Return True if gerrit.host is set."""
         if self.is_gerrit is None:
@@ -6336,6 +6342,18 @@ def CMDupload(parser, args):
         help="force yes to questions (don't prompt)",
     )
     parser.add_option(
+        "--allow-dirty",
+        action="store_true",
+        dest="allow_dirty",
+        help="Allow upload even if there are changed files in the working directory",
+    )
+    parser.add_option(
+        "--no-allow-dirty",
+        action="store_false",
+        dest="allow_dirty",
+        help="Disallow upload while there are dirty files in the working directory.",
+    )
+    parser.add_option(
         "--message",
         "-m",
         dest="message",
@@ -6586,8 +6604,30 @@ def CMDupload(parser, args):
     if os.path.isfile(".gitmodules"):
         git_common.warn_submodule()
 
-    if git_common.is_dirty_git_tree("upload"):
+    if options.allow_dirty is None:
+        options.allow_dirty = settings.GetAllowDirtyUpload()
+
+    if options.squash is None:
+        # Load default for user, repo, squash=true, in this order.
+        options.squash = settings.GetSquashGerritUploads()
+
+    dirty_files = git_common.get_dirty_files()
+    if not dirty_files:
+        pass
+    elif not options.allow_dirty:
+        git_common.is_dirty_git_tree("upload")
         return 1
+    elif options.squash and options.allow_dirty:
+        parser.error(
+            "Dirty files cannot be ignored if squash upload is enabled."
+        )
+    elif options.allow_dirty:
+        print(
+            "WARNING: Working directory is dirty. The following files are ignored:\n"
+            f"{dirty_files.strip()}\n"
+            "Note: Presubmit checks will still run on your local disk files "
+            "(including dirty changes)"
+        )
 
     options.reviewers = cleanup_list(options.reviewers)
     options.cc = cleanup_list(options.cc)
@@ -6630,10 +6670,6 @@ def CMDupload(parser, args):
 
     if options.use_commit_queue:
         options.send_mail = True
-
-    if options.squash is None:
-        # Load default for user, repo, squash=true, in this order.
-        options.squash = settings.GetSquashGerritUploads()
 
     # Warm change details cache now to avoid RPCs later, reducing latency for
     # developers.
