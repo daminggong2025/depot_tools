@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env vpython3
 # Copyright 2026 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -28,6 +28,31 @@ def run_prpc(service, method, payload):
             )
             return None
         return json.loads(stdout)
+
+
+def check_auth():
+    """Checks if the user is logged into buildbucket."""
+    try:
+        res = subprocess.run(
+            ["bb", "auth-info"], capture_output=True, text=True, check=False
+        )
+        if res.returncode != 0 or "Not logged in" in res.stdout:
+            print(
+                "Error: You are not logged into Buildbucket (bb).",
+                file=sys.stderr,
+            )
+            print(
+                "Please run 'bb auth-login' in your terminal and try again.",
+                file=sys.stderr,
+            )
+            return False
+        return True
+    except FileNotFoundError:
+        print(
+            "Error: 'bb' tool not found. Is depot_tools in your PATH?",
+            file=sys.stderr,
+        )
+        return False
 
 
 def resolve_build_id(project, bucket, builder, build_number):
@@ -170,7 +195,11 @@ def fetch_log_snippet(res_name, raw=False):
         payload,
     )
     if not result or "artifacts" not in result:
-        return "No artifacts found."
+        return (
+            "No artifacts found. This can happen if the build failed early, "
+            "the logs were purged, or there is an authentication issue. "
+            "Try checking 'bb auth-info' or running 'bb log' for the failing step."
+        )
 
     # Prefer "Test Log" or similar
     artifacts = result["artifacts"]
@@ -332,6 +361,9 @@ def test_history(
 
 
 def main():
+    if not check_auth():
+        sys.exit(1)
+
     """Main CLI entry point."""
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(dest="command")
