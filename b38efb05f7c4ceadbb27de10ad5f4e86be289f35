@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1042a7ad_02e41529",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118499
+      },
+      "writtenOn": "2026-07-25T21:53:53Z",
+      "side": 1,
+      "message": "Some QoL upgrades that I ran into when trying to use these.",
+      "revId": "b38efb05f7c4ceadbb27de10ad5f4e86be289f35",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
