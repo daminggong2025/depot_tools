@@ -42,6 +42,26 @@ def run_bb(args):
             f"Error: bb command timed out after 60 seconds: {' '.join(cmd)}")
 
 
+def check_auth():
+    """Checks if the user is logged into buildbucket."""
+    try:
+        res = subprocess.run(["bb", "auth-info"],
+                             capture_output=True,
+                             text=True,
+                             check=False)
+        if res.returncode != 0 or "Not logged in" in res.stdout:
+            print("Error: You are not logged into Buildbucket (bb).",
+                  file=sys.stderr)
+            print("Please run 'bb auth-login' in your terminal and try again.",
+                  file=sys.stderr)
+            return False
+        return True
+    except FileNotFoundError:
+        print("Error: 'bb' tool not found. Is depot_tools in your PATH?",
+              file=sys.stderr)
+        return False
+
+
 def get_latest_build(builder_path):
     """Gets the latest build for a given builder path."""
     output = run_bb(["ls", "-n", "1", "-json", builder_path])
@@ -388,6 +408,9 @@ def _fetch_and_print_log(build_id, step):
 
 
 def main():
+    if not check_auth():
+        sys.exit(1)
+
     parser = argparse.ArgumentParser(
         description="Helper wrapper for buildbucket (bb) tool.")
     subparsers = parser.add_subparsers(dest="command", required=True)
