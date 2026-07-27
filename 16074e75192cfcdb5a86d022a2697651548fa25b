@@ -20,6 +20,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "54f13727_f2d90d62",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 4995882
+      },
+      "writtenOn": "2026-07-27T21:06:50Z",
+      "side": 1,
+      "message": "It was generated with http://shortn/_VficqJIzcc which goes through a bunch of things like gerrit comment history, etc",
+      "parentUuid": "ab08b275_e44e243b",
+      "revId": "16074e75192cfcdb5a86d022a2697651548fa25b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "36b7c492_48394995",
         "filename": "agents/skills/code-review-workflow/references/Code_Style_and_Documentation_guide.md",
         "patchSetId": 4

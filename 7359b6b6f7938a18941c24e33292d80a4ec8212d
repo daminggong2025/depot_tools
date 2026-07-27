@@ -33,6 +33,24 @@
       "message": "This is... a lot. At the very least, please break this up into two separate CLs, one for each skill.\n\nEven with that, though, ~10k lines of Markdown for a new skill seems excessive.",
       "revId": "7359b6b6f7938a18941c24e33292d80a4ec8212d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e504cd1c_d1c933da",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 4995882
+      },
+      "writtenOn": "2026-07-27T21:06:50Z",
+      "side": 1,
+      "message": "Ok, I can split it up. The reason it\u0027s so big is because it was generated using this http://shortn/_VficqJIzcc",
+      "parentUuid": "a39545d7_71fded79",
+      "revId": "7359b6b6f7938a18941c24e33292d80a4ec8212d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
