@@ -16,6 +16,23 @@
       "message": "How was this generated, what was ingested into the context?\n\nThere is a lot of different skills here within this one code-reviewing skill. Have you considered breaking it down into muiltiple skills instead of multiple .mds in references/ in the same code-review-workflow/ skill?",
       "revId": "16074e75192cfcdb5a86d022a2697651548fa25b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "36b7c492_48394995",
+        "filename": "agents/skills/code-review-workflow/references/Code_Style_and_Documentation_guide.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1241393
+      },
+      "writtenOn": "2026-07-27T21:00:20Z",
+      "side": 1,
+      "message": "This only covers Python?",
+      "revId": "16074e75192cfcdb5a86d022a2697651548fa25b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
