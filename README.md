@@ -37,6 +37,12 @@ that find binaries in chromium checkout, and run with proper setup/check.
 To use these wrappers, you need to initialize/bootstrap depot_tools (using
 `gclient`, `update_depot_tools` or `ensure_bootstrap`).
 
+## depot_tools_agents
+
+> The `depot_tools_agents` directory contains agent configuration and tooling
+> that is only meant for working on code in `depot_tools` itself. It is **not**
+> intended for use with the Chromium codebase.
+
 ## Installing
 
 See [set-up documentation](https://commondatastorage.googleapis.com/chrome-infra-docs/flat/depot_tools/docs/html/depot_tools_tutorial.html#_setting_up).
