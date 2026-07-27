@@ -16,6 +16,23 @@
       "message": "Can you add a bit more context about how these are going to be used?",
       "revId": "7359b6b6f7938a18941c24e33292d80a4ec8212d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a39545d7_71fded79",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1163549
+      },
+      "writtenOn": "2026-07-27T20:50:56Z",
+      "side": 1,
+      "message": "This is... a lot. At the very least, please break this up into two separate CLs, one for each skill.\n\nEven with that, though, ~10k lines of Markdown for a new skill seems excessive.",
+      "revId": "7359b6b6f7938a18941c24e33292d80a4ec8212d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
