@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ab08b275_e44e243b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1241393
+      },
+      "writtenOn": "2026-07-27T20:58:18Z",
+      "side": 1,
+      "message": "How was this generated, what was ingested into the context?\n\nThere is a lot of different skills here within this one code-reviewing skill. Have you considered breaking it down into muiltiple skills instead of multiple .mds in references/ in the same code-review-workflow/ skill?",
+      "revId": "16074e75192cfcdb5a86d022a2697651548fa25b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
