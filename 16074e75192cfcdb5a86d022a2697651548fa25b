@@ -33,6 +33,29 @@
       "message": "This only covers Python?",
       "revId": "16074e75192cfcdb5a86d022a2697651548fa25b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b342e55d_fa1df430",
+        "filename": "agents/skills/code-review-workflow/references/Developer_Collaboration_Workflow_guide.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1241393
+      },
+      "writtenOn": "2026-07-27T21:04:00Z",
+      "side": 1,
+      "message": "We have CLA, not DCO. Suggest to rewrite this more succintly and more focused on what can actionably be done in a Code Review.",
+      "range": {
+        "startLine": 15,
+        "startChar": 0,
+        "endLine": 15,
+        "endChar": 37
+      },
+      "revId": "16074e75192cfcdb5a86d022a2697651548fa25b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
