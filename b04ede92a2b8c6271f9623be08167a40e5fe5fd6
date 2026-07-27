@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5a00b67e_5aa7bf15",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 4343019
+      },
+      "writtenOn": "2026-07-27T18:05:06Z",
+      "side": 1,
+      "message": "LGTM, this skill looks good. How often do we need to export screenshots for IDS_IOS_DEFAULT_BROWSER_NON_MODAL_OMNIBOX_NAVIGATION_TITLE_EXP? Having a dedicate skill indicates that we may need to regular update them. There are a few other locations for skills too: \n- `https://source.corp.google.com/piper///depot/google3/experimental/chrome-ios/_agents/skills/`\n- `ios_internal/agents/plugins/bling-experimental`",
+      "revId": "b04ede92a2b8c6271f9623be08167a40e5fe5fd6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
