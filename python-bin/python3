@@ -1,5 +1,14 @@
 #!/usr/bin/env bash
 
+if [[ -n "$VPYTHON_BYPASS" && "$VPYTHON_BYPASS" != "0" ]] || \
+   [[ -n "$DEPOT_TOOLS_PYTHON_BYPASS" && "$DEPOT_TOOLS_PYTHON_BYPASS" != "0" ]]; then
+  if [[ -x /usr/bin/python3 ]]; then
+    exec /usr/bin/python3 "$@"
+  else
+    exec python3 "$@"
+  fi
+fi
+
 DEPOT_TOOLS=$(dirname "$0")/..
 
 if [[ ! -f "$DEPOT_TOOLS/python3_bin_reldir.txt" ]]; then
