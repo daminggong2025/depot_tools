@@ -4,6 +4,10 @@
 :: found in the LICENSE file.
 
 setlocal
+
+if defined VPYTHON_BYPASS if not "%VPYTHON_BYPASS%"=="" if not "%VPYTHON_BYPASS%"=="0" goto :BYPASS
+if defined DEPOT_TOOLS_PYTHON_BYPASS if not "%DEPOT_TOOLS_PYTHON_BYPASS%"=="" if not "%DEPOT_TOOLS_PYTHON_BYPASS%"=="0" goto :BYPASS
+
 set PYTHON_BAT_RUNNER=1
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -39,8 +43,34 @@ set PYTHON_BAT_RUNNER=1
 
 if not "%PYTHON_BAT_RUNNER%" == "1" goto :END
 
-for /f %%i in (%~dp0python3_bin_reldir.txt) do set PYTHON3_BIN_RELDIR=%%i
-set PATH=%~dp0%PYTHON3_BIN_RELDIR%;%~dp0%PYTHON3_BIN_RELDIR%\Scripts;%PATH%
-"%~dp0%PYTHON3_BIN_RELDIR%\python3.exe" %*
+if exist "%~dp0python3_bin_reldir.txt" (
+  set "ROOT_DIR=%~dp0."
+) else (
+  set "ROOT_DIR=%~dp0.."
+)
+for %%d in ("%ROOT_DIR%") do set "ROOT_DIR=%%~fd"
+for /f %%i in (%ROOT_DIR%\python3_bin_reldir.txt) do set PYTHON3_BIN_RELDIR=%%i
+set PATH=%ROOT_DIR%\%PYTHON3_BIN_RELDIR%;%ROOT_DIR%\%PYTHON3_BIN_RELDIR%\Scripts;%PATH%
+"%ROOT_DIR%\%PYTHON3_BIN_RELDIR%\python3.exe" %*
+exit /b %ERRORLEVEL%
+
+:BYPASS
+:: Note: On POSIX, DEPOT_TOOLS directories are filtered out of PATH before searching
+:: for system python. On Windows batch, we search PATH directly for python3.exe/python.exe.
+:: If a user has prepended CIPD python directories to PATH, those will be matched.
+for %%i in (python3.exe) do if not "%%~$PATH:i"=="" (
+  set "SYS_PYTHON=%%~$PATH:i"
+  goto :RUN_SYS_PYTHON
+)
+for %%i in (python.exe) do if not "%%~$PATH:i"=="" (
+  set "SYS_PYTHON=%%~$PATH:i"
+  goto :RUN_SYS_PYTHON
+)
+echo depot_tools: Error: System python3/python not found in PATH (bypass enabled). >&2
+exit /b 1
+
+:RUN_SYS_PYTHON
+"%SYS_PYTHON%" %*
+exit /b %ERRORLEVEL%
 
 :END
