@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9e358875_107c062a",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 59
+      },
+      "lineNbr": 2856,
+      "author": {
+        "id": 1381059
+      },
+      "writtenOn": "2026-07-28T21:52:32Z",
+      "side": 1,
+      "message": "should be vpython.bat for win.",
+      "range": {
+        "startLine": 2856,
+        "startChar": 60,
+        "endLine": 2856,
+        "endChar": 68
+      },
+      "revId": "9d29889032919e07600da90801bfbbaeaeb97614",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bca82eb6_9c9b85ff",
+        "filename": "verify_lockfile.py",
+        "patchSetId": 59
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1381059
+      },
+      "writtenOn": "2026-07-28T21:52:32Z",
+      "side": 1,
+      "message": "Can https://packaging.pypa.io/en/stable/utils.html#packaging.utils.canonicalize_name be used instead?",
+      "revId": "9d29889032919e07600da90801bfbbaeaeb97614",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
