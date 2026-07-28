@@ -1,6 +1,35 @@
 #!/usr/bin/env bash
 
-DEPOT_TOOLS=$(dirname "$0")/..
+DEPOT_TOOLS=$(cd "$(dirname "$0")/.." && pwd -P)
+
+if [[ -n "$VPYTHON_BYPASS" && "$VPYTHON_BYPASS" != "0" ]] || \
+   [[ -n "$DEPOT_TOOLS_PYTHON_BYPASS" && "$DEPOT_TOOLS_PYTHON_BYPASS" != "0" ]]; then
+  # Filter out depot_tools paths from PATH before searching for system python3/python
+  clean_path=""
+  IFS=':' read -ra path_entries <<< "$PATH"
+  for entry in "${path_entries[@]}"; do
+    if [[ "$entry" != "$DEPOT_TOOLS" && "$entry" != "$DEPOT_TOOLS/"* ]]; then
+      entry_abs=$(cd "$entry" 2>/dev/null && pwd -P)
+      if [[ -n "$entry_abs" && "$entry_abs" != "$DEPOT_TOOLS" && "$entry_abs" != "$DEPOT_TOOLS/"* ]]; then
+        clean_path="${clean_path:+${clean_path}:}$entry"
+      fi
+    fi
+  done
+  sys_python=$(PATH="$clean_path" command -v python3)
+  if [[ -z "$sys_python" || ! -f "$sys_python" || ! -x "$sys_python" ]]; then
+    sys_python=$(PATH="$clean_path" command -v python)
+  fi
+  if [[ -n "$sys_python" && -f "$sys_python" && -x "$sys_python" ]]; then
+    if [[ "$sys_python" -ef "$0" || "$sys_python" -ef "$DEPOT_TOOLS/python3" || "$sys_python" -ef "$DEPOT_TOOLS/python-bin/python3" ]]; then
+      echo "depot_tools: Error: System python3 in PATH symlinks back to depot_tools (bypass enabled)." >&2
+      exit 1
+    fi
+    exec "$sys_python" "$@"
+  else
+    echo "depot_tools: Error: System python3/python not found in PATH (bypass enabled)." >&2
+    exit 1
+  fi
+fi
 
 if [[ ! -f "$DEPOT_TOOLS/python3_bin_reldir.txt" ]]; then
   cat >&2 <<EOF
