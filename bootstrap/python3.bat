@@ -3,6 +3,9 @@
 :: Use of this source code is governed by a BSD-style license that can be
 :: found in the LICENSE file.
 
+if defined VPYTHON_BYPASS if not "%VPYTHON_BYPASS%"=="0" goto :BYPASS
+if defined DEPOT_TOOLS_PYTHON_BYPASS if not "%DEPOT_TOOLS_PYTHON_BYPASS%"=="0" goto :BYPASS
+
 setlocal
 set PYTHON_BAT_RUNNER=1
 
@@ -39,8 +42,26 @@ set PYTHON_BAT_RUNNER=1
 
 if not "%PYTHON_BAT_RUNNER%" == "1" goto :END
 
-for /f %%i in (%~dp0python3_bin_reldir.txt) do set PYTHON3_BIN_RELDIR=%%i
-set PATH=%~dp0%PYTHON3_BIN_RELDIR%;%~dp0%PYTHON3_BIN_RELDIR%\Scripts;%PATH%
-"%~dp0%PYTHON3_BIN_RELDIR%\python3.exe" %*
+if exist "%~dp0python3_bin_reldir.txt" (
+  set ROOT_DIR=%~dp0
+) else (
+  set ROOT_DIR=%~dp0..
+)
+for /f %%i in (%ROOT_DIR%\python3_bin_reldir.txt) do set PYTHON3_BIN_RELDIR=%%i
+set PATH=%ROOT_DIR%\%PYTHON3_BIN_RELDIR%;%ROOT_DIR%\%PYTHON3_BIN_RELDIR%\Scripts;%PATH%
+"%ROOT_DIR%\%PYTHON3_BIN_RELDIR%\python3.exe" %*
+exit /b %ERRORLEVEL%
+
+:BYPASS
+for %%i in (python3.exe) do if not "%%~$PATH:i"=="" (
+  "%%~$PATH:i" %*
+  exit /b %ERRORLEVEL%
+)
+for %%i in (python.exe) do if not "%%~$PATH:i"=="" (
+  "%%~$PATH:i" %*
+  exit /b %ERRORLEVEL%
+)
+echo depot_tools: Error: System python3/python not found in PATH (bypass enabled). >&2
+exit /b 1
 
 :END
