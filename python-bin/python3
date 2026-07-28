@@ -1,5 +1,19 @@
 #!/usr/bin/env bash
 
+if [[ -n "$VPYTHON_BYPASS" && "$VPYTHON_BYPASS" != "0" ]] || \
+   [[ -n "$DEPOT_TOOLS_PYTHON_BYPASS" && "$DEPOT_TOOLS_PYTHON_BYPASS" != "0" ]]; then
+  # Filter out depot_tools paths from PATH before searching for system python3
+  depot_tools_dir=$(cd "$(dirname "$0")/.." && pwd)
+  clean_path=$(echo "$PATH" | tr ':' '\n' | grep -v -F "$depot_tools_dir" | paste -sd:)
+  sys_python=$(PATH="$clean_path" command -v python3)
+  if [[ -n "$sys_python" && -x "$sys_python" ]]; then
+    exec "$sys_python" "$@"
+  else
+    echo "depot_tools: Error: System python3 not found in PATH (bypass enabled)." >&2
+    exit 1
+  fi
+fi
+
 DEPOT_TOOLS=$(dirname "$0")/..
 
 if [[ ! -f "$DEPOT_TOOLS/python3_bin_reldir.txt" ]]; then

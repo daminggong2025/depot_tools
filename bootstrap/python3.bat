@@ -3,6 +3,9 @@
 :: Use of this source code is governed by a BSD-style license that can be
 :: found in the LICENSE file.
 
+if defined VPYTHON_BYPASS if not "%VPYTHON_BYPASS%"=="0" goto :BYPASS
+if defined DEPOT_TOOLS_PYTHON_BYPASS if not "%DEPOT_TOOLS_PYTHON_BYPASS%"=="0" goto :BYPASS
+
 setlocal
 set PYTHON_BAT_RUNNER=1
 
@@ -42,5 +45,14 @@ if not "%PYTHON_BAT_RUNNER%" == "1" goto :END
 for /f %%i in (%~dp0python3_bin_reldir.txt) do set PYTHON3_BIN_RELDIR=%%i
 set PATH=%~dp0%PYTHON3_BIN_RELDIR%;%~dp0%PYTHON3_BIN_RELDIR%\Scripts;%PATH%
 "%~dp0%PYTHON3_BIN_RELDIR%\python3.exe" %*
+exit /b %ERRORLEVEL%
+
+:BYPASS
+for %%i in (python3.exe) do if not "%%~$PATH:i"=="" (
+  python3.exe %*
+  exit /b %ERRORLEVEL%
+)
+python.exe %*
+exit /b %ERRORLEVEL%
 
 :END
