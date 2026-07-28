@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "708cc017_899a4d4e",
+        "filename": "agents/skills/ios-simulator-screenshot-generator/scripts/generate_simulator_screenshots.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 4343019
+      },
+      "writtenOn": "2026-07-28T20:21:14Z",
+      "side": 1,
+      "message": "Optional nit: Creating screenshots usually happen during development of a feature. Some features may require a specific setup that can not be easily set up from a fresh installation. One example is that if a feature requires a sign-in user, then it might be easier to reuse the installed app with its existing state. Chrome also supports an experiment feature where it can take a `--enable-features` parameters, or force variant configuration if a feature relies on a variant. So, adding an option like skip install might help to use existing configuration from what the user already has in simulator.",
+      "range": {
+        "startLine": 94,
+        "startChar": 0,
+        "endLine": 94,
+        "endChar": 67
+      },
+      "revId": "c52f35035c3b7423055b27ed1b6276c3a15b8aa8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c1c59541_9328c385",
+        "filename": "agents/skills/ios-simulator-screenshot-generator/scripts/generate_simulator_screenshots.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 135,
+      "author": {
+        "id": 4343019
+      },
+      "writtenOn": "2026-07-28T20:21:14Z",
+      "side": 1,
+      "message": "QQ: A user has 5s to go to the right screen with the intended string. Does the agent (Jetski) tell you something like, \"You have 5s to go to a screen with the string, and keep the screen there?\"",
+      "range": {
+        "startLine": 135,
+        "startChar": 0,
+        "endLine": 135,
+        "endChar": 17
+      },
+      "revId": "c52f35035c3b7423055b27ed1b6276c3a15b8aa8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
