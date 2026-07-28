@@ -4,6 +4,16 @@
 :: found in the LICENSE file.
 
 setlocal
+if exist "%~dp0python3_bin_reldir.txt" (
+  set "ROOT_DIR=%~dp0."
+) else (
+  set "ROOT_DIR=%~dp0.."
+)
+for %%d in ("%ROOT_DIR%") do set "ROOT_DIR=%%~fd"
+
+if defined VPYTHON_BYPASS if not "%VPYTHON_BYPASS%"=="" if not "%VPYTHON_BYPASS%"=="0" goto :BYPASS
+if defined DEPOT_TOOLS_PYTHON_BYPASS if not "%DEPOT_TOOLS_PYTHON_BYPASS%"=="" if not "%DEPOT_TOOLS_PYTHON_BYPASS%"=="0" goto :BYPASS
+
 set PYTHON_BAT_RUNNER=1
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -39,8 +49,28 @@ set PYTHON_BAT_RUNNER=1
 
 if not "%PYTHON_BAT_RUNNER%" == "1" goto :END
 
-for /f %%i in (%~dp0python3_bin_reldir.txt) do set PYTHON3_BIN_RELDIR=%%i
-set PATH=%~dp0%PYTHON3_BIN_RELDIR%;%~dp0%PYTHON3_BIN_RELDIR%\Scripts;%PATH%
-"%~dp0%PYTHON3_BIN_RELDIR%\python3.exe" %*
+if not exist "%ROOT_DIR%\python3_bin_reldir.txt" (
+  echo python3_bin_reldir.txt not found. need to initialize depot_tools by >&2
+  echo running gclient or update_depot_tools >&2
+  exit /b 1
+)
+for /f %%i in (%ROOT_DIR%\python3_bin_reldir.txt) do set PYTHON3_BIN_RELDIR=%%i
+set PATH=%ROOT_DIR%\%PYTHON3_BIN_RELDIR%;%ROOT_DIR%\%PYTHON3_BIN_RELDIR%\Scripts;%PATH%
+"%ROOT_DIR%\%PYTHON3_BIN_RELDIR%\python3.exe" %*
+exit /b %ERRORLEVEL%
+
+:BYPASS
+:: Note: Filter out executables located under %ROOT_DIR% by combining
+:: where.exe and findstr.exe so CIPD python directories are ignored.
+for /f "delims=" %%i in ('where.exe python3.exe python.exe 2^>nul ^| findstr.exe /i /v /c:"%ROOT_DIR%"') do (
+  set "SYS_PYTHON=%%~fi"
+  goto :RUN_SYS_PYTHON
+)
+echo depot_tools: Error: System python3/python not found in PATH (bypass enabled). >&2
+exit /b 1
+
+:RUN_SYS_PYTHON
+"%SYS_PYTHON%" %*
+exit /b %ERRORLEVEL%
 
 :END
