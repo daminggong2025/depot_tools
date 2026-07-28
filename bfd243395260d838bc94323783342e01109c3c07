@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fd02f8f4_25fe1a30",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 8
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 4820673
+      },
+      "writtenOn": "2026-07-28T15:51:39Z",
+      "side": 1,
+      "message": "Hey Gavin, can you have a look at this proposal? `git stash` takes a while on my machine, so having this flag would simplify things for me :)",
+      "revId": "bfd243395260d838bc94323783342e01109c3c07",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
