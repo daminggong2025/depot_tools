@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+base_dir=$(dirname "$0")
+
+if [[ -n "$VPYTHON_BYPASS" && "$VPYTHON_BYPASS" != "0" ]] || \
+   [[ -n "$DEPOT_TOOLS_PYTHON_BYPASS" && "$DEPOT_TOOLS_PYTHON_BYPASS" != "0" ]]; then
+  if [[ -x /usr/bin/python3 ]]; then
+    exec /usr/bin/python3 "$@"
+  else
+    exec python3 "$@"
+  fi
+fi
+
+exec "$base_dir/python-bin/python3" "$@"
