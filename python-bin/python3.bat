@@ -6,6 +6,10 @@
 setlocal
 
 for %%d in (%~dp0..) do set PARENT_DIR=%%~fd
+
+if defined VPYTHON_BYPASS if not "%VPYTHON_BYPASS%"=="" if not "%VPYTHON_BYPASS%"=="0" goto :BYPASS
+if defined DEPOT_TOOLS_PYTHON_BYPASS if not "%DEPOT_TOOLS_PYTHON_BYPASS%"=="" if not "%DEPOT_TOOLS_PYTHON_BYPASS%"=="0" goto :BYPASS
+
 IF NOT EXIST "%PARENT_DIR%\python3_bin_reldir.txt" (
   echo python3_bin_reldir.txt not found. need to initialize depot_tools by >&2
   echo running gclient or update_depot_tools >&2
@@ -16,3 +20,18 @@ IF NOT EXIST "%PARENT_DIR%\python3_bin_reldir.txt" (
 for /f %%i in (%PARENT_DIR%\python3_bin_reldir.txt) do set PYTHON_BIN_ABSDIR=%PARENT_DIR%\%%i
 set PATH=%PYTHON_BIN_ABSDIR%;%PYTHON_BIN_ABSDIR%\Scripts;%PATH%
 "%PYTHON_BIN_ABSDIR%\python3.exe" %*
+exit /b %ERRORLEVEL%
+
+:BYPASS
+:: Note: Filter out executables located under %PARENT_DIR% by combining
+:: where.exe and findstr.exe so CIPD python directories are ignored.
+for /f "delims=" %%i in ('where.exe python3.exe python.exe 2^>nul ^| findstr.exe /i /v /c:"%PARENT_DIR%"') do (
+  set "SYS_PYTHON=%%~fi"
+  goto :RUN_SYS_PYTHON
+)
+echo depot_tools: Error: System python3/python not found in PATH (bypass enabled). >&2
+exit /b 1
+
+:RUN_SYS_PYTHON
+"%SYS_PYTHON%" %*
+exit /b %ERRORLEVEL%
