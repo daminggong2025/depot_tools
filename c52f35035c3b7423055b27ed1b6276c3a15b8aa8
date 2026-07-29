@@ -1,6 +1,40 @@
 {
   "comments": [
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "8331f2d0_2150840a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1331877
+      },
+      "writtenOn": "2026-07-29T18:02:16Z",
+      "side": 1,
+      "message": "LGTM with a suggestion",
+      "revId": "c52f35035c3b7423055b27ed1b6276c3a15b8aa8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d9a64327_a5cbe822",
+        "filename": "agents/skills/ios-simulator-screenshot-generator/SKILL.md",
+        "patchSetId": 6
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1331877
+      },
+      "writtenOn": "2026-07-29T18:02:16Z",
+      "side": 1,
+      "message": "This might make the dev lose some state they had in the simulator. The agent should probably prompt the user before uninstalling",
+      "revId": "c52f35035c3b7423055b27ed1b6276c3a15b8aa8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "708cc017_899a4d4e",
