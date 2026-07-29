@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ad3b3def_64e5c2fe",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 12
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1001917
+      },
+      "writtenOn": "2026-07-29T19:06:19Z",
+      "side": 1,
+      "message": "LGTM but I\u0027ll defer to others. We should probably publicize teh change to the virtual build path env variable so ppl can change their config",
+      "revId": "beb729b661c2c2aeb024ee53f9cbb6d8af3c6c50",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
