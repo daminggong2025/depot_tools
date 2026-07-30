@@ -16,6 +16,24 @@
       "message": "Hey Gavin, can you have a look at this proposal? `git stash` takes a while on my machine, so having this flag would simplify things for me :)",
       "revId": "bfd243395260d838bc94323783342e01109c3c07",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3d8adb88_f4d117c8",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 8
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-07-30T23:10:16Z",
+      "side": 1,
+      "message": "Hey Tamino, letting git cl upload proceed with dirty files IMO would make it more complicated, and breaks presubmits (which check the files on disk). alternatives for your workflow like git worktrees and gclient-new-workdir.py (https://source.chromium.org/chromium/chromium/tools/depot_tools/+/main:gclient-new-workdir.py;l\u003d7?q\u003dgclient-new-workdir.py\u0026ss\u003dchromium) exist that I recommend you look into",
+      "parentUuid": "fd02f8f4_25fe1a30",
+      "revId": "bfd243395260d838bc94323783342e01109c3c07",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
