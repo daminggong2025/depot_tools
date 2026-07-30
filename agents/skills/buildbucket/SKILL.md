@@ -3,7 +3,7 @@ name: buildbucket
 description: >
   A wrapper around the 'bb' (buildbucket) tool designed for low-context
   agentic usage without overly verbose logs. Good for a high-level
-  overview of builder failures across a patchset, and for surfacing
+  Build-level overview of builder failures across a patchset, and for surfacing
   non-test failures (e.g., compile and profile merge failures). For
   detailed, complete, and actionable test failures, use the
   'luci-test-results' skill which queries ResultDB directly for comprehensive
@@ -16,12 +16,16 @@ This skill provides a Python wrapper (`bb_wrapper.py`) around the `bb` CLI tool.
 It is designed to handle large outputs gracefully by parsing JSON and saving
 logs to files, providing summaries instead of dumping everything to stdout.
 
-Key features:
+It is optimized for **Build-level status**, identifying failed steps, and
+inspecting compile/infrastructure errors.
 
-- List try bot results for a Gerrit CL URL.
-- Easily find the latest build for a builder.
-- List build steps with status clearly visible.
-- Fetch logs safely and view the tail.
+## Environment & Auth Discovery
+
+- **Environment**: Always execute this script using **`vpython3`** instead
+  of `python3` to ensure all hermetic dependencies (like `httplib2`) are
+  satisfied.
+- **Authentication**: Run `bb auth-info` to verify your login status. If you
+  are not logged in, stop execution and ask the user to run `bb auth-login` in their terminal.
 
 ## Usage
 
@@ -33,7 +37,7 @@ directory of this skill.
 1. **List CL Build Results**
 
    ```bash
-   agents/skills/buildbucket/scripts/bb_wrapper.py cl <cl_url> [--patchset <N>] [--all] [--verbose] [--logs]
+   vpython3 agents/skills/buildbucket/scripts/bb_wrapper.py cl <cl_url> [--patchset <N>] [--all] [--verbose] [--logs]
    ```
 
    - `cl_url`: The full URL to the Gerrit CL.
@@ -50,7 +54,7 @@ directory of this skill.
 2. **Get Latest Build Info for a Builder**
 
    ```bash
-   agents/skills/buildbucket/scripts/bb_wrapper.py latest <builder_path>
+   vpython3 agents/skills/buildbucket/scripts/bb_wrapper.py latest <builder_path>
    ```
 
    - `builder_path`: format `project/bucket/builder` (e.g.,
@@ -59,7 +63,7 @@ directory of this skill.
 3. **List Build Steps**
 
    ```bash
-   agents/skills/buildbucket/scripts/bb_wrapper.py steps <build_id>
+   vpython3 agents/skills/buildbucket/scripts/bb_wrapper.py steps <build_id>
    ```
 
    - `build_id`: The ID of the build.
@@ -67,7 +71,7 @@ directory of this skill.
 4. **Fetch Logs for a Step**
 
    ```bash
-   agents/skills/buildbucket/scripts/bb_wrapper.py logs <build_id> <step_name> <log_name> [-o output_file]
+   vpython3 agents/skills/buildbucket/scripts/bb_wrapper.py logs <build_id> <step_name> <log_name> [-o output_file]
    ```
 
    - `step_name`: Name of the step (e.g., `compile`, `browser_tests`).
@@ -80,25 +84,25 @@ directory of this skill.
 ### Check CL try bot results (URL includes patchset)
 
 ```bash
-agents/skills/buildbucket/scripts/bb_wrapper.py cl https://chromium-review.googlesource.com/c/chromium/src/+/123456/3
+vpython3 agents/skills/buildbucket/scripts/bb_wrapper.py cl https://chromium-review.googlesource.com/c/chromium/src/+/123456/3
 ```
 
 ### Check all builds for a CL (no patchset specified)
 
 ```bash
-agents/skills/buildbucket/scripts/bb_wrapper.py cl https://chromium-review.googlesource.com/c/chromium/src/+/123456 --all
+vpython3 agents/skills/buildbucket/scripts/bb_wrapper.py cl https://chromium-review.googlesource.com/c/chromium/src/+/123456 --all
 ```
 
 ### Inspect steps of a failed build
 
 ```bash
-agents/skills/buildbucket/scripts/bb_wrapper.py steps 876543210987654321
+vpython3 agents/skills/buildbucket/scripts/bb_wrapper.py steps 876543210987654321
 ```
 
 ### Get the compile log
 
 ```bash
-agents/skills/buildbucket/scripts/bb_wrapper.py logs 876543210987654321 compile stdout
+vpython3 agents/skills/buildbucket/scripts/bb_wrapper.py logs 876543210987654321 compile stdout
 ```
 
 ## Best Practices
@@ -136,9 +140,9 @@ agents/skills/buildbucket/scripts/bb_wrapper.py logs 876543210987654321 compile 
   ```bash
   bb ls -cl https://chromium-review.googlesource.com/c/chromium/src/+/123456 -n 20
   ```
-- **Authentication**: If you see errors like `Login required: run bb auth-login` while
-  trying to use the `bb` tool, you cannot perform interactive authentication yourself.
-  You MUST ask the user to run `bb auth-login` in their terminal to authorize the tool.
+- **Authentication**: Run `bb auth-info` to proactively check if you are
+  logged into Buildbucket. If not, the script will prompt you to run
+  `bb auth-login`.
 - **Corp URLs**: If the URL contains `.git.corp.google.com`, replace it with `.googlesource.com`
   instead, as automated agents often fail to authenticate on the corp host.
 - **Do not** `cat` entire log files if they are large. The wrapper prints the
