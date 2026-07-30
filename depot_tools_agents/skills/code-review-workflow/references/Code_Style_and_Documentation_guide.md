@@ -1855,7 +1855,7 @@ typo.**
 
 **Don't:**
 
-*   Fix the preperation logic so it doens't fail.
+*   Fix the preparation logic so it doesn't fail.
 
 **Do:**
 
@@ -4793,7 +4793,7 @@ documentation.**
 
 **Don't:**
 
-*   This a placeholder to establish a folder to build the telemtry lib
+*   This a placeholder to establish a folder to build the telemetry lib
 
 **Do:**
 
