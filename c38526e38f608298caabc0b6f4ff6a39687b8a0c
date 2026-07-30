@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cbb241e5_380ee67a",
+        "filename": "agents/skills/buildbucket/SKILL.md",
+        "patchSetId": 6
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1241393
+      },
+      "writtenOn": "2026-07-30T21:56:03Z",
+      "side": 0,
+      "message": "Why delete?",
+      "range": {
+        "startLine": 19,
+        "startChar": 0,
+        "endLine": 24,
+        "endChar": 38
+      },
+      "revId": "c38526e38f608298caabc0b6f4ff6a39687b8a0c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
