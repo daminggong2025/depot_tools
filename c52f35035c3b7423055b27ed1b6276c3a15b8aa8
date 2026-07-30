@@ -35,6 +35,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ebf075cb_02fd9ee3",
+        "filename": "agents/skills/ios-simulator-screenshot-generator/SKILL.md",
+        "patchSetId": 6
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 4646555
+      },
+      "writtenOn": "2026-07-30T15:10:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d9a64327_a5cbe822",
+      "revId": "c52f35035c3b7423055b27ed1b6276c3a15b8aa8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "708cc017_899a4d4e",
@@ -58,6 +76,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "2f90c117_58fb97df",
+        "filename": "agents/skills/ios-simulator-screenshot-generator/scripts/generate_simulator_screenshots.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 4646555
+      },
+      "writtenOn": "2026-07-30T15:10:18Z",
+      "side": 1,
+      "message": "That\u0027s a good point. I added these optional flags:\n- the `--skip-install` flag skip reinstalling the app binary.\n- `--enable-features \u003cFEATURES\u003e` to pass Chromium experiment feature flags directly on launch \n- `--launch-arg \u003cARG\u003e` for passing arbitrary additional command line arguments to Chromium during launch.",
+      "parentUuid": "708cc017_899a4d4e",
+      "range": {
+        "startLine": 94,
+        "startChar": 0,
+        "endLine": 94,
+        "endChar": 67
+      },
+      "revId": "c52f35035c3b7423055b27ed1b6276c3a15b8aa8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "c1c59541_9328c385",
@@ -71,6 +113,30 @@
       "writtenOn": "2026-07-28T20:21:14Z",
       "side": 1,
       "message": "QQ: A user has 5s to go to the right screen with the intended string. Does the agent (Jetski) tell you something like, \"You have 5s to go to a screen with the string, and keep the screen there?\"",
+      "range": {
+        "startLine": 135,
+        "startChar": 0,
+        "endLine": 135,
+        "endChar": 17
+      },
+      "revId": "c52f35035c3b7423055b27ed1b6276c3a15b8aa8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9367d830_eab408c1",
+        "filename": "agents/skills/ios-simulator-screenshot-generator/scripts/generate_simulator_screenshots.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 135,
+      "author": {
+        "id": 4646555
+      },
+      "writtenOn": "2026-07-30T15:10:18Z",
+      "side": 1,
+      "message": "Now it does :) I updated `SKILL.md` to add explicit manual navigation guidance for AI agents.\n\nIn my tests I\u0027ve had situations where, without the sleep, a screenshot would capture a blank screen or partially rendered view instead of the loaded feature UI. I\u0027ve also added a configurable delay with `--delay \u003cSECONDS\u003e` CLI option and defaulted it to 5sec.",
+      "parentUuid": "c1c59541_9328c385",
       "range": {
         "startLine": 135,
         "startChar": 0,
