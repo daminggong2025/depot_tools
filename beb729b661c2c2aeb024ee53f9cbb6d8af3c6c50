@@ -16,6 +16,23 @@
       "message": "LGTM but I\u0027ll defer to others. We should probably publicize teh change to the virtual build path env variable so ppl can change their config",
       "revId": "beb729b661c2c2aeb024ee53f9cbb6d8af3c6c50",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "954d85d5_392954ec",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 12
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1381059
+      },
+      "writtenOn": "2026-07-30T21:31:08Z",
+      "side": 1,
+      "message": "defer to gavinmak@",
+      "revId": "beb729b661c2c2aeb024ee53f9cbb6d8af3c6c50",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
