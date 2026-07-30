@@ -16,6 +16,47 @@
       "message": "There\u0027s a massive diff if I run `git cl format` in this repo.  I\u0027m not sure what to do about that...",
       "revId": "33b9ce580711653e976523b0a18fd6d35eda57b3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "27eb6a56_5047e960",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-07-30T23:02:02Z",
+      "side": 1,
+      "message": "there was a recent large-scale formatting change: https://crrev.com/c/8129537. I recommend rebasing and trying again",
+      "parentUuid": "3a4fc632_ce6ec9b0",
+      "revId": "33b9ce580711653e976523b0a18fd6d35eda57b3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f2f47cb7_f94e55c2",
+        "filename": "gclient-new-workdir.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 276,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-07-30T23:02:02Z",
+      "side": 1,
+      "message": "nit: dedupe these two calls into a helper `_refresh_index_stat_cache(dest)`",
+      "range": {
+        "startLine": 276,
+        "startChar": 4,
+        "endLine": 276,
+        "endChar": 19
+      },
+      "revId": "33b9ce580711653e976523b0a18fd6d35eda57b3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
