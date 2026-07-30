@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "0a8666ca_4d494a68",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 4995882
+      },
+      "writtenOn": "2026-07-30T18:13:33Z",
+      "side": 1,
+      "message": "Yes. Some parts of the skills have spelling mistakes to tell the ai what not to do.",
+      "parentUuid": "3fa91c3e_15a2b7cc",
+      "range": {
+        "startLine": 11,
+        "startChar": 0,
+        "endLine": 11,
+        "endChar": 20
+      },
+      "revId": "ff3b16014f65e3f164409390f8b2440d3c636f9d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "bc092cd3_ae72aec9",
@@ -37,6 +61,30 @@
       "writtenOn": "2026-07-30T18:04:44Z",
       "side": 1,
       "message": "nit: remove quoting\n\nalso would be good to make this section a little more broad to include agents/ (ie how it\u0027s meant for Chromium devs/agents, whereas depot_tools_agents is for Gerrit review agents for maintainers of depot_tools)",
+      "range": {
+        "startLine": 42,
+        "startChar": 0,
+        "endLine": 44,
+        "endChar": 1
+      },
+      "revId": "ff3b16014f65e3f164409390f8b2440d3c636f9d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8b3e2c1e_ba19b7bd",
+        "filename": "README.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 4995882
+      },
+      "writtenOn": "2026-07-30T18:13:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "bc092cd3_ae72aec9",
       "range": {
         "startLine": 42,
         "startChar": 0,
