@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "9ed9e823_69a795a0",
+        "filename": "agents/skills/buildbucket/SKILL.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1118499
+      },
+      "writtenOn": "2026-07-30T21:49:21Z",
+      "side": 1,
+      "message": "thx. appreciate that.",
+      "parentUuid": "fa9eeefb_9d0419e4",
+      "range": {
+        "startLine": 27,
+        "startChar": 22,
+        "endLine": 27,
+        "endChar": 69
+      },
+      "revId": "84c2d1233fec4a93a82d02b23833f7b559fdfd13",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "24b1e0c5_41a7defc",
@@ -41,6 +65,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "30b79c1e_71805c61",
+        "filename": "agents/skills/luci-test-results/scripts/luci_triage.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1118499
+      },
+      "writtenOn": "2026-07-30T21:49:21Z",
+      "side": 1,
+      "message": "good call. i got \u0027em mixed up",
+      "parentUuid": "24b1e0c5_41a7defc",
+      "revId": "84c2d1233fec4a93a82d02b23833f7b559fdfd13",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "459f756c_bb731338",
@@ -54,6 +96,30 @@
       "writtenOn": "2026-07-30T20:38:22Z",
       "side": 1,
       "message": "No, these rpcs don\u0027t require bb auth.",
+      "range": {
+        "startLine": 200,
+        "startChar": 73,
+        "endLine": 201,
+        "endChar": 83
+      },
+      "revId": "84c2d1233fec4a93a82d02b23833f7b559fdfd13",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b28ab94d_2bdf8cab",
+        "filename": "agents/skills/luci-test-results/scripts/luci_triage.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 201,
+      "author": {
+        "id": 1118499
+      },
+      "writtenOn": "2026-07-30T21:49:21Z",
+      "side": 1,
+      "message": "Acknowledged",
+      "parentUuid": "459f756c_bb731338",
       "range": {
         "startLine": 200,
         "startChar": 73,
