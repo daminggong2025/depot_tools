@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e00e2e6a_2f0250d2",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1126674
+      },
+      "writtenOn": "2026-07-31T17:38:22Z",
+      "side": 1,
+      "message": "I\u0027ve hit this several times in the last few days. I never had \"git cl\" trigger, but groups search turned this up and I am very thankful!",
+      "revId": "99d255e39ab1d5a6a56fa19605bef619b3c0e31b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
