@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env vpython3
 # Copyright 2026 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -170,7 +170,11 @@ def fetch_log_snippet(res_name, raw=False):
         payload,
     )
     if not result or "artifacts" not in result:
-        return "No artifacts found."
+        return (
+            "No artifacts found. This can happen if the build failed early, "
+            "the logs were purged, or the build is private and requires authentication. "
+            "Try running 'bb auth-login' or 'bb log' in your terminal."
+        )
 
     # Prefer "Test Log" or similar
     artifacts = result["artifacts"]
