@@ -38,6 +38,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "7b67aab0_56619434",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1116294
+      },
+      "writtenOn": "2026-07-31T01:49:28Z",
+      "side": 1,
+      "message": "I still see a massive diff when running `git cl format`\u0027.   It appears be a mass \u0027\u0027 to \"\" string rewrite.",
+      "parentUuid": "27eb6a56_5047e960",
+      "revId": "33b9ce580711653e976523b0a18fd6d35eda57b3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "f2f47cb7_f94e55c2",
         "filename": "gclient-new-workdir.py",
         "patchSetId": 2
