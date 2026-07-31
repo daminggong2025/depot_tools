@@ -34,6 +34,24 @@
       "parentUuid": "fd02f8f4_25fe1a30",
       "revId": "bfd243395260d838bc94323783342e01109c3c07",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "19061340_49c9f6d7",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 8
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 4820673
+      },
+      "writtenOn": "2026-07-31T08:11:59Z",
+      "side": 1,
+      "message": "Hey, thanks for the feedback. I am already using multiple worktrees, but still encounter the issue. :)\n\nI don\u0027t really see your point about presubmits because they are broken anyway for multi-commit CL chains with `--no-squash` (which I use a lot), so the dirty changes are just like another (not pushed) commit on top of the chain.\n\nBut no need to merge this if you have concerns about that, I can also just keep it as a local patch for me.",
+      "parentUuid": "3d8adb88_f4d117c8",
+      "revId": "bfd243395260d838bc94323783342e01109c3c07",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
