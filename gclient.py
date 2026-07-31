@@ -4346,6 +4346,35 @@ def CMDstatus(parser, args):
     return client.RunOnDeps("status", args)
 
 
+def _GetSyncCachePath(client):
+    return os.path.join(client.root_dir, ".gclient_sync_cache.txt")
+
+
+def _CalculateSyncCacheHash(client):
+    """Calculates hash of .gclient and DEPS files for sync caching."""
+    hasher = hashlib.sha256()
+
+    config_filename = (
+        getattr(client._options, "config_filename", ".gclient") or ".gclient"
+    )
+    gclient_config_path = os.path.join(client.root_dir, config_filename)
+    if os.path.exists(gclient_config_path):
+        with open(gclient_config_path, "rb") as f:
+            hasher.update(f.read())
+
+    for dep in client.dependencies:
+        deps_path = os.path.join(client.root_dir, dep.name, dep.deps_file)
+        if not os.path.exists(deps_path):
+            deps_path = os.path.join(client.root_dir, dep.name, "DEPS")
+        if not os.path.exists(deps_path):
+            deps_path = os.path.join(client.root_dir, "DEPS")
+        if os.path.exists(deps_path):
+            with open(deps_path, "rb") as f:
+                hasher.update(f.read())
+
+    return hasher.hexdigest()
+
+
 @subcommand.epilog("""Examples:
   gclient sync
       update files from SCM according to current configuration,
@@ -4378,7 +4407,7 @@ def CMDsync(parser, args):
         "-f",
         "--force",
         action="store_true",
-        help="force update even for unchanged modules",
+        help="force update even for unchanged modules and bypass sync cache",
     )
     parser.add_option(
         "-n",
@@ -4601,10 +4630,37 @@ def CMDsync(parser, args):
     if options.verbose:
         client.PrintLocationAndContents()
 
+    cache_path = _GetSyncCachePath(client)
+    current_hash = _CalculateSyncCacheHash(client)
+    if (
+        not options.force
+        and not options.revisions
+        and not options.patch_refs
+        and os.path.exists(cache_path)
+    ):
+        try:
+            with open(cache_path, "r") as f:
+                cached_hash = f.read().strip()
+            if current_hash and current_hash == cached_hash:
+                print(
+                    "Already did gclient sync on this version, skipping because "
+                    "it shouldn't be necessary. Use --force to force a sync."
+                )
+                return 0
+        except IOError:
+            pass
+
     if gclient_utils.IsEnvCog():
         ret = client.RunOnDeps("runhooks", args)
     else:
         ret = client.RunOnDeps("update", args)
+
+    if ret == 0 and current_hash:
+        try:
+            with open(cache_path, "w") as f:
+                f.write(current_hash + "\n")
+        except IOError:
+            pass
     if options.output_json:
         slns = {}
         for d in client.subtree(True):
