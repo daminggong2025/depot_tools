@@ -34,6 +34,24 @@
       "parentUuid": "0b037625_fbdc1c0a",
       "revId": "a1f49d4569e956d95704e0252950cb12e3634367",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "65baa9ad_66bde075",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1167294
+      },
+      "writtenOn": "2026-07-31T17:24:39Z",
+      "side": 1,
+      "message": "I had no idea someone started this. How would I begin to opt-in to test the existing implementation? Was this feature announced anywhere?",
+      "parentUuid": "dfd764ce_515b97c2",
+      "revId": "a1f49d4569e956d95704e0252950cb12e3634367",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
