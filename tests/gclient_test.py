@@ -76,7 +76,7 @@ class SCMMock(object):
         self.url = parsed_url
 
     def RunCommand(self, command, options, args, file_list):
-        self.unit_test.assertEqual("None", command)
+        self.unit_test.assertIn(command, ("None", "update"))
         self.unit_test.processed.put((self.name, self.url))
 
     # pylint: disable=no-self-use
@@ -2024,6 +2024,62 @@ class GclientTest(trial_dir.TestCase):
             expected_skip_sync_revisions,
             client._EnforceSkipSyncRevisions(patch_refs),
         )
+
+    def testCMDsyncCaching(self):
+        write(
+            ".gclient",
+            "solutions = [\n"
+            '  { "name": "foo", "url": "svn://example.com/foo" },\n'
+            "]",
+        )
+        write(
+            os.path.join("foo", "DEPS"),
+            'deps = {\n  "foo/dir1": "svn://example.com/dir1",\n}',
+        )
+
+        # Initial sync executes and creates cache file
+        gclient.CMDsync(gclient.OptionParser(), [])
+        cache_file = os.path.join(self.root_dir, ".gclient_sync_cache.txt")
+        self.assertTrue(os.path.exists(cache_file))
+        with open(cache_file, "r") as f:
+            first_hash = f.read().strip()
+        self.assertTrue(len(first_hash) > 0)
+
+        # Clear processed list
+        self._get_processed()
+
+        # Second sync with no changes skips execution
+        ret = gclient.CMDsync(gclient.OptionParser(), [])
+        self.assertEqual(0, ret)
+        self.assertEqual([], self._get_processed())
+
+        # Sync with --force forces execution even without changes
+        gclient.CMDsync(gclient.OptionParser(), ["--force"])
+        self.assertEqual(
+            [
+                ("foo", "svn://example.com/foo"),
+                ("foo/dir1", "svn://example.com/dir1"),
+            ],
+            self._get_processed(),
+        )
+        self._get_processed()
+
+        # Update DEPS -> sync executes and updates cache
+        write(
+            os.path.join("foo", "DEPS"),
+            'deps = {\n  "foo/dir1": "svn://example.com/dir1_updated",\n}',
+        )
+        gclient.CMDsync(gclient.OptionParser(), [])
+        self.assertEqual(
+            [
+                ("foo", "svn://example.com/foo"),
+                ("foo/dir1", "svn://example.com/dir1_updated"),
+            ],
+            self._get_processed(),
+        )
+        with open(cache_file, "r") as f:
+            second_hash = f.read().strip()
+        self.assertNotEqual(first_hash, second_hash)
 
 
 class MergeVarsTest(unittest.TestCase):
