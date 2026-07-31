@@ -22,6 +22,30 @@
       },
       "revId": "c38526e38f608298caabc0b6f4ff6a39687b8a0c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "15c6678d_e873a70a",
+        "filename": "agents/skills/buildbucket/SKILL.md",
+        "patchSetId": 6
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1118499
+      },
+      "writtenOn": "2026-07-31T17:50:43Z",
+      "side": 0,
+      "message": "yeah i was thinking this skill already lists all the functionality already so a tldr at the top doesn\u0027t have as much value for a model, but...   also no biggie. restoring it!",
+      "parentUuid": "cbb241e5_380ee67a",
+      "range": {
+        "startLine": 19,
+        "startChar": 0,
+        "endLine": 24,
+        "endChar": 38
+      },
+      "revId": "c38526e38f608298caabc0b6f4ff6a39687b8a0c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

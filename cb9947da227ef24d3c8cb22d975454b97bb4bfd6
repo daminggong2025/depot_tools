@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "14fc2531_638c8257",
+        "filename": "agents/skills/buildbucket/SKILL.md",
+        "patchSetId": 6
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1118499
+      },
+      "writtenOn": "2026-07-31T17:50:43Z",
+      "side": 1,
+      "message": "yeah good call. i appreciate you challenging this.",
+      "parentUuid": "29576b06_22a13963",
+      "range": {
+        "startLine": 24,
+        "startChar": 1,
+        "endLine": 26,
+        "endChar": 12
+      },
+      "revId": "cb9947da227ef24d3c8cb22d975454b97bb4bfd6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d0415886_8825f87a",
@@ -47,6 +71,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "c2ef7bcc_6a363504",
+        "filename": "agents/skills/luci-test-results/SKILL.md",
+        "patchSetId": 6
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1118499
+      },
+      "writtenOn": "2026-07-31T17:50:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d0415886_8825f87a",
+      "range": {
+        "startLine": 14,
+        "startChar": 38,
+        "endLine": 19,
+        "endChar": 65
+      },
+      "revId": "cb9947da227ef24d3c8cb22d975454b97bb4bfd6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "599904c0_93293208",
@@ -60,6 +108,24 @@
       "writtenOn": "2026-07-30T21:56:03Z",
       "side": 1,
       "message": "Still mentioning bb, but it might be right? If you query an internal builder and you require luci-auth for that, isn\u0027t there another more appropriate command to run? Because bb auth-login would actually work, I think, but it would be good if it doesn\u0027t get run because some build failure early, or logs got purged. But this might just be ok if bb auth-login is actually usable for this situation and is always available from depot-tools.",
+      "revId": "cb9947da227ef24d3c8cb22d975454b97bb4bfd6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "256a7041_26dc420f",
+        "filename": "agents/skills/luci-test-results/scripts/luci_triage.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 176,
+      "author": {
+        "id": 1118499
+      },
+      "writtenOn": "2026-07-31T17:50:43Z",
+      "side": 1,
+      "message": "Good call. I poked into this\n\n1.  Yes there\u0027s a bunch of pRPC calls to LUCI services that dont require credentials (confirmed with a cleared LUCI_CONTEXT and isolated empty HOME)\n2. Cuz of that, the proactive \u0027bb auth-info\u0027 i added to the start of bb_wrapper scripts didnt make sense. I dropped it.\n3. Now we check bb auth-info on failures and append the suggestion for auth-login if it makes sense.\n\nAlso.. on why `bb auth-login` in the first place?   While both bb and the prpc binary share the same token store... bb auth-login is the most userfriendly.  luci-auth login requires manually passing the exect scopes string. \n\nAnyway. I think were we ended up is great. Low-friction but helpful in the case of failure. Mostly :)   \n\nappreciate this!",
+      "parentUuid": "599904c0_93293208",
       "revId": "cb9947da227ef24d3c8cb22d975454b97bb4bfd6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
