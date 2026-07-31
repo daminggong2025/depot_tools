@@ -128,6 +128,24 @@
       "parentUuid": "599904c0_93293208",
       "revId": "cb9947da227ef24d3c8cb22d975454b97bb4bfd6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ae054761_a25f3dcc",
+        "filename": "agents/skills/luci-test-results/scripts/luci_triage.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 176,
+      "author": {
+        "id": 1241393
+      },
+      "writtenOn": "2026-07-31T18:03:21Z",
+      "side": 1,
+      "message": "Sounds good, thanks a lot for the patch! My agents usually get stuck in bb and then take a while to pivot to luci-test-results silently, so this will hopefully guide them better through auth!",
+      "parentUuid": "256a7041_26dc420f",
+      "revId": "cb9947da227ef24d3c8cb22d975454b97bb4bfd6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
