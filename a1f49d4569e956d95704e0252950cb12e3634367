@@ -16,6 +16,24 @@
       "message": "Hey Gavin, would you be willing to accept this feature?",
       "revId": "a1f49d4569e956d95704e0252950cb12e3634367",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "dfd764ce_515b97c2",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-07-31T16:47:59Z",
+      "side": 1,
+      "message": "I agree with the principle, but not in this form for a few reasons including: sync flags aren\u0027t part of the cache key, --output-json is skipped on cache hit, gclient sync no longer repairs a broken checkout, etc.\n\nI remember there was a previous \"no sync\" effort that tried to do the same thing, but skips per-dep fetches and runs the full sync pipeline. see https://crbug.com/40230011 and https://source.chromium.org/chromium/chromium/tools/depot_tools/+/main:gclient.py;l\u003d2306-2360;drc\u003df394ab2c993283e94680ca13db98b99927868e98 \n\nI\u0027d recommend building on top of that rather than adding a parallel mechanism and keep it opt-in",
+      "parentUuid": "0b037625_fbdc1c0a",
+      "revId": "a1f49d4569e956d95704e0252950cb12e3634367",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
