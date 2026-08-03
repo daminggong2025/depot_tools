@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "711900a4_f881b27f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 4879783
+      },
+      "writtenOn": "2026-08-03T01:33:37Z",
+      "side": 1,
+      "message": "Israel Aparecido Lima de Araújo",
+      "revId": "9d3c0b7e7eb681664a5e911ab7b6f21177b4be07",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
