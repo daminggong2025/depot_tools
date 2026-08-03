@@ -20,6 +20,7 @@ from download_from_google_storage import Gsutil
 import gclient_utils
 import lockfile
 import metrics
+import scm
 import subcommand
 
 # Analogous to gc.autopacklimit git config.
@@ -393,7 +394,17 @@ class Mirror(object):
             tempdir = tempfile.mkdtemp(
                 prefix="_cache_tmp", dir=self.GetCachePath()
             )
-            self.RunGit(["init", "-b", "main", "--bare"], cwd=tempdir)
+            object_format = scm.GIT.GetRemoteObjectFormat(self.url)
+            self.RunGit(
+                [
+                    "init",
+                    "-b",
+                    "main",
+                    f"--object-format={object_format}",
+                    "--bare",
+                ],
+                cwd=tempdir,
+            )
             self.print(
                 "Downloading files in %s/* into %s." % (latest_dir, tempdir)
             )
@@ -574,7 +585,14 @@ class Mirror(object):
                 # 1. No previous cache.
                 # 2. Project doesn't have a bootstrap folder.
                 # Start with a bare git dir.
-                self.RunGit(["init", "--bare"])
+                object_format = scm.GIT.GetRemoteObjectFormat(self.url)
+                self.RunGit(
+                    [
+                        "init",
+                        f"--object-format={object_format}",
+                        "--bare",
+                    ]
+                )
                 with open(self._init_sentient_file, "w"):
                     # Create sentient file
                     pass

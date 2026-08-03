@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import abc
 import contextlib
+import logging
 import os
 import pathlib
 import platform
@@ -968,6 +969,35 @@ class GIT(object):
             pass
         # Return default branch
         return "refs/remotes/%s/main" % remote
+
+    @staticmethod
+    def GetRemoteObjectFormat(url: str) -> str:
+        """Returns the object format ('sha1' or 'sha256') advertised by a remote."""
+        env = os.environ.copy()
+        env["GIT_TERMINAL_PROMPT"] = "0"
+        try:
+            resp = GIT.Capture(["ls-remote", "--quiet", url], env=env)
+        except subprocess2.CalledProcessError as e:
+            logging.warning(
+                "Failed to probe remote object format for %s; "
+                "defaulting to sha1. Error: %s",
+                url,
+                e,
+            )
+            return "sha1"
+        if isinstance(resp, str):
+            for line in resp.splitlines():
+                oid = line.split("\t", 1)[0].strip()
+                if len(oid) == 64:
+                    return "sha256"
+                if len(oid) == 40:
+                    return "sha1"
+        logging.warning(
+            "Could not determine remote object format for %s from "
+            "ls-remote output; defaulting to sha1.",
+            url,
+        )
+        return "sha1"
 
     @staticmethod
     def GetBranch(cwd):
