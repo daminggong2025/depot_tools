@@ -54,6 +54,55 @@ class GitCacheTest(unittest.TestCase):
         git = "git.bat" if sys.platform == "win32" else "git"
         subprocess.check_call([git] + cmd, cwd=cwd)
 
+    def _cacheHasTag(self, cache_dir, tag="TAG"):
+        git = "git.bat" if sys.platform == "win32" else "git"
+        return (
+            subprocess.call(
+                [
+                    git,
+                    "--git-dir",
+                    cache_dir,
+                    "show-ref",
+                    "--verify",
+                    "--quiet",
+                    "refs/tags/" + tag,
+                ]
+            )
+            == 0
+        )
+
+    def _makeBareMirrorWithHead(self, head_ref):
+        """Creates the mirror as a bare repo with HEAD pointing at head_ref."""
+        mirror = git_cache.Mirror(self.origin_dir)
+        self.git(["init", "-q", "--bare", mirror.mirror_path])
+        self.git(
+            ["--git-dir", mirror.mirror_path, "symbolic-ref", "HEAD", head_ref]
+        )
+        return mirror
+
+    @mock.patch("git_cache.Mirror.bootstrap_repo", return_value=True)
+    def testEnsureBootstrappedHandlesStaleMasterHead(self, _mock_bootstrap):
+        # HEAD is read via git (symbolic-ref), so a cache left pointing at
+        # refs/heads/master (with no such ref) is detected as stale and nuked,
+        # while a healthy refs/heads/main cache is kept -- regardless of the
+        # on-disk ref backend (loose, packed, or reftable).
+        cases = [
+            # (head_ref, expect_deleted)
+            ("refs/heads/master", True),
+            ("refs/heads/main", False),
+        ]
+        for head_ref, expect_deleted in cases:
+            with self.subTest(head_ref=head_ref):
+                mirror = self._makeBareMirrorWithHead(head_ref)
+                with mock.patch(
+                    "git_cache.gclient_utils.rmtree"
+                ) as mock_rmtree:
+                    mirror._ensure_bootstrapped(None, True, False)
+                if expect_deleted:
+                    mock_rmtree.assert_any_call(mirror.mirror_path)
+                else:
+                    mock_rmtree.assert_not_called()
+
     def testParseFetchSpec(self):
         testData = [
             ([], []),
@@ -336,7 +385,7 @@ class GitCacheTest(unittest.TestCase):
         cache_dir = os.path.join(
             self.cache_dir, mirror.UrlToCacheDir(self.origin_dir)
         )
-        self.assertTrue(os.path.exists(cache_dir + "/refs/tags/TAG"))
+        self.assertTrue(self._cacheHasTag(cache_dir))
 
     def testPopulateFetchWithoutTags(self):
         self._makeGitRepoWithTag()
@@ -348,7 +397,7 @@ class GitCacheTest(unittest.TestCase):
         cache_dir = os.path.join(
             self.cache_dir, mirror.UrlToCacheDir(self.origin_dir)
         )
-        self.assertFalse(os.path.exists(cache_dir + "/refs/tags/TAG"))
+        self.assertFalse(self._cacheHasTag(cache_dir))
 
     def testPopulateResetFetchConfigEmptyFetchConfig(self):
         self.git(["init", "-q"])
