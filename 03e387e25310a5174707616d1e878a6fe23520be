@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1b326dcc_c0029c1e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 4343019
+      },
+      "writtenOn": "2026-08-03T14:05:09Z",
+      "side": 1,
+      "message": "CL to merge it into chrome experimental directory: https://critique.corp.google.com/cl/956645001",
+      "revId": "03e387e25310a5174707616d1e878a6fe23520be",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
