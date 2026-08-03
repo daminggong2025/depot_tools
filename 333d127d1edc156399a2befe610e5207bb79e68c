@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7ae6ffa3_282fe9cf",
+        "filename": "tests/presubmit_unittest.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 4052,
+      "author": {
+        "id": 1429892
+      },
+      "writtenOn": "2026-08-03T03:03:01Z",
+      "side": 1,
+      "message": "Super nit: \"1 files\"",
+      "range": {
+        "startLine": 4052,
+        "startChar": 42,
+        "endLine": 4052,
+        "endChar": 49
+      },
+      "revId": "333d127d1edc156399a2befe610e5207bb79e68c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
