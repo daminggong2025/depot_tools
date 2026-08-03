@@ -1107,6 +1107,33 @@ class CachedGitConfigStateTest(unittest.TestCase):
         )
 
 
+class GetRemoteObjectFormatTest(unittest.TestCase):
+    """Tests for scm.GIT.GetRemoteObjectFormat."""
+
+    @mock.patch("scm.GIT.Capture")
+    def testGetRemoteObjectFormat(self, mockCapture):
+        # Fields: subtest label, Capture return value, Capture side effect,
+        # expected object format, and whether a fallback warning is expected.
+        # A recognizable 40/64-char OID is detected silently; anything else
+        # (empty output or a probe error) falls back to sha1 with a warning.
+        cases = [
+            ("sha1", f"{'a' * 40}\trefs/heads/main", None, "sha1", False),
+            ("sha256", f"{'a' * 64}\trefs/heads/main", None, "sha256", False),
+            ("empty output", "", None, "sha1", True),
+            ("probe error", None, callError(cmd="git ls-remote"), "sha1", True),
+        ]
+        for label, return_value, side_effect, expected, warns in cases:
+            with self.subTest(label):
+                mockCapture.return_value = return_value
+                mockCapture.side_effect = side_effect
+                assert_logs = self.assertLogs if warns else self.assertNoLogs
+                with assert_logs(level="WARNING"):
+                    self.assertEqual(
+                        scm.GIT.GetRemoteObjectFormat("https://example/repo"),
+                        expected,
+                    )
+
+
 if __name__ == "__main__":
     if "-v" in sys.argv:
         logging.basicConfig(level=logging.DEBUG)
