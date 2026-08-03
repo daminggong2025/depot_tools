@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "4b4919a3_94523131",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 16
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-08-03T05:24:22Z",
+      "side": 1,
+      "message": "We have a lot of scripts that are not vpython3 and are not planning to, for example JJ is using system python3 unwillingly. The path of least resistance instead of moving all of them and educating devs, simply replace python3 utilizing the fact that depot_tools is already fist in the PATH.",
+      "parentUuid": "23bd360e_f1f3a41d",
+      "revId": "be1b37e6ede33c933836202735c8c1839bf476c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "5b081e79_ad122521",
@@ -31,6 +49,30 @@
       "writtenOn": "2026-08-03T05:19:58Z",
       "side": 1,
       "message": "Why does it need to have nested wrappers? What\u0027s wrong with depot_tools/{python3, python3.bat} wrapppers to call the CIPD Python directly?",
+      "range": {
+        "startLine": 13,
+        "startChar": 0,
+        "endLine": 15,
+        "endChar": 59
+      },
+      "revId": "be1b37e6ede33c933836202735c8c1839bf476c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7ec0a887_f2c7c3e7",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 16
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-08-03T05:24:22Z",
+      "side": 1,
+      "message": "We need to replicate the flag parsing logic for CIPD python elision which is not the best option.",
+      "parentUuid": "5b081e79_ad122521",
       "range": {
         "startLine": 13,
         "startChar": 0,
