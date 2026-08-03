@@ -28,6 +28,25 @@ $VerifiedPlatform linux-mips64 linux-mips64le linux-mipsle
 TEST_TIMEOUT_S = 450  # 7m 30s
 
 
+def CheckRuff(input_api, output_api):
+    """Run Ruff linter on supported python files."""
+    files_to_check = [
+        r"^mcp/.*\.py$",
+        r"^[^/]*\.py$",
+        r"^testing_support/[^/]*\.py$",
+        r"^tests/[^/]*\.py$",
+        r"^recipe_modules/.*\.py$",  # Allow recursive search in recipe modules.
+    ]
+    return input_api.RunTests(
+        input_api.canned_checks.GetRuff(
+            input_api,
+            output_api,
+            files_to_check=files_to_check,
+            files_to_skip=_GetPylintFilesToSkip(input_api),
+        )
+    )
+
+
 def CheckPylint(input_api, output_api):
     """Run Pylint 3.X on supported python files."""
     files_to_check = [
