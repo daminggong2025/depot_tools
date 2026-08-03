@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9679fb91_7591ba5f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1493367
+      },
+      "writtenOn": "2026-08-03T10:55:04Z",
+      "side": 1,
+      "message": "seeing issues on Windows when running presubmit after this was landed:\n\n```\n[E2026-08-03T17:50:59.518566+07:00 56208 0 builder.go:224]\nerror: Access is denied. (os error 5) at path \"C:\\\\WINDOWS\\\\.tmplxbYdm\"\nCreating virtualenv via UV...\nTraceback (most recent call last):\n  File \"C:\\Users\\user\\AppData\\Local\\vpython-root.0\\store\\bootstrap+8gemeien42601m5aqnba1n89qs\\contents\\uv_bootstrap.py\", line 258, in \u003cmodule\u003e\n    sys.exit(main())\n             ^^^^^^\n  File \"C:\\Users\\user\\AppData\\Local\\vpython-root.0\\store\\bootstrap+8gemeien42601m5aqnba1n89qs\\contents\\uv_bootstrap.py\", line 175, in main\n    subprocess.check_call(venv_cmd, env\u003denv)\n  File \"C:\\Users\\user\\AppData\\Local\\vpython-root.0\\store\\cpython+mi7dcjml3vvcqgcfj26qe857pk\\contents\\bin\\Lib\\subprocess.py\", line 413, in check_call\n    raise CalledProcessError(retcode, cmd)\nsubprocess.CalledProcessError: Command \u0027[\u0027C:\\\\Users\\\\user\\\\AppData\\\\Local\\\\vpython-root.0\\\\store\\\\uv+ob76e57n3h8j34beplui6d0cg8\\\\contents\\\\uv.exe\u0027, \u0027venv\u0027, \u0027C:\\\\Users\\\\user\\\\AppData\\\\Local\\\\vpython-root.0\\\\store\\\\uv_venv-0qoib9lru5m47q9nuh3vg0qadk\\\\contents\u0027, \u0027--python\u0027, \u0027C:\\\\Users\\\\user\\\\AppData\\\\Local\\\\vpython-root.0\\\\store\\\\cpython+mi7dcjml3vvcqgcfj26qe857pk\\\\contents\\\\bin\\\\python3.exe\u0027]\u0027 returned non-zero exit status 2.\n```\n\ntemp vars are fine:\n```\nTEMP\u003dC:\\Users\\user\\AppData\\Local\\Temp\nTMP\u003dC:\\Users\\user\\AppData\\Local\\Temp\n```\n\nreverting depot_tools to a previous commit fixes the issue.",
+      "revId": "db395c47f653b18d647fd238e3fd0b1487da793b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
