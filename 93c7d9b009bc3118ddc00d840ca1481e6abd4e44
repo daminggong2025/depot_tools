@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "60d6d439_e27069fc",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-08-03T03:52:08Z",
+      "side": 1,
+      "message": "Will need to wait for the autoroll for the presubmits to pass",
+      "revId": "93c7d9b009bc3118ddc00d840ca1481e6abd4e44",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
