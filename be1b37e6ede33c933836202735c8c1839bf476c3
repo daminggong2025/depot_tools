@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "23bd360e_f1f3a41d",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 16
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2026-08-03T05:19:58Z",
+      "side": 1,
+      "message": "What is the motivation of doing this now?",
+      "revId": "be1b37e6ede33c933836202735c8c1839bf476c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5b081e79_ad122521",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 16
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2026-08-03T05:19:58Z",
+      "side": 1,
+      "message": "Why does it need to have nested wrappers? What\u0027s wrong with depot_tools/{python3, python3.bat} wrapppers to call the CIPD Python directly?",
+      "range": {
+        "startLine": 13,
+        "startChar": 0,
+        "endLine": 15,
+        "endChar": 59
+      },
+      "revId": "be1b37e6ede33c933836202735c8c1839bf476c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
