@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "80aa3701_3daf6c86",
+        "filename": "python3",
+        "patchSetId": 20
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2026-08-04T05:51:32Z",
+      "side": 1,
+      "message": "Is it possible to unify these conditional checks?",
+      "range": {
+        "startLine": 10,
+        "startChar": 0,
+        "endLine": 16,
+        "endChar": 31
+      },
+      "fixSuggestions": [
+        {
+          "fixId": "661c075e_856d46eb",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "python3",
+              "range": {
+                "startLine": 10,
+                "startChar": 0,
+                "endLine": 15,
+                "endChar": 0
+              },
+              "replacement": ""
+            },
+            {
+              "path": "python3",
+              "range": {
+                "startLine": 16,
+                "startChar": 0,
+                "endLine": 17,
+                "endChar": 0
+              },
+              "replacement": "if [[ -z \"$DEPOT_TOOLS_PYTHON_BYPASS\" || \"$DEPOT_TOOLS_PYTHON_BYPASS\" \u003d\u003d \"0\" ]]; then\n"
+            }
+          ]
+        }
+      ],
+      "revId": "5b03083ecc4e3921b8fe5d07fef1ac15f6f737b9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ac9c639c_5b162579",
+        "filename": "tests/python3_test.py",
+        "patchSetId": 20
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2026-08-04T05:51:32Z",
+      "side": 1,
+      "message": "This is redundant?",
+      "range": {
+        "startLine": 101,
+        "startChar": 39,
+        "endLine": 101,
+        "endChar": 45
+      },
+      "fixSuggestions": [
+        {
+          "fixId": "67df4b02_d551b087",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "tests/python3_test.py",
+              "range": {
+                "startLine": 101,
+                "startChar": 0,
+                "endLine": 102,
+                "endChar": 0
+              },
+              "replacement": "    env.pop(\"DEPOT_TOOLS_PYTHON_BYPASS\")\n"
+            }
+          ]
+        }
+      ],
+      "revId": "5b03083ecc4e3921b8fe5d07fef1ac15f6f737b9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
