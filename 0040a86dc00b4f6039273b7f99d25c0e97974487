@@ -1,0 +1,113 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c4e6752e_28e33c40",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-08-04T17:05:59Z",
+      "side": 1,
+      "message": "not for this CL but worth talking about is how git_cache gets to sha256. we maintain a recipe that uploads a bare repo so builds can use those objects instead of cloning. when remote switches to sha256 those builds will break (sha mismatch between bundle built from sha1 and fetch using sha256). right now, builds will wipe and redownload the bundle (broken since they\u0027re built from sha1), but this should self-recover as our bundle-uploader rebuilds with sha256. we have a followup CL tell builds to skip the redownload step if sha mismatch and clone fresh from remote",
+      "revId": "0040a86dc00b4f6039273b7f99d25c0e97974487",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1cc87216_fe4e8156",
+        "filename": "git_cache.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 407,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-08-04T17:05:59Z",
+      "side": 1,
+      "message": "nit: do we need this change? since we download from GCS into the tempdir anyway so object-format would get wiped",
+      "range": {
+        "startLine": 397,
+        "startChar": 12,
+        "endLine": 407,
+        "endChar": 13
+      },
+      "revId": "0040a86dc00b4f6039273b7f99d25c0e97974487",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "185e727e_c02f639e",
+        "filename": "git_cache.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 594,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-08-04T17:05:59Z",
+      "side": 1,
+      "message": "this is reachable with an existing mirror, and errors if object_format doesn\u0027t match the existing one",
+      "range": {
+        "startLine": 590,
+        "startChar": 20,
+        "endLine": 594,
+        "endChar": 21
+      },
+      "revId": "0040a86dc00b4f6039273b7f99d25c0e97974487",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "eeb0dc21_1ac6aaa8",
+        "filename": "scm.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 979,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-08-04T17:05:59Z",
+      "side": 1,
+      "message": "ls-remote will add a significant amount of latency, on top of having to download a bunch of refs\n```\ntime git ls-remote --quiet sso://chromium/chromium/src.git\n...\ndownloading all refs\n...\ngit ls-remote --quiet sso://chromium/chromium/src.git  7.96s user 32.47s system 71% cpu 56.893 total\n```\n\ngiven that, according to the commit message `remotes stay SHA-1 for the foreseeable future`, and we always fall back to sha1 anyway, the ls-remote step seems to add overhead without any upside. eventually, when GoB supports https://git-scm.com/docs/protocol-v2#_object_format we should use that instead to probe remote since it\u0027s significantlyfaster\n\nfor now, I think it makes sense to return \"sha1\" always, with a comment explaining the situation, and a TODO (linking to the depot_tools git 3.0 support bug) to revisit when remotes start migrating. for reference here\u0027s the GoB tracking object-format work: http://b/534009949",
+      "range": {
+        "startLine": 979,
+        "startChar": 33,
+        "endLine": 979,
+        "endChar": 42
+      },
+      "revId": "0040a86dc00b4f6039273b7f99d25c0e97974487",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5034ac5c_1e40a425",
+        "filename": "tests/git_setup_test.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-08-04T17:05:59Z",
+      "side": 1,
+      "message": "2026",
+      "range": {
+        "startLine": 2,
+        "startChar": 12,
+        "endLine": 2,
+        "endChar": 16
+      },
+      "revId": "0040a86dc00b4f6039273b7f99d25c0e97974487",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
