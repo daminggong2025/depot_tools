@@ -52,6 +52,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "46a9e722_bf3dc42a",
+        "filename": "python3",
+        "patchSetId": 20
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-08-04T05:57:31Z",
+      "side": 1,
+      "message": "Good point",
+      "parentUuid": "80aa3701_3daf6c86",
+      "range": {
+        "startLine": 10,
+        "startChar": 0,
+        "endLine": 16,
+        "endChar": 31
+      },
+      "revId": "5b03083ecc4e3921b8fe5d07fef1ac15f6f737b9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "ac9c639c_5b162579",
@@ -89,6 +113,30 @@
           ]
         }
       ],
+      "revId": "5b03083ecc4e3921b8fe5d07fef1ac15f6f737b9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "58ea9c6f_53b59a89",
+        "filename": "tests/python3_test.py",
+        "patchSetId": 20
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-08-04T05:57:31Z",
+      "side": 1,
+      "message": "No, if no default value is provided and the key is missing this will crash.",
+      "parentUuid": "ac9c639c_5b162579",
+      "range": {
+        "startLine": 101,
+        "startChar": 39,
+        "endLine": 101,
+        "endChar": 45
+      },
       "revId": "5b03083ecc4e3921b8fe5d07fef1ac15f6f737b9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
