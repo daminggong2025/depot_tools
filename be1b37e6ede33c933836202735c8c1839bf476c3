@@ -81,6 +81,30 @@
       },
       "revId": "be1b37e6ede33c933836202735c8c1839bf476c3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "49dd15eb_6ca9aec6",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 16
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2026-08-04T05:50:53Z",
+      "side": 1,
+      "message": "My question is why do we need to keep the python-bin/{python3, python.bat}?",
+      "parentUuid": "7ec0a887_f2c7c3e7",
+      "range": {
+        "startLine": 13,
+        "startChar": 0,
+        "endLine": 15,
+        "endChar": 59
+      },
+      "revId": "be1b37e6ede33c933836202735c8c1839bf476c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
