@@ -125,6 +125,23 @@
       },
       "revId": "0040a86dc00b4f6039273b7f99d25c0e97974487",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b9d64ece_7c63b3d7",
+        "filename": "tests/git_setup_test.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 5061116
+      },
+      "writtenOn": "2026-08-04T20:31:33Z",
+      "side": 1,
+      "message": "great tests!",
+      "revId": "0040a86dc00b4f6039273b7f99d25c0e97974487",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
