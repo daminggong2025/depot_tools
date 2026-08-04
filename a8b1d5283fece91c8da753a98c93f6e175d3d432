@@ -22,6 +22,30 @@
       },
       "revId": "a8b1d5283fece91c8da753a98c93f6e175d3d432",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1807b8d8_621b32d5",
+        "filename": "bootstrap/python3.bat",
+        "patchSetId": 19
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-08-04T05:44:06Z",
+      "side": 1,
+      "message": "Yes, you\u0027re right, it\u0027s besides point to modify this file. Left the changes only with python3s in the root.",
+      "parentUuid": "0d7debd5_31e13f20",
+      "range": {
+        "startLine": 25,
+        "startChar": 0,
+        "endLine": 26,
+        "endChar": 26
+      },
+      "revId": "a8b1d5283fece91c8da753a98c93f6e175d3d432",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

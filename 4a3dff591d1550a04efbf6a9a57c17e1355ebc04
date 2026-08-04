@@ -72,6 +72,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "7116dc14_6cdfb916",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 17
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-08-04T05:44:06Z",
+      "side": 1,
+      "message": "That sounds good",
+      "parentUuid": "c1ac1ad0_8b204514",
+      "range": {
+        "startLine": 11,
+        "startChar": 9,
+        "endLine": 11,
+        "endChar": 53
+      },
+      "revId": "4a3dff591d1550a04efbf6a9a57c17e1355ebc04",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "dd93cb65_0c9b16e6",
