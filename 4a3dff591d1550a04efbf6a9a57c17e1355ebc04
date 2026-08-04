@@ -50,6 +50,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "c1ac1ad0_8b204514",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 17
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2026-08-04T05:28:51Z",
+      "side": 1,
+      "message": "Can we just use DEPOT_TOOLS_PYTHON_BYPASS then? I think it is fine to ask users not to use vpython if they don\u0027t want to use vpython unless there are concrete requirement to have both variables to control wrapper behavior.",
+      "parentUuid": "80dc7681_a5887b81",
+      "range": {
+        "startLine": 11,
+        "startChar": 9,
+        "endLine": 11,
+        "endChar": 53
+      },
+      "revId": "4a3dff591d1550a04efbf6a9a57c17e1355ebc04",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "dd93cb65_0c9b16e6",
         "filename": "ninja",
         "patchSetId": 17
