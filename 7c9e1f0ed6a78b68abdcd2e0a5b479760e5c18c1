@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a52cb2a2_0a9fb4d2",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-08-04T14:40:30Z",
+      "side": 1,
+      "message": "also please update https://source.chromium.org/chromium/chromium/tools/depot_tools/+/main:recipes/recipe_modules/bot_update/resources/bot_update.py;l\u003d53;drc\u003df394ab2c993283e94680ca13db98b99927868e98",
+      "revId": "7c9e1f0ed6a78b68abdcd2e0a5b479760e5c18c1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d08f71c2_4c82d888",
+        "filename": "git_cl.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-08-04T14:40:30Z",
+      "side": 1,
+      "message": "please update",
+      "range": {
+        "startLine": 96,
+        "startChar": 0,
+        "endLine": 96,
+        "endChar": 70
+      },
+      "revId": "7c9e1f0ed6a78b68abdcd2e0a5b479760e5c18c1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e4fb085b_b07a79c9",
+        "filename": "tests/git_cl_test.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 8541,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-08-04T14:40:30Z",
+      "side": 1,
+      "message": "nit: keep the `\"`s for consistency",
+      "range": {
+        "startLine": 8541,
+        "startChar": 12,
+        "endLine": 8541,
+        "endChar": 98
+      },
+      "revId": "7c9e1f0ed6a78b68abdcd2e0a5b479760e5c18c1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
