@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "2194e396_02830ad5",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 4995882
+      },
+      "writtenOn": "2026-08-04T19:02:42Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a52cb2a2_0a9fb4d2",
+      "revId": "7c9e1f0ed6a78b68abdcd2e0a5b479760e5c18c1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d08f71c2_4c82d888",
@@ -41,6 +59,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "d34ca723_d09906d8",
+        "filename": "git_cl.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 4995882
+      },
+      "writtenOn": "2026-08-04T19:02:42Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d08f71c2_4c82d888",
+      "range": {
+        "startLine": 96,
+        "startChar": 0,
+        "endLine": 96,
+        "endChar": 70
+      },
+      "revId": "7c9e1f0ed6a78b68abdcd2e0a5b479760e5c18c1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e4fb085b_b07a79c9",
@@ -54,6 +96,30 @@
       "writtenOn": "2026-08-04T14:40:30Z",
       "side": 1,
       "message": "nit: keep the `\"`s for consistency",
+      "range": {
+        "startLine": 8541,
+        "startChar": 12,
+        "endLine": 8541,
+        "endChar": 98
+      },
+      "revId": "7c9e1f0ed6a78b68abdcd2e0a5b479760e5c18c1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d52c4456_e67e8d2c",
+        "filename": "tests/git_cl_test.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 8541,
+      "author": {
+        "id": 4995882
+      },
+      "writtenOn": "2026-08-04T19:02:42Z",
+      "side": 1,
+      "message": "Acknowledged",
+      "parentUuid": "e4fb085b_b07a79c9",
       "range": {
         "startLine": 8541,
         "startChar": 12,
