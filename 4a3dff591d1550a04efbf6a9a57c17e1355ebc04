@@ -1,0 +1,78 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "99c6a6fe_fba56685",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 17
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2026-08-04T02:44:03Z",
+      "side": 1,
+      "message": "If these enviroment has the same meaning, it is better to have only one?",
+      "range": {
+        "startLine": 11,
+        "startChar": 9,
+        "endLine": 11,
+        "endChar": 53
+      },
+      "revId": "4a3dff591d1550a04efbf6a9a57c17e1355ebc04",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "dd93cb65_0c9b16e6",
+        "filename": "ninja",
+        "patchSetId": 17
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2026-08-04T02:44:03Z",
+      "side": 1,
+      "message": "If we have python3 wrapper, this change is not necessary?",
+      "revId": "4a3dff591d1550a04efbf6a9a57c17e1355ebc04",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5453ad66_e62fd77b",
+        "filename": "ninja.bat",
+        "patchSetId": 17
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2026-08-04T02:44:03Z",
+      "side": 1,
+      "message": "If we have python3 wrapper, this change is not necessary?",
+      "revId": "4a3dff591d1550a04efbf6a9a57c17e1355ebc04",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0c760407_f0e8f6dd",
+        "filename": "python-bin/python3.bat",
+        "patchSetId": 17
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2026-08-04T02:44:03Z",
+      "side": 1,
+      "message": "I think it is better to have bypass logic in toplevel python3 wrappers only.",
+      "revId": "4a3dff591d1550a04efbf6a9a57c17e1355ebc04",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
