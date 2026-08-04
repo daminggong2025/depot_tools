@@ -1371,7 +1371,10 @@ class ChangeDescription(object):
     CC_LINE = r"^[ \t]*(CC)[ \t]*=[ \t]*(.*?)[ \t]*$"
     BUG_LINE = r"^[ \t]*(?:(BUG)[ \t]*=|Bug:)[ \t]*(.*?)[ \t]*$"
     FIXED_LINE = r"^[ \t]*Fixed[ \t]*:[ \t]*(.*?)[ \t]*$"
-    CHERRY_PICK_LINE = r"^\(cherry picked from commit [a-fA-F0-9]{40}\)$"
+    CHERRY_PICK_LINE = (
+        r"^\(cherry picked from commit "
+        r"(?:[a-fA-F0-9]{40}|[a-fA-F0-9]{64})\)$"
+    )
     STRIP_HASH_TAG_PREFIX = r'^(\s*(revert|reland)( "|:)?\s*)*'
     BRACKET_HASH_TAG = r"\s*\[([^\[\]]+)\]"
     COLON_SEPARATED_HASH_TAG = r"^([a-zA-Z0-9_\- ]+):($|[^:])"
