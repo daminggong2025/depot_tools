@@ -20,6 +20,23 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "c4fcfa5e_d14ced4f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 5061116
+      },
+      "writtenOn": "2026-08-04T20:28:34Z",
+      "side": 1,
+      "message": "An empty SHA-256 remote has no refs, so `git ls-remote` succeeds with empty output and this falls back to SHA-1. The callers then initialize a SHA-1 repo, and fetching after the first SHA-256 ref is created fails with `fatal: mismatched algorithms`.",
+      "revId": "0040a86dc00b4f6039273b7f99d25c0e97974487",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "1cc87216_fe4e8156",
         "filename": "git_cache.py",
         "patchSetId": 5
