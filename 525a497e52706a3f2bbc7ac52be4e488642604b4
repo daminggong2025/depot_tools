@@ -16,6 +16,29 @@
       "message": "ptal",
       "revId": "525a497e52706a3f2bbc7ac52be4e488642604b4",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "98953c43_a0360c65",
+        "filename": "agents/skills/luci-test-results/scripts/luci_triage.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 411,
+      "author": {
+        "id": 1241393
+      },
+      "writtenOn": "2026-08-05T17:41:54Z",
+      "side": 1,
+      "message": "I don\u0027t know if we should by default exclude exonerated tests. I think the default behavior being more \"pure\" to the data source has value in keeping the skill versatile. I would turn this into --ignore-exonerated like --ignore-flaky.\n\nAlso, related but not actionable in this CL; we are at a bad spot in # of exonerated tests, especially in Linux and Windows :/ Exoneration causes flaky tests to be effectively disabled for CQ but cause reverts in CI, so tests shouldn\u0027t be permanently in this state; they should get fixed or disabled.",
+      "range": {
+        "startLine": 407,
+        "startChar": 0,
+        "endLine": 411,
+        "endChar": 5
+      },
+      "revId": "525a497e52706a3f2bbc7ac52be4e488642604b4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
