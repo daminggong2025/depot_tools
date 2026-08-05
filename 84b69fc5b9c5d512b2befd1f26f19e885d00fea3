@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6ce0a652_a91f0174",
+        "filename": "git_auth.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 3355336
+      },
+      "writtenOn": "2026-08-05T21:46:34Z",
+      "side": 0,
+      "message": "unused",
+      "revId": "84b69fc5b9c5d512b2befd1f26f19e885d00fea3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
