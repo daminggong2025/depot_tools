@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4285f3cc_edbbe6f1",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 9
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1126674
+      },
+      "writtenOn": "2026-08-06T18:39:24Z",
+      "side": 1,
+      "message": "Re-worked this so that we can again have both warnings and errors. ptal!",
+      "revId": "8c5963f1376851c5f531da207cd472617a0ab0ed",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
