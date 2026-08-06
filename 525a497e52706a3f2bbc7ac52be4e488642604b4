@@ -18,6 +18,23 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "771a0e63_6b09422a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1241393
+      },
+      "writtenOn": "2026-08-06T21:05:06Z",
+      "side": 1,
+      "message": "LGTM",
+      "revId": "525a497e52706a3f2bbc7ac52be4e488642604b4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "98953c43_a0360c65",
@@ -55,6 +72,30 @@
       "side": 1,
       "message": "The problem is that the default produces almost 0.5 MB of output where agy typically stops after a few tens of KB. I think the default behavior of the skill should be to produce output that agy can deal with.",
       "parentUuid": "98953c43_a0360c65",
+      "range": {
+        "startLine": 407,
+        "startChar": 0,
+        "endLine": 411,
+        "endChar": 5
+      },
+      "revId": "525a497e52706a3f2bbc7ac52be4e488642604b4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "de7e8cc9_a5e9ace6",
+        "filename": "agents/skills/luci-test-results/scripts/luci_triage.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 411,
+      "author": {
+        "id": 1241393
+      },
+      "writtenOn": "2026-08-06T21:05:06Z",
+      "side": 1,
+      "message": "Ok, fair.",
+      "parentUuid": "7189ec30_c296dd58",
       "range": {
         "startLine": 407,
         "startChar": 0,
