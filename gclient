@@ -22,8 +22,9 @@ if [[ "#grep#fetch#cleanup#diff#help#getdep#root#setdep#recurse#--help#" != *"#$
   fi
 fi
 
-# Ensure that "depot_tools" is somewhere in PATH so this tool can be used
-# standalone, but allow other PATH manipulations to take priority.
-PATH=$PATH:$base_dir
+# Prepend python-bin to PATH so subprocesses (e.g. gclient hooks) use CIPD
+# Python, and ensure depot_tools is on PATH for standalone usage.
+base_dir_abs=$(CDPATH= cd -- "$base_dir" 2>/dev/null && pwd -P || echo "$base_dir")
+PATH="$base_dir_abs/python-bin:$PATH:$base_dir_abs"
 
 PYTHONDONTWRITEBYTECODE=1 exec vpython3 "$base_dir/gclient.py" "$@"

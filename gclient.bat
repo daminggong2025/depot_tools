@@ -31,9 +31,9 @@ IF "%DEPOT_TOOLS_UPDATE%" == "0" GOTO :CALL_GCLIENT
 call "%~dp0update_depot_tools.bat" %* & IF ERRORLEVEL 1 (exit /b 1) ELSE (GOTO :CALL_GCLIENT)
 
 :CALL_GCLIENT
-:: Ensure that "depot_tools" is somewhere in PATH so this tool can be used
-:: standalone, but allow other PATH manipulations to take priority.
-set PATH=%PATH%;%~dp0
+:: Prepend python-bin to PATH so subprocesses (e.g. gclient hooks) use CIPD
+:: Python, and ensure depot_tools is on PATH for standalone usage.
+set "PATH=%~dp0python-bin;%PATH%;%~dp0"
 
 :: Defer control.
 call vpython3 "%~dp0gclient.py" %*
