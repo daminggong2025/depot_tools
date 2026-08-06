@@ -11,7 +11,9 @@
 
 # vpython specs
 /.vpython*       recipes
-/gsutil.py.vpython3 recipes
+/*.py.vpython3   recipes
+/*.toml          recipes
+/*.uv.lock       recipes
 
 # Extensionless tools we want and support scripts.
 /autoninja*                   recipes
