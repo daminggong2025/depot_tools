@@ -16,6 +16,23 @@
       "message": "Re-worked this so that we can again have both warnings and errors. ptal!",
       "revId": "8c5963f1376851c5f531da207cd472617a0ab0ed",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8b2f740f_20640846",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 9
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1126674
+      },
+      "writtenOn": "2026-08-06T18:45:19Z",
+      "side": 1,
+      "message": "note: presumbits failing due to ruff \u0026 reverting: https://chromium-review.git.corp.google.com/c/chromium/tools/depot_tools/+/8218087",
+      "revId": "8c5963f1376851c5f531da207cd472617a0ab0ed",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
