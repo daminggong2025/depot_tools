@@ -5005,6 +5005,77 @@ class ThreadPoolTest(unittest.TestCase):
         )
         self.assertEqual("5\n5 (0.00s) failed\nstdout", messages[2])
 
+    def testOutputParser(self):
+        def FakePopen(cmd, **kwargs):
+            if cmd[0] == "multiple":
+                return mock.Mock(returncode=0)
+            if cmd[0] == "empty_pass":
+                return mock.Mock(returncode=0)
+            if cmd[0] == "empty_fail":
+                return mock.Mock(returncode=1)
+            return mock.Mock(returncode=0)
+
+        subprocess.Popen.side_effect = FakePopen
+
+        def parse_multiple(output):
+            return ["error 1", "error 2", "warning 1"]
+
+        def parse_empty(output):
+            return []
+
+        mock_tests = [
+            presubmit.CommandData(
+                name="multiple",
+                cmd=["multiple"],
+                kwargs={},
+                output_parser=parse_multiple,
+            ),
+            presubmit.CommandData(
+                name="empty_pass",
+                cmd=["empty_pass"],
+                kwargs={},
+                output_parser=parse_empty,
+            ),
+            presubmit.CommandData(
+                name="empty_fail",
+                cmd=["empty_fail"],
+                kwargs={},
+                message=lambda x, **kwargs: x,
+                output_parser=parse_empty,
+            ),
+        ]
+
+        t = presubmit.ThreadPool(1)
+        t.AddTests(mock_tests)
+        messages = sorted(t.RunAsync())
+
+        self.assertEqual(4, len(messages))
+        self.assertIn("empty_fail\nempty_fail (0.00s) failed\nstdout", messages)
+        self.assertIn("error 1", messages)
+        self.assertIn("error 2", messages)
+        self.assertIn("warning 1", messages)
+
+        # Test InputApi.RunTests with output_parser parameter
+        change = presubmit.Change(
+            "foo",
+            "desc",
+            "/fake",
+            None,
+            0,
+            0,
+            None,
+        )
+        input_api = presubmit.InputApi(
+            change, "/fake/PRESUBMIT.py", False, None, False
+        )
+        input_api.parallel = False
+        input_api.thread_pool = t
+        cmd = presubmit.CommandData(
+            name="multiple", cmd=["multiple"], kwargs={}
+        )
+        results = input_api.RunTests([cmd], output_parser=parse_multiple)
+        self.assertEqual(["error 1", "error 2", "warning 1"], results)
+
 
 if __name__ == "__main__":
     import unittest
