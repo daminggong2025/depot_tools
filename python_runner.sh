@@ -48,4 +48,4 @@ SCRIPT="${SCRIPT-${BASENAME//-/_}.py}"
 # standalone, but allow other PATH manipulations to take priority.
 PATH=$PATH:$DEPOT_TOOLS
 
-vpython3 "$DEPOT_TOOLS/$SCRIPT" "$@"
+"$DEPOT_TOOLS/python-bin/python3" "$DEPOT_TOOLS/$SCRIPT" "$@"

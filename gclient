@@ -26,4 +26,4 @@ fi
 # standalone, but allow other PATH manipulations to take priority.
 PATH=$PATH:$base_dir
 
-PYTHONDONTWRITEBYTECODE=1 exec vpython3 "$base_dir/gclient.py" "$@"
+PYTHONDONTWRITEBYTECODE=1 exec "$base_dir/python-bin/python3" "$base_dir/gclient.py" "$@"

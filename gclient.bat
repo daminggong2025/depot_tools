@@ -36,4 +36,4 @@ call "%~dp0update_depot_tools.bat" %* & IF ERRORLEVEL 1 (exit /b 1) ELSE (GOTO :
 set PATH=%PATH%;%~dp0
 
 :: Defer control.
-call vpython3 "%~dp0gclient.py" %*
+call "%~dp0python-bin\python3.bat" "%~dp0gclient.py" %*
