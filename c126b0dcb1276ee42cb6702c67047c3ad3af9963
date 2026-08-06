@@ -16,6 +16,24 @@
       "message": "This will also catch other stuff like gerrit_client.py.vpython3. Using more specific paths would have the advantage of self-documenting why we need the paths, but up to you\nhttps://source.chromium.org/search?q\u003df:%5Ethird_party%2Fdepot_tools.*(py.vpython3%7Ctoml%7Cuv.lock)$%20-f:(%5Eout)\u0026ss\u003dchromium%2Fchromium%2Fsrc",
       "revId": "c126b0dcb1276ee42cb6702c67047c3ad3af9963",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "735fb705_1ffbe7d8",
+        "filename": ".gitattributes",
+        "patchSetId": 2
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-08-06T15:48:44Z",
+      "side": 1,
+      "message": "Actually we should take all partner scripts with the pythons as they take priority over the global .vpython3! So I think it was an old oversight to not include them.",
+      "parentUuid": "36ca56cd_c12326c8",
+      "revId": "c126b0dcb1276ee42cb6702c67047c3ad3af9963",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
