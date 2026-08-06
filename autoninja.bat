@@ -6,6 +6,7 @@
 setlocal
 
 set scriptdir=%~dp0
+set PATH=%scriptdir%python-bin;%PATH%
 
 if "%*" == "/?" (
   rem Handle "autoninja /?" which will otherwise give help on the "call" command

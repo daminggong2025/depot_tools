@@ -29,9 +29,9 @@ call "%~dp0\update_depot_tools.bat" %* & IF ERRORLEVEL 1 (exit /b 1) ELSE (GOTO 
 
 :CALL_FETCH
 
-:: Ensure that "depot_tools" is somewhere in PATH so this tool can be used
-:: standalone, but allow other PATH manipulations to take priority.
-set PATH=%PATH%;%~dp0
+:: Prepend python-bin to PATH so subprocesses use CIPD Python, and ensure
+:: depot_tools is on PATH for standalone usage.
+set PATH=%~dp0python-bin;%PATH%;%~dp0
 
 :: Defer control.
 call vpython3 "%~dp0\fetch.py" %*

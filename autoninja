@@ -15,6 +15,7 @@ if [ "$NINJA_SUMMARIZE_BUILD" == "1" ]; then
 fi
 
 scriptdir=$(dirname -- "$0")
+export PATH="${scriptdir}/python-bin:$PATH"
 python_path="${scriptdir}/python-bin/python3"
 
 if [ "$DEPOT_TOOLS_USE_VIRTUAL_BUILD_PATH" == "1" ]; then

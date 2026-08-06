@@ -44,8 +44,8 @@ fi
 
 SCRIPT="${SCRIPT-${BASENAME//-/_}.py}"
 
-# Ensure that "depot_tools" is somewhere in PATH so this tool can be used
-# standalone, but allow other PATH manipulations to take priority.
-PATH=$PATH:$DEPOT_TOOLS
+# Prepend python-bin to PATH so subprocesses (e.g. presubmits, hooks) use CIPD
+# Python, and ensure depot_tools is on PATH for standalone usage.
+PATH=$DEPOT_TOOLS/python-bin:$PATH:$DEPOT_TOOLS
 
 vpython3 "$DEPOT_TOOLS/$SCRIPT" "$@"
