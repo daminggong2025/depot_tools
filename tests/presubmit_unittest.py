@@ -2652,9 +2652,9 @@ class CannedChecksUnittest(PresubmitTestsBase):
         # optimization since NewContents() is much faster to execute than
         # ChangedContents().
         affected_file1.ChangedContents.return_value = [
-            (42, content1),
-            (43, "hfoo"),
-            (23, "ifoo"),
+            (2, content1),
+            (3, "hfoo"),
+            (4, "ifoo"),
         ]
 
         change2 = presubmit.Change(
@@ -2673,9 +2673,9 @@ class CannedChecksUnittest(PresubmitTestsBase):
             "gfoo",
         ]
         affected_file2.ChangedContents.return_value = [
-            (42, content2),
-            (43, "hfoo"),
-            (23, "ifoo"),
+            (2, content2),
+            (3, "hfoo"),
+            (4, "ifoo"),
         ]
 
         results1 = check(input_api1, presubmit.OutputApi, None)
@@ -2703,6 +2703,9 @@ class CannedChecksUnittest(PresubmitTestsBase):
         input_api.AffectedFiles.return_value = [affected_file]
         affected_file.LocalPath.return_value = "foo.py"
         affected_file.NewContents.return_value = content.splitlines()
+        affected_file.ChangedContents.return_value = [
+            (i + 1, l) for i, l in enumerate(content.splitlines())
+        ]
 
         results = presubmit_canned_checks.CheckLongLines(
             input_api, presubmit.OutputApi, maxlen
@@ -3385,11 +3388,118 @@ check is enabled on the next line.
 The following line should fail
 since global directives apply to
 the current line as well!
-                  # pylint: enable-line-too-long should fail
+                  # pylint: enable=line-too-long should fail
 """,
         ]
-        for content in failing_cases[0:0]:
+        for content in failing_cases:
             self.PythonLongLineTest(40, content, should_pass=False)
+
+    def testCannedCheckPythonLongLinesUnmodifiedLines(self):
+        change = presubmit.Change(
+            "foo1", "foo1\n", self.fake_root_dir, None, 0, 0, None
+        )
+        input_api = self.MockInputApi(change, False)
+        affected_file = mock.MagicMock(presubmit.GitAffectedFile)
+        input_api.AffectedFiles.return_value = [affected_file]
+        affected_file.LocalPath.return_value = "foo.py"
+        # Line 1 is long, but only line 2 (short) was changed.
+        affected_file.NewContents.return_value = [
+            "A " * 50,
+            "short line",
+        ]
+        affected_file.ChangedContents.return_value = [
+            (2, "short line"),
+        ]
+
+        results = presubmit_canned_checks.CheckLongLines(
+            input_api, presubmit.OutputApi, 80
+        )
+        self.assertEqual(results, [])
+
+        # When the long line is changed, it should be flagged.
+        affected_file.ChangedContents.return_value = [
+            (1, "A " * 50),
+            (2, "short line"),
+        ]
+        results = presubmit_canned_checks.CheckLongLines(
+            input_api, presubmit.OutputApi, 80
+        )
+        self.assertEqual(len(results), 1)
+        self.assertEqual(
+            results[0].__class__, presubmit.OutputApi.PresubmitPromptWarning
+        )
+
+    def testCannedCheckPythonLongLinesCrossFileStateLeak(self):
+        change = presubmit.Change(
+            "foo1", "foo1\n", self.fake_root_dir, None, 0, 0, None
+        )
+        input_api = self.MockInputApi(change, False)
+        affected_file1 = mock.MagicMock(presubmit.GitAffectedFile)
+        affected_file1.LocalPath.return_value = "file1.py"
+        affected_file1.NewContents.return_value = [
+            "# pylint: disable=line-too-long",
+            "A " * 50,
+        ]
+        affected_file1.ChangedContents.return_value = [
+            (1, "# pylint: disable=line-too-long"),
+            (2, "A " * 50),
+        ]
+
+        affected_file2 = mock.MagicMock(presubmit.GitAffectedFile)
+        affected_file2.LocalPath.return_value = "file2.py"
+        affected_file2.NewContents.return_value = [
+            "A " * 50,
+        ]
+        affected_file2.ChangedContents.return_value = [
+            (1, "A " * 50),
+        ]
+
+        input_api.AffectedFiles.return_value = [affected_file1, affected_file2]
+        results = presubmit_canned_checks.CheckLongLines(
+            input_api, presubmit.OutputApi, 80
+        )
+        # file1.py has disable so it passes; file2.py must still be flagged.
+        self.assertEqual(len(results), 1)
+        self.assertEqual(
+            results[0].__class__, presubmit.OutputApi.PresubmitPromptWarning
+        )
+        self.assertTrue(any("file2.py" in item for item in results[0]._items))
+        self.assertFalse(any("file1.py" in item for item in results[0]._items))
+
+    def testCannedCheckJavaLongLinesUnmodifiedLines(self):
+        change = presubmit.Change(
+            "foo1", "foo1\n", self.fake_root_dir, None, 0, 0, None
+        )
+        input_api = self.MockInputApi(change, False)
+        affected_file = mock.MagicMock(presubmit.GitAffectedFile)
+        input_api.AffectedFiles.return_value = [affected_file]
+        affected_file.LocalPath.return_value = "Foo.java"
+        # Line 1 is long, but only line 2 (short) was changed.
+        affected_file.NewContents.return_value = [
+            'String s = "' + "A " * 50 + '";',
+            "int x = 1;",
+        ]
+        affected_file.ChangedContents.return_value = [
+            (2, "int x = 1;"),
+        ]
+
+        results = presubmit_canned_checks.CheckLongLines(
+            input_api, presubmit.OutputApi, 80
+        )
+        self.assertEqual(results, [])
+
+        # When the long line is changed, it should be flagged.
+        affected_file.ChangedContents.return_value = [
+            (1, 'String s = "' + "A " * 50 + '";'),
+            (2, "int x = 1;"),
+        ]
+        results = presubmit_canned_checks.CheckLongLines(
+            input_api, presubmit.OutputApi, 80
+        )
+        self.assertEqual(len(results), 1)
+        self.assertEqual(
+            results[0].__class__, presubmit.OutputApi.PresubmitPromptWarning
+        )
 
     def testCannedCheckJSLongLines(self):
         check = lambda x, y, _: presubmit_canned_checks.CheckLongLines(x, y, 10)

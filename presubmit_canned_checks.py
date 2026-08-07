@@ -754,10 +754,17 @@ def CheckLongLines(input_api, output_api, maxlen, source_file_filter=None):
 
     def check_python_long_lines(affected_files, error_formatter):
         errors = []
-        global_check_enabled = True
 
         for f in affected_files:
+            if all(
+                no_long_lines(PY_FILE_EXTS[0], line) for line in f.NewContents()
+            ):
+                continue
+
             file_path = f.LocalPath()
+            global_check_enabled = True
+            changed_lines = {line_num for line_num, _ in f.ChangedContents()}
+
             for idx, line in enumerate(f.NewContents()):
                 line_num = idx + 1
                 line_is_short = no_long_lines(PY_FILE_EXTS[0], line)
@@ -781,7 +788,7 @@ def CheckLongLines(input_api, output_api, maxlen, source_file_filter=None):
                     else:
                         do_check = True  # Local enable
 
-                if do_check and not line_is_short:
+                if do_check and not line_is_short and line_num in changed_lines:
                     errors.append(error_formatter(file_path, line_num, line))
 
         return errors
@@ -790,7 +797,11 @@ def CheckLongLines(input_api, output_api, maxlen, source_file_filter=None):
         """Check long lines in Java files, ignoring lines within text blocks."""
         errors = []
         for f in affected_files:
+            if all(no_long_lines("java", line) for line in f.NewContents()):
+                continue
+
             file_path = f.LocalPath()
+            changed_lines = {line_num for line_num, _ in f.ChangedContents()}
             in_text_block = False
             for idx, line in enumerate(f.NewContents()):
                 line_num = idx + 1
@@ -813,7 +824,11 @@ def CheckLongLines(input_api, output_api, maxlen, source_file_filter=None):
                 # Ignore closing lines to avoid flagging lines that are long
                 # due to text block content, assuming users don't add much after
                 # the closing delimiter.
-                if not in_text_block and not no_long_lines("java", line):
+                if (
+                    not in_text_block
+                    and not no_long_lines("java", line)
+                    and line_num in changed_lines
+                ):
                     errors.append(error_formatter(file_path, line_num, line))
 
                 if count % 2 == 1:
@@ -1715,8 +1730,7 @@ def GetRuff(
         x, files_to_check, files_to_skip
     )
     affected_files = [
-        f.AbsoluteLocalPath()
-        for f in input_api.AffectedSourceFiles(src_filter)
+        f.AbsoluteLocalPath() for f in input_api.AffectedSourceFiles(src_filter)
     ]
     if not affected_files:
         return []
