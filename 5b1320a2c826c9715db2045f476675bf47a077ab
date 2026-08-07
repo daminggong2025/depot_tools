@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6326a501_63caf9d2",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1237240
+      },
+      "writtenOn": "2026-08-07T13:17:05Z",
+      "side": 1,
+      "message": "Thank you! Turns out we (the Dart team) ran into issues with this on our benchmarking system (golem) where we got an error (`depot_tools: Error: python3_bin_reldir.txt not found. Initialize depot_tools by running gclient or update_depot_tools.`) when using a revision between the reverted commit and this revert.",
+      "revId": "5b1320a2c826c9715db2045f476675bf47a077ab",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
