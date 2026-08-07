@@ -519,6 +519,44 @@ class CheckLongLinesTest(unittest.TestCase):
                             any(item in str(actual) for actual in all_items)
                         )
 
+    def testCheckPythonLongLines(self):
+        # File with an existing unmodified long line and a newly added short line.
+        unmodified_long_file = MockFile(
+            os.path.normpath("some/py/file/test.py"),
+            [
+                "A " * 50,  # line 1 (100 chars, unmodified)
+                "x = 1",  # line 2 (short, modified)
+            ],
+        )
+        unmodified_long_file._changed_contents = [(2, "x = 1")]
+
+        input_api = MockInputApi()
+        input_api.files = [unmodified_long_file]
+        errors = presubmit_canned_checks.CheckLongLines(
+            input_api, MockOutputApi(), maxlen=80
+        )
+        self.assertEqual(0, len(errors))
+
+        # Modifying the long line should trigger an error.
+        modified_long_file = MockFile(
+            os.path.normpath("some/py/file/test.py"),
+            [
+                "A " * 50,
+                "x = 1",
+            ],
+        )
+        modified_long_file._changed_contents = [
+            (1, "A " * 50),
+            (2, "x = 1"),
+        ]
+        input_api = MockInputApi()
+        input_api.files = [modified_long_file]
+        errors = presubmit_canned_checks.CheckLongLines(
+            input_api, MockOutputApi(), maxlen=80
+        )
+        self.assertEqual(1, len(errors))
+        self.assertTrue("test.py" in errors[0].items[0])
+
 
 class DescriptionChecksTest(unittest.TestCase):
     def testCheckDescriptionUsesColonInsteadOfEquals(self):
