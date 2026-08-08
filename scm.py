@@ -6,7 +6,9 @@
 from __future__ import annotations
 
 import abc
+import asyncio
 import contextlib
+import logging
 import os
 import pathlib
 import platform
@@ -16,7 +18,7 @@ import threading
 from collections import defaultdict
 from itertools import chain
 from typing import Any
-from typing import Collection, Iterable, Iterator, Literal, Dict
+from typing import Collection, Iterable, Iterator, Literal, Dict, Callable
 from typing import Optional, Sequence, Mapping
 
 import gclient_utils
@@ -688,6 +690,37 @@ class GitConfigStateTest(GitConfigStateBase):
             cfg[key] = [v for v in cur if not pat.match(v)]
 
 
+class _PacketTraceParser:
+    """Detects the object format from GIT_TRACE_PACKET stderr output.
+
+    In protocol v2 the server begins with a capability advertisement that opens
+    with 'version 2' and ends with a '0000' flush packet. The object-format
+    capability, when present, appears in between. Some servers omit it for sha1
+    repositories, so reaching the flush without having seen it implies sha1.
+
+    Incoming (server -> client) packets are prefixed with '<' in the trace,
+    which is what we key on to avoid misreading packets the client sends.
+    """
+
+    def __init__(self) -> None:
+        self._in_capability_advertisement = False
+
+    def feed(self, line: str) -> Optional[str]:
+        if "< version 2" in line:
+            self._in_capability_advertisement = True
+            return None
+        if not self._in_capability_advertisement:
+            return None
+        if "< object-format=sha256" in line:
+            return "sha256"
+        if "< object-format=sha1" in line:
+            return "sha1"
+        if "< 0000" in line:
+            # Capability advertisement ended without an object-format.
+            return "sha1"
+        return None
+
+
 class GIT(object):
     current_version = None
     rev_parse_cache = {}
@@ -968,6 +1001,121 @@ class GIT(object):
             pass
         # Return default branch
         return "refs/remotes/%s/main" % remote
+
+    @staticmethod
+    def _parse_object_format_from_ref_line(line: str) -> Optional[str]:
+        """Detects the object format from a `git ls-remote` stdout line."""
+        oid = line.split("\t", 1)[0].strip()
+        if all(c in "0123456789abcdefABCDEF" for c in oid):
+            if len(oid) == 64:
+                return "sha256"
+            if len(oid) == 40:
+                return "sha1"
+        return None
+
+    @staticmethod
+    async def _read_stream_for_object_format(
+        stream: asyncio.StreamReader,
+        handle_line: Callable[[str], Optional[str]],
+    ) -> Optional[str]:
+        """Reads a subprocess stream line by line until an answer or EOF."""
+        while True:
+            raw = await stream.readline()
+            if not raw:
+                # EOF: the child closed this pipe.
+                return None
+            answer = handle_line(raw.decode("utf-8", "replace"))
+            if answer is not None:
+                return answer
+
+    @staticmethod
+    async def _probe_remote_object_format(url: str) -> Optional[str]:
+        """Spawns `git ls-remote` and detects the remote object format.
+
+        Reads stdout and stderr concurrently so neither pipe can fill and
+        deadlock the child, and returns as soon as either stream identifies the
+        format. Returns None if the child exits and we still don't know.
+        """
+        env = GIT.ApplyEnvVars({})
+        env["GIT_TERMINAL_PROMPT"] = "0"
+        env["GIT_TRACE_PACKET"] = "1"
+        proc = await asyncio.create_subprocess_exec(
+            git_common.GIT_EXE,
+            "ls-remote",
+            "--quiet",
+            url,
+            stdin=asyncio.subprocess.DEVNULL,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
+            env=env,
+        )
+        parser = _PacketTraceParser()
+        tasks = {
+            asyncio.create_task(
+                GIT._read_stream_for_object_format(
+                    proc.stdout, GIT._parse_object_format_from_ref_line
+                )
+            ),
+            asyncio.create_task(
+                GIT._read_stream_for_object_format(proc.stderr, parser.feed)
+            ),
+        }
+        result = None
+        try:
+            while tasks and result is None:
+                done, tasks = await asyncio.wait(
+                    tasks, return_when=asyncio.FIRST_COMPLETED
+                )
+                for task in done:
+                    answer = task.result()
+                    if answer is not None:
+                        result = answer
+                        break
+        finally:
+            for task in tasks:
+                task.cancel()
+            if tasks:
+                await asyncio.gather(*tasks, return_exceptions=True)
+            # Stop the child and reap it so we don't leave a zombie.
+            try:
+                proc.kill()
+            except (ProcessLookupError, OSError):
+                pass
+            await proc.wait()
+            # Only a genuine failure is worth surfacing; an early kill after we
+            # found the answer legitimately yields a non-zero code.
+            if result is None and proc.returncode not in (0, None):
+                logging.warning(
+                    "git ls-remote for %s exited with code %s",
+                    url,
+                    proc.returncode,
+                )
+        return result
+
+    @staticmethod
+    def GetRemoteObjectFormat(url: str) -> str:
+        """Returns the object format ('sha1' or 'sha256') advertised by a remote.
+
+        Probes the remote with `git ls-remote` and inspects both the ref output
+        (object ID length on stdout) and the GIT_TRACE_PACKET protocol trace
+        (on stderr), returning as soon as either identifies the format so we do
+        not wait for the full ref advertisement of large repositories.
+        """
+        try:
+            result = asyncio.run(GIT._probe_remote_object_format(url))
+        except Exception as e:
+            result, reason = None, e
+        else:
+            reason = "ls-remote did not reveal the object format"
+        if result is not None:
+            return result
+        logging.warning(
+            "Could not determine remote object format for %s; "
+            "defaulting to sha1. Reason: %s",
+            url,
+            reason,
+        )
+        return "sha1"
 
     @staticmethod
     def GetBranch(cwd):
