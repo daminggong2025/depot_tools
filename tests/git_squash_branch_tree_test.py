@@ -8,6 +8,7 @@
 import os
 import sys
 import unittest
+from unittest import mock
 
 DEPOT_TOOLS_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, DEPOT_TOOLS_ROOT)
@@ -16,6 +17,7 @@ from testing_support import git_test_utils
 
 import git_squash_branch_tree
 import git_common
+import subprocess2
 
 git_common.TEST_MODE = True
 
@@ -117,6 +119,36 @@ class GitSquashBranchTreeTest(git_test_utils.GitRepoReadWriteTestBase):
         self.assertEqual(self._getCountAheadOfUpstream("branchA"), 1)
         self.assertEqual(self._getCountAheadOfUpstream("branchB"), 1)
         self.assertEqual(self._getCountAheadOfUpstream("branchC"), 1)
+
+    def testGitSquashBranchTreeAtomicFailure(self):
+        self.assertEqual(self._getCountAheadOfUpstream("branchA"), 2)
+        self.assertEqual(self._getCountAheadOfUpstream("branchB"), 2)
+        self.assertEqual(self._getCountAheadOfUpstream("branchC"), 2)
+
+        real_run = git_common.run
+
+        def run_with_corrupted_transaction(*args, **kwargs):
+            if args and args[0] == "update-ref" and "--stdin" in args:
+                indata = kwargs.get("indata", b"").decode("utf-8")
+                # Corrupt the expected old SHA for branchC to force transaction failure
+                lines = indata.strip().split("\n")
+                lines[-1] = lines[-1].rsplit(" ", 1)[0] + " " + ("0" * 40)
+                kwargs["indata"] = ("\n".join(lines) + "\n").encode("utf-8")
+            return real_run(*args, **kwargs)
+
+        with mock.patch(
+            "git_common.run", side_effect=run_with_corrupted_transaction
+        ):
+            with self.assertRaises(subprocess2.CalledProcessError):
+                self.repo.run(
+                    git_squash_branch_tree.main,
+                    ["--branch", "branchA", "--ignore-no-upstream"],
+                )
+
+        # Assert that zero branches were modified due to the atomic rollback
+        self.assertEqual(self._getCountAheadOfUpstream("branchA"), 2)
+        self.assertEqual(self._getCountAheadOfUpstream("branchB"), 2)
+        self.assertEqual(self._getCountAheadOfUpstream("branchC"), 2)
 
     # Creates a file with arbitrary contents and commit it to the current
     # branch.
