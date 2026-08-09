@@ -101,7 +101,7 @@ def main(args):
             )
             return 1
 
-    git_common.squash_current_branch(opts.message)
+    git_common.squash_branch(return_branch, header=opts.message)
 
     # Fixup our children with our new state.
     for branch in downstream_branches[return_branch]:

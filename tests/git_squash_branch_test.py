@@ -8,6 +8,7 @@
 import os
 import sys
 import unittest
+from unittest import mock
 
 DEPOT_TOOLS_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, DEPOT_TOOLS_ROOT)
@@ -125,6 +126,41 @@ class GitSquashBranchTest(git_test_utils.GitRepoReadWriteTestBase):
         self.assertEqual(self._getCountAheadOfUpstream("branchB"), 1)
         self.assertEqual(self._getCountAheadOfUpstream("branchC"), 2)
         self.assertEqual(self._getCountAheadOfUpstream("branchD"), 2)
+
+    def testSquashBranchFailsWhenTreeDirty(self):
+        self.repo.git("checkout", "branchD")
+        with self.repo.open("fileD1", "w") as f:
+            f.write("dirty content")
+        with self.assertRaisesRegex(RuntimeError, "uncommitted changes"):
+            self.repo.run(git_common.squash_branch, "branchD")
+
+    def testSquashBranchFailsWhenInRebase(self):
+        self.repo.git("checkout", "branchD")
+        with mock.patch("git_common.in_rebase", return_value=True):
+            with self.assertRaisesRegex(RuntimeError, "rebase is in progress"):
+                self.repo.run(git_common.squash_branch, "branchD")
+
+    def testSquashBranchEmptyBranch(self):
+        self.repo.git("checkout", "-B", "emptyBranch", "--track", "main")
+        self._createFileAndCommit("tempFile")
+        self.repo.git("rm", "tempFile")
+        self.repo.git_commit("Removed tempFile")
+
+        self.assertFalse(self.repo.run(git_common.squash_branch, "emptyBranch"))
+        self.assertEqual(
+            self.repo.run(git_common.hash_one, "emptyBranch"),
+            self.repo.run(git_common.hash_one, "main"),
+        )
+
+    def testSquashBranchCustomMessage(self):
+        self.repo.git("checkout", "branchD")
+        self.repo.run(
+            git_squash_branch.main, ["-m", "Custom squash header message"]
+        )
+        commit_msg = self.repo.git("log", "-1", "--format=%B", "branchD").stdout
+        self.assertTrue(commit_msg.startswith("Custom squash header message"))
+        self.assertIn("Added file fileD1", commit_msg)
+        self.assertIn("Added file fileD2", commit_msg)
 
     # Creates a file with arbitrary contents and commit it to the current
     # branch.
