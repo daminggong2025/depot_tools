@@ -8,48 +8,69 @@ potential conflicts during a git rebase-update with multiple stacked CLs.
 """
 
 import argparse
-import collections
-import git_common as git
 import sys
 
+import gclient_utils
+import git_common as git
 
-# Squash a branch, taking care to rebase the branch on top of the new commit
-# position of its upstream branch.
-def squash_branch(branch, initial_hashes):
-    print("Squashing branch %s." % branch)
-    assert initial_hashes[branch] == git.hash_one(branch)
 
-    upstream_branch = git.upstream(branch)
-    old_upstream_branch = initial_hashes[upstream_branch]
-
-    # Because the branch's upstream has potentially changed from squashing it,
-    # the current branch is rebased on top of the new upstream.
-    git.run(
-        "rebase",
-        "--onto",
-        upstream_branch,
-        old_upstream_branch,
+def squash_branch(
+    branch, tree, new_shas, commit_messages, original_shas, ref_updates
+):
+    print(f"Squashing branch {branch}.")
+    parent = tree[branch]
+    body = commit_messages.get(branch, "")
+    log_msg = f"git squash commit for {branch}.\n\n{body}\n"
+    commit_sha = git.create_squash_commit(
         branch,
-        "--update-refs",
+        parent=new_shas.get(parent) or parent,
+        commit_message=log_msg,
     )
-
-    # Now do the squashing.
-    git.run("checkout", branch)
-    git.squash_current_branch()
+    new_shas[branch] = commit_sha
+    ref_updates.append((branch, commit_sha, original_shas[branch]))
 
 
 # Squashes all branches that are part of the subtree starting at `branch`.
-def squash_subtree(branch, initial_hashes, downstream_branches):
+def squash_subtree(
+    branch,
+    tree,
+    new_shas,
+    commit_messages,
+    downstream_branches,
+    original_shas,
+    ref_updates,
+):
     # The upstream default never has to be squashed (e.g. origin/main).
     if branch != git.upstream_default():
-        squash_branch(branch, initial_hashes)
+        squash_branch(
+            branch,
+            tree,
+            new_shas,
+            commit_messages,
+            original_shas,
+            ref_updates,
+        )
 
     # Recurse on downstream branches, if any.
     for downstream_branch in downstream_branches[branch]:
-        squash_subtree(downstream_branch, initial_hashes, downstream_branches)
+        squash_subtree(
+            downstream_branch,
+            tree,
+            new_shas,
+            commit_messages,
+            downstream_branches,
+            original_shas,
+            ref_updates,
+        )
 
 
 def main(args=None):
+    if gclient_utils.IsEnvCog():
+        print(
+            "squash-branch-tree command is not supported in non-git environment.",
+            file=sys.stderr,
+        )
+        return 1
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--ignore-no-upstream",
@@ -61,7 +82,7 @@ def main(args=None):
         "-b",
         type=str,
         default=git.current_branch(),
-        help="The name of the branch who's subtree must be "
+        help="The name of the branch whose subtree must be "
         "squashed. Defaults to the current branch.",
     )
     opts = parser.parse_args(args)
@@ -96,11 +117,33 @@ def main(args=None):
     # we can go back to it at the end.
     return_branch = git.current_branch()
 
-    initial_hashes = git.get_hashes(tree)
+    commit_messages = {
+        b: git.run("log", "--reverse", "--format=%H%n%B", f"{parent}..{b}")
+        for b, parent in tree.items()
+    }
     downstream_branches = git.get_downstream_branches(tree)
-    squash_subtree(opts.branch, initial_hashes, downstream_branches)
+    original_shas = {b: git.hash_one(b) for b in tree}
+    new_shas = {}
+    ref_updates = []
+    squash_subtree(
+        opts.branch,
+        tree,
+        new_shas,
+        commit_messages,
+        downstream_branches,
+        original_shas,
+        ref_updates,
+    )
 
-    git.run("checkout", return_branch)
+    if ref_updates:
+        payload = "".join(
+            f"update refs/heads/{b} {new} {old}\n"
+            for b, new, old in ref_updates
+        )
+        git.run("update-ref", "--stdin", indata=payload.encode("utf-8"))
+
+    if return_branch:
+        git.run("checkout", return_branch)
 
     return 0
 
