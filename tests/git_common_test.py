@@ -909,7 +909,12 @@ class GitMutableStructuredTest(
         self.repo.git("checkout", "branch_K")
 
         self.assertEqual(
-            True, self.repo.run(self.gc.squash_current_branch, "✔ cool message")
+            True,
+            self.repo.run(
+                self.gc.squash_current_branch,
+                self.repo["B"],
+                header="✔ cool message",
+            ),
         )
 
         lines = ["✔ cool message", ""]
@@ -928,7 +933,9 @@ class GitMutableStructuredTest(
 
     def testSquashBranchDefaultMessage(self):
         self.repo.git("checkout", "branch_K")
-        self.assertEqual(True, self.repo.run(self.gc.squash_current_branch))
+        self.assertEqual(
+            True, self.repo.run(self.gc.squash_current_branch, self.repo["B"])
+        )
         self.assertEqual(
             self.repo.run(self.gc.run, "log", "-n1", "--format=%s"),
             "git squash commit for branch_K.",
@@ -939,7 +946,9 @@ class GitMutableStructuredTest(
         self.repo.git("checkout", "branch_G", ".")
         self.repo.git("commit", "-m", "revert all changes no branch")
         # Should return False since the quash would result in an empty commit
-        stdout = self.repo.capture_stdio(self.gc.squash_current_branch)[0]
+        stdout = self.repo.capture_stdio(
+            self.gc.squash_current_branch, self.repo["B"]
+        )[0]
         self.assertEqual(
             stdout, "Nothing to commit; squashed branch is empty\n"
         )
