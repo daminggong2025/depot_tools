@@ -35,6 +35,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "62399d02_b4f171ec",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 4995882
+      },
+      "writtenOn": "2026-08-10T23:21:50Z",
+      "side": 1,
+      "message": "Fixed for when git protocol v2 is used, which very major git server has been using for years now",
+      "parentUuid": "c4fcfa5e_d14ced4f",
+      "revId": "0040a86dc00b4f6039273b7f99d25c0e97974487",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "1cc87216_fe4e8156",
@@ -48,6 +66,30 @@
       "writtenOn": "2026-08-04T17:05:59Z",
       "side": 1,
       "message": "nit: do we need this change? since we download from GCS into the tempdir anyway so object-format would get wiped",
+      "range": {
+        "startLine": 397,
+        "startChar": 12,
+        "endLine": 407,
+        "endChar": 13
+      },
+      "revId": "0040a86dc00b4f6039273b7f99d25c0e97974487",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "69e788f6_33f8156e",
+        "filename": "git_cache.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 407,
+      "author": {
+        "id": 4995882
+      },
+      "writtenOn": "2026-08-10T23:21:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1cc87216_fe4e8156",
       "range": {
         "startLine": 397,
         "startChar": 12,
@@ -81,6 +123,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "0047ca63_b91558d9",
+        "filename": "git_cache.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 594,
+      "author": {
+        "id": 4995882
+      },
+      "writtenOn": "2026-08-10T23:21:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "185e727e_c02f639e",
+      "range": {
+        "startLine": 590,
+        "startChar": 20,
+        "endLine": 594,
+        "endChar": 21
+      },
+      "revId": "0040a86dc00b4f6039273b7f99d25c0e97974487",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "eeb0dc21_1ac6aaa8",
@@ -104,6 +170,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "76a652b6_790aaeda",
+        "filename": "scm.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 979,
+      "author": {
+        "id": 4995882
+      },
+      "writtenOn": "2026-08-10T23:21:50Z",
+      "side": 1,
+      "message": "Fixed to probe the remote.",
+      "parentUuid": "eeb0dc21_1ac6aaa8",
+      "range": {
+        "startLine": 979,
+        "startChar": 33,
+        "endLine": 979,
+        "endChar": 42
+      },
+      "revId": "0040a86dc00b4f6039273b7f99d25c0e97974487",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "5034ac5c_1e40a425",
@@ -117,6 +207,30 @@
       "writtenOn": "2026-08-04T17:05:59Z",
       "side": 1,
       "message": "2026",
+      "range": {
+        "startLine": 2,
+        "startChar": 12,
+        "endLine": 2,
+        "endChar": 16
+      },
+      "revId": "0040a86dc00b4f6039273b7f99d25c0e97974487",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "87b94046_c8f2d511",
+        "filename": "tests/git_setup_test.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 4995882
+      },
+      "writtenOn": "2026-08-10T23:21:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5034ac5c_1e40a425",
       "range": {
         "startLine": 2,
         "startChar": 12,
