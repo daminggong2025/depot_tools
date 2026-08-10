@@ -58,6 +58,7 @@ import git_footers
 import git_new_branch
 import git_squash_branch
 import google_java_format
+import ktfmt
 import metrics
 import metrics_utils
 import metrics_xml_format
@@ -8197,6 +8198,60 @@ def _RunGoogleJavaFormat(opts, paths, top_dir, diffs):
         return return_value
 
 
+def _RunKtfmt(opts, paths, top_dir, diffs):
+    """Runs ktfmt and sets a return value if necessary."""
+    tool = ktfmt.FindKtfmt()
+    if tool is None:
+        # Fail silently. It could be we are on an old chromium revision, or that
+        # it is a non-chromium project. https://crbug.com/1491627
+        print("ktfmt not found, skipping kotlin formatting.")
+        return 0
+
+    base_cmd = [tool]
+    if not opts.diff and opts.dry_run:
+        base_cmd += ["--dry-run"]
+
+    def RunFormat(cmd, path, **kwds):
+        # If --diff is passed, ktfmt will output formatted content from stdin.
+        # Diff it with the existing file in the checkout and output the result.
+        if opts.diff:
+            file_path = os.path.join(top_dir, path) if top_dir else path
+            with open(file_path, "rb") as f:
+                content = f.read()
+            stdout = RunCommand(cmd + ["-"], stdin=content, **kwds)
+            stdout = RunGitDiffCmd(
+                ["-U3"],
+                "--no-index",
+                [path, "-"],
+                stdin=stdout.encode(),
+                **kwds,
+            )
+        else:
+            stdout = RunCommand(cmd + [path], **kwds)
+        return stdout
+
+    results = []
+    kwds = {"error_ok": True, "cwd": top_dir}
+    with multiprocessing.pool.ThreadPool() as pool:
+        for path in paths:
+            results.append(
+                pool.apply_async(
+                    RunFormat, args=[base_cmd.copy(), path], kwds=kwds
+                )
+            )
+
+        return_value = 0
+        for result in results:
+            stdout = result.get()
+            if stdout:
+                if opts.diff:
+                    sys.stdout.write("Requires formatting: " + stdout)
+                if opts.dry_run:
+                    return_value = 2
+
+        return return_value
+
+
 def _RunRustFmt(opts, paths, top_dir, diffs):
     """Runs rustfmt.  Just like _RunClangFormatDiff returns 2 to indicate that
     presubmit checks have failed (and returns 0 otherwise)."""
@@ -8817,6 +8872,19 @@ def CMDformat(parser: optparse.OptionParser, args: list[str]):
         help="Disable auto-formatting of .java",
     )
     parser.add_option(
+        "--ktfmt",
+        dest="ktfmt",
+        action="store_true",
+        default=False,
+        help="Enables formatting of .kt files using ktfmt.",
+    )
+    parser.add_option(
+        "--no-ktfmt",
+        dest="ktfmt",
+        action="store_false",
+        help="Disable auto-formatting of .kt files.",
+    )
+    parser.add_option(
         "--lucicfg",
         action="store_true",
         help="Enables formatting of .star files.",
@@ -8892,6 +8960,8 @@ def CMDformat(parser: optparse.OptionParser, args: list[str]):
     ]
     if not opts.no_java:
         formatters.append(([".java"], _RunGoogleJavaFormat, []))
+    if opts.ktfmt:
+        formatters.append(([".kt"], _RunKtfmt, []))
     if opts.clang_format:
         formatters.append((clang_exts, _RunClangFormatDiff, [".html.ts"]))
     if opts.use_rust_fmt:
