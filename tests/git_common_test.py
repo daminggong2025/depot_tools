@@ -909,7 +909,8 @@ class GitMutableStructuredTest(
         self.repo.git("checkout", "branch_K")
 
         self.assertEqual(
-            True, self.repo.run(self.gc.squash_current_branch, "✔ cool message")
+            True,
+            self.repo.run(self.gc.squash_current_branch, "✔ cool message"),
         )
 
         lines = ["✔ cool message", ""]
