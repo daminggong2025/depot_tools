@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a97774a1_1c55f3a6",
+        "filename": "git_cl.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 8210,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-08-10T22:12:04Z",
+      "side": 1,
+      "message": "we should make sure `--diff` is respected if it isn\u0027t already, not sure if as-is passing `--diff` w/o `--dry-run` will silently format files in place",
+      "range": {
+        "startLine": 8210,
+        "startChar": 0,
+        "endLine": 8210,
+        "endChar": 20
+      },
+      "revId": "c59a17af0e96d010575aa669eeae337acfc12d27",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "579f9a1b_c523f474",
+        "filename": "git_cl.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 8848,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-08-10T22:12:04Z",
+      "side": 1,
+      "message": "nit: this flag is a no-op. I\u0027d remove, rework, or add a comment",
+      "range": {
+        "startLine": 8848,
+        "startChar": 0,
+        "endLine": 8848,
+        "endChar": 21
+      },
+      "revId": "c59a17af0e96d010575aa669eeae337acfc12d27",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
