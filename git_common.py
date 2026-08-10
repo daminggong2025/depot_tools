@@ -1164,29 +1164,119 @@ def status(ignore_submodules=None):
     )
 
 
-def squash_current_branch(header=None, merge_base=None):
-    header = header or "git squash commit for %s." % current_branch()
-    merge_base = merge_base or get_or_create_merge_base(current_branch())
-    log_msg = header + "\n"
-    if log_msg:
-        log_msg += "\n"
-    output = run("log", "--reverse", "--format=%H%n%B", "%s..HEAD" % merge_base)
-    assert isinstance(output, str)
-    log_msg += output
-    run("reset", "--soft", merge_base)
+def get_squash_message(branch, upstream_branch, header=None):
+    """Constructs the squash commit message using the branch's upstream history."""
+    assert branch and not branch.startswith("refs/")
+    assert upstream_branch and not upstream_branch.startswith("refs/")
+    header = header or ("git squash commit for %s." % branch)
+    log_base = get_or_create_merge_base(branch, parent=upstream_branch)
+    assert log_base, (
+        f"Unable to determine merge base for {branch} on {upstream_branch}"
+    )
+    body = run(
+        "log",
+        "--reverse",
+        "--format=%H%n%B",
+        "%s..%s" % (log_base, branch),
+    )
+    return "%s\n\n%s\n" % (header, body)
 
-    if not get_dirty_files():
-        # Sometimes the squash can result in the same tree, meaning that there
-        # is nothing to commit at this point.
+
+def create_squash_commit(branch, parent_sha, commit_message):
+    """Creates a squashed commit object for `branch` on top of `parent_sha`.
+
+    Returns the new commit SHA (or parent_sha if the branch introduces no changes).
+    Does not modify any branch references.
+    """
+    assert branch and not branch.startswith("refs/")
+    assert parent_sha
+    assert commit_message
+
+    tree_sha = run("rev-parse", "%s^{tree}" % branch)
+    parent_tree_sha = run("rev-parse", "%s^{tree}" % parent_sha)
+
+    if tree_sha == parent_tree_sha:
+        return parent_sha
+
+    return run(
+        "commit-tree",
+        tree_sha,
+        "-p",
+        parent_sha,
+        indata=commit_message.encode("utf-8"),
+    )
+
+
+def reparent_commit(commit, new_parent):
+    """Creates a commit with the same tree, author, and message as `commit`,
+    pointing to `new_parent`.
+    """
+    assert commit
+    assert new_parent
+
+    raw = run(
+        "log",
+        "-1",
+        "--format=%T%x00%an%x00%ae%x00%aI%x00%B",
+        commit,
+        autostrip=False,
+    )
+    tree_sha, aname, aemail, adate, message = raw.split("\0", 4)
+    env = {
+        **os.environ,
+        "GIT_AUTHOR_NAME": aname,
+        "GIT_AUTHOR_EMAIL": aemail,
+        "GIT_AUTHOR_DATE": adate,
+    }
+    return run(
+        "commit-tree",
+        tree_sha,
+        "-p",
+        new_parent,
+        indata=message.encode("utf-8"),
+        env=env,
+    )
+
+
+def squash_branch(
+    branch,
+    parent=None,
+    header=None,
+    commit_message=None,
+):
+    """Squashes `branch` onto `parent` and updates its ref atomically."""
+    assert branch and branch != "HEAD" and not branch.startswith("refs/")
+    if branch == current_branch():
+        if in_rebase():
+            raise RuntimeError(
+                "Cannot squash branch while a rebase is in progress."
+            )
+        if get_dirty_files():
+            raise RuntimeError(
+                f"Cannot squash current branch '{branch}' with uncommitted changes. "
+                "Please commit, stash, or freeze your changes first."
+            )
+    parent = parent or get_or_create_merge_base(branch)
+    assert parent, f"Unable to determine upstream parent for {branch}"
+    old_sha = hash_one(branch)
+    parent_sha = hash_one(parent)
+    if commit_message is None:
+        upstream_branch = upstream(branch) or parent
+        commit_message = get_squash_message(
+            branch, upstream_branch, header=header
+        )
+    new_sha = create_squash_commit(branch, parent_sha, commit_message)
+    run("update-ref", f"refs/heads/{branch}", new_sha, old_sha)
+    if new_sha == parent_sha:
         print("Nothing to commit; squashed branch is empty")
         return False
-
-    # git reset --soft will stage all changes so we can just commit those.
-    # Note: Just before reset --soft is called, we may have git submodules
-    # checked to an old commit (not latest state). We don't want to include
-    # those in our commit.
-    run("commit", "--no-verify", "-F", "-", indata=log_msg.encode("utf-8"))
     return True
+
+
+def squash_current_branch(header=None, merge_base=None):
+    curr = current_branch()
+    assert curr and curr != "HEAD", "Cannot squash in detached HEAD"
+    return squash_branch(curr, parent=merge_base, header=header)
 
 
 def tags(*args):

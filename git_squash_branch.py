@@ -10,35 +10,40 @@ import gclient_utils
 import git_common
 
 
-# Squash a branch, taking care to rebase the branch on top of the new commit
-# position of its upstream branch.
-def rebase_branch(branch, initial_hashes):
-    print("Re-parenting branch %s." % branch)
-    assert initial_hashes[branch] == git_common.hash_one(branch)
+def reparent_branch(branch, old_upstream_sha, new_upstream_sha):
+    """Re-parents all commits on `branch` (from `old_upstream_sha`) onto `new_upstream_sha`."""
+    assert branch and old_upstream_sha and new_upstream_sha
+    commits = git_common.run(
+        "rev-list", "--reverse", f"{old_upstream_sha}..{branch}"
+    ).splitlines()
+    parent = new_upstream_sha
+    for commit in commits:
+        parent = git_common.reparent_commit(commit, parent)
+    return parent
 
+
+def reparent_subtree(
+    branch, new_shas, initial_hashes, downstream_branches, ref_updates
+):
     upstream_branch = git_common.upstream(branch)
-    old_upstream_branch = initial_hashes[upstream_branch]
+    assert upstream_branch in initial_hashes
+    assert upstream_branch in new_shas
 
-    # Because the branch's upstream has potentially changed from squashing it,
-    # the current branch is rebased on top of the new upstream.
-    git_common.run(
-        "rebase",
-        "--onto",
-        upstream_branch,
-        old_upstream_branch,
-        branch,
-        "--update-refs",
-    )
+    old_upstream = initial_hashes[upstream_branch]
+    new_upstream = new_shas[upstream_branch]
 
+    new_branch_sha = reparent_branch(branch, old_upstream, new_upstream)
+    new_shas[branch] = new_branch_sha
+    ref_updates.append((branch, new_branch_sha, initial_hashes[branch]))
 
-# Squashes all branches that are part of the subtree starting at `branch`.
-def rebase_subtree(branch, initial_hashes, downstream_branches):
-    # Rebase us onto our parent
-    rebase_branch(branch, initial_hashes)
-
-    # Recurse on downstream branches, if any.
     for downstream_branch in downstream_branches[branch]:
-        rebase_subtree(downstream_branch, initial_hashes, downstream_branches)
+        reparent_subtree(
+            downstream_branch,
+            new_shas,
+            initial_hashes,
+            downstream_branches,
+            ref_updates,
+        )
 
 
 def children_have_diverged(branch, downstream_branches, diverged_branches):
@@ -79,19 +84,25 @@ def main(args):
     if git_common.is_dirty_git_tree("squash-branch"):
         return 1
 
-    # Save off the current branch so we can return to it at the end.
-    return_branch = git_common.current_branch()
+    target_branch = git_common.current_branch()
 
     # Save the hashes before we mutate the tree so that we have all of the
     # necessary rebasing information.
     _, tree = git_common.get_branch_tree()
+    if target_branch not in tree:
+        print(
+            f"Cannot squash `{target_branch}` because it has no upstream.",
+            file=sys.stderr,
+        )
+        return 1
+
     initial_hashes = git_common.get_hashes(tree)
     downstream_branches = git_common.get_downstream_branches(tree)
     diverged_branches = git_common.get_diverged_branches(tree)
 
     # We won't be rebasing our squashed branch, so only check any potential
     # children
-    for branch in downstream_branches[return_branch]:
+    for branch in downstream_branches[target_branch]:
         if children_have_diverged(
             branch, downstream_branches, diverged_branches
         ):
@@ -101,13 +112,40 @@ def main(args):
             )
             return 1
 
-    git_common.squash_current_branch(opts.message)
+    upstream_branch = tree[target_branch]
+    merge_base = git_common.get_or_create_merge_base(target_branch)
+    assert merge_base
+    parent_sha = git_common.hash_one(merge_base)
+    msg = git_common.get_squash_message(
+        target_branch, upstream_branch, header=opts.message
+    )
+    new_squash_sha = git_common.create_squash_commit(
+        target_branch, parent_sha, msg
+    )
+    if new_squash_sha == parent_sha:
+        print("Nothing to commit; squashed branch is empty")
+    new_shas = {target_branch: new_squash_sha}
+    ref_updates = [
+        (target_branch, new_squash_sha, initial_hashes[target_branch])
+    ]
 
-    # Fixup our children with our new state.
-    for branch in downstream_branches[return_branch]:
-        rebase_subtree(branch, initial_hashes, downstream_branches)
+    for branch in downstream_branches[target_branch]:
+        reparent_subtree(
+            branch,
+            new_shas,
+            initial_hashes,
+            downstream_branches,
+            ref_updates,
+        )
 
-    git_common.run("checkout", return_branch)
+    if ref_updates:
+        payload = "".join(
+            f"update refs/heads/{b}\0{new}\0{old}\0"
+            for b, new, old in ref_updates
+        )
+        git_common.run(
+            "update-ref", "-z", "--stdin", indata=payload.encode("utf-8")
+        )
 
     return 0
 
