@@ -33,6 +33,52 @@
       "message": "note: presumbits failing due to ruff \u0026 reverting: https://chromium-review.git.corp.google.com/c/chromium/tools/depot_tools/+/8218087",
       "revId": "8c5963f1376851c5f531da207cd472617a0ab0ed",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0f3b0af9_95fa3706",
+        "filename": "presubmit_support.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 274,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-08-10T22:29:21Z",
+      "side": 1,
+      "message": "should this msg also include stdout?",
+      "range": {
+        "startLine": 274,
+        "startChar": 54,
+        "endLine": 274,
+        "endChar": 76
+      },
+      "revId": "8c5963f1376851c5f531da207cd472617a0ab0ed",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ad16793a_a1edba63",
+        "filename": "run_alint.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-08-10T22:29:21Z",
+      "side": 1,
+      "message": "`CheckAyeAye` expects all output from this script to be parseable json, but there are cases where that isn\u0027t the case, eg this line, or L44 if `os.chdir` fails",
+      "range": {
+        "startLine": 35,
+        "startChar": 0,
+        "endLine": 35,
+        "endChar": 77
+      },
+      "revId": "8c5963f1376851c5f531da207cd472617a0ab0ed",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
