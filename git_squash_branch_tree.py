@@ -8,48 +8,87 @@ potential conflicts during a git rebase-update with multiple stacked CLs.
 """
 
 import argparse
-import collections
-import git_common as git
 import sys
 
+import gclient_utils
+import git_common as git
 
-# Squash a branch, taking care to rebase the branch on top of the new commit
-# position of its upstream branch.
-def squash_branch(branch, initial_hashes):
-    print("Squashing branch %s." % branch)
-    assert initial_hashes[branch] == git.hash_one(branch)
 
-    upstream_branch = git.upstream(branch)
-    old_upstream_branch = initial_hashes[upstream_branch]
+def stage_squash_branch(branch, tree, new_shas, original_shas, ref_updates):
+    """Creates a squash commit for `branch` on top of its parent commit and
+    records the staged ref update.
 
-    # Because the branch's upstream has potentially changed from squashing it,
-    # the current branch is rebased on top of the new upstream.
-    git.run(
-        "rebase",
-        "--onto",
-        upstream_branch,
-        old_upstream_branch,
+    Args:
+        branch: The branch to squash.
+        tree: Mapping of {branch: upstream_branch}.
+        new_shas: Mapping of {branch: squashed_commit_sha} updated in-place.
+        original_shas: Mapping of {branch: original_commit_sha}.
+        ref_updates: List of (branch, new_sha, old_sha) tuples updated in-place.
+    """
+    print(f"Squashing branch {branch}.")
+    assert branch in tree
+    parent = tree[branch]
+    merge_base = git.get_or_create_merge_base(branch, parent)
+    parent_sha = new_shas.get(parent)
+    if parent_sha is None:
+        parent_sha = git.hash_one(merge_base)
+    msg = git.get_squash_message(branch, merge_base)
+    commit_sha = git.create_squash_commit(
         branch,
-        "--update-refs",
+        parent_sha,
+        msg,
     )
-
-    # Now do the squashing.
-    git.run("checkout", branch)
-    git.squash_current_branch()
+    new_shas[branch] = commit_sha
+    ref_updates.append((branch, commit_sha, original_shas[branch]))
 
 
-# Squashes all branches that are part of the subtree starting at `branch`.
-def squash_subtree(branch, initial_hashes, downstream_branches):
+def squash_subtree(
+    branch,
+    tree,
+    new_shas,
+    downstream_branches,
+    original_shas,
+    ref_updates,
+):
+    """Recursively squashes `branch` and all of its downstream branches.
+
+    Args:
+        branch: The root branch of the subtree to squash.
+        tree: Mapping of {branch: upstream_branch}.
+        new_shas: Mapping of {branch: squashed_commit_sha} updated in-place.
+        downstream_branches: Mapping of {branch: list_of_children}.
+        original_shas: Mapping of {branch: original_commit_sha}.
+        ref_updates: List of (branch, new_sha, old_sha) tuples updated in-place.
+    """
     # The upstream default never has to be squashed (e.g. origin/main).
     if branch != git.upstream_default():
-        squash_branch(branch, initial_hashes)
+        stage_squash_branch(
+            branch,
+            tree,
+            new_shas,
+            original_shas,
+            ref_updates,
+        )
 
     # Recurse on downstream branches, if any.
     for downstream_branch in downstream_branches[branch]:
-        squash_subtree(downstream_branch, initial_hashes, downstream_branches)
+        squash_subtree(
+            downstream_branch,
+            tree,
+            new_shas,
+            downstream_branches,
+            original_shas,
+            ref_updates,
+        )
 
 
 def main(args=None):
+    if gclient_utils.IsEnvCog():
+        print(
+            "squash-branch-tree command is not supported in non-git environment.",
+            file=sys.stderr,
+        )
+        return 1
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--ignore-no-upstream",
@@ -61,7 +100,7 @@ def main(args=None):
         "-b",
         type=str,
         default=git.current_branch(),
-        help="The name of the branch who's subtree must be "
+        help="The name of the branch whose subtree must be "
         "squashed. Defaults to the current branch.",
     )
     opts = parser.parse_args(args)
@@ -74,11 +113,22 @@ def main(args=None):
     if not opts.ignore_no_upstream and branches_without_upstream:
         print(
             "Cannot use `git squash-branch-tree` since the following\n"
-            "branches don't have an upstream:"
+            "branches don't have an upstream:",
+            file=sys.stderr,
         )
         for branch in branches_without_upstream:
-            print(f"  - {branch}")
-        print("Use --ignore-no-upstream to ignore this check and proceed.")
+            print(f"  - {branch}", file=sys.stderr)
+        print(
+            "Use --ignore-no-upstream to ignore this check and proceed.",
+            file=sys.stderr,
+        )
+        return 1
+
+    if opts.branch != git.upstream_default() and opts.branch not in tree:
+        print(
+            f"Cannot squash `{opts.branch}` because it has no upstream.",
+            file=sys.stderr,
+        )
         return 1
 
     diverged_branches = git.get_diverged_branches(tree)
@@ -86,21 +136,31 @@ def main(args=None):
         print(
             "Cannot use `git squash-branch-tree` since the following\n"
             "branches have diverged from their upstream and could cause\n"
-            "conflicts:"
+            "conflicts:",
+            file=sys.stderr,
         )
         for diverged_branch in diverged_branches:
-            print(f"  - {diverged_branch}")
+            print(f"  - {diverged_branch}", file=sys.stderr)
         return 1
 
-    # Before doing the squashing, save the current branch checked out branch so
-    # we can go back to it at the end.
-    return_branch = git.current_branch()
-
-    initial_hashes = git.get_hashes(tree)
     downstream_branches = git.get_downstream_branches(tree)
-    squash_subtree(opts.branch, initial_hashes, downstream_branches)
+    original_shas = git.get_hashes(tree)
+    new_shas = {}
+    ref_updates = []
 
-    git.run("checkout", return_branch)
+    # Phase 1: Generate all squashed commit objects in the object store.
+    squash_subtree(
+        opts.branch,
+        tree,
+        new_shas,
+        downstream_branches,
+        original_shas,
+        ref_updates,
+    )
+
+    # Phase 2: Commit all branch reference updates in a single atomic transaction.
+    # Prevents leaving branches in a partially squashed state if interrupted.
+    git.update_refs_atomic(ref_updates)
 
     return 0
 
