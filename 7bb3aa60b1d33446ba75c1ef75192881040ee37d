@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "140ca39e_2f7a2b3c",
+        "filename": "git_cl.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 8690,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2026-08-10T04:28:02Z",
+      "side": 1,
+      "message": "It is still better to show error if the file is not using UTF8 encoding?",
+      "range": {
+        "startLine": 8690,
+        "startChar": 52,
+        "endLine": 8690,
+        "endChar": 68
+      },
+      "revId": "7bb3aa60b1d33446ba75c1ef75192881040ee37d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7e09a78c_5241ade7",
+        "filename": "tests/git_cl_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 7664,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2026-08-10T04:28:02Z",
+      "side": 1,
+      "message": "It is better to have these lines under `with tempfile.NamedTemporaryFile` block and remove `try .. finally` block?",
+      "range": {
+        "startLine": 7647,
+        "startChar": 0,
+        "endLine": 7664,
+        "endChar": 38
+      },
+      "revId": "7bb3aa60b1d33446ba75c1ef75192881040ee37d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
