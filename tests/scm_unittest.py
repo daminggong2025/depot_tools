@@ -6,6 +6,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import logging
 import os
 import sys
@@ -1105,6 +1106,268 @@ class CachedGitConfigStateTest(unittest.TestCase):
                 "true",
             ],
         )
+
+
+class _FakeStreamReader:
+    """Minimal asyncio.StreamReader stand-in yielding preset lines then EOF."""
+
+    def __init__(self, lines):
+        self._lines = list(lines)
+
+    async def readline(self):
+        if self._lines:
+            return self._lines.pop(0)
+        return b""
+
+
+class _FakeProcess:
+    """Minimal asyncio subprocess stand-in for GetRemoteObjectFormat tests."""
+
+    def __init__(self, stdout_lines=(), stderr_lines=(), exit_code=0):
+        self.stdout = _FakeStreamReader(stdout_lines)
+        self.stderr = _FakeStreamReader(stderr_lines)
+        self.returncode = None
+        self.kill_called = False
+        self._exit_code = exit_code
+
+    def kill(self):
+        self.kill_called = True
+        # Mirror the OS reaping an already-terminating child: wait() still
+        # reports the real exit code rather than the signal.
+        if self.returncode is None:
+            self.returncode = self._exit_code
+
+    async def wait(self):
+        if self.returncode is None:
+            self.returncode = self._exit_code
+        return self.returncode
+
+
+class ParseObjectFormatFromRefLineTest(unittest.TestCase):
+    """Tests for scm.GIT._parse_object_format_from_ref_line."""
+
+    def testParse(self):
+        cases = [
+            ("sha1 ref", f"{'a' * 40}\trefs/heads/main", "sha1"),
+            ("sha256 ref", f"{'a' * 64}\trefs/heads/main", "sha256"),
+            ("no tab", "a" * 40, "sha1"),
+            ("empty line", "", None),
+            ("not an oid", "warning: something happened", None),
+            ("wrong length", f"{'a' * 12}\trefs/heads/main", None),
+        ]
+        for label, line, expected in cases:
+            with self.subTest(label):
+                self.assertEqual(
+                    scm.GIT._parse_object_format_from_ref_line(line), expected
+                )
+
+
+class PacketTraceParserTest(unittest.TestCase):
+    """Tests for scm._PacketTraceParser."""
+
+    @staticmethod
+    def _first_answer(lines):
+        parser = scm._PacketTraceParser()
+        for line in lines:
+            answer = parser.feed(line)
+            if answer is not None:
+                return answer
+        return None
+
+    def testFeed(self):
+        cases = [
+            (
+                "sha256 advertised",
+                [
+                    "packet:        git< version 2",
+                    "packet:        git< agent=git/2.44",
+                    "packet:        git< object-format=sha256",
+                    "packet:        git< 0000",
+                ],
+                "sha256",
+            ),
+            (
+                "sha1 advertised",
+                [
+                    "packet:        git< version 2",
+                    "packet:        git< object-format=sha1",
+                    "packet:        git< 0000",
+                ],
+                "sha1",
+            ),
+            (
+                "no object-format defaults to sha1 at flush",
+                [
+                    "packet:        git< version 2",
+                    "packet:        git< agent=git/2.30",
+                    "packet:        git< ls-refs=unborn",
+                    "packet:        git< 0000",
+                ],
+                "sha1",
+            ),
+            (
+                "object-format before version 2 is ignored",
+                [
+                    "packet:        git< object-format=sha256",
+                    "packet:        git< 0000",
+                ],
+                None,
+            ),
+            (
+                "flush before version 2 is ignored",
+                [
+                    "packet:        git< # service=git-upload-pack",
+                    "packet:        git< 0000",
+                    "packet:        git< version 2",
+                    "packet:        git< object-format=sha256",
+                    "packet:        git< 0000",
+                ],
+                "sha256",
+            ),
+            (
+                "outgoing packets are ignored",
+                [
+                    "packet:        git> version 2",
+                    "packet:        git> object-format=sha256",
+                ],
+                None,
+            ),
+            ("no version line", ["packet:        git< agent=git/2.44"], None),
+        ]
+        for label, lines, expected in cases:
+            with self.subTest(label):
+                self.assertEqual(self._first_answer(lines), expected)
+
+
+class GetRemoteObjectFormatTest(unittest.TestCase):
+    """Tests for scm.GIT.GetRemoteObjectFormat (async probe)."""
+
+    def _patchExec(self, proc=None, exc=None):
+        async def fake_exec(*args, **kwargs):
+            if exc is not None:
+                raise exc
+            return proc
+
+        return mock.patch(
+            "asyncio.create_subprocess_exec", side_effect=fake_exec
+        )
+
+    def testDetectsFormat(self):
+        cases = [
+            (
+                "sha1 from stdout ref length",
+                _FakeProcess(
+                    stdout_lines=[f"{'a' * 40}\trefs/heads/main\n".encode()]
+                ),
+                "sha1",
+                False,
+            ),
+            (
+                "sha256 from stdout ref length",
+                _FakeProcess(
+                    stdout_lines=[f"{'a' * 64}\trefs/heads/main\n".encode()]
+                ),
+                "sha256",
+                False,
+            ),
+            (
+                "sha256 from stderr packet trace",
+                _FakeProcess(
+                    stderr_lines=[
+                        b"packet:        git< version 2\n",
+                        b"packet:        git< object-format=sha256\n",
+                        b"packet:        git< 0000\n",
+                    ]
+                ),
+                "sha256",
+                False,
+            ),
+            (
+                "sha1 default when trace has no object-format",
+                _FakeProcess(
+                    stderr_lines=[
+                        b"packet:        git< version 2\n",
+                        b"packet:        git< 0000\n",
+                    ]
+                ),
+                "sha1",
+                False,
+            ),
+            (
+                "unparseable output falls back to sha1",
+                _FakeProcess(stdout_lines=[b"noise\n"]),
+                "sha1",
+                True,
+            ),
+            (
+                "no output at all falls back to sha1",
+                _FakeProcess(),
+                "sha1",
+                True,
+            ),
+        ]
+        for label, proc, expected, warns in cases:
+            with self.subTest(label):
+                assert_logs = self.assertLogs if warns else self.assertNoLogs
+                with self._patchExec(proc=proc):
+                    with assert_logs(level="WARNING"):
+                        self.assertEqual(
+                            scm.GIT.GetRemoteObjectFormat(
+                                "https://example/repo"
+                            ),
+                            expected,
+                        )
+                # The child is always reaped, and killed if still running.
+                self.assertIsNotNone(proc.returncode)
+
+    def testEarlyStopKillsChild(self):
+        # A short stdout answer must stop the probe without draining a large
+        # stderr trace stream.
+        proc = _FakeProcess(
+            stdout_lines=[f"{'a' * 64}\trefs/heads/main\n".encode()],
+            stderr_lines=[b"packet:        git< noise\n"] * 1000,
+        )
+        with self._patchExec(proc=proc):
+            self.assertEqual(
+                scm.GIT.GetRemoteObjectFormat("https://example/repo"),
+                "sha256",
+            )
+        self.assertTrue(proc.kill_called)
+
+    def testSpawnFailureFallsBackToSha1(self):
+        with self._patchExec(exc=OSError("git not found")):
+            with self.assertLogs(level="WARNING"):
+                self.assertEqual(
+                    scm.GIT.GetRemoteObjectFormat("https://example/repo"),
+                    "sha1",
+                )
+
+    def testWarnsOnNonZeroExit(self):
+        # git ran to completion and failed on its own: surface its exit code.
+        proc = _FakeProcess(exit_code=128)
+        with self._patchExec(proc=proc):
+            with self.assertLogs(level="WARNING") as logs:
+                result = asyncio.run(
+                    scm.GIT._probe_remote_object_format("https://example/repo")
+                )
+        self.assertIsNone(result)
+        self.assertTrue(
+            any("exited with code 128" in line for line in logs.output)
+        )
+
+    def testNoExitWarningWhenAnswerFound(self):
+        # We killed the child early after finding the answer, so its non-zero
+        # exit is expected and must not warn.
+        proc = _FakeProcess(
+            stdout_lines=[f"{'a' * 64}\trefs/heads/main\n".encode()],
+            exit_code=128,
+        )
+        with self._patchExec(proc=proc):
+            with self.assertNoLogs(level="WARNING"):
+                self.assertEqual(
+                    scm.GIT.GetRemoteObjectFormat("https://example/repo"),
+                    "sha256",
+                )
 
 
 if __name__ == "__main__":
