@@ -1,6 +1,23 @@
 {
   "comments": [
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "2ef35fb7_eb5229d6",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1541419
+      },
+      "writtenOn": "2026-08-10T21:25:23Z",
+      "side": 1,
+      "message": "Owner review\n\nGavin, could you have a look?",
+      "revId": "baadb8110bd26c490c8bc040d3782b81d2634a6b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "15fc8f3c_b7e39bf5",
@@ -14,6 +31,24 @@
       "writtenOn": "2026-08-10T16:50:55Z",
       "side": 1,
       "message": "Fix this one too?",
+      "revId": "baadb8110bd26c490c8bc040d3782b81d2634a6b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6e7dc31b_e7972b5e",
+        "filename": "git_cl.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 4921,
+      "author": {
+        "id": 1541419
+      },
+      "writtenOn": "2026-08-10T21:25:23Z",
+      "side": 1,
+      "message": "Thanks!\n\nThis line is for `git cl upload --dependencies`.\n\nhttps://g-issues.chromium.org/issues/544586381#comment3\n\nI\u0027ll make `git cl upload --dependencies` out of scope of this CL because 1. It\u0027s relatively complex and 2. I\u0027m not a user and can\u0027t test edge cases.\n\nSee the comment for more details.",
+      "parentUuid": "15fc8f3c_b7e39bf5",
       "revId": "baadb8110bd26c490c8bc040d3782b81d2634a6b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
