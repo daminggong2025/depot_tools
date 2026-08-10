@@ -16,6 +16,11 @@ import sys
 CIPD_CLIENT_ENSURE_FILE_TEMPLATE = r"""
 # Full supported.
 $VerifiedPlatform linux-amd64 mac-amd64 windows-amd64 windows-386
+
+
+asdfadsf
+
+
 # Best effort support.
 $VerifiedPlatform linux-386 linux-ppc64 linux-ppc64le linux-s390x
 $VerifiedPlatform linux-arm64 linux-armv6l
@@ -43,6 +48,17 @@ def CheckPylint(input_api, output_api):
         "bad-super-call",
         "cell-var-from-loop",
         "consider-using-dict-items",
+
+      asdfsadf
+      a
+
+  asdf
+dsf
+asd
+f
+dsa
+fsa
+df
         "consider-using-enumerate",
         "consider-using-from-import",
         "consider-using-generator",
