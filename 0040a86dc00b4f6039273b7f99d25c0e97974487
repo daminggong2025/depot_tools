@@ -250,6 +250,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "38e80e73_0dd22b5d",
+        "filename": "scm.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 979,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-08-11T21:03:42Z",
+      "side": 1,
+      "message": "why `ls-remote` instead of a falling back to \"sha1\" until they migrate? what if remote hangs?",
+      "parentUuid": "76a652b6_790aaeda",
+      "range": {
+        "startLine": 979,
+        "startChar": 33,
+        "endLine": 979,
+        "endChar": 42
+      },
+      "revId": "0040a86dc00b4f6039273b7f99d25c0e97974487",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "5034ac5c_1e40a425",
         "filename": "tests/git_setup_test.py",
         "patchSetId": 5
