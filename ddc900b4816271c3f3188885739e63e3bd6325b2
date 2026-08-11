@@ -41,6 +41,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "2210e59c_f2a8c893",
+        "filename": "git_common.py",
+        "patchSetId": 10
+      },
+      "lineNbr": 1221,
+      "author": {
+        "id": 1137015
+      },
+      "writtenOn": "2026-08-11T01:43:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "96d10787_229eea8a",
+      "range": {
+        "startLine": 1221,
+        "startChar": 0,
+        "endLine": 1221,
+        "endChar": 17
+      },
+      "revId": "ddc900b4816271c3f3188885739e63e3bd6325b2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "218dfc6a_120be195",
@@ -54,6 +78,30 @@
       "writtenOn": "2026-08-10T23:07:38Z",
       "side": 1,
       "message": "without `-m`, update-ref writes blank entries, let\u0027s add something like `-m \"squash-branch\"` to this",
+      "range": {
+        "startLine": 1273,
+        "startChar": 0,
+        "endLine": 1273,
+        "endChar": 66
+      },
+      "revId": "ddc900b4816271c3f3188885739e63e3bd6325b2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "832425a8_3d54cf06",
+        "filename": "git_common.py",
+        "patchSetId": 10
+      },
+      "lineNbr": 1273,
+      "author": {
+        "id": 1137015
+      },
+      "writtenOn": "2026-08-11T01:43:12Z",
+      "side": 1,
+      "message": "Good suggestion! Done.",
+      "parentUuid": "218dfc6a_120be195",
       "range": {
         "startLine": 1273,
         "startChar": 0,
@@ -87,6 +135,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "55291285_3454f682",
+        "filename": "git_common.py",
+        "patchSetId": 10
+      },
+      "lineNbr": 1310,
+      "author": {
+        "id": 1137015
+      },
+      "writtenOn": "2026-08-11T01:43:12Z",
+      "side": 1,
+      "message": "I made this one a param so that callers can specify the exact message.",
+      "parentUuid": "a039a822_b176c82a",
+      "range": {
+        "startLine": 1310,
+        "startChar": 0,
+        "endLine": 1310,
+        "endChar": 70
+      },
+      "revId": "ddc900b4816271c3f3188885739e63e3bd6325b2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "813d396d_dbb510bf",
@@ -100,6 +172,30 @@
       "writtenOn": "2026-08-10T23:07:38Z",
       "side": 1,
       "message": "same thing here w/ sign arg",
+      "range": {
+        "startLine": 52,
+        "startChar": 0,
+        "endLine": 52,
+        "endChar": 22
+      },
+      "revId": "ddc900b4816271c3f3188885739e63e3bd6325b2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "47149aa7_75240d67",
+        "filename": "git_squash_branch.py",
+        "patchSetId": 10
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1137015
+      },
+      "writtenOn": "2026-08-11T01:43:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "813d396d_dbb510bf",
       "range": {
         "startLine": 52,
         "startChar": 0,
@@ -133,6 +229,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "7050244a_48d4ff81",
+        "filename": "git_squash_branch.py",
+        "patchSetId": 10
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 1137015
+      },
+      "writtenOn": "2026-08-11T01:43:12Z",
+      "side": 1,
+      "message": "Good suggestion! Done.",
+      "parentUuid": "3036b033_ba0cbc05",
+      "range": {
+        "startLine": 80,
+        "startChar": 4,
+        "endLine": 81,
+        "endChar": 48
+      },
+      "revId": "ddc900b4816271c3f3188885739e63e3bd6325b2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "208352d7_73adce73",
@@ -146,6 +266,30 @@
       "writtenOn": "2026-08-10T23:07:38Z",
       "side": 1,
       "message": "let\u0027s move this after `parse_args` so `--help` still works",
+      "range": {
+        "startLine": 143,
+        "startChar": 7,
+        "endLine": 143,
+        "endChar": 30
+      },
+      "revId": "ddc900b4816271c3f3188885739e63e3bd6325b2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6c884e49_f23715ab",
+        "filename": "git_squash_branch.py",
+        "patchSetId": 10
+      },
+      "lineNbr": 143,
+      "author": {
+        "id": 1137015
+      },
+      "writtenOn": "2026-08-11T01:43:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "208352d7_73adce73",
       "range": {
         "startLine": 143,
         "startChar": 7,
@@ -179,6 +323,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "868afa23_585f9ebd",
+        "filename": "git_squash_branch.py",
+        "patchSetId": 10
+      },
+      "lineNbr": 186,
+      "author": {
+        "id": 1137015
+      },
+      "writtenOn": "2026-08-11T01:43:12Z",
+      "side": 1,
+      "message": "Not needed. Removed.",
+      "parentUuid": "11f0b961_786fac56",
+      "range": {
+        "startLine": 180,
+        "startChar": 4,
+        "endLine": 186,
+        "endChar": 16
+      },
+      "revId": "ddc900b4816271c3f3188885739e63e3bd6325b2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "9a22efd6_d90e5290",
@@ -192,6 +360,30 @@
       "writtenOn": "2026-08-10T23:07:38Z",
       "side": 1,
       "message": "this isn\u0027t used",
+      "range": {
+        "startLine": 17,
+        "startChar": 38,
+        "endLine": 17,
+        "endChar": 52
+      },
+      "revId": "ddc900b4816271c3f3188885739e63e3bd6325b2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8d16192f_75d692f0",
+        "filename": "git_squash_branch_tree.py",
+        "patchSetId": 10
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1137015
+      },
+      "writtenOn": "2026-08-11T01:43:12Z",
+      "side": 1,
+      "message": "Good catch. removed.",
+      "parentUuid": "9a22efd6_d90e5290",
       "range": {
         "startLine": 17,
         "startChar": 38,
