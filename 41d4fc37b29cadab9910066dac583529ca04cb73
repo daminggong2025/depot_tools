@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "81157141_cc89691a",
+        "filename": "git_cache.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 572,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-08-11T23:41:31Z",
+      "side": 0,
+      "message": "dropping this is a behavior change that unrelated to git 3 support. let\u0027s keep this the same and check for existence in the block (and insert the object-format arg if not exists)",
+      "range": {
+        "startLine": 572,
+        "startChar": 32,
+        "endLine": 572,
+        "endChar": 64
+      },
+      "revId": "41d4fc37b29cadab9910066dac583529ca04cb73",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
