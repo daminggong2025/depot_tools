@@ -492,6 +492,30 @@ branch refs/heads/empty_branch_in_worktree
 
         self.assertIn("Unable to determine nerp@{upstream}", err)
 
+    def testReplayRebase(self):
+        self.repo.git("checkout", "branch_K")
+        self.repo.run(self.nb.main, ["feature_branch"])
+        with self.repo.open("feat", "w") as f:
+            f.write("feature work")
+        self.repo.git("add", "feat")
+        self.repo.git_commit("feat1")
+
+        start_hash = self.repo.git("rev-parse", "branch_K").stdout.strip()
+        new_sha = self.repo.run(
+            self.gc.replay_rebase, "origin/main", start_hash, "feature_branch"
+        )
+        self.assertIsNotNone(new_sha)
+        old_sha = self.repo.git("rev-parse", "feature_branch").stdout.strip()
+        self.repo.run(
+            self.gc.update_refs_atomic,
+            [("feature_branch", new_sha, old_sha)],
+            "test-rebase",
+        )
+        self.assertEqual(
+            self.repo.git("rev-parse", "feature_branch~").stdout.strip(),
+            self.repo.git("rev-parse", "origin/main").stdout.strip(),
+        )
+
 
 if __name__ == "__main__":
     sys.exit(

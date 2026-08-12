@@ -217,6 +217,21 @@ def rebase_branch(branch, parent, start_hash, no_squash):
     if git.hash_one(parent) != start_hash:
         # Try a plain rebase first
         print("Rebasing:", format_branch_name(branch))
+
+        # First attempt in-memory rebase with git replay:
+        new_sha = git.replay_rebase(parent, start_hash, branch)
+        if new_sha:
+            old_sha = git.hash_one(branch)
+            git.update_refs_atomic(
+                [(branch, new_sha, old_sha)], "rebase-update"
+            )
+            git.remove_merge_base(branch)
+            git.get_or_create_merge_base(branch)
+            return True
+
+        # Cleanly check out branch before falling back to porcelain rebase.
+        git.run("checkout", "-f", branch)
+
         consider_squashing = git.get_num_commits(branch) != 1 and not (
             no_squash
         )
@@ -471,6 +486,7 @@ def main(args=None):
         # return_branch may not be there any more.
         if return_branch in git.branches(use_limit=False):
             git.run("checkout", return_branch)
+            git.run("reset", "--hard", "HEAD")
             git.thaw()
         else:
             root_branch = git.root()

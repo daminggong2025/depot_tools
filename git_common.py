@@ -632,15 +632,44 @@ def get_branch_tree(use_limit=False):
     Returns a tuple of (skipped, <branch_tree dict>) where skipped is a set of
     branches without upstream branches defined.
     """
+    key = "depot-tools.branch-limit"
+    limit = get_config_int(key, 20)
+
+    data = run(
+        "for-each-ref",
+        "--format=%(refname:short)%00%(upstream:short)",
+        "refs/heads",
+    )
+    assert isinstance(data, str)
+    raw_lines = [line for line in data.splitlines() if line]
+
+    if use_limit and len(raw_lines) > limit:
+        die(
+            """\
+      Your git repo has too many branches (%d/%d) for this tool to work well.
+
+      You may adjust this limit by running:
+      git config %s <new_limit>
+
+      You may also try cleaning up your old branches by running:
+      git cl archive
+      """,
+            len(raw_lines),
+            limit,
+            key,
+        )
+
     skipped = set()
     branch_tree = {}
 
-    for branch in branches(use_limit=use_limit):
-        parent = upstream(branch)
+    for line in raw_lines:
+        parts = line.split("\0", 1)
+        branch = parts[0]
+        parent = parts[1] if len(parts) > 1 and parts[1] else None
         if not parent:
             skipped.add(branch)
-            continue
-        branch_tree[branch] = parent
+        else:
+            branch_tree[branch] = parent
 
     return skipped, branch_tree
 
@@ -874,6 +903,33 @@ def rebase(parent, start, branch, abort=False, allow_gc=False):
             cpe.stdout.decode("utf-8", "replace"),
             cpe.stderr.decode("utf-8", "replace"),
         )
+
+
+def replay_rebase(parent: str, start: str, branch: str) -> Optional[str]:
+    """Attempts an in-memory rebase of `branch` onto `parent` from `start` using `git replay`.
+
+    Returns the new tip commit SHA if successful, or None if conflicts occur or replay fails.
+    Does not modify the working tree or index.
+    """
+    try:
+        ref = branch if branch.startswith("refs/") else f"refs/heads/{branch}"
+        out = run(
+            "replay",
+            "--ref-action=print",
+            "--onto",
+            parent,
+            f"{start}..{branch}",
+            "--ref",
+            ref,
+        )
+        assert isinstance(out, str)
+        for line in out.splitlines():
+            parts = line.strip().split()
+            if len(parts) >= 3 and parts[0] == "update":
+                return parts[2]
+        return None
+    except subprocess2.CalledProcessError:
+        return None
 
 
 def remove_merge_base(branch):
