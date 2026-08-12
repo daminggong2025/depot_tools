@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "0326622e_7d749b2b",
+        "filename": "git_common.py",
+        "patchSetId": 12
+      },
+      "lineNbr": 1196,
+      "author": {
+        "id": 1137015
+      },
+      "writtenOn": "2026-08-12T05:00:37Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a284a1b1_08d054aa",
+      "range": {
+        "startLine": 1196,
+        "startChar": 0,
+        "endLine": 1196,
+        "endChar": 22
+      },
+      "revId": "b4adf810ef1eb00982fcd0aa0f999b00facbfded",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "0507c224_1cbcee0b",
@@ -37,6 +61,30 @@
       "writtenOn": "2026-08-11T23:50:05Z",
       "side": 1,
       "message": "use f strings here and below incl til :1233",
+      "range": {
+        "startLine": 1197,
+        "startChar": 17,
+        "endLine": 1197,
+        "endChar": 53
+      },
+      "revId": "b4adf810ef1eb00982fcd0aa0f999b00facbfded",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4bc23c14_b71ea452",
+        "filename": "git_common.py",
+        "patchSetId": 12
+      },
+      "lineNbr": 1197,
+      "author": {
+        "id": 1137015
+      },
+      "writtenOn": "2026-08-12T05:00:37Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0507c224_1cbcee0b",
       "range": {
         "startLine": 1197,
         "startChar": 17,
