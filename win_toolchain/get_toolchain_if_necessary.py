@@ -522,7 +522,7 @@ def SetupJunction(target_dir):
         try:
             if os.path.samefile(os.readlink(junction_dir), target_dir):
                 return junction_dir
-        except:
+        except:  # noqa: E722
             # os.readlink may fail if junction_dir is not junction or symlink
             pass
         RmDir(junction_dir)

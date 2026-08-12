@@ -22,7 +22,6 @@ sys.path.insert(
 import bot_update
 
 # TODO: Should fix these warnings.
-# pylint: disable=line-too-long
 
 
 class MockedPopen(object):

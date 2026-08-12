@@ -4,18 +4,14 @@
 
 import argparse
 import collections
-import contextlib
 import fnmatch
-import hashlib
 import logging
 import os
-import platform
 import posixpath
 import shutil
 import string
 import subprocess
 import sys
-import tempfile
 
 THIS_DIR = os.path.abspath(os.path.dirname(__file__))
 ROOT_DIR = os.path.abspath(os.path.join(THIS_DIR, ".."))
@@ -279,8 +275,8 @@ def _traverse_to_git_root(abspath):
         exists as an ancestor; otherwise, None.
 
     Examples:
-      * "C:\Program Files\Git\cmd" -> "C:\Program Files\Git"
-      * "C:\Program Files\Git\mingw64\bin" -> "C:\Program Files\Git"
+      * "C:\\Program Files\\Git\\cmd" -> "C:\\Program Files\\Git"
+      * "C:\\Program Files\\Git\\mingw64\bin" -> "C:\\Program Files\\Git"
     """
     head, tail = os.path.split(abspath)
     while tail:
@@ -555,7 +551,7 @@ def _win_git_bootstrap_config():
 
     # Clean up deprecated setting depot-tools.gitPostprocessVersion.
     postprocess_key = "depot-tools.gitPostprocessVersion"
-    if current_config.get(postprocess_key) != None:
+    if current_config.get(postprocess_key) != None:  # noqa: E711
         _check_call(
             [git_bat_path, "config", "--unset", "--global", postprocess_key]
         )
