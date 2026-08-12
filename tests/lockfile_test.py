@@ -17,12 +17,11 @@ import queue
 DEPOT_TOOLS_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, DEPOT_TOOLS_ROOT)
 
-from testing_support import coverage_utils
+from testing_support import coverage_utils  # noqa: E402
 
-import lockfile
+import lockfile  # noqa: E402
 
 # TODO: Should fix these warnings.
-# pylint: disable=line-too-long
 
 
 class LockTest(unittest.TestCase):

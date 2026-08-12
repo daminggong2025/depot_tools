@@ -22,9 +22,9 @@ from unittest import mock
 DEPOT_TOOLS_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, DEPOT_TOOLS_ROOT)
 
-import subprocess2
-from testing_support import coverage_utils
-from testing_support import git_test_utils
+import subprocess2  # noqa: E402
+from testing_support import coverage_utils  # noqa: E402
+from testing_support import git_test_utils  # noqa: E402
 
 GitRepo = git_test_utils.GitRepo
 
@@ -390,7 +390,8 @@ class GitReadOnlyFunctionsTest(
 
     def testTags(self):
         self.assertEqual(
-            set(self.repo.run(self.gc.tags)), {"tag_" + l for l in "ABCDE"}
+            set(self.repo.run(self.gc.tags)),
+            {"tag_" + l for l in "ABCDE"},  # noqa: E741
         )
 
     def testTree(self):
@@ -914,7 +915,7 @@ class GitMutableStructuredTest(
         )
 
         lines = ["✔ cool message", ""]
-        for l in "HIJK":
+        for l in "HIJK":  # noqa: E741
             lines.extend((self.repo[l], l, ""))
         lines.pop()
         msg = "\n".join(lines)
@@ -1071,9 +1072,8 @@ class GitMutableStructuredTest(
 
     def testStatus(self):
         def inner():
-            dictified_status = lambda: {
-                k: dict(v._asdict())  # pylint: disable=protected-access
-                for k, v in self.repo.run(self.gc.status)
+            dictified_status = lambda: {  # noqa: E731
+                k: dict(v._asdict()) for k, v in self.repo.run(self.gc.status)
             }
             self.repo.git("mv", "file", "cat")
             with open("COOL", "w") as f:
