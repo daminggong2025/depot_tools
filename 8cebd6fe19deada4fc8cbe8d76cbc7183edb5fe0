@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ea02e06b_84c3d919",
+        "filename": "git_cache.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 461,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-08-12T18:26:38Z",
+      "side": 1,
+      "message": "Please fix this WARNING reported by code-review-workflow: [code-review-workflow] Multi-line docstrings should consist of a one-line summar...\n\n[code-review-workflow] Multi-line docstrings should consist of a one-line summary followed by a blank line before the rest of the description.\n\n**Suggestion**\n\n        \"\"\"Returns the object format (\u0027sha1\u0027 or \u0027sha256\u0027) of the cache repo.\n\n        Returns None if not determined.\n        \"\"\"\n\n**Reference**\n\nPEP 257",
+      "range": {
+        "startLine": 459,
+        "startChar": 0,
+        "endLine": 461,
+        "endChar": 0
+      },
+      "revId": "8cebd6fe19deada4fc8cbe8d76cbc7183edb5fe0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
