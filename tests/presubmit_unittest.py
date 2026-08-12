@@ -4,17 +4,15 @@
 # found in the LICENSE file.
 """Unit tests for presubmit_support.py and presubmit_canned_checks.py."""
 
-# pylint: disable=no-member,E1103
-
 import fnmatch
 import functools
 import io
-import itertools
+import itertools  # noqa: F401
 import logging
-import multiprocessing
+import multiprocessing  # noqa: F401
 import os
 import random
-import re
+import re  # noqa: F401
 import sys
 import tempfile
 import threading
@@ -23,23 +21,23 @@ import unittest
 
 from io import StringIO
 from unittest import mock
-import urllib.request as urllib_request
+import urllib.request as urllib_request  # noqa: F401
 
 _ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, _ROOT)
 
-from testing_support.test_case_utils import TestCaseUtils
+from testing_support.test_case_utils import TestCaseUtils  # noqa: E402
 
-import auth
-import gclient_utils
-import git_cl
-import git_common as git
-import json
-import owners_client
-import presubmit_support as presubmit
-import rdb_wrapper
-import scm
-import subprocess2 as subprocess
+import auth  # noqa: E402, F401
+import gclient_utils  # noqa: E402
+import git_cl  # noqa: E402, F401
+import git_common as git  # noqa: E402, F401
+import json  # noqa: E402
+import owners_client  # noqa: E402
+import presubmit_support as presubmit  # noqa: E402
+import rdb_wrapper  # noqa: E402
+import scm  # noqa: E402
+import subprocess2 as subprocess  # noqa: E402
 
 # Shortcut.
 presubmit_canned_checks = presubmit.presubmit_canned_checks
@@ -47,12 +45,6 @@ presubmit_canned_checks = presubmit.presubmit_canned_checks
 RUNNING_PY_CHECKS_TEXT = (
     "Running presubmit upload checks on branch mychange ...\n"
 )
-
-# Access to a protected member XXX of a client class
-# pylint: disable=protected-access
-
-# TODO: Should fix these warnings.
-# pylint: disable=line-too-long
 
 
 class MockTemporaryFile(object):
@@ -69,7 +61,6 @@ class MockTemporaryFile(object):
 
     def close(self):
         pass
-
 
 class PresubmitTestsBase(TestCaseUtils, unittest.TestCase):
     """Sets up and tears down the mocks but doesn't test anything as-is."""
@@ -212,7 +203,6 @@ index fe3de7b..54ae6e1 100755
 
     def checkstdout(self, value):
         self.assertEqual(sys.stdout.getvalue(), value)
-
 
 class PresubmitUnittest(PresubmitTestsBase):
     """General presubmit_support.py tests (excluding InputApi and OutputApi)."""
@@ -409,7 +399,7 @@ class PresubmitUnittest(PresubmitTestsBase):
             "+   erratically,",
             " into still different texts",
             "-from this.",
-            "\ No newline at end of file",
+            "\ No newline at end of file",  # noqa: W605
             "+from this.",
             "+",
             "+For the most part,",
@@ -423,7 +413,7 @@ class PresubmitUnittest(PresubmitTestsBase):
             "+or anything messed up like that,",
             "+because you parsed the header",
             "+correctly.",
-            "\ No newline at end of file",
+            "\ No newline at end of file",  # noqa: W605
             "",
         ]
         files = [
@@ -797,9 +787,9 @@ class PresubmitUnittest(PresubmitTestsBase):
         )
 
         expected = (
-            "Running post upload checks \.\.\.\n"
+            "Running post upload checks \.\.\.\n"  # noqa: W605
             "\n"
-            "\*\* Post Upload Hook Messages \*\*\n"
+            "\*\* Post Upload Hook Messages \*\*\n"  # noqa: W605
             "!!\n"
             "\n"
         )
@@ -1640,7 +1630,6 @@ index d7ba659f..b7957f3 100644
             "--gerrit_fetch requires --gerrit_url, --issue and --patchset."
         )
 
-
 class InputApiUnittest(PresubmitTestsBase):
     """Tests presubmit.InputApi."""
 
@@ -2142,7 +2131,6 @@ class InputApiUnittest(PresubmitTestsBase):
         )
         self.assertEqual(["foo", "bar"], input_api._named_temporary_files)
 
-
 class OutputApiUnittest(PresubmitTestsBase):
     """Tests presubmit.OutputApi."""
 
@@ -2271,7 +2259,6 @@ class OutputApiUnittest(PresubmitTestsBase):
         output_api.PresubmitPromptOrNotify("???").handle()
         self.assertIsNotNone(sys.stdout.getvalue().count("???"))
 
-
 class AffectedFileUnittest(PresubmitTestsBase):
     def testAffectedFile(self):
         gclient_utils.FileRead.return_value = "whatever\ncookie"
@@ -2356,7 +2343,6 @@ class AffectedFileUnittest(PresubmitTestsBase):
                 path, "M", self.fake_root_dir, None
             ).Extension()
             self.assertEqual(expectedExtension, extension)
-
 
 class ChangeUnittest(PresubmitTestsBase):
     def testAffectedFiles(self):
@@ -2550,12 +2536,10 @@ class ChangeUnittest(PresubmitTestsBase):
         self.assertEqual(["bar", "baz", "foo"], change.TBRsFromDescription())
         self.assertEqual("bar,baz,foo", change.TBR)
 
-
 class CannedChecksUnittest(PresubmitTestsBase):
     """Tests presubmit_canned_checks.py."""
 
     def MockInputApi(self, change, committing, gerrit=None):
-        # pylint: disable=no-self-use
         input_api = mock.MagicMock(presubmit.InputApi)
         input_api.thread_pool = presubmit.ThreadPool()
         input_api.parallel = False
@@ -3246,7 +3230,7 @@ class CannedChecksUnittest(PresubmitTestsBase):
         self.assertEqual(results1[0]._long_text, "makefile.foo:46")
 
     def testCannedCheckLongLines(self):
-        check = lambda x, y, z: presubmit_canned_checks.CheckLongLines(
+        check = lambda x, y, z: presubmit_canned_checks.CheckLongLines(  # noqa: E731
             x, y, 10, z
         )
         self.ContentTest(
@@ -3259,7 +3243,7 @@ class CannedChecksUnittest(PresubmitTestsBase):
         )
 
     def testCannedCheckJavaLongLines(self):
-        check = lambda x, y, _: presubmit_canned_checks.CheckLongLines(x, y, 80)
+        check = lambda x, y, _: presubmit_canned_checks.CheckLongLines(x, y, 80)  # noqa: E731
         self.ContentTest(
             check,
             "A " * 50,
@@ -3270,7 +3254,7 @@ class CannedChecksUnittest(PresubmitTestsBase):
         )
 
     def testCannedCheckRustLongLines(self):
-        check = lambda x, y, _: presubmit_canned_checks.CheckLongLines(x, y, 80)
+        check = lambda x, y, _: presubmit_canned_checks.CheckLongLines(x, y, 80)  # noqa: E731
         # Rust files should pass even with long lines.
         self.ContentTest(
             check,
@@ -3282,7 +3266,7 @@ class CannedChecksUnittest(PresubmitTestsBase):
         )
 
     def testCannedCheckMojomLongLines(self):
-        check = lambda x, y, _: presubmit_canned_checks.CheckLongLines(x, y, 80)
+        check = lambda x, y, _: presubmit_canned_checks.CheckLongLines(x, y, 80)  # noqa: E731
         # Mojom files should pass with long LINT.ThenChange lines.
         self.ContentTest(
             check,
@@ -3295,7 +3279,7 @@ class CannedChecksUnittest(PresubmitTestsBase):
         )
 
     def testCannedCheckSpecialJavaLongLines(self):
-        check = lambda x, y, _: presubmit_canned_checks.CheckLongLines(x, y, 80)
+        check = lambda x, y, _: presubmit_canned_checks.CheckLongLines(x, y, 80)  # noqa: E731
         self.ContentTest(
             check,
             "import " + "A " * 150,
@@ -3392,7 +3376,7 @@ the current line as well!
             self.PythonLongLineTest(40, content, should_pass=False)
 
     def testCannedCheckJSLongLines(self):
-        check = lambda x, y, _: presubmit_canned_checks.CheckLongLines(x, y, 10)
+        check = lambda x, y, _: presubmit_canned_checks.CheckLongLines(x, y, 10)  # noqa: E731
         self.ContentTest(
             check,
             "GEN('#include \"c/b/ui/webui/fixture.h\"');",
@@ -3403,7 +3387,7 @@ the current line as well!
         )
 
     def testCannedCheckJSLongImports(self):
-        check = lambda x, y, _: presubmit_canned_checks.CheckLongLines(x, y, 10)
+        check = lambda x, y, _: presubmit_canned_checks.CheckLongLines(x, y, 10)  # noqa: E731
         self.ContentTest(
             check,
             "import {Name, otherName} from './dir/file.js';",
@@ -3414,7 +3398,7 @@ the current line as well!
         )
 
     def testCannedCheckTSLongImports(self):
-        check = lambda x, y, _: presubmit_canned_checks.CheckLongLines(x, y, 10)
+        check = lambda x, y, _: presubmit_canned_checks.CheckLongLines(x, y, 10)  # noqa: E731
         self.ContentTest(
             check,
             "import {Name, otherName} from './dir/file';",
@@ -3425,7 +3409,7 @@ the current line as well!
         )
 
     def testCannedCheckObjCExceptionLongLines(self):
-        check = lambda x, y, _: presubmit_canned_checks.CheckLongLines(x, y, 80)
+        check = lambda x, y, _: presubmit_canned_checks.CheckLongLines(x, y, 80)  # noqa: E731
         self.ContentTest(
             check,
             "#import " + "A " * 150,
@@ -3436,7 +3420,7 @@ the current line as well!
         )
 
     def testCannedCheckMakefileLongLines(self):
-        check = lambda x, y, _: presubmit_canned_checks.CheckLongLines(x, y, 80)
+        check = lambda x, y, _: presubmit_canned_checks.CheckLongLines(x, y, 80)  # noqa: E731
         self.ContentTest(
             check,
             "A " * 100,
@@ -3447,7 +3431,7 @@ the current line as well!
         )
 
     def testCannedCheckLongLinesLF(self):
-        check = lambda x, y, z: presubmit_canned_checks.CheckLongLines(
+        check = lambda x, y, z: presubmit_canned_checks.CheckLongLines(  # noqa: E731
             x, y, 10, z
         )
         self.ContentTest(
@@ -3460,7 +3444,7 @@ the current line as well!
         )
 
     def testCannedCheckCppExceptionLongLines(self):
-        check = lambda x, y, z: presubmit_canned_checks.CheckLongLines(
+        check = lambda x, y, z: presubmit_canned_checks.CheckLongLines(  # noqa: E731
             x, y, 10, z
         )
         self.ContentTest(
@@ -3473,7 +3457,7 @@ the current line as well!
         )
 
     def testCannedCheckLongLinesHttp(self):
-        check = lambda x, y, z: presubmit_canned_checks.CheckLongLines(
+        check = lambda x, y, z: presubmit_canned_checks.CheckLongLines(  # noqa: E731
             x, y, 10, z
         )
         self.ContentTest(
@@ -3486,7 +3470,7 @@ the current line as well!
         )
 
     def testCannedCheckLongLinesFile(self):
-        check = lambda x, y, z: presubmit_canned_checks.CheckLongLines(
+        check = lambda x, y, z: presubmit_canned_checks.CheckLongLines(  # noqa: E731
             x, y, 10, z
         )
         self.ContentTest(
@@ -3499,7 +3483,7 @@ the current line as well!
         )
 
     def testCannedCheckLongLinesCssUrl(self):
-        check = lambda x, y, z: presubmit_canned_checks.CheckLongLines(
+        check = lambda x, y, z: presubmit_canned_checks.CheckLongLines(  # noqa: E731
             x, y, 10, z
         )
         self.ContentTest(
@@ -3512,7 +3496,7 @@ the current line as well!
         )
 
     def testCannedCheckLongLinesLongSymbol(self):
-        check = lambda x, y, z: presubmit_canned_checks.CheckLongLines(
+        check = lambda x, y, z: presubmit_canned_checks.CheckLongLines(  # noqa: E731
             x, y, 10, z
         )
         self.ContentTest(
@@ -3912,7 +3896,7 @@ the current line as well!
 
     def testRunPythonUnitTestsNonExistentUpload(self):
         input_api = self.MockInputApi(None, False)
-        subprocess.Popen().returncode = 1  # pylint: disable=no-value-for-parameter
+        subprocess.Popen().returncode = 1
         presubmit.sigint_handler.wait.return_value = (b"foo", None)
 
         results = presubmit_canned_checks.RunPythonUnitTests(
@@ -3925,7 +3909,7 @@ the current line as well!
 
     def testRunPythonUnitTestsNonExistentCommitting(self):
         input_api = self.MockInputApi(None, True)
-        subprocess.Popen().returncode = 1  # pylint: disable=no-value-for-parameter
+        subprocess.Popen().returncode = 1
         presubmit.sigint_handler.wait.return_value = (b"foo", None)
 
         results = presubmit_canned_checks.RunPythonUnitTests(
@@ -3939,7 +3923,7 @@ the current line as well!
     def testRunPythonUnitTestsFailureUpload(self):
         input_api = self.MockInputApi(None, False)
         input_api.unittest = mock.MagicMock(unittest)
-        subprocess.Popen().returncode = 1  # pylint: disable=no-value-for-parameter
+        subprocess.Popen().returncode = 1
         presubmit.sigint_handler.wait.return_value = (b"foo", None)
 
         results = presubmit_canned_checks.RunPythonUnitTests(
@@ -3956,7 +3940,7 @@ the current line as well!
 
     def testRunPythonUnitTestsFailureCommitting(self):
         input_api = self.MockInputApi(None, True)
-        subprocess.Popen().returncode = 1  # pylint: disable=no-value-for-parameter
+        subprocess.Popen().returncode = 1
         presubmit.sigint_handler.wait.return_value = (b"foo", None)
 
         results = presubmit_canned_checks.RunPythonUnitTests(
@@ -3974,7 +3958,7 @@ the current line as well!
     def testRunPythonUnitTestsSuccess(self):
         input_api = self.MockInputApi(None, False)
         input_api.unittest = mock.MagicMock(unittest)
-        subprocess.Popen().returncode = 0  # pylint: disable=no-value-for-parameter
+        subprocess.Popen().returncode = 0
         presubmit.sigint_handler.wait.return_value = (b"", None)
 
         presubmit_canned_checks.RunPythonUnitTests(
@@ -4077,7 +4061,6 @@ the current line as well!
         self.assertEqual(len(commands[0].cmd), 3 + 50)
         self.assertEqual(len(commands[1].cmd), 3 + 50)
         self.assertEqual(len(commands[2].cmd), 3 + 50)
-
 
     def testCannedRunRuffMissingTool(self):
         affected_file = mock.Mock()
@@ -4982,7 +4965,6 @@ the current line as well!
         self.assertEqual(len(commands), 1)
         self.assertEqual(commands[0].name, "Verify script.py")
 
-
 class ThreadPoolTest(unittest.TestCase):
     def setUp(self):
         super(ThreadPoolTest, self).setUp()
@@ -5028,7 +5010,6 @@ class ThreadPoolTest(unittest.TestCase):
             messages[1],
         )
         self.assertEqual("5\n5 (0.00s) failed\nstdout", messages[2])
-
 
 if __name__ == "__main__":
     import unittest

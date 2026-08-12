@@ -18,12 +18,8 @@ import gclient_smoketest_base
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT_DIR)
 
-import subprocess2
-from testing_support.fake_repos import join, write
-
-# TODO: Should fix these warnings.
-# pylint: disable=line-too-long
-
+import subprocess2  # noqa: E402
+from testing_support.fake_repos import join  # noqa: E402
 
 class GClientSmokeGIT(gclient_smoketest_base.GClientSmokeBase):
     def setUp(self):
@@ -2150,7 +2146,6 @@ class GClientSmokeGIT(gclient_smoketest_base.GClientSmokeBase):
             ]
         )
         self.assertTree(tree)
-
 
 if __name__ == "__main__":
     if "-v" in sys.argv:

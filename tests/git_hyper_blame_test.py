@@ -15,16 +15,12 @@ from unittest import mock
 DEPOT_TOOLS_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, DEPOT_TOOLS_ROOT)
 
-from testing_support import coverage_utils
-from testing_support import git_test_utils
+from testing_support import coverage_utils  # noqa: E402
+from testing_support import git_test_utils  # noqa: E402
 
-import gclient_utils
+import gclient_utils  # noqa: E402
 
 GitRepo = git_test_utils.GitRepo
-
-# TODO: Should fix these warnings.
-# pylint: disable=line-too-long
-
 
 class GitHyperBlameTestBase(git_test_utils.GitRepoReadOnlyTestBase):
     @classmethod
@@ -66,7 +62,6 @@ class GitHyperBlameTestBase(git_test_utils.GitRepoReadOnlyTestBase):
         else:
             author += self.repo.show_commit(commit_name, format_string=" %ai")
         return ("%s (%s %s" % (start, author, rest)).encode("utf-8")
-
 
 class GitHyperBlameMainTest(GitHyperBlameTestBase):
     """End-to-end tests on a very simple repo."""
@@ -299,7 +294,6 @@ class GitHyperBlameMainTest(GitHyperBlameTestBase):
         )
         self.assertEqual("", sys.stderr.getvalue())
 
-
 class GitHyperBlameSimpleTest(GitHyperBlameTestBase):
     REPO_SCHEMA = """
   A B D E F G H
@@ -441,7 +435,6 @@ class GitHyperBlameSimpleTest(GitHyperBlameTestBase):
         retval, output = self.run_hyperblame(["B"], "some/files/empty", "tag_B")
         self.assertEqual(0, retval)
         self.assertEqual(expected_output, output)
-
 
 class GitHyperBlameLineMotionTest(GitHyperBlameTestBase):
     REPO_SCHEMA = """
@@ -646,7 +639,6 @@ class GitHyperBlameLineMotionTest(GitHyperBlameTestBase):
         self.assertEqual(0, retval)
         self.assertEqual(expected_output, output)
 
-
 class GitHyperBlameLineNumberTest(GitHyperBlameTestBase):
     REPO_SCHEMA = """
   A B C D
@@ -693,7 +685,6 @@ class GitHyperBlameLineNumberTest(GitHyperBlameTestBase):
         self.assertEqual(0, retval)
         self.assertEqual(expected_output, output)
 
-
 class GitHyperBlameUnicodeTest(GitHyperBlameTestBase):
     REPO_SCHEMA = """
   A B C
@@ -732,7 +723,6 @@ class GitHyperBlameUnicodeTest(GitHyperBlameTestBase):
         retval, output = self.run_hyperblame([], "file", "tag_C")
         self.assertEqual(0, retval)
         self.assertEqual(expected_output, output)
-
 
 if __name__ == "__main__":
     sys.exit(

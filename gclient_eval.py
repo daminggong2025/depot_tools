@@ -7,7 +7,6 @@ import collections
 from io import StringIO
 import logging
 import string
-import sys
 import tokenize
 
 import gclient_utils
@@ -15,15 +14,11 @@ import from_third_party
 
 schema = from_third_party.import_module("schema")
 
-# TODO: Should fix these warnings.
-# pylint: disable=line-too-long
-
 # git_dependencies migration states. Used within the DEPS file to indicate
 # the current migration state.
 DEPS = "DEPS"
 SYNC = "SYNC"
 SUBMODULES = "SUBMODULES"
-
 
 class _SafeFormatter(string.Formatter):
     def get_field(self, field_name, args, kwargs):
@@ -33,9 +28,7 @@ class _SafeFormatter(string.Formatter):
             )
         return super().get_field(field_name, args, kwargs)
 
-
 _SAFE_FORMATTER = _SafeFormatter()
-
 
 def _ExpandVars(value, vars_dict):
     """Expands {name} placeholders in |value| using |vars_dict|.
@@ -46,7 +39,6 @@ def _ExpandVars(value, vars_dict):
     internals (e.g. __globals__) and read process state such as os.environ.
     """
     return _SAFE_FORMATTER.format(value, **vars_dict)
-
 
 class ConstantString(object):
     def __init__(self, value):
@@ -67,7 +59,6 @@ class ConstantString(object):
 
     def __hash__(self):
         return self.value.__hash__()
-
 
 class _NodeDict(collections.abc.MutableMapping):
     """Dict-like type that also stores information on AST nodes and tokens."""
@@ -118,7 +109,6 @@ class _NodeDict(collections.abc.MutableMapping):
     def SetNode(self, key, value, node):
         self.data[key] = (value, node)
 
-
 def _NodeDictSchema(dict_schema):
     """Validate dict_schema after converting _NodeDict to a regular dict."""
 
@@ -128,18 +118,14 @@ def _NodeDictSchema(dict_schema):
 
     return validate
 
-
 def _IsConstant(node):
     return isinstance(node, ast.Constant)
-
 
 def _IsStringConstant(node):
     return _IsConstant(node) and isinstance(node.value, str)
 
-
 def _IsNameConstant(node):
     return _IsConstant(node) and isinstance(node.value, (bool, type(None)))
-
 
 def _IsNumericConstant(node):
     return (
@@ -147,7 +133,6 @@ def _IsNumericConstant(node):
         and isinstance(node.value, (int, float, complex))
         and not isinstance(node.value, bool)
     )
-
 
 # See https://github.com/keleshev/schema for docs how to configure schema.
 # NOTE: If you change this schema, you may need to update other sites that
@@ -324,7 +309,6 @@ _GCLIENT_SCHEMA = schema.Schema(
     )
 )
 
-
 def _gclient_eval(node_or_string, filename="<unknown>", vars_dict=None):
     """Safely evaluates a single expression. Returns the result."""
     _allowed_names = {"None": None, "True": True, "False": False}
@@ -447,7 +431,6 @@ def _gclient_eval(node_or_string, filename="<unknown>", vars_dict=None):
 
     return _convert(node_or_string)
 
-
 def Exec(content, filename="<unknown>", vars_override=None, builtin_vars=None):
     """Safely execs a set of assignments."""
 
@@ -536,7 +519,6 @@ def Exec(content, filename="<unknown>", vars_override=None, builtin_vars=None):
     except schema.SchemaError as e:
         raise gclient_utils.Error(str(e))
 
-
 def _StandardizeDeps(deps_dict, vars_dict):
     """ "Standardizes the deps_dict.
 
@@ -553,7 +535,6 @@ def _StandardizeDeps(deps_dict, vars_dict):
         dep_info.setdefault("dep_type", "git")
         new_deps_dict[dep_name] = dep_info
     return new_deps_dict
-
 
 def _MergeDepsOs(deps_dict, os_deps_dict, os_name):
     """Merges the deps in os_deps_dict into conditional dependencies in deps_dict.
@@ -588,7 +569,6 @@ def _MergeDepsOs(deps_dict, os_deps_dict, os_name):
 
         deps_dict[dep_name] = dep_info
 
-
 def UpdateCondition(info_dict, op, new_condition):
     """Updates info_dict's condition with |new_condition|.
 
@@ -608,7 +588,6 @@ def UpdateCondition(info_dict, op, new_condition):
     # Otherwise, no condition should be set
     elif curr_condition:
         del info_dict["condition"]
-
 
 def Parse(content, filename, vars_override=None, builtin_vars=None):
     """Parses DEPS strings.
@@ -653,7 +632,6 @@ def Parse(content, filename, vars_override=None, builtin_vars=None):
 
     return result
 
-
 def _to_plain_types(val):
     if isinstance(val, collections.abc.MutableMapping):
         return {k: _to_plain_types(v) for k, v in val.items()}
@@ -662,7 +640,6 @@ def _to_plain_types(val):
     if isinstance(val, tuple):
         return tuple(_to_plain_types(v) for v in val)
     return val
-
 
 def ParseLocalConfig(content, filename="<unknown>"):
     """Safely parses a local configuration file (like .gclient or
@@ -740,7 +717,6 @@ def ParseLocalConfig(content, filename="<unknown>"):
                 % (name, e, filename, getattr(node, "lineno", "<unknown>"))
             )
     return result
-
 
 def EvaluateCondition(condition, variables, referenced_variables=None):
     """Safely evaluates a boolean condition. Returns the result."""
@@ -859,11 +835,9 @@ def EvaluateCondition(condition, variables, referenced_variables=None):
 
     return _convert(main_node)
 
-
 def RenderDEPSFile(gclient_dict):
     contents = sorted(gclient_dict.tokens.values(), key=lambda token: token[2])
     return tokenize.untokenize(contents)
-
 
 def _UpdateAstString(tokens, node, value):
     if isinstance(node, ast.Call):
@@ -876,7 +850,6 @@ def _UpdateAstString(tokens, node, value):
     tokens[position][1] = quote_char + value + quote_char
     node.value = value
 
-
 def _ShiftLinesInTokens(tokens, delta, start):
     new_tokens = {}
     for token in tokens.values():
@@ -885,7 +858,6 @@ def _ShiftLinesInTokens(tokens, delta, start):
             token[3] = token[3][0] + delta, token[3][1]
         new_tokens[token[2]] = token
     return new_tokens
-
 
 def AddVar(gclient_dict, var_name, value):
     if not isinstance(gclient_dict, _NodeDict) or gclient_dict.tokens is None:
@@ -910,7 +882,7 @@ def AddVar(gclient_dict, var_name, value):
     node = gclient_dict.GetNode("vars")
     if node is None:
         raise ValueError(
-            "The vars dict has no formatting information." % var_name
+            "The vars dict has no formatting information." % var_name  # noqa: F507
         )
     line = node.lineno + 1
 
@@ -943,7 +915,6 @@ def AddVar(gclient_dict, var_name, value):
     gclient_dict.tokens = _ShiftLinesInTokens(gclient_dict.tokens, 1, line)
     gclient_dict.tokens.update(_ShiftLinesInTokens(var_tokens, line - 2, 0))
 
-
 def SetVar(gclient_dict, var_name, value):
     if not isinstance(gclient_dict, _NodeDict) or gclient_dict.tokens is None:
         raise ValueError(
@@ -970,7 +941,6 @@ def SetVar(gclient_dict, var_name, value):
     _UpdateAstString(tokens, node, value)
     gclient_dict["vars"].SetNode(var_name, value, node)
 
-
 def _GetVarName(node):
     if isinstance(node, ast.Call):
         return node.args[0].value
@@ -979,7 +949,6 @@ def _GetVarName(node):
         last_brace = node.value.rfind("{")
         return node.value[last_brace + 1 : -1]
     return None
-
 
 def SetGCS(gclient_dict, dep_name, new_objects):
     if not isinstance(gclient_dict, _NodeDict) or gclient_dict.tokens is None:
@@ -1009,7 +978,6 @@ def SetGCS(gclient_dict, dep_name, new_objects):
             _UpdateAstString(tokens, value, new_objects[index][key.value])
 
     node.SetNode("objects", new_objects, objects_node)
-
 
 def SetCIPD(gclient_dict, dep_name, package_name, new_version):
     if not isinstance(gclient_dict, _NodeDict) or gclient_dict.tokens is None:
@@ -1073,7 +1041,6 @@ def SetCIPD(gclient_dict, dep_name, package_name, new_version):
         _UpdateAstString(tokens, node, new_version)
         packages[0].SetNode("version", new_version, node)
 
-
 def SetRevision(gclient_dict, dep_name, new_revision):
     def _UpdateRevision(dep_dict, dep_key, new_revision):
         dep_node = dep_dict.GetNode(dep_key)
@@ -1133,7 +1100,6 @@ def SetRevision(gclient_dict, dep_name, new_revision):
     else:
         _UpdateRevision(gclient_dict["deps"], dep_name, new_revision)
 
-
 def GetVar(gclient_dict, var_name):
     if "vars" not in gclient_dict or var_name not in gclient_dict["vars"]:
         raise KeyError("Could not find any variable called %s." % var_name)
@@ -1142,7 +1108,6 @@ def GetVar(gclient_dict, var_name):
     if isinstance(val, ConstantString):
         return val.value
     return val
-
 
 def GetCIPD(gclient_dict, dep_name, package_name):
     if "deps" not in gclient_dict or dep_name not in gclient_dict["deps"]:
@@ -1161,7 +1126,6 @@ def GetCIPD(gclient_dict, dep_name, package_name):
         )
 
     return packages[0]["version"]
-
 
 def GetRevision(gclient_dict, dep_name):
     if "deps" not in gclient_dict or dep_name not in gclient_dict["deps"]:

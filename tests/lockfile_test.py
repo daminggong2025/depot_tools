@@ -17,13 +17,9 @@ import queue
 DEPOT_TOOLS_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, DEPOT_TOOLS_ROOT)
 
-from testing_support import coverage_utils
+from testing_support import coverage_utils  # noqa: E402
 
-import lockfile
-
-# TODO: Should fix these warnings.
-# pylint: disable=line-too-long
-
+import lockfile  # noqa: E402
 
 class LockTest(unittest.TestCase):
     def setUp(self):
@@ -103,7 +99,6 @@ class LockTest(unittest.TestCase):
         # queue.
         self.assertEqual(1, results.qsize())
         sleep_mock.assert_called_with(0.1)
-
 
 if __name__ == "__main__":
     logging.basicConfig(

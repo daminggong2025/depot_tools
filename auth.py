@@ -17,16 +17,12 @@ from dataclasses import dataclass
 
 import subprocess2
 
-# TODO: Should fix these warnings.
-# pylint: disable=line-too-long
-
 # This is what most GAE apps require for authentication.
 OAUTH_SCOPE_EMAIL = "https://www.googleapis.com/auth/userinfo.email"
 # Gerrit and Git on *.googlesource.com require this scope.
 OAUTH_SCOPE_GERRIT = "https://www.googleapis.com/auth/gerritcodereview"
 # Deprecated. Use OAUTH_SCOPE_EMAIL instead.
 OAUTH_SCOPES = OAUTH_SCOPE_EMAIL
-
 
 @dataclass
 class ReAuthContext:
@@ -47,11 +43,9 @@ host={self.host}
 path={self.project}
 """.lstrip().encode("utf-8")
 
-
 # Mockable datetime.datetime.utcnow for testing.
 def datetime_now():
     return datetime.datetime.utcnow()
-
 
 # OAuth access token or ID token with its expiration time (UTC datetime or None
 # if unknown).
@@ -75,7 +69,6 @@ class Token(
         # Token without expiration time never expires.
         return False
 
-
 class LoginRequiredError(Exception):
     """Interaction with the user is required to authenticate."""
 
@@ -90,7 +83,6 @@ class LoginRequiredError(Exception):
     @property
     def login_command(self) -> str:
         return 'luci-auth login -scopes "%s"' % self.scopes
-
 
 class GitLoginRequiredError(Exception):
     """Interaction with the user is required to authenticate.
@@ -109,7 +101,6 @@ class GitLoginRequiredError(Exception):
     def login_command(self) -> str:
         return "git credential-luci login"
 
-
 class GitReAuthRequiredError(Exception):
     """Interaction with the user is required to ReAuth.
 
@@ -127,7 +118,6 @@ class GitReAuthRequiredError(Exception):
     def reauth_command(self) -> str:
         return "git credential-luci reauth"
 
-
 class GitUnknownError(Exception):
     """Unknown error from git-credential-luci."""
 
@@ -142,7 +132,6 @@ class GitUnknownError(Exception):
     def login_command(self) -> str:
         return "git credential-luci login"
 
-
 def has_luci_context_local_auth():
     """Returns whether LUCI_CONTEXT should be used for ambient authentication."""
     ctx_path = os.environ.get("LUCI_CONTEXT")
@@ -154,7 +143,6 @@ def has_luci_context_local_auth():
     except (OSError, IOError, ValueError):
         return False
     return loaded.get("local_auth", {}).get("default_account_id") is not None
-
 
 class Authenticator(object):
     """Object that knows how to refresh access tokens or id tokens when needed.
@@ -289,7 +277,6 @@ class Authenticator(object):
             logging.error("luci-auth token failed: %s", e)
             return None
 
-
 class GerritAuthenticator(object):
     """Object that knows how to refresh access tokens for Gerrit.
 
@@ -378,7 +365,7 @@ class GerritAuthenticator(object):
         )
         return None
 
-    def _parse_creds_helper_out(self, out_bytes: str) -> Dict[str, str]:
+    def _parse_creds_helper_out(self, out_bytes: str) -> Dict[str, str]:  # noqa: F821
         """Parse credential helper's output to a dictionary.
 
         Note, this function doesn't handle arrays (e.g. key[]=value).

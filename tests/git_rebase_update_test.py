@@ -11,12 +11,8 @@ from unittest import mock
 DEPOT_TOOLS_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, DEPOT_TOOLS_ROOT)
 
-from testing_support import coverage_utils
-from testing_support import git_test_utils
-
-# TODO: Should fix these warnings.
-# pylint: disable=line-too-long
-
+from testing_support import coverage_utils  # noqa: E402
+from testing_support import git_test_utils  # noqa: E402
 
 class GitRebaseUpdateTest(git_test_utils.GitRepoReadWriteTestBase):
     REPO_SCHEMA = """
@@ -33,7 +29,10 @@ class GitRebaseUpdateTest(git_test_utils.GitRepoReadWriteTestBase):
     @classmethod
     def setUpClass(cls):
         super(GitRebaseUpdateTest, cls).setUpClass()
-        import git_rebase_update, git_new_branch, git_reparent_branch, git_common
+        import git_rebase_update
+        import git_new_branch
+        import git_reparent_branch
+        import git_common
         import git_rename_branch
 
         cls.reup = git_rebase_update
@@ -60,7 +59,7 @@ class GitRebaseUpdateTest(git_test_utils.GitRepoReadWriteTestBase):
         )
         self.origin = origin_schema.reify()
         self.origin.git("checkout", "main")
-        self.origin.git("branch", "-d", *["branch_" + l for l in "KLG"])
+        self.origin.git("branch", "-d", *["branch_" + l for l in "KLG"])  # noqa: E741
 
         self.repo.git("remote", "add", "origin", self.origin.repo_path)
         self.repo.git(
@@ -491,7 +490,6 @@ branch refs/heads/empty_branch_in_worktree
         _, err = self.repo.capture_stdio(self.rp.main, ["branch_K"])
 
         self.assertIn("Unable to determine nerp@{upstream}", err)
-
 
 if __name__ == "__main__":
     sys.exit(

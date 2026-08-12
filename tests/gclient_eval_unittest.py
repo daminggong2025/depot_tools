@@ -16,16 +16,11 @@ import metrics_utils
 # We have to disable monitoring before importing gclient.
 metrics_utils.COLLECT_METRICS = False
 
-import gclient_eval
-import gclient_utils
-
-# TODO: Should fix these warnings.
-# pylint: disable=line-too-long
-
+import gclient_eval  # noqa: E402
+import gclient_utils  # noqa: E402
 
 def file_join(lines):
-    return "".join([l + "\n" for l in lines])
-
+    return "".join([l + "\n" for l in lines])  # noqa: E741
 
 class GClientEvalTest(unittest.TestCase):
     def test_str(self):
@@ -129,7 +124,6 @@ class GClientEvalTest(unittest.TestCase):
             expected = [(str(n), str(n)) for n in test_case]
             result = gclient_eval._gclient_eval("".join(input_data))
             self.assertEqual(expected, list(result.items()))
-
 
 class ExecTest(unittest.TestCase):
     def test_multiple_assignment(self):
@@ -275,7 +269,6 @@ class ExecTest(unittest.TestCase):
             )
         self.assertIn("duplicate key in dictionary: a_dep", str(cm.exception))
 
-
 class ParseLocalConfigTest(unittest.TestCase):
     def test_parse_gclient(self):
         content = file_join(
@@ -400,7 +393,6 @@ class ParseLocalConfigTest(unittest.TestCase):
             gclient_eval.ParseLocalConfig(content, ".gclient")
         self.assertIn("overrides var", str(cm.exception))
 
-
 class UpdateConditionTest(unittest.TestCase):
     def test_both_present(self):
         info = {"condition": "foo"}
@@ -443,7 +435,6 @@ class UpdateConditionTest(unittest.TestCase):
         info = {}
         gclient_eval.UpdateCondition(info, "or", None)
         self.assertEqual(info, {})
-
 
 class EvaluateConditionTest(unittest.TestCase):
     def test_true(self):
@@ -625,7 +616,6 @@ class EvaluateConditionTest(unittest.TestCase):
             )
         )
 
-
 class VarTest(unittest.TestCase):
     def assert_adds_var(self, before, after):
         local_scope = gclient_eval.Exec(file_join(before))
@@ -794,7 +784,6 @@ class VarTest(unittest.TestCase):
                 ]
             ),
         )
-
 
 class CipdTest(unittest.TestCase):
     def test_gets_and_sets_cipd(self):
@@ -1112,7 +1101,6 @@ class CipdTest(unittest.TestCase):
             ),
         )
 
-
 class RevisionTest(unittest.TestCase):
     def assert_gets_and_sets_revision(
         self, before, after, rev_before="deadbeef"
@@ -1339,7 +1327,6 @@ class RevisionTest(unittest.TestCase):
             "}",
         ]
         self.assert_gets_and_sets_revision(before, after)
-
 
 class ParseTest(unittest.TestCase):
     def callParse(self, vars_override=None):
@@ -1722,7 +1709,6 @@ class ParseTest(unittest.TestCase):
             },
             local_scope,
         )
-
 
 if __name__ == "__main__":
     level = logging.DEBUG if "-v" in sys.argv else logging.FATAL

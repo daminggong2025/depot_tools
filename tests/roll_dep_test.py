@@ -13,15 +13,11 @@ from unittest import mock
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT_DIR)
 
-import roll_dep
-from testing_support import fake_repos
+import roll_dep  # noqa: E402
+from testing_support import fake_repos  # noqa: E402
 
 ROLL_DEP = os.path.join(ROOT_DIR, "roll-dep")
 GCLIENT = os.path.join(ROOT_DIR, "gclient")
-
-# TODO: Should fix these warnings.
-# pylint: disable=line-too-long
-
 
 def create_deps_content(git_base, path_to_revision_map):
     """
@@ -49,7 +45,6 @@ def create_deps_content(git_base, path_to_revision_map):
         "]",
     ]
     return "\n".join(deps_content)
-
 
 class FakeRepos(fake_repos.FakeReposBase):
     NB_GIT_REPOS = 2
@@ -138,7 +133,6 @@ class FakeRepos(fake_repos.FakeReposBase):
                 ),
             },
         )
-
 
 class RollDepTest(fake_repos.FakeReposTestBase):
     FAKE_REPOS_CLASS = FakeRepos
@@ -346,7 +340,6 @@ class RollDepTest(fake_repos.FakeReposTestBase):
         self.assertIn(expected_message, stdout)
         self.assertIn(expected_message, commit_message)
 
-
 class CommitMessageTest(unittest.TestCase):
     def setUp(self):
         self.logs = "\n".join(
@@ -400,7 +393,6 @@ class CommitMessageTest(unittest.TestCase):
         self.assertFalse(
             roll_dep.should_show_log("https://private.googlesource.com/project")
         )
-
 
 if __name__ == "__main__":
     level = logging.DEBUG if "-v" in sys.argv else logging.FATAL

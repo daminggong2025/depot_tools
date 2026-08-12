@@ -21,19 +21,13 @@ import traceback
 
 import gclient_utils
 import gerrit_util
-import git_auth
 import git_cache
 import git_common
 import scm
 import subprocess2
 
-# TODO: Should fix these warnings.
-# pylint: disable=line-too-long
-
-
 class NoUsableRevError(gclient_utils.Error):
     """Raised if requested revision isn't found in checkout."""
-
 
 class DiffFiltererWrapper(object):
     """Simple base class which tracks which file is being diffed and
@@ -72,7 +66,6 @@ class DiffFiltererWrapper(object):
                 line = self._Replace(line)
         self._print_func(line)
 
-
 class GitDiffFilterer(DiffFiltererWrapper):
     index_string = "diff --git "
 
@@ -85,9 +78,7 @@ class GitDiffFilterer(DiffFiltererWrapper):
             "[a|b]/" + self._current_file, self._replacement_file, line
         )
 
-
 # SCMWrapper base class
-
 
 class SCMWrapper(object):
     """Add necessary glue between all the supported SCM.
@@ -137,10 +128,10 @@ class SCMWrapper(object):
             "runhooks",
         ]
 
-        if not command in commands:
+        if command not in commands:
             raise gclient_utils.Error("Unknown command %s" % command)
 
-        if not command in dir(self):
+        if command not in dir(self):
             raise gclient_utils.Error(
                 "Command %s not implemented in %s wrapper"
                 % (command, self.__class__.__name__)
@@ -250,7 +241,6 @@ class SCMWrapper(object):
             else:
                 shutil.move(checkout_path, dest_path)
 
-
 def _canonical_git_url(url):
     """Folds cosmetic spellings of one fetch URL: the 'git+' prefix, a trailing
     '/', a '.git' suffix. Keeps the googlesource '/a/' auth path distinct, so
@@ -264,14 +254,12 @@ def _canonical_git_url(url):
         url = url[: -len(".git")]
     return url
 
-
 def _canonical_git_repo(url):
     """Canonical repo identity: also folds the googlesource '/a/' auth path, so
     one repo reached via authenticated and anonymous URLs compares equal."""
     return _canonical_git_url(
         url.replace("googlesource.com/a/", "googlesource.com/")
     )
-
 
 class GitWrapper(SCMWrapper):
     """Wrapper for Git"""
@@ -328,7 +316,7 @@ class GitWrapper(SCMWrapper):
         present."""
         out = self._Capture(["ls-files", "-s"])
         result = {}
-        for l in out.split("\n"):
+        for l in out.split("\n"):  # noqa: E741
             if not l.startswith("160000"):
                 # Not a submodule
                 continue
@@ -369,7 +357,7 @@ class GitWrapper(SCMWrapper):
         # 4 - new gitlink content detected. It contains currently checked
         # commit. At this point, we have all information needed, and we can
         # reset state to 0.
-        for l in out.split("\n"):
+        for l in out.split("\n"):  # noqa: E741
             if l.startswith("diff --git"):
                 # New file detected, reset state.
                 state = 1
@@ -2055,7 +2043,6 @@ class GitWrapper(SCMWrapper):
         return revision
 
     def _Run(self, args, options, **kwargs):
-        # Disable 'unused options' warning | pylint: disable=unused-argument
         kwargs.setdefault("cwd", self.checkout_path)
         kwargs.setdefault("filter_fn", self.filter)
         kwargs.setdefault("show_header", True)
@@ -2063,7 +2050,6 @@ class GitWrapper(SCMWrapper):
 
         cmd = ["git"] + args
         gclient_utils.CheckCallAndFilter(cmd, env=env, **kwargs)
-
 
 class CipdPackage(object):
     """A representation of a single CIPD package."""
@@ -2093,7 +2079,6 @@ class CipdPackage(object):
     @property
     def version(self):
         return self._version
-
 
 class CipdRoot(object):
     """A representation of a single CIPD root."""
@@ -2183,7 +2168,7 @@ class CipdRoot(object):
             ensure_file = None
             with tempfile.NamedTemporaryFile(
                 suffix=".ensure", delete=False, mode="wb"
-            ) as ensure_file:
+            ) as ensure_file:  # noqa: F811
                 ensure_file.write(contents.encode("utf-8", "replace"))
             yield ensure_file.name
         finally:
@@ -2220,7 +2205,7 @@ class CipdRoot(object):
             ensure_file = None
             with tempfile.NamedTemporaryFile(
                 suffix=".ensure", delete=False, mode="wb"
-            ) as ensure_file:
+            ) as ensure_file:  # noqa: F811
                 ensure_file.write(contents.encode("utf-8", "replace"))
             yield ensure_file.name
         finally:
@@ -2278,7 +2263,6 @@ class CipdRoot(object):
     @property
     def service_url(self):
         return self._service_url
-
 
 class CipdWrapper(SCMWrapper):
     """Wrapper for CIPD.
@@ -2391,7 +2375,6 @@ class CipdWrapper(SCMWrapper):
         CIPD packages should be updated at the root by running
         `CipdRoot.run('update')`.
         """
-
 
 class GcsRoot(object):
     """Root to keep track of all GCS objects, per checkout"""
@@ -2525,7 +2508,6 @@ class GcsRoot(object):
         with self._mutator_lock:
             self._gcs_entries = {}
 
-
 class GcsWrapper(SCMWrapper):
     """Wrapper for GCS.
 
@@ -2575,7 +2557,6 @@ class GcsWrapper(SCMWrapper):
 
     def update(self, options, args, file_list):
         """Does nothing."""
-
 
 class CogWrapper(SCMWrapper):
     """Wrapper for Cog, all no-op."""

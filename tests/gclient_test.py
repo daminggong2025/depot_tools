@@ -18,7 +18,6 @@ import tempfile
 import unittest
 from unittest import mock
 
-
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import metrics_utils
@@ -26,14 +25,10 @@ import metrics_utils
 # We have to disable monitoring before importing gclient.
 metrics_utils.COLLECT_METRICS = False
 
-import gclient
-import gclient_eval
-import gclient_utils
-from testing_support import trial_dir
-
-# TODO: Should fix these warnings.
-# pylint: disable=line-too-long
-
+import gclient  # noqa: E402
+import gclient_eval  # noqa: E402
+import gclient_utils  # noqa: E402
+from testing_support import trial_dir  # noqa: E402
 
 def write(filename, content):
     """Writes the content of a file and create the directories as needed."""
@@ -44,7 +39,6 @@ def write(filename, content):
     with open(filename, "w") as f:
         f.write(content)
 
-
 class CIPDRootMock(object):
     def __init__(self, root_dir, service_url):
         self.root_dir = root_dir
@@ -52,7 +46,6 @@ class CIPDRootMock(object):
 
     def expand_package_name(self, package_name):
         return package_name
-
 
 class SCMMock(object):
     unit_test = None
@@ -79,7 +72,6 @@ class SCMMock(object):
         self.unit_test.assertEqual("None", command)
         self.unit_test.processed.put((self.name, self.url))
 
-    # pylint: disable=no-self-use
     def DoesRemoteURLMatch(self, _):
         return True
 
@@ -88,7 +80,6 @@ class SCMMock(object):
 
     def revinfo(self, _, _a, _b):
         return "bbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
-
 
 class GclientTest(trial_dir.TestCase):
     def setUp(self):
@@ -367,7 +358,6 @@ class GclientTest(trial_dir.TestCase):
         )
         # TODO(ehmaldonado): Improve this test.
         # Make sure __str__() works fine.
-        # pylint: disable=protected-access
         obj.dependencies[0]._file_list.append("foo")
         str_obj = str(obj)
         self.assertEqual(322, len(str_obj), "%d\n%s" % (len(str_obj), str_obj))
@@ -2025,32 +2015,30 @@ class GclientTest(trial_dir.TestCase):
             client._EnforceSkipSyncRevisions(patch_refs),
         )
 
-
 class MergeVarsTest(unittest.TestCase):
     def test_merge_vars(self):
         merge_vars = gclient.merge_vars
         Str = gclient_eval.ConstantString
 
-        l = {"foo": "bar", "baz": True}
+        l = {"foo": "bar", "baz": True}  # noqa: E741
         merge_vars(l, {"foo": Str("quux")})
         self.assertEqual(l, {"foo": "quux", "baz": True})
 
-        l = {"foo": "bar", "baz": True}
+        l = {"foo": "bar", "baz": True}  # noqa: E741
         merge_vars(l, {"foo": "quux"})
         self.assertEqual(l, {"foo": "quux", "baz": True})
 
-        l = {"foo": Str("bar"), "baz": True}
+        l = {"foo": Str("bar"), "baz": True}  # noqa: E741
         merge_vars(l, {"foo": Str("quux")})
         self.assertEqual(l, {"foo": Str("quux"), "baz": True})
 
-        l = {"foo": Str("bar"), "baz": True}
+        l = {"foo": Str("bar"), "baz": True}  # noqa: E741
         merge_vars(l, {"foo": Str("quux")})
         self.assertEqual(l, {"foo": Str("quux"), "baz": True})
 
-        l = {"foo": "bar"}
+        l = {"foo": "bar"}  # noqa: E741
         merge_vars(l, {"baz": True})
         self.assertEqual(l, {"foo": "bar", "baz": True})
-
 
 if __name__ == "__main__":
     sys.stdout = gclient_utils.MakeFileAutoFlush(sys.stdout)

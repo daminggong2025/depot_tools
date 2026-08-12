@@ -11,9 +11,7 @@ from __future__ import annotations
 import base64
 import collections
 import datetime
-import enum
 import fnmatch
-import functools
 import itertools
 import json
 import logging
@@ -79,11 +77,7 @@ import from_third_party
 
 colorama = from_third_party.import_module("colorama")
 
-
 __version__ = "2.0"
-
-# TODO: Should fix these warnings.
-# pylint: disable=line-too-long
 
 # Traces for git push will be stored in a traces directory inside the
 # depot_tools checkout.
@@ -188,10 +182,8 @@ _NO_BRANCH_ERROR = (
     "upload all commits since base!"
 )
 
-
 class GitPushError(Exception):
     pass
-
 
 def DieWithError(message, change_desc=None) -> NoReturn:
     if change_desc:
@@ -209,20 +201,17 @@ def DieWithError(message, change_desc=None) -> NoReturn:
     print(message, file=sys.stderr)
     sys.exit(1)
 
-
 def SaveDescriptionBackup(change_desc):
     backup_path = os.path.join(DEPOT_TOOLS, DESCRIPTION_BACKUP_FILE)
     print("\nsaving CL description to %s\n" % backup_path)
     with open(backup_path, "wb") as backup_file:
         backup_file.write(change_desc.description.encode("utf-8"))
 
-
 def GetNoGitPagerEnv():
     env = os.environ.copy()
     # 'cat' is a magical git string that disables pagers on all platforms.
     env["GIT_PAGER"] = "cat"
     return env
-
 
 def RunCommand(args, error_ok=False, error_message=None, shell=False, **kwargs):
     try:
@@ -238,11 +227,9 @@ def RunCommand(args, error_ok=False, error_message=None, shell=False, **kwargs):
             out += e.stderr.decode("utf-8", "replace")
         return out
 
-
 def RunGit(args, **kwargs) -> str:
     """Returns stdout."""
     return RunCommand(["git"] + args, **kwargs)
-
 
 def RunGitWithCode(args, suppress_stderr=False, cwd=None):
     """Returns return code and stdout."""
@@ -263,29 +250,24 @@ def RunGitWithCode(args, suppress_stderr=False, cwd=None):
         logging.debug("Failed running %s", ["git"] + args)
         return e.returncode, e.stdout.decode("utf-8", "replace")
 
-
 def RunGitSilent(args, cwd=None):
     """Returns stdout, suppresses stderr and ignores the return code."""
     return RunGitWithCode(args, suppress_stderr=True, cwd=cwd)[1]
-
 
 def time_sleep(seconds):
     # Use this so that it can be mocked in tests without interfering with python
     # system machinery.
     return time.sleep(seconds)
 
-
 def time_time():
     # Use this so that it can be mocked in tests without interfering with python
     # system machinery.
     return time.time()
 
-
 def datetime_now():
     # Use this so that it can be mocked in tests without interfering with python
     # system machinery.
     return datetime.datetime.now()
-
 
 def confirm_or_exit(prefix="", action="confirm"):
     """Asks user to press enter to continue or press Ctrl+C to abort."""
@@ -301,7 +283,6 @@ def confirm_or_exit(prefix="", action="confirm"):
         "%s%s Enter to %s, or Ctrl+C to abort" % (prefix, mid, action)
     )
 
-
 def ask_for_explicit_yes(prompt):
     """Returns whether user typed 'y' or 'yes' to confirm the given prompt."""
     result = gclient_utils.AskForData(prompt + " [Yes/No]: ").lower()
@@ -311,7 +292,6 @@ def ask_for_explicit_yes(prompt):
         if "no".startswith(result):
             return False
         result = gclient_utils.AskForData("Please, type yes or no: ").lower()
-
 
 def _get_properties_from_options(options):
     prop_list = getattr(options, "properties", [])
@@ -323,24 +303,20 @@ def _get_properties_from_options(options):
             pass  # If a value couldn't be evaluated, treat it as a string.
     return properties
 
-
 class _BuildbucketTag(TypedDict, total=False):
     key: str
     value: str
-
 
 class _BuildbucketSearchPredicate(TypedDict, total=False):
     gerritChanges: List[Mapping[str, Any]]
     builder: Mapping[str, str]
     tags: List[_BuildbucketTag]
 
-
 class _BuildbucketSearchRequest(TypedDict, total=False):
     predicate: _BuildbucketSearchPredicate
     fields: str
     pageSize: int
     pageToken: str
-
 
 class _BuildbucketScheduleBuildRequest(TypedDict, total=False):
     requestId: str
@@ -349,7 +325,6 @@ class _BuildbucketScheduleBuildRequest(TypedDict, total=False):
     properties: Mapping[str, Any]
     tags: List[_BuildbucketTag]
     gitilesCommit: Mapping[str, str]
-
 
 def _buildbucket_batch(
     buildbucket_host: str,
@@ -394,7 +369,6 @@ def _buildbucket_batch(
 
     return batch_res or {}
 
-
 def _buildbucket_search(
     buildbucket_host: str, request: _BuildbucketSearchRequest
 ) -> Mapping[str, Any]:
@@ -404,7 +378,6 @@ def _buildbucket_search(
     if not responses:
         return {}
     return responses[0].get("searchBuilds", {})
-
 
 def _parse_bucket(raw_bucket):
     legacy = True
@@ -427,7 +400,6 @@ def _parse_bucket(raw_bucket):
         )
     return project, bucket
 
-
 def _canonical_git_googlesource_host(host) -> str:
     """Normalizes Gerrit hosts (with '-review') to Git host."""
     assert host.endswith(_GOOGLESOURCE)
@@ -437,19 +409,16 @@ def _canonical_git_googlesource_host(host) -> str:
         prefix = prefix[: -len("-review")]
     return prefix + "." + _GOOGLESOURCE
 
-
 def _canonical_gerrit_googlesource_host(host):
     git_host = _canonical_git_googlesource_host(host)
     prefix = git_host.split(".", 1)[0]
     return prefix + "-review." + _GOOGLESOURCE
-
 
 def _get_counterpart_host(host):
     assert host.endswith(_GOOGLESOURCE)
     git = _canonical_git_googlesource_host(host)
     gerrit = _canonical_gerrit_googlesource_host(git)
     return git if gerrit == host else gerrit
-
 
 def _trigger_tryjobs(changelist, jobs, options, patchset):
     """Sends a request to Buildbucket to trigger tryjobs for a changelist.
@@ -472,7 +441,6 @@ def _trigger_tryjobs(changelist, jobs, options, patchset):
         return
 
     _buildbucket_batch(DEFAULT_BUILDBUCKET_HOST, schedules=requests)
-
 
 def _make_tryjob_schedule_requests(
     changelist,
@@ -536,7 +504,6 @@ def _make_tryjob_schedule_requests(
 
     return requests
 
-
 def _fetch_tryjobs(changelist, buildbucket_host, patchset=None):
     """Fetches tryjobs from buildbucket.
 
@@ -565,7 +532,6 @@ def _fetch_tryjobs(changelist, buildbucket_host, patchset=None):
 
     response = _buildbucket_search(buildbucket_host, request)
     return response.get("builds", [])
-
 
 def _fetch_latest_builds(changelist, buildbucket_host, latest_patchset=None):
     """Fetches builds from the latest patchset that has builds (within
@@ -597,7 +563,6 @@ def _fetch_latest_builds(changelist, buildbucket_host, latest_patchset=None):
             return builds, ps
         ps -= 1
     return [], 0
-
 
 def _filter_failed_for_retry(all_builds):
     """Returns a list of buckets/builders that are worth retrying.
@@ -647,7 +612,6 @@ def _filter_failed_for_retry(all_builds):
     # Sort the jobs to make testing easier.
     return sorted(jobs)
 
-
 def _print_tryjobs(options, builds):
     """Prints nicely result of _fetch_tryjobs."""
     if not builds:
@@ -672,7 +636,7 @@ def _print_tryjobs(options, builds):
             }
         )
 
-    sort_key = lambda b: (b["name"], b["id"])
+    sort_key = lambda b: (b["name"], b["id"])  # noqa: E731
 
     def print_builds(title, builds, fmt=None, color=None):
         """Pop matching builds from `builds` dict and print them."""
@@ -681,9 +645,9 @@ def _print_tryjobs(options, builds):
 
         fmt = fmt or "{name} https://ci.chromium.org/b/{id}"
         if not options.color or color is None:
-            colorize = lambda x: x
+            colorize = lambda x: x  # noqa: E731
         else:
-            colorize = lambda x: "%s%s%s" % (color, x, Fore.RESET)
+            colorize = lambda x: "%s%s%s" % (color, x, Fore.RESET)  # noqa: E731
 
         print(colorize(title))
         for b in sorted(builds, key=sort_key):
@@ -721,7 +685,6 @@ def _print_tryjobs(options, builds):
         "Other:", sum(builds_by_status.values(), []), fmt="{name} id={id}"
     )
     print("Total: %d tryjobs" % total)
-
 
 def _ComputeFormatDiffLineRanges(files, diffs, expand=0):
     """Gets the changed line ranges for each file.
@@ -787,7 +750,6 @@ def _ComputeFormatDiffLineRanges(files, diffs, expand=0):
 
     return line_diffs
 
-
 def _FindYapfConfigFile(fpath, yapf_config_cache, top_dir=None):
     """Checks if a yapf file is in any parent directory of fpath until top_dir.
 
@@ -818,7 +780,6 @@ def _FindYapfConfigFile(fpath, yapf_config_cache, top_dir=None):
     yapf_config_cache[fpath] = ret
     return ret
 
-
 def _FindMarkdownConfigFile(
     fpath: str,
     markdown_config_cache: dict[str, str | None],
@@ -836,7 +797,6 @@ def _FindMarkdownConfigFile(
         )
     return markdown_config_cache[fpath]
 
-
 def _FindLitTemplateFormatterConfigFile(
     fpath: str, config_cache: dict[str, str | None], top_dir: str | None = None
 ) -> str | None:
@@ -851,7 +811,6 @@ def _FindLitTemplateFormatterConfigFile(
             fpath, ".style.lit_template_formatter", top_dir
         )
     return config_cache[fpath]
-
 
 def _GetYapfIgnorePatterns(top_dir):
     """Returns all patterns in the .yapfignore file.
@@ -882,7 +841,6 @@ def _GetYapfIgnorePatterns(top_dir):
         ignore_patterns.add(stripped_line)
     return ignore_patterns
 
-
 def _FilterYapfIgnoredFiles(filepaths, patterns):
     """Filters out any filepaths that match any of the given patterns.
 
@@ -899,7 +857,6 @@ def _FilterYapfIgnoredFiles(filepaths, patterns):
         f for f in filepaths if not any(fnmatch.fnmatch(f, p) for p in patterns)
     ]
 
-
 def _GetCommitCountSummary(
     begin_commit: str, end_commit: str = "HEAD"
 ) -> Optional[str]:
@@ -915,7 +872,6 @@ def _GetCommitCountSummary(
         return None
 
     return f"{count} commit{'s'[: count != 1]}"
-
 
 def _prepare_superproject_push_option() -> str | None:
     """Returns the push option specifying the root repo of a gclient checkout.
@@ -940,7 +896,6 @@ def _prepare_superproject_push_option() -> str | None:
     soln_root = gclient_paths.GetPrimarySolutionPath()
     rev = RunGitSilent(["rev-parse", "refs/heads/main"], cwd=soln_root).strip()
     return f"custom-keyed-value=rootRepo:{host}/{project}@{rev}"
-
 
 @dataclasses.dataclass
 class CommentInfo:
@@ -973,7 +928,6 @@ class CommentInfo:
             k: v for k, v in comment.items() if k in field_names
         }
         return cls(**filtered_comment)
-
 
 def _merge_comments_into_threads(file_comments) -> list[list[CommentInfo]]:
     # We construct this reverse mapping to make it easier to find all the
@@ -1022,7 +976,6 @@ def _merge_comments_into_threads(file_comments) -> list[list[CommentInfo]]:
 
     return list(threads.values())
 
-
 def print_stats(args):
     """Prints statistics about the change to the user."""
     # --no-ext-diff is broken in some versions of Git, so try to work around
@@ -1036,7 +989,6 @@ def print_stats(args):
         ["git", "diff", "--no-ext-diff", "--stat", "-l100000", "-C50"] + args,
         env=env,
     )
-
 
 class BuildbucketResponseException(Exception):
     def __init__(
@@ -1058,7 +1010,6 @@ class BuildbucketResponseException(Exception):
         super(BuildbucketResponseException, self).__init__(
             message or "Unknown Buildbucket error"
         )
-
 
 class Settings(object):
     def __init__(self):
@@ -1220,9 +1171,7 @@ class Settings(object):
         self._LazyUpdateIfNeeded()
         return scm.GIT.GetConfigBool(self.GetRoot(), key)
 
-
 settings = Settings()
-
 
 class _CQState(object):
     """Enum for states of CL with respect to CQ."""
@@ -1233,7 +1182,6 @@ class _CQState(object):
 
     ALL_STATES = [NONE, DRY_RUN, COMMIT]
 
-
 class _ParsedIssueNumberArgument(object):
     def __init__(self, issue=None, patchset=None, hostname=None):
         self.issue = issue
@@ -1243,7 +1191,6 @@ class _ParsedIssueNumberArgument(object):
     @property
     def valid(self):
         return self.issue is not None
-
 
 def ParseIssueNumberArgument(arg):
     """Parses the issue argument and returns _ParsedIssueNumberArgument."""
@@ -1306,11 +1253,10 @@ def ParseIssueNumberArgument(arg):
         hostname=parsed_url.netloc,
     )
 
-
 def _create_description_from_log(args):
     """Pulls out the commit log to use as a base for the CL description."""
     log_args = []
-    if len(args) == 1 and args[0] == None:
+    if len(args) == 1 and args[0] == None:  # noqa: E711
         # Handle the case where None is passed as the branch.
         return ""
     if len(args) == 1 and not args[0].endswith("."):
@@ -1323,7 +1269,6 @@ def _create_description_from_log(args):
         log_args = args[:]  # Hope for the best!
     return RunGit(["log", "--pretty=format:%B%n"] + log_args)
 
-
 class GerritChangeNotExists(Exception):
     def __init__(self, issue, url):
         self.issue = issue
@@ -1335,7 +1280,6 @@ class GerritChangeNotExists(Exception):
             self.issue,
             self.url,
         )
-
 
 _CommentSummary = collections.namedtuple(
     "_CommentSummary",
@@ -1364,7 +1308,6 @@ _NewUpload = collections.namedtuple(
         "prev_patchset",
     ],
 )
-
 
 class ChangeDescription(object):
     """Contains a parsed form of the change description."""
@@ -1402,7 +1345,7 @@ class ChangeDescription(object):
                 self.append_footer("Fixed: %s" % ", ".join(values))
 
     @property  # www.logilab.org/ticket/89786
-    def description(self):  # pylint: disable=method-hidden
+    def description(self):
         return "\n".join(self._description_lines)
 
     def set_description(self, desc):
@@ -1452,7 +1395,9 @@ class ChangeDescription(object):
         regexp = re.compile(self.R_LINE)
         matches = [regexp.match(line) for line in self._description_lines]
         new_desc = [
-            l for i, l in enumerate(self._description_lines) if not matches[i]
+            line
+            for i, line in enumerate(self._description_lines)
+            if not matches[i]
         ]
         self.set_description(new_desc)
 
@@ -1496,7 +1441,7 @@ class ChangeDescription(object):
         bug_regexp = re.compile(self.BUG_LINE)
         fixed_regexp = re.compile(self.FIXED_LINE)
         prefix = settings.GetBugPrefix()
-        has_issue = lambda l: bug_regexp.match(l) or fixed_regexp.match(l)
+        has_issue = lambda l: bug_regexp.match(l) or fixed_regexp.match(l)  # noqa: E731, E741
 
         if not any((has_issue(line) for line in self._description_lines)):
             self.append_footer("Bug: %s" % prefix)
@@ -1618,7 +1563,6 @@ class ChangeDescription(object):
         A sanitized hashtag can be used as a git push refspec parameter value.
         """
         return re.sub(cls.BAD_HASH_TAG_CHUNK, "-", tag).strip("-").lower()
-
 
 class Changelist(object):
     """Changelist works with one changelist in local branch.
@@ -2190,7 +2134,7 @@ class Changelist(object):
         if options.commit_description:
             description = options.commit_description
             if description == "-":
-                description = "\n".join(l.rstrip() for l in sys.stdin)
+                description = "\n".join(l.rstrip() for l in sys.stdin)  # noqa: E741
             elif description == "+":
                 description = _create_description_from_log(git_diff_args)
         elif self.GetIssue() and options.squash:
@@ -4232,7 +4176,6 @@ class Changelist(object):
         details = self._GetChangeDetail(["DETAILED_ACCOUNTS"])
         return [r["email"] for r in details["reviewers"].get("REVIEWER", [])]
 
-
 def _get_bug_line_values(default_project_prefix, bugs):
     """Given default_project_prefix and comma separated list of bugs, yields bug
     line values.
@@ -4270,7 +4213,6 @@ def _get_bug_line_values(default_project_prefix, bugs):
         # rare.
         yield other
 
-
 def FindCodereviewSettingsFile(filename="codereview.settings"):
     """Finds the given file starting in the cwd and going up.
 
@@ -4293,7 +4235,6 @@ def FindCodereviewSettingsFile(filename="codereview.settings"):
             break
         cwd = parent_dir
     return None
-
 
 def LoadCodereviewSettingsFromFile(fileobj):
     """Parses a codereview.settings file and updates hooks."""
@@ -4345,7 +4286,6 @@ def LoadCodereviewSettingsFromFile(fileobj):
             keyvals["PUSH_URL_CONFIG"], keyvals["ORIGIN_URL_CONFIG"]
         )
 
-
 def urlretrieve(source, destination):
     """Downloads a network object to a local file, like urllib.urlretrieve.
 
@@ -4354,12 +4294,10 @@ def urlretrieve(source, destination):
     with open(destination, "wb") as f:
         f.write(urllib.request.urlopen(source).read())
 
-
 def hasSheBang(fname):
     """Checks fname is a #! script."""
     with open(fname) as f:
         return f.read(2).startswith("#!")
-
 
 def DownloadGerritHook(force):
     """Downloads and installs a Gerrit commit-msg hook.
@@ -4392,7 +4330,6 @@ def DownloadGerritHook(force):
                 "into .git/hooks/commit-msg and "
                 "chmod +x .git/hooks/commit-msg" % src
             )
-
 
 class _GitCookiesChecker(object):
     """Provides facilities for validating and suggesting fixes to .gitcookies."""
@@ -4500,10 +4437,10 @@ class _GitCookiesChecker(object):
             print("No Git/Gerrit credentials found.")
             return
         lengths = [max(map(len, (row[i] for row in hosts))) for i in range(3)]
-        header = [("Host", "User", "Which file"), ["=" * l for l in lengths]]
+        header = [("Host", "User", "Which file"), ["=" * l for l in lengths]]  # noqa: E741
         print("Your .gitcookies have credentials for these hosts:")
         for row in header + hosts:
-            print("\t".join((("%%+%ds" % l) % s) for l, s in zip(lengths, row)))
+            print("\t".join((("%%+%ds" % l) % s) for l, s in zip(lengths, row)))  # noqa: E741
 
     @staticmethod
     def _parse_identity(identity):
@@ -4663,7 +4600,6 @@ class _GitCookiesChecker(object):
             )
         return found
 
-
 @metrics.collector.collect_metrics("git cl creds-check")
 def CMDcreds_check(parser, args):
     """Checks credentials and suggests changes."""
@@ -4728,7 +4664,6 @@ def CMDcreds_check(parser, args):
         return 0
     return 1
 
-
 @metrics.collector.collect_metrics("git cl baseurl")
 def CMDbaseurl(parser, args):
     """Gets or sets base-url for this branch."""
@@ -4753,7 +4688,6 @@ def CMDbaseurl(parser, args):
     scm.GIT.SetConfig(settings.GetRoot(), f"branch.{branch}.base-url", args[0])
     return 0
 
-
 def color_for_status(status):
     """Maps a Changelist status to color, for CMDstatus and other tools."""
     BOLD = "\033[1m"
@@ -4767,7 +4701,6 @@ def color_for_status(status):
         "closed": BOLD + Fore.CYAN,
         "error": BOLD + Fore.WHITE,
     }.get(status, Fore.WHITE)
-
 
 def get_cl_statuses(
     changes: List[Changelist], fine_grained, max_processes=None
@@ -4834,7 +4767,6 @@ def get_cl_statuses(
     # Add any branches that failed to fetch.
     for cl in set(changes) - fetched_cls:
         yield (cl, "error")
-
 
 def upload_branch_deps(cl, args, force=False):
     """Uploads CLs of local branches that are dependents of the current branch.
@@ -4943,7 +4875,6 @@ def upload_branch_deps(cl, args, force=False):
 
     return 0
 
-
 def GetArchiveTagForBranch(issue_num, branch_name, existing_tags, pattern):
     """Given a proposed tag name, returns a tag name that is guaranteed to be
     unique. If 'foo' is proposed but already exists, then 'foo-2' is used,
@@ -4958,7 +4889,6 @@ def GetArchiveTagForBranch(issue_num, branch_name, existing_tags, pattern):
 
         if to_check not in existing_tags:
             return to_check
-
 
 @metrics.collector.collect_metrics("git cl archive")
 def CMDarchive(parser, args):
@@ -5088,7 +5018,6 @@ def CMDarchive(parser, args):
 
     return 0
 
-
 @metrics.collector.collect_metrics("git cl squash-closed")
 def CMDsquash_closed(parser, args):
     """Squashes branches associated with closed changelists, and reparents their children."""
@@ -5182,7 +5111,6 @@ def CMDsquash_closed(parser, args):
     print("\nJob's done!")
 
     return 0
-
 
 @metrics.collector.collect_metrics("git cl status")
 def CMDstatus(parser, args):
@@ -5362,7 +5290,6 @@ def CMDstatus(parser, args):
         print(cl.FetchDescription(pretty=True))
     return 0
 
-
 def colorize_CMDstatus_doc():
     """To be called once in main() to add colors to git cl status help."""
     colors = [i for i in dir(Fore) if i[0].isupper()]
@@ -5381,8 +5308,7 @@ def colorize_CMDstatus_doc():
         return line
 
     lines = CMDstatus.__doc__.splitlines()
-    CMDstatus.__doc__ = "\n".join(colorize_line(l) for l in lines)
-
+    CMDstatus.__doc__ = "\n".join(colorize_line(l) for l in lines)  # noqa: E741
 
 def write_json(path, contents):
     if path == "-":
@@ -5390,7 +5316,6 @@ def write_json(path, contents):
     else:
         with open(path, "w") as f:
             json.dump(contents, f)
-
 
 @subcommand.usage("[issue_number]")
 @metrics.collector.collect_metrics("git cl issue")
@@ -5491,7 +5416,6 @@ def CMDissue(parser, args):
         )
     return 0
 
-
 def _create_commit_message(orig_message, bug=None, milestone=None):
     """Returns a commit message for the cherry picked CL.
 
@@ -5521,7 +5445,6 @@ def _create_commit_message(orig_message, bug=None, milestone=None):
     if change_id := git_footers.get_footer_change_id(orig_message):
         new_message += f"Change-Id: {change_id[0]}\n"
     return new_message
-
 
 # TODO(b/341792235): Add metrics.
 @subcommand.usage("[revisions ...]")
@@ -5739,7 +5662,6 @@ def CMDcherry_pick(parser, args):
 
     return 0
 
-
 @metrics.collector.collect_metrics("git cl comments")
 def CMDcomments(parser, args):
     """Shows or posts review comments for any changelist."""
@@ -5893,13 +5815,13 @@ def CMDcomments(parser, args):
                 comment.sender,
                 Fore.RESET,
                 "\n".join(
-                    "  " + l for l in comment.message.strip().splitlines()
+                    "  " + l
+                    for l in comment.message.strip().splitlines()  # noqa: E741
                 ),
             )
         )
 
     return 0
-
 
 @subcommand.usage("[codereview url or issue id]")
 @metrics.collector.collect_metrics("git cl description")
@@ -5963,7 +5885,7 @@ def CMDdescription(parser, args):
     if options.new_description:
         text = options.new_description
         if text == "-":
-            text = "\n".join(l.rstrip() for l in sys.stdin)
+            text = "\n".join(l.rstrip() for l in sys.stdin)  # noqa: E741
         elif text == "+":
             base_branch = cl.GetCommonAncestorWithUpstream()
             text = _create_description_from_log([base_branch])
@@ -5974,7 +5896,6 @@ def CMDdescription(parser, args):
     if cl.FetchDescription().strip() != description.description:
         cl.UpdateDescription(description.description, force=options.force)
     return 0
-
 
 def FindFilesForLint(options, args):
     """Returns the base folder and a list of files to lint."""
@@ -6017,7 +5938,6 @@ def FindFilesForLint(options, args):
 
     return cwd, files
 
-
 @subcommand.usage("[files ...]")
 @metrics.collector.collect_metrics("git cl lint")
 def CMDlint(parser, args):
@@ -6039,7 +5959,6 @@ def CMDlint(parser, args):
         return 1
 
     # Access to a protected member _XX of a client class
-    # pylint: disable=protected-access
     try:
         import cpplint
         import cpplint_chromium
@@ -6076,7 +5995,6 @@ def CMDlint(parser, args):
     if cpplint._cpplint_state.error_count != 0:
         return 1
     return 0
-
 
 @metrics.collector.collect_metrics("git cl presubmit")
 @subcommand.usage("[base branch]")
@@ -6146,7 +6064,7 @@ def CMDpresubmit(parser, args):
 
     start = time.time()
     try:
-        if not "PRESUBMIT_SKIP_NETWORK" in os.environ and cl.GetIssue():
+        if "PRESUBMIT_SKIP_NETWORK" not in os.environ and cl.GetIssue():
             description = cl.FetchDescription()
         else:
             description = _create_description_from_log([base_branch])
@@ -6178,7 +6096,6 @@ def CMDpresubmit(parser, args):
     if options.json:
         write_json(options.json, result)
     return 0
-
 
 def GenerateGerritChangeId(message):
     """Returns the Change ID footer value (Ixxxxxx...xxx).
@@ -6212,7 +6129,6 @@ def GenerateGerritChangeId(message):
         stdin=("\n".join(lines)).encode(),
     )
     return "I%s" % change_hash.strip()
-
 
 def GetTargetRef(remote, remote_branch, target_branch) -> Optional[str]:
     """Computes the remote branch ref to use for the CL.
@@ -6254,9 +6170,7 @@ def GetTargetRef(remote, remote_branch, target_branch) -> Optional[str]:
             if not match:
                 # This is a branch path but not one we recognize; use as-is.
                 remote_branch = target_branch
-    # pylint: disable=consider-using-get
     elif remote_branch in REFS_THAT_ALIAS_TO_OTHER_REFS:
-        # pylint: enable=consider-using-get
         # Handle the refs that need to land in different refs.
         remote_branch = REFS_THAT_ALIAS_TO_OTHER_REFS[remote_branch]
 
@@ -6276,8 +6190,7 @@ def GetTargetRef(remote, remote_branch, target_branch) -> Optional[str]:
 
     return remote_branch
 
-
-def cleanup_list(l):
+def cleanup_list(l):  # noqa: E741
     """Fixes a list so that comma separated items are put as individual items.
 
     So that "--reviewers joe@c,john@c --reviewers joa@c" results in
@@ -6286,7 +6199,6 @@ def cleanup_list(l):
     items = sum((i.split(",") for i in l), [])
     stripped_items = (i.strip() for i in items)
     return sorted(filter(None, stripped_items))
-
 
 @subcommand.usage("[flags]")
 @metrics.collector.collect_metrics("git cl upload")
@@ -6697,7 +6609,6 @@ def CMDupload(parser, args):
 
     return ret
 
-
 def UploadAllSquashed(
     options: optparse.Values, orig_args: Sequence[str]
 ) -> int:
@@ -6843,7 +6754,6 @@ def UploadAllSquashed(
 
     return 0
 
-
 def _UploadAllPrecheck(
     options: optparse.Values, orig_args: Sequence[str]
 ) -> Tuple[Sequence[Changelist], bool]:
@@ -6983,7 +6893,6 @@ def _UploadAllPrecheck(
                 if answer.lower() == "n":
                     cherry_pick = True
     return cls, cherry_pick
-
 
 @subcommand.usage("--description=<description file>")
 @metrics.collector.collect_metrics("git cl split")
@@ -7168,7 +7077,6 @@ def CMDsplit(parser, args):
         settings.GetRoot(),
     )
 
-
 @subcommand.usage("DEPRECATED")
 @metrics.collector.collect_metrics("git cl commit")
 def CMDdcommit(parser, args):
@@ -7179,7 +7087,6 @@ def CMDdcommit(parser, args):
     )
     print(message)
     return 1
-
 
 @subcommand.usage("[upstream branch to apply against]")
 @metrics.collector.collect_metrics("git cl land")
@@ -7241,7 +7148,6 @@ def CMDland(parser, args):
         options.resultdb,
         options.realm,
     )
-
 
 @subcommand.usage("<patch url or issue id or issue url>")
 @metrics.collector.collect_metrics("git cl patch")
@@ -7376,7 +7282,6 @@ def CMDpatch(parser, args):
         reauthor=options.reauthor,
     )
 
-
 def GetTreeStatus(url=None):
     """Fetches the tree status and returns either 'open', 'closed',
     'unknown' or 'unset'."""
@@ -7392,7 +7297,6 @@ def GetTreeStatus(url=None):
         return "unknown"
     return "unset"
 
-
 def GetTreeStatusReason():
     """Fetches the tree status from a json url and returns the message
     with the reason for the tree to be opened or closed."""
@@ -7402,7 +7306,6 @@ def GetTreeStatusReason():
     status = json.loads(connection.read())
     connection.close()
     return status["message"]
-
 
 @metrics.collector.collect_metrics("git cl tree")
 def CMDtree(parser, args):
@@ -7429,7 +7332,6 @@ def CMDtree(parser, args):
     if status != "open":
         return 1
     return 0
-
 
 @metrics.collector.collect_metrics("git cl try")
 def CMDtry(parser, args):
@@ -7589,7 +7491,6 @@ def CMDtry(parser, args):
         return 1
     return 0
 
-
 @metrics.collector.collect_metrics("git cl try-results")
 def CMDtry_results(parser, args):
     """Prints info about results for tryjobs associated with the current CL."""
@@ -7664,7 +7565,6 @@ def CMDtry_results(parser, args):
         _print_tryjobs(options, jobs)
     return 0
 
-
 @subcommand.usage("[new upstream branch]")
 @metrics.collector.collect_metrics("git cl upstream")
 def CMDupstream(parser, args):
@@ -7692,7 +7592,6 @@ def CMDupstream(parser, args):
     else:
         print(cl.GetUpstreamBranch())
     return 0
-
 
 @metrics.collector.collect_metrics("git cl web")
 def CMDweb(parser, args):
@@ -7741,7 +7640,6 @@ def CMDweb(parser, args):
         os.dup2(saved_stderr, 2)
     return 0
 
-
 @metrics.collector.collect_metrics("git cl set-commit")
 def CMDset_commit(parser, args):
     """Sets the commit bit to trigger the CQ."""
@@ -7785,7 +7683,6 @@ def CMDset_commit(parser, args):
     cl.SetCQState(state)
     return 0
 
-
 @metrics.collector.collect_metrics("git cl set-close")
 def CMDset_close(parser, args):
     """Closes the issue."""
@@ -7813,7 +7710,6 @@ def CMDset_close(parser, args):
         DieWithError("ERROR: No issue to close.")
     cl.CloseIssue()
     return 0
-
 
 @subcommand.usage("[--] [files ...]")
 @metrics.collector.collect_metrics("git cl diff")
@@ -7872,7 +7768,6 @@ def CMDdiff(parser, raw_args):
     subprocess2.check_call(cmd)
 
     return 0
-
 
 @metrics.collector.collect_metrics("git cl owners")
 def CMDowners(parser, args):
@@ -7959,7 +7854,6 @@ def CMDowners(parser, args):
         ignore_author=options.ignore_self,
     ).run()
 
-
 def _SplitArgsByCmdLineLimit(args):
     """Splits a list of arguments into shorter lists that fit within the command
     line limit."""
@@ -7984,7 +7878,6 @@ def _SplitArgsByCmdLineLimit(args):
 
     if batch_args:
         yield batch_args
-
 
 def RunGitDiffCmd(
     diff_type, upstream_commit, files, allow_prefix=False, **kwargs
@@ -8021,7 +7914,6 @@ def RunGitDiffCmd(
         output += RunGit(diff_cmd + files_batch, **kwargs)
 
     return output
-
 
 def _RunClangFormatDiff(opts, paths, top_dir, diffs):
     """Runs clang-format-diff and sets a return value if necessary."""
@@ -8106,7 +7998,6 @@ def _RunClangFormatDiff(opts, paths, top_dir, diffs):
         return_value = 2
 
     return return_value
-
 
 def _RunGoogleJavaFormat(opts, paths, top_dir, diffs):
     """Runs google-java-format and sets a return value if necessary."""
@@ -8196,7 +8087,6 @@ def _RunGoogleJavaFormat(opts, paths, top_dir, diffs):
 
         return return_value
 
-
 def _RunRustFmt(opts, paths, top_dir, diffs):
     """Runs rustfmt.  Just like _RunClangFormatDiff returns 2 to indicate that
     presubmit checks have failed (and returns 0 otherwise)."""
@@ -8222,7 +8112,6 @@ def _RunRustFmt(opts, paths, top_dir, diffs):
 
     return 0
 
-
 def _RunSwiftFormat(opts, paths, top_dir, diffs):
     """Runs swift-format.  Just like _RunClangFormatDiff returns 2 to indicate
     that presubmit checks have failed (and returns 0 otherwise)."""
@@ -8247,15 +8136,12 @@ def _RunSwiftFormat(opts, paths, top_dir, diffs):
 
     return 0
 
-
 _ruff_batch_supported_cache: bool | None = None
-
 
 def _GetRuffChromiumPath() -> str:
     """Returns the absolute path to the ruff_chromium wrapper script."""
     depot_tools_path = os.path.dirname(os.path.abspath(__file__))
     return os.path.join(depot_tools_path, "ruff_chromium")
-
 
 def _IsRuffBatchSupported(ruff_chromium_path: str) -> bool:
     """Checks if the ruff_chromium wrapper supports batch formatting.
@@ -8273,7 +8159,6 @@ def _IsRuffBatchSupported(ruff_chromium_path: str) -> bool:
         _ruff_batch_supported_cache = False
 
     return _ruff_batch_supported_cache
-
 
 def _RunPythonFormat(
     opts: optparse.Values,
@@ -8351,7 +8236,6 @@ def _RunPythonFormat(
         sys.stderr.write(f"Failed to run ruff_chromium --batch: {e}\n")
         return 1
 
-
 def _RunYapf(opts, paths, top_dir, diffs):
     depot_tools_path = os.path.dirname(os.path.abspath(__file__))
     yapf_tool = os.path.join(depot_tools_path, "yapf")
@@ -8418,7 +8302,6 @@ def _RunYapf(opts, paths, top_dir, diffs):
             RunCommand(cmd, cwd=top_dir, shell=sys.platform.startswith("win32"))
     return return_value
 
-
 def _RunMarkdownFormat(
     opts: optparse.Values,
     paths: list[str],
@@ -8454,7 +8337,6 @@ def _RunMarkdownFormat(
         return_value = 2
 
     return return_value
-
 
 def _RunLitTemplateFormatter(
     opts: optparse.Values,
@@ -8524,7 +8406,6 @@ def _RunLitTemplateFormatter(
 
     return return_value
 
-
 def _RunGnFormat(opts, paths, top_dir, diffs):
     cmd = [sys.executable, os.path.join(DEPOT_TOOLS, "gn.py"), "format"]
     if opts.dry_run or opts.diff:
@@ -8549,7 +8430,6 @@ def _RunGnFormat(opts, paths, top_dir, diffs):
                 + "\nTry running `gn format` on this file manually."
             )
     return return_value
-
 
 def _RunMojomFormat(opts, paths, top_dir, diffs):
     primary_solution_path = gclient_paths.GetPrimarySolutionPath()
@@ -8579,7 +8459,6 @@ def _RunMojomFormat(opts, paths, top_dir, diffs):
         return 2
 
     return ret
-
 
 def _RunMetricsXMLFormat(opts, paths, top_dir, diffs):
     # Skip the metrics formatting from the global presubmit hook. These files
@@ -8619,7 +8498,6 @@ def _RunMetricsXMLFormat(opts, paths, top_dir, diffs):
             return_value = 2  # Not formatted.
     return return_value
 
-
 def _RunLUCICfgFormat(opts, paths, top_dir, diffs):
     depot_tools_path = os.path.dirname(os.path.abspath(__file__))
     lucicfg = os.path.join(depot_tools_path, "lucicfg")
@@ -8637,13 +8515,11 @@ def _RunLUCICfgFormat(opts, paths, top_dir, diffs):
 
     return ret
 
-
 FormatterFunction = Callable[
     [optparse.Values, list[str], str, Optional[Mapping[str, str]]], int
 ]
 
-
-def _SplitDiffsByFile(diff_string: str) -> Dict[str, str]:
+def _SplitDiffsByFile(diff_string: str) -> Dict[str, str]:  # noqa: F821
     """Split a given diff string into per-file patches.
 
     This function expects that the diff_string was generated with a prefix.
@@ -8676,10 +8552,9 @@ def _SplitDiffsByFile(diff_string: str) -> Dict[str, str]:
 
     return ret
 
-
 def _FindFilesToFormat(
     opts: optparse.Values, files: list[str] | None, upstream_commit: str | None
-) -> Tuple[List[str], Dict[str, str] | None]:
+) -> Tuple[List[str], Dict[str, str] | None]:  # noqa: F821
     """Returns a list of files to format and the diffs.
 
     If opts.full, returns None for the diffs.
@@ -8700,7 +8575,6 @@ def _FindFilesToFormat(
         RunGitDiffCmd(["-U0"], upstream_commit, files, allow_prefix=True)
     )
     return diffs.keys(), diffs
-
 
 @subcommand.usage("[files or directories to diff]")
 @metrics.collector.collect_metrics("git cl format")
@@ -8922,7 +8796,6 @@ def CMDformat(parser: optparse.OptionParser, args: list[str]):
 
     return return_value
 
-
 @subcommand.usage("<codereview url or issue id>")
 @metrics.collector.collect_metrics("git cl checkout")
 def CMDcheckout(parser, args):
@@ -8975,7 +8848,6 @@ def CMDcheckout(parser, args):
 
     return 0
 
-
 def CMDlol(parser, args):
     # This command is intentionally undocumented.
     print(
@@ -8990,10 +8862,8 @@ def CMDlol(parser, args):
     )
     return 0
 
-
 def CMDversion(parser, args):
     print(utils.depot_tools_version())
-
 
 class OptionParser(optparse.OptionParser):
     """Creates the option parse and add --verbose support."""
@@ -9016,7 +8886,7 @@ class OptionParser(optparse.OptionParser):
     ) -> tuple[optparse.Values, list[str]]: ...
 
     @typing.overload
-    def parse_args(  # pylint: disable=signature-differs
+    def parse_args(
         self, args: Sequence[AnyStr], values: Optional[optparse.Values] = None
     ) -> tuple[optparse.Values, list[AnyStr]]: ...
 
@@ -9069,7 +8939,6 @@ class OptionParser(optparse.OptionParser):
 
         return options, argslist
 
-
 def _ResolveGitPath(git_path, base_dir):
     if not os.path.exists(git_path):
         return None
@@ -9093,7 +8962,6 @@ def _ResolveGitPath(git_path, base_dir):
         path = os.path.abspath(os.path.join(base_dir, path))
     return path
 
-
 def FindGitDir(start_dir="."):
     curr = os.path.abspath(start_dir)
     while True:
@@ -9105,7 +8973,6 @@ def FindGitDir(start_dir="."):
             break
         curr = parent
     return None
-
 
 def GetUntrackedCacheRecoveryMsg():
     try:
@@ -9138,7 +9005,6 @@ def GetUntrackedCacheRecoveryMsg():
         f"  git update-index --no-untracked-cache\n"
         f"  git config core.untrackedCache false"
     )
-
 
 def main(argv):
     colorize_CMDstatus_doc()
@@ -9176,7 +9042,6 @@ def main(argv):
             DieWithError(GetUntrackedCacheRecoveryMsg())
         raise
     return 0
-
 
 if __name__ == "__main__":
     # These affect sys.stdout, so do it outside of main() to simplify mocks in

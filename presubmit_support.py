@@ -45,7 +45,6 @@ import gclient_utils
 import git_footers
 import gerrit_util
 from gerrit_cache import GerritCache
-import lockfile
 import owners_client
 import owners_finder
 import presubmit_canned_checks
@@ -53,9 +52,6 @@ import presubmit_diff
 import rdb_wrapper
 import scm
 import subprocess2 as subprocess  # Exposed through the API.
-
-# TODO: Should fix these warnings.
-# pylint: disable=line-too-long
 
 # Ask for feedback only once in program lifetime.
 _ASKED_FOR_FEEDBACK = False
@@ -67,16 +63,13 @@ _SHOW_CALLSTACKS = False
 # This is the default branch name.
 _NO_BRANCH_NAME = "no name"
 
-
 def time_time():
     # Use this so that it can be mocked in tests without interfering with python
     # system machinery.
     return time.time()
 
-
 class PresubmitFailure(Exception):
     pass
-
 
 class CommandData(object):
     def __init__(self, name, cmd, kwargs, message, python3=True):
@@ -92,7 +85,6 @@ class CommandData(object):
         self.kwargs["stdin"] = subprocess.PIPE
         self.message = message
         self.info = None
-
 
 # Adapted from
 # https://github.com/google/gtest-parallel/blob/master/gtest_parallel.py#L37
@@ -148,9 +140,7 @@ class SigintHandler(object):
                 self.__on_sigint()
         return stdout, stderr
 
-
 sigint_handler = SigintHandler()
-
 
 class Timer(object):
     def __init__(self, timeout, fn):
@@ -172,7 +162,6 @@ class Timer(object):
     def _onTimer(self):
         self._fn()
         self.completed = True
-
 
 class ThreadPool(object):
     def __init__(self, pool_size=None, timeout=None):
@@ -301,7 +290,6 @@ class ThreadPool(object):
 
         return self._messages
 
-
 def normpath(path):
     """Version of os.path.normpath that also changes backward slashes to
     forward slashes when not running on Windows.
@@ -311,7 +299,6 @@ def normpath(path):
     path = path.replace(os.sep, "/")
     return os.path.normpath(path)
 
-
 def _RightHandSideLinesImpl(affected_files):
     """Implements RightHandSideLines for InputApi and GclChange."""
     for af in affected_files:
@@ -319,13 +306,11 @@ def _RightHandSideLinesImpl(affected_files):
         for line in lines:
             yield (af, line[0], line[1])
 
-
 def prompt_should_continue(prompt_string):
     sys.stdout.write(prompt_string)
     sys.stdout.flush()
     response = sys.stdin.readline().strip().lower()
     return response in ("y", "yes")
-
 
 # Top level object so multiprocessing can pickle
 # Public access through OutputApi object.
@@ -399,7 +384,6 @@ class _PresubmitResultLocation:
                 f"), got ({self.start_line}, {self.start_col}) .. "
                 f"({self.end_line}, {self.end_col})"
             )
-
 
 # Top level object so multiprocessing can pickle
 # Public access through OutputApi object.
@@ -498,14 +482,12 @@ class _PresubmitResult(object):
             "fatal": self.fatal,
         }
 
-
 # Top level object so multiprocessing can pickle
 # Public access through OutputApi object.
 class _PresubmitError(_PresubmitResult):
     """A hard presubmit error."""
 
     fatal = True
-
 
 # Top level object so multiprocessing can pickle
 # Public access through OutputApi object.
@@ -514,12 +496,10 @@ class _PresubmitPromptWarning(_PresubmitResult):
 
     should_prompt = True
 
-
 # Top level object so multiprocessing can pickle
 # Public access through OutputApi object.
 class _PresubmitNotifyResult(_PresubmitResult):
     """Just print something to the screen -- but it's not even a warning."""
-
 
 # Top level object so multiprocessing can pickle
 # Public access through OutputApi object.
@@ -529,7 +509,6 @@ class _MailTextResult(_PresubmitResult):
     def __init__(self, *args, **kwargs):
         super(_MailTextResult, self).__init__()
         raise NotImplementedError()
-
 
 class GerritAccessor(object):
     """Limited Gerrit functionality for canned presubmit checks to work.
@@ -664,7 +643,6 @@ class GerritAccessor(object):
 
         return self.code_owners_enabled
 
-
 class OutputApi(object):
     """An instance of OutputApi gets passed to presubmit scripts so that they
     can output various types of results.
@@ -691,14 +669,10 @@ class OutputApi(object):
             return self.PresubmitNotifyResult(*args, **kwargs)
         return self.PresubmitPromptWarning(*args, **kwargs)
 
-
 class InputApi(object):
     """An instance of this object is passed to presubmit scripts so they can
     know stuff about the change they're looking at.
     """
-
-    # Method could be a function
-    # pylint: disable=no-self-use
 
     # File extensions that are considered source files from a style guide
     # perspective. Don't modify this list from a presubmit script!
@@ -852,7 +826,7 @@ class InputApi(object):
         self._named_temporary_files = []
 
         self.owners_client = None
-        if self.gerrit and not "PRESUBMIT_SKIP_NETWORK" in self.environ:
+        if self.gerrit and "PRESUBMIT_SKIP_NETWORK" not in self.environ:
             try:
                 self.owners_client = owners_client.GetCodeOwnersClient(
                     host=self.gerrit.host,
@@ -869,7 +843,6 @@ class InputApi(object):
         # Replace <hash_map> and <hash_set> as headers that need to be included
         # with 'base/containers/hash_tables.h' instead.
         # Access to a protected member _XX of a client class
-        # pylint: disable=protected-access
         self.cpplint._re_pattern_templates = [
             (a, b, "base/containers/hash_tables.h")
             if header in ("<hash_map>", "<hash_set>")
@@ -948,7 +921,6 @@ class InputApi(object):
                 category=DeprecationWarning,
                 stacklevel=2,
             )
-        # pylint: disable=consider-using-generator
         return [
             x
             for x in self.AffectedFiles(include_deletes=False, **kwargs)
@@ -1052,7 +1024,6 @@ class InputApi(object):
             input_api.subprocess.check_output(['script-that', '--reads-from',
                                             f.name])
 
-
         Note that callers of CreateTemporaryFile() should not worry about removing
         any temporary file; this is done transparently by the presubmit handling
         code.
@@ -1102,7 +1073,6 @@ class InputApi(object):
             msgs.extend(self.thread_pool.RunAsync())
         return msgs
 
-
 class _DiffCache(object):
     """Caches diffs retrieved from a particular SCM."""
 
@@ -1113,7 +1083,6 @@ class _DiffCache(object):
     def GetOldContents(self, path, local_root):
         """Get the old version for a particular path."""
         raise NotImplementedError()
-
 
 class _GitDiffCache(_DiffCache):
     """DiffCache implementation for git; gets all file diffs at once."""
@@ -1128,7 +1097,7 @@ class _GitDiffCache(_DiffCache):
     def GetDiff(self, path, local_root):
         # Compare against None to distinguish between None and an initialized
         # but empty dictionary.
-        if self._diffs_by_file == None:
+        if self._diffs_by_file == None:  # noqa: E711
             # Don't specify any filenames below, because there are command line
             # length limits on some platforms and GenerateDiff would fail.
             unified_diff = scm.GIT.GenerateDiff(
@@ -1156,7 +1125,6 @@ class _GitDiffCache(_DiffCache):
     def GetOldContents(self, path, local_root):
         return scm.GIT.GetOldContents(local_root, path, branch=self._upstream)
 
-
 class _ProvidedDiffCache(_DiffCache):
     """Caches diffs from the provided diff file."""
 
@@ -1168,7 +1136,7 @@ class _ProvidedDiffCache(_DiffCache):
 
     def GetDiff(self, path, local_root):
         """Get the diff for a particular path."""
-        if self._diffs_by_file == None:
+        if self._diffs_by_file == None:  # noqa: E711
             self._diffs_by_file = _parse_unified_diff(self._diff)
         return self._diffs_by_file.get(path, "")
 
@@ -1223,14 +1191,11 @@ class _ProvidedDiffCache(_DiffCache):
                     return gclient_utils.FileRead(copy_dst)
                 return ""
 
-
 class AffectedFile(object):
     """Representation of a file in a change."""
 
     DIFF_CACHE = _DiffCache
 
-    # Method could be a function
-    # pylint: disable=no-self-use
     def __init__(self, path, action, repository_root, diff_cache):
         self._path = path
         self._action = action
@@ -1379,12 +1344,10 @@ class AffectedFile(object):
     def GenerateScmDiff(self):
         return self._diff_cache.GetDiff(self.LocalPath(), self._local_root)
 
-
 class GitAffectedFile(AffectedFile):
     """Representation of a file in a change out of a git checkout."""
 
     # Method 'NNN' is abstract in class 'NNN' but is not overridden
-    # pylint: disable=abstract-method
 
     DIFF_CACHE = _GitDiffCache
 
@@ -1402,12 +1365,10 @@ class GitAffectedFile(AffectedFile):
                 )
         return self._is_testable_file
 
-
 class ProvidedDiffAffectedFile(AffectedFile):
     """Representation of a file in a change described by a diff."""
 
     DIFF_CACHE = _ProvidedDiffCache
-
 
 class Change(object):
     """Describe a change.
@@ -1709,7 +1670,6 @@ class Change(object):
             self._submodules = scm.GIT.ListSubmodules(self.RepositoryRoot())
         return self._submodules
 
-
 class GitChange(Change):
     _AFFECTED_FILES = GitAffectedFile
     scm = "git"
@@ -1759,7 +1719,6 @@ class GitChange(Change):
             return affected
         return list(filter(lambda x: x.Action() != "D", affected))
 
-
 class ProvidedDiffChange(Change):
     _AFFECTED_FILES = ProvidedDiffAffectedFile
 
@@ -1774,7 +1733,6 @@ class ProvidedDiffChange(Change):
         """List all files under source control in the repo."""
         root = root or self.RepositoryRoot()
         return scm.DIFF.GetAllFiles(root)
-
 
 def ListRelevantPresubmitFiles(files, root):
     """Finds all presubmit files that apply to a given set of source files.
@@ -1830,7 +1788,6 @@ def ListRelevantPresubmitFiles(files, root):
 
     logging.debug("Presubmit files: %s", ",".join(results))
     return results
-
 
 class GetPostUploadExecuter(object):
     def __init__(self, change, gerrit_obj):
@@ -1890,7 +1847,6 @@ class GetPostUploadExecuter(object):
             )
         return post_upload_hook(self.gerrit, self.change, OutputApi(False))
 
-
 def DoPostUploadExecuter(change, gerrit_obj, verbose):
     """Execute the post upload hook.
 
@@ -1937,7 +1893,6 @@ def DoPostUploadExecuter(change, gerrit_obj, verbose):
         sys.stdout.write("\n")
 
     return exit_code
-
 
 class PresubmitExecuter(object):
     def __init__(
@@ -2182,7 +2137,6 @@ class PresubmitExecuter(object):
                 "output_api.PresubmitResult"
             )
 
-
 def RDBStatusFrom(result):
     """Returns the status and failure reason for a PresubmitResult."""
     failure_reason = None
@@ -2198,7 +2152,6 @@ def RDBStatusFrom(result):
         if failure_reasons:
             failure_reason = "\n".join(failure_reasons)
     return status, failure_reason
-
 
 def DoPresubmitChecks(
     change,
@@ -2386,7 +2339,6 @@ def DoPresubmitChecks(
 
         return 1 if presubmits_failed else 0
 
-
 def _scan_sub_dirs(mask, recursive):
     if not recursive:
         return [x for x in glob.glob(mask) if x not in (".svn", ".git")]
@@ -2402,14 +2354,12 @@ def _scan_sub_dirs(mask, recursive):
                 results.append(os.path.join(root, name))
     return results
 
-
 def _parse_files(args, recursive):
     logging.debug("Searching for %s", args)
     files = []
     for arg in args:
         files.extend([("M", f) for f in _scan_sub_dirs(arg, recursive)])
     return files
-
 
 def _parse_change(parser, options):
     """Process change options.
@@ -2508,7 +2458,6 @@ def _parse_change(parser, options):
         )
     return Change(*change_args)
 
-
 def _parse_gerrit_options(parser, options):
     """Process gerrit options.
 
@@ -2548,7 +2497,6 @@ def _parse_gerrit_options(parser, options):
 
     return gerrit_obj
 
-
 def _parse_unified_diff(diff):
     """Parses a unified git diff and returns a list of (path, diff) tuples."""
     diffs = {}
@@ -2572,13 +2520,11 @@ def _parse_unified_diff(diff):
 
     return dict((normpath(path), "".join(diff)) for path, diff in diffs.items())
 
-
 def _process_diff_file(diff_file):
     diff = gclient_utils.FileRead(diff_file)
     if not diff:
         return "", []
     return diff, _diffs_to_change_files(_parse_unified_diff(diff))
-
 
 def _diffs_to_change_files(diffs):
     """Validates a dict of diffs and processes it into a list of change files.
@@ -2619,7 +2565,6 @@ def _diffs_to_change_files(diffs):
         change_files.append((action, file))
     return change_files
 
-
 @contextlib.contextmanager
 def setup_environ(kv: Mapping[str, str]):
     """Update environment while in context, and reset back to original on exit.
@@ -2640,7 +2585,6 @@ def setup_environ(kv: Mapping[str, str]):
         else:
             os.environ.pop(k, None)
 
-
 @contextlib.contextmanager
 def canned_check_filter(method_names):
     filtered = {}
@@ -2659,7 +2603,6 @@ def canned_check_filter(method_names):
     finally:
         for name, method in filtered.items():
             setattr(presubmit_canned_checks, name, method)
-
 
 def main(argv=None):
     parser = argparse.ArgumentParser(usage="%(prog)s [options] <files...>")
@@ -2834,7 +2777,6 @@ def main(argv=None):
             file=sys.stderr,
         )
         return 2
-
 
 if __name__ == "__main__":
     try:

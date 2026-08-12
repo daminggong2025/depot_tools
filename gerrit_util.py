@@ -30,7 +30,7 @@ import urllib.parse
 from dataclasses import dataclass
 from io import StringIO
 from multiprocessing.pool import ThreadPool
-from typing import Any, Container, Dict, Mapping
+from typing import Any, Container, Dict
 from typing import NamedTuple, List, Optional
 from typing import Tuple, TypedDict, cast
 from typing import Generator
@@ -45,7 +45,6 @@ import metrics_utils
 import newauth
 import scm
 import subprocess2
-
 
 # HACK: httplib2 has significant bugs with its proxy support in
 # python3. All httplib2 code should be rewritten to just use python
@@ -88,8 +87,8 @@ def __fixed_rewrite_proxy(self: httplib2.socks.socksocket, header: bytes):
         host = host.split(b" ")[1]
         endpt = endpt.split(b" ")
         if (
-            self._socksocket__proxy[4] != None
-            and self._socksocket__proxy[5] != None
+            self._socksocket__proxy[4] != None  # noqa: E711
+            and self._socksocket__proxy[5] != None  # noqa: E711
         ):
             hdrs.insert(0, self._socksocket__getauthheader())
         hdrs.insert(0, b"Host: %s" % host)
@@ -98,11 +97,7 @@ def __fixed_rewrite_proxy(self: httplib2.socks.socksocket, header: bytes):
         )
     return b"\r\n".join(hdrs)
 
-
 httplib2.socks.socksocket._socksocket__rewriteproxy = __fixed_rewrite_proxy
-
-# TODO: Should fix these warnings.
-# pylint: disable=line-too-long
 
 LOGGER = logging.getLogger()
 # With a starting sleep time of 12.0 seconds, x <= [1.8-2.2]x backoff, and six
@@ -120,18 +115,15 @@ GERRIT_PROTOCOL = "https"
 # Controls how many concurrent Gerrit connections there can be.
 MAX_CONCURRENT_CONNECTION = 20
 
-
 def time_sleep(seconds):
     # Use this so that it can be mocked in tests without interfering with python
     # system machinery.
     return time.sleep(seconds)
 
-
 def time_time():
     # Use this so that it can be mocked in tests without interfering with python
     # system machinery.
     return time.time()
-
 
 def log_retry_and_sleep(seconds, attempt, try_limit):
     LOGGER.info(
@@ -141,7 +133,6 @@ def log_retry_and_sleep(seconds, attempt, try_limit):
     )
     time_sleep(seconds)
     return seconds * random.uniform(MIN_BACKOFF, MAX_BACKOFF)
-
 
 class GerritError(Exception):
     """Exception class for errors commuicating with the gerrit-on-borg service."""
@@ -154,7 +145,6 @@ class GerritError(Exception):
     def __str__(self):
         return self.message
 
-
 def _QueryString(params, first_param=None):
     """Encodes query parameters in the key:val[+key:val...] format specified here:
 
@@ -163,7 +153,6 @@ def _QueryString(params, first_param=None):
     q = [urllib.parse.quote(first_param)] if first_param else []
     q.extend(["%s:%s" % (key, val.replace(" ", "+")) for key, val in params])
     return "+".join(q)
-
 
 class SSOHelper(object):
     """SSOHelper finds a Google-internal SSO helper."""
@@ -183,10 +172,8 @@ class SSOHelper(object):
         self._sso_cmd = cmd
         return cmd
 
-
 # Global instance
 ssoHelper = SSOHelper()
-
 
 def ShouldUseSSO(host: str, email: str) -> bool:
     """Return True if we should use SSO for the given Gerrit host and user."""
@@ -195,11 +182,9 @@ def ShouldUseSSO(host: str, email: str) -> bool:
     LOGGER.debug("SSO=%r: %s", result.status, result.reason)
     return result.status
 
-
 class SSOCheckResult(NamedTuple):
     status: bool
     reason: str
-
 
 @functools.lru_cache(maxsize=None)
 def CheckShouldUseSSO(host: str, email: str) -> SSOCheckResult:
@@ -236,7 +221,6 @@ def CheckShouldUseSSO(host: str, email: str) -> SSOCheckResult:
     if any(email == r["email"] for r in records):
         return SSOCheckResult(True, "email is linked to @google.com email")
     return SSOCheckResult(False, "email is not linked to @google.com email")
-
 
 class _Authenticator(object):
     """Base authenticator class for authenticator implementations to subclass."""
@@ -368,13 +352,11 @@ class _Authenticator(object):
                 f"Could not find suitable authenticator, tried: [{auth_names}]."
             )
 
-
 def debug_auth() -> Tuple[str, str]:
     """Returns the name of the chosen auth scheme and any additional debugging
     information for that authentication scheme."""
     authn = _Authenticator.get()
     return authn.__class__.__name__, authn.debug_summary_state()
-
 
 def ensure_authenticated(
     *,
@@ -392,7 +374,6 @@ def ensure_authenticated(
         git_host=git_host,
         reauth_context=reauth_context,
     )
-
 
 class SSOAuthenticator(_Authenticator):
     """SSOAuthenticator implements a Google-internal authentication scheme."""
@@ -668,7 +649,6 @@ class SSOAuthenticator(_Authenticator):
     def debug_summary_state(self) -> str:
         return ""
 
-
 class CookiesAuthenticator(_Authenticator):
     """_Authenticator implementation that uses ".gitcookies" for token.
 
@@ -865,7 +845,6 @@ class CookiesAuthenticator(_Authenticator):
         username, domain = login[len("git-") :].split(".", 1)
         return "%s@%s" % (username, domain)
 
-
 class GceAuthenticator(_Authenticator):
     """_Authenticator implementation that uses GCE metadata service for token."""
 
@@ -963,7 +942,6 @@ class GceAuthenticator(_Authenticator):
         # TODO(b/343230702) - report ambient account name.
         return ""
 
-
 class LuciContextAuthenticator(_Authenticator):
     """_Authenticator implementation that uses LUCI_CONTEXT ambient local auth."""
 
@@ -995,7 +973,6 @@ class LuciContextAuthenticator(_Authenticator):
     def debug_summary_state(self) -> str:
         # TODO(b/343230702) - report ambient account name.
         return ""
-
 
 class GitCredsAuthenticator(_Authenticator):
     """_Authenticator implementation that uses `git-credential-luci` with OAuth.
@@ -1140,7 +1117,6 @@ class GitCredsAuthenticator(_Authenticator):
             )
             return False
 
-
 class NoAuthenticator(_Authenticator):
     """_Authenticator implementation that does no auth."""
 
@@ -1153,7 +1129,6 @@ class NoAuthenticator(_Authenticator):
 
     def debug_summary_state(self) -> str:
         return ""
-
 
 class ChainedAuthenticator(_Authenticator):
     """_Authenticator that delegates to others in sequence.
@@ -1223,13 +1198,11 @@ class ChainedAuthenticator(_Authenticator):
             f"{self!r} has no applicable authenticator for {gerrit_host}",
         )
 
-
 class ReqParams(TypedDict):
     uri: str
     method: str
     headers: Dict[str, str]
     body: Optional[str]
-
 
 class HttpConn(httplib2.Http):
     """HttpConn is an httplib2.Http with additional request-specific fields."""
@@ -1296,7 +1269,6 @@ class HttpConn(httplib2.Http):
     @property
     def host(self) -> str:
         return self.req_host
-
 
 def CreateHttpConn(
     host: str,
@@ -1384,7 +1356,6 @@ def CreateHttpConn(
             LOGGER.debug(conn.req_body)
 
     return conn
-
 
 def ReadHttpResponse(
     conn: HttpConn,
@@ -1496,7 +1467,6 @@ def ReadHttpResponse(
     reason = "%s: %s" % (response.reason, contents)
     raise GerritError(response.status, reason)
 
-
 def ReadHttpJsonResponse(
     conn,
     accept_statuses: Container[int] = frozenset([200]),
@@ -1520,7 +1490,6 @@ def ReadHttpJsonResponse(
         return {}
     return json.loads(s)
 
-
 def CallGerritApi(host, path, **kwargs):
     """Helper for calling a Gerrit API that returns a JSON response."""
     conn_kwargs = {}
@@ -1533,7 +1502,6 @@ def CallGerritApi(host, path, **kwargs):
         (k, kwargs[k]) for k in ["accept_statuses"] if k in kwargs
     )
     return ReadHttpJsonResponse(conn, **read_kwargs)
-
 
 def QueryChanges(
     host, params, first_param=None, limit=None, o_params=None, start=None
@@ -1565,7 +1533,6 @@ def QueryChanges(
     if o_params:
         path = "%s&%s" % (path, "&".join(["o=%s" % p for p in o_params]))
     return ReadHttpJsonResponse(CreateHttpConn(host, path, timeout=30))
-
 
 def GenerateAllChanges(
     host, params, first_param=None, limit=500, o_params=None, start=None
@@ -1632,7 +1599,6 @@ def GenerateAllChanges(
         for cl in at_most_once(page):
             yield cl
 
-
 def MultiQueryChanges(
     host, params, change_list, limit=None, o_params=None, start=None
 ):
@@ -1660,11 +1626,9 @@ def MultiQueryChanges(
         raise GerritError(e.http_status, msg)
     return result
 
-
 def GetGerritFetchUrl(host):
     """Given a Gerrit host name returns URL of a Gerrit instance to fetch from."""
     return "%s://%s/" % (GERRIT_PROTOCOL, host)
-
 
 def GetCodeReviewTbrScore(host, project):
     """Given a Gerrit host name and project, return the Code-Review score for TBR."""
@@ -1680,16 +1644,13 @@ def GetCodeReviewTbrScore(host, project):
         return 1
     return max([int(x) for x in project["labels"]["Code-Review"]["values"]])
 
-
 def GetChangePageUrl(host, change_number):
     """Given a Gerrit host name and change number, returns change page URL."""
     return "%s://%s/#/c/%d/" % (GERRIT_PROTOCOL, host, change_number)
 
-
 def GetChangeUrl(host, change):
     """Given a Gerrit host name and change ID, returns a URL for the change."""
     return "%s://%s/a/changes/%s" % (GERRIT_PROTOCOL, host, change)
-
 
 def GetChange(host, change, accept_statuses: Container[int] = frozenset([200])):
     """Queries a Gerrit server for information about a single change."""
@@ -1698,7 +1659,6 @@ def GetChange(host, change, accept_statuses: Container[int] = frozenset([200])):
         CreateHttpConn(host, path), accept_statuses=accept_statuses
     )
 
-
 def GetChangeDetail(host, change, o_params=None):
     """Queries a Gerrit server for extended information about a single change."""
     path = "changes/%s/detail" % change
@@ -1706,22 +1666,18 @@ def GetChangeDetail(host, change, o_params=None):
         path += "?%s" % "&".join(["o=%s" % p for p in o_params])
     return ReadHttpJsonResponse(CreateHttpConn(host, path))
 
-
 def GetChangeCommit(host: str, change: str, revision: str = "current") -> dict:
     """Query a Gerrit server for a revision associated with a change."""
     path = "changes/%s/revisions/%s/commit?links" % (change, revision)
     return ReadHttpJsonResponse(CreateHttpConn(host, path))
 
-
 def GetChangeCurrentRevision(host, change):
     """Get information about the latest revision for a given change."""
     return QueryChanges(host, [], change, o_params=("CURRENT_REVISION",))
 
-
 def GetChangeRevisions(host, change):
     """Gets information about all revisions associated with a change."""
     return QueryChanges(host, [], change, o_params=("ALL_REVISIONS",))
-
 
 def GetChangeReview(host, change, revision=None):
     """Gets the current review information for a change."""
@@ -1738,12 +1694,10 @@ def GetChangeReview(host, change, revision=None):
     path = "changes/%s/revisions/%s/review"
     return ReadHttpJsonResponse(CreateHttpConn(host, path))
 
-
 def GetChangeComments(host, change):
     """Get the line- and file-level comments on a change."""
     path = "changes/%s/comments" % change
     return ReadHttpJsonResponse(CreateHttpConn(host, path))
-
 
 def CreateDraft(host, change, revision="current", body=None):
     """Creates a draft comment on a revision.
@@ -1756,12 +1710,10 @@ def CreateDraft(host, change, revision="current", body=None):
     conn = CreateHttpConn(host, path, reqtype="PUT", body=body)
     return ReadHttpJsonResponse(conn, accept_statuses=(200, 201))
 
-
 def GetRelatedChanges(host, change, revision="current"):
     """Gets the related changes for a given change and revision."""
     path = "changes/%s/revisions/%s/related" % (change, revision)
     return ReadHttpJsonResponse(CreateHttpConn(host, path))
-
 
 def AbandonChange(host, change, msg=""):
     """Abandons a Gerrit change."""
@@ -1770,7 +1722,6 @@ def AbandonChange(host, change, msg=""):
     conn = CreateHttpConn(host, path, reqtype="POST", body=body)
     return ReadHttpJsonResponse(conn, accept_statuses=(200, 204, 409))
 
-
 def MoveChange(host, change, destination_branch):
     """Move a Gerrit change to different destination branch."""
     path = "changes/%s/move" % change
@@ -1778,14 +1729,12 @@ def MoveChange(host, change, destination_branch):
     conn = CreateHttpConn(host, path, reqtype="POST", body=body)
     return ReadHttpJsonResponse(conn)
 
-
 def RestoreChange(host, change, msg=""):
     """Restores a previously abandoned change."""
     path = "changes/%s/restore" % change
     body = {"message": msg} if msg else {}
     conn = CreateHttpConn(host, path, reqtype="POST", body=body)
     return ReadHttpJsonResponse(conn)
-
 
 def RebaseChange(host, change, base=None):
     """Rebases a change."""
@@ -1797,7 +1746,6 @@ def RebaseChange(host, change, base=None):
     # exist.
     return ReadHttpJsonResponse(conn, max_tries=2)
 
-
 def SubmitChange(host, change):
     """Submits a Gerrit change via Gerrit."""
     path = "changes/%s/submit" % change
@@ -1807,13 +1755,11 @@ def SubmitChange(host, change):
     # exist.
     return ReadHttpJsonResponse(conn, max_tries=2)
 
-
 def GetChangesSubmittedTogether(host, change):
     """Get all changes submitted with the given one."""
     path = "changes/%s/submitted_together?o=NON_VISIBLE_CHANGES" % change
     conn = CreateHttpConn(host, path, reqtype="GET")
     return ReadHttpJsonResponse(conn)
-
 
 def PublishChangeEdit(host, change, notify=True):
     """Publish a Gerrit change edit."""
@@ -1821,7 +1767,6 @@ def PublishChangeEdit(host, change, notify=True):
     body = {"notify": "ALL" if notify else "NONE"}
     conn = CreateHttpConn(host, path, reqtype="POST", body=body)
     return ReadHttpJsonResponse(conn, accept_statuses=(204,))
-
 
 def ChangeEdit(host, change, path, data):
     """Puts content of a file into a change edit."""
@@ -1833,14 +1778,12 @@ def ChangeEdit(host, change, path, data):
     conn = CreateHttpConn(host, path, reqtype="PUT", body=body)
     return ReadHttpJsonResponse(conn, accept_statuses=(204, 409))
 
-
 def SetChangeEditMessage(host, change, message):
     """Sets the commit message of a change edit."""
     path = "changes/%s/edit:message" % change
     body = {"message": message}
     conn = CreateHttpConn(host, path, reqtype="PUT", body=body)
     return ReadHttpJsonResponse(conn, accept_statuses=(204, 409))
-
 
 def HasPendingChangeEdit(host, change):
     conn = CreateHttpConn(host, "changes/%s/edit" % change)
@@ -1853,13 +1796,11 @@ def HasPendingChangeEdit(host, change):
         raise
     return True
 
-
 def DeletePendingChangeEdit(host, change):
     conn = CreateHttpConn(host, "changes/%s/edit" % change, reqtype="DELETE")
     # On success, Gerrit returns status 204; if the edit was already deleted it
     # returns 404.  Anything else is an error.
     ReadHttpResponse(conn, accept_statuses=[204, 404])
-
 
 def CherryPick(
     host,
@@ -1888,7 +1829,6 @@ def CherryPick(
     # still exist.
     return ReadHttpJsonResponse(conn, max_tries=2)
 
-
 def CherryPickCommit(host, project, commit, destination):
     """Cherry-pick a commit from a project to a destination branch."""
     project = urllib.parse.quote(project, "")
@@ -1896,7 +1836,6 @@ def CherryPickCommit(host, project, commit, destination):
     body = {"destination": destination}
     conn = CreateHttpConn(host, path, reqtype="POST", body=body)
     return ReadHttpJsonResponse(conn)
-
 
 def GetFileContents(host, change, path, revision="current"):
     """Get the contents of a file with the given path in the given revision.
@@ -1911,7 +1850,6 @@ def GetFileContents(host, change, path, revision="current"):
     )
     conn = CreateHttpConn(host, path, reqtype="GET")
     return base64.b64decode(ReadHttpResponse(conn).read())
-
 
 def SetCommitMessage(host, change, description, notify="ALL"):
     """Updates a commit message."""
@@ -1928,7 +1866,6 @@ def SetCommitMessage(host, change, description, notify="ALL"):
             "in change %s" % change,
         )
 
-
 def GetCommitIncludedIn(host, project, commit):
     """Retrieves the branches and tags for a given commit.
 
@@ -1944,13 +1881,11 @@ def GetCommitIncludedIn(host, project, commit):
     conn = CreateHttpConn(host, path, reqtype="GET")
     return ReadHttpJsonResponse(conn, accept_statuses=[200])
 
-
 def IsCodeOwnersEnabledOnHost(host):
     """Check if the code-owners plugin is enabled for the host."""
     path = "config/server/capabilities"
     capabilities = ReadHttpJsonResponse(CreateHttpConn(host, path))
     return "code-owners-checkCodeOwner" in capabilities
-
 
 def IsCodeOwnersEnabledOnRepo(host, repo):
     """Check if the code-owners plugin is enabled for the repo."""
@@ -1958,7 +1893,6 @@ def IsCodeOwnersEnabledOnRepo(host, repo):
     path = "/projects/%s/code_owners.project_config" % repo
     config = ReadHttpJsonResponse(CreateHttpConn(host, path))
     return not config["status"].get("disabled", False)
-
 
 def GetOwnersForFile(
     host,
@@ -1990,18 +1924,15 @@ def GetOwnersForFile(
         path = "%s?%s" % (path, "&".join(q))
     return ReadHttpJsonResponse(CreateHttpConn(host, path))
 
-
 def GetReviewers(host, change):
     """Gets information about all reviewers attached to a change."""
     path = "changes/%s/reviewers" % change
     return ReadHttpJsonResponse(CreateHttpConn(host, path))
 
-
 def GetReview(host, change, revision):
     """Gets review information about a specific revision of a change."""
     path = "changes/%s/revisions/%s/review" % (change, revision)
     return ReadHttpJsonResponse(CreateHttpConn(host, path))
-
 
 def AddReviewers(
     host,
@@ -2059,10 +1990,8 @@ def AddReviewers(
             accept_statuses=[200],
         )
 
-
 # Gerrit labels that are subject to review enforcement.
 _REVIEW_ENFORCEMENT_LABELS = set(x.lower() for x in ["Code-Review"])
-
 
 def _contains_review_enforcement_label(
     labels: Optional[Dict[str, str]],
@@ -2071,7 +2000,6 @@ def _contains_review_enforcement_label(
     return bool(labels) and any(
         label.lower() in _REVIEW_ENFORCEMENT_LABELS for label in labels
     )
-
 
 def SetReview(
     host,
@@ -2143,7 +2071,6 @@ def SetReview(
                 )
     return response
 
-
 def ResetReviewLabels(
     host, change, label, value="0", message=None, notify=None
 ):
@@ -2202,7 +2129,6 @@ def ResetReviewLabels(
             "a new patchset was uploaded." % change,
         )
 
-
 def CreateChange(host, project, branch="main", subject="", params=()):
     """
     Creates a new change.
@@ -2225,7 +2151,6 @@ def CreateChange(host, project, branch="main", subject="", params=()):
     conn = CreateHttpConn(host, path, reqtype="POST", body=body)
     return ReadHttpJsonResponse(conn, accept_statuses=[201])
 
-
 def CreateGerritBranch(host, project, branch, commit):
     """Creates a new branch from given project and commit
 
@@ -2241,7 +2166,6 @@ def CreateGerritBranch(host, project, branch, commit):
     if response:
         return response
     raise GerritError(200, "Unable to create gerrit branch")
-
 
 def CreateGerritTag(host, project, tag, commit):
     """Creates a new tag at the given commit.
@@ -2259,7 +2183,6 @@ def CreateGerritTag(host, project, tag, commit):
         return response
     raise GerritError(200, "Unable to create gerrit tag")
 
-
 def GetHead(host, project):
     """Retrieves current HEAD of Gerrit project
 
@@ -2274,7 +2197,6 @@ def GetHead(host, project):
     if response:
         return response
     raise GerritError(200, "Unable to update gerrit HEAD")
-
 
 def UpdateHead(host, project, branch):
     """Updates Gerrit HEAD to point to branch
@@ -2292,7 +2214,6 @@ def UpdateHead(host, project, branch):
         return response
     raise GerritError(200, "Unable to update gerrit HEAD")
 
-
 def GetGerritBranch(host, project, branch):
     """Gets a branch info from given project and branch name.
 
@@ -2306,13 +2227,11 @@ def GetGerritBranch(host, project, branch):
     conn = CreateHttpConn(host, path, reqtype="GET")
     return ReadHttpJsonResponse(conn, accept_statuses=[200, 404])
 
-
 def GetProjectHead(host, project):
     conn = CreateHttpConn(
         host, "/projects/%s/HEAD" % urllib.parse.quote(project, "")
     )
     return ReadHttpJsonResponse(conn, accept_statuses=[200])
-
 
 def GetAccountDetails(
     host, account_id="self", *, authenticator: Optional[_Authenticator] = None
@@ -2332,11 +2251,9 @@ def GetAccountDetails(
     )
     return ReadHttpJsonResponse(conn, accept_statuses=[200, 404])
 
-
 class EmailRecord(TypedDict):
     email: str
     preferred: bool  # This should be NotRequired[bool] in 3.11+
-
 
 def GetAccountEmails(
     host, account_id="self", *, authenticator: Optional[_Authenticator] = None
@@ -2361,7 +2278,6 @@ def GetAccountEmails(
     if resp is None:
         return None
     return cast(List[EmailRecord], resp)
-
 
 def ValidAccounts(host, accounts, max_threads=10):
     """Returns a mapping from valid account to its details.
@@ -2389,7 +2305,6 @@ def ValidAccounts(host, accounts, max_threads=10):
                 valid[account] = details
     return valid
 
-
 def PercentEncodeForGitRef(original):
     """Applies percent-encoding for strings sent to Gerrit via git ref metadata.
 
@@ -2409,7 +2324,6 @@ def PercentEncodeForGitRef(original):
     # longest.
     return encoded.replace(" ", "_")
 
-
 @contextlib.contextmanager
 def tempdir():
     tdir = None
@@ -2419,7 +2333,6 @@ def tempdir():
     finally:
         if tdir:
             gclient_utils.rmtree(tdir)
-
 
 def ChangeIdentifier(project, change_number):
     """Returns change identifier "project~number" suitable for |change| arg of

@@ -12,13 +12,9 @@ from unittest import mock
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT_DIR)
 
-import metrics
-import metrics_utils
-import utils
-
-# TODO: Should fix these warnings.
-# pylint: disable=line-too-long
-
+import metrics  # noqa: E402
+import metrics_utils  # noqa: E402
+import utils  # noqa: E402
 
 class TimeMock(object):
     def __init__(self):
@@ -27,7 +23,6 @@ class TimeMock(object):
     def __call__(self):
         self._count += 1
         return self._count * 1000
-
 
 class MetricsCollectorTest(unittest.TestCase):
     def setUp(self):
@@ -721,7 +716,6 @@ class MetricsCollectorTest(unittest.TestCase):
         # Assert that we collected all metrics for fun.
         self.assert_collects_metrics({"fun": [1, 2, 5]})
 
-
 class MetricsUtilsTest(unittest.TestCase):
     def test_extracts_host(self):
         """Test that we extract the host from the requested URI."""
@@ -938,7 +932,6 @@ class MetricsUtilsTest(unittest.TestCase):
             metrics_utils.EditMonitorState.CONTROL,
             metrics_utils.get_edit_monitor_state(),
         )
-
 
 if __name__ == "__main__":
     unittest.main()

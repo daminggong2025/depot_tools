@@ -82,7 +82,6 @@
 __version__ = "0.7"
 
 import copy
-import hashlib
 import json
 import logging
 import optparse
@@ -98,8 +97,6 @@ import tempfile
 import time
 import urllib.parse
 import zipfile
-
-from collections.abc import Collection, Mapping, Sequence
 
 import detect_host_arch
 import download_from_google_storage
@@ -121,9 +118,6 @@ import from_third_party
 
 Progress = from_third_party.import_module("repo.progress").Progress
 
-# TODO: Should fix these warnings.
-# pylint: disable=line-too-long
-
 DEPOT_TOOLS_DIR = os.path.dirname(os.path.abspath(os.path.realpath(__file__)))
 
 # Singleton object to represent an unset cache_dir (as opposed to a disabled
@@ -139,10 +133,8 @@ NO_SYNC_EXPERIMENT = "no-sync"
 
 PRECOMMIT_HOOK_VAR = "GCLIENT_PRECOMMIT"
 
-
 class GNException(Exception):
     pass
-
 
 def ToGNString(value):
     """Returns a stringified GN equivalent of the Python value."""
@@ -165,7 +157,6 @@ def ToGNString(value):
     # NOTE: some type handling removed compared to chromium/src copy.
 
     raise GNException("Unsupported type when printing to GN.")
-
 
 class Hook(object):
     """Descriptor of command ran before/after sync or on demand."""
@@ -299,7 +290,6 @@ class Hook(object):
                     % (gclient_utils.CommandToStr(cmd), elapsed_time)
                 )
 
-
 class DependencySettings(object):
     """Immutable configuration settings."""
 
@@ -379,7 +369,6 @@ class DependencySettings(object):
     def root(self):
         """Returns the root node, a GClient object."""
         if not self.parent:
-            # This line is to signal pylint that it could be a GClient instance.
             return self or GClient(None, None)
         return self.parent.root
 
@@ -429,7 +418,6 @@ class DependencySettings(object):
             url = self.parent.get_custom_deps(name, url)
         # None is a valid return value to disable a dependency.
         return self.custom_deps.get(name, url)
-
 
 class Dependency(gclient_utils.WorkItem, DependencySettings):
     """Object that represents a dependency checkout."""
@@ -1259,7 +1247,7 @@ class Dependency(gclient_utils.WorkItem, DependencySettings):
 
     def add_dependencies_and_close(self, deps_to_add, hooks, hooks_cwd=None):
         """Adds the dependencies, hooks and mark the parsing as done."""
-        if hooks_cwd == None:
+        if hooks_cwd == None:  # noqa: E711
             hooks_cwd = self.root.root_dir
 
         for dep in deps_to_add:
@@ -1330,7 +1318,6 @@ class Dependency(gclient_utils.WorkItem, DependencySettings):
         return None
 
     # Arguments number differs from overridden method
-    # pylint: disable=arguments-differ
     def run(
         self,
         revision_overrides,  # type: Mapping[str, str]
@@ -1643,7 +1630,7 @@ class Dependency(gclient_utils.WorkItem, DependencySettings):
         return result
 
     def RunHooksRecursively(self, options, progress):
-        assert self.hooks_ran == False
+        assert self.hooks_ran == False  # noqa: E712
         self._hooks_ran = True
         hooks = self.GetHooks(options)
         if progress:
@@ -1866,7 +1853,6 @@ class Dependency(gclient_utils.WorkItem, DependencySettings):
 
         return result
 
-
 _PLATFORM_MAPPING = {
     "cygwin": "win",
     "darwin": "mac",
@@ -1876,7 +1862,6 @@ _PLATFORM_MAPPING = {
     "aix6": "aix",
     "zos": "zos",
 }
-
 
 def merge_vars(result, new_vars):
     for k, v in new_vars.items():
@@ -1891,7 +1876,6 @@ def merge_vars(result, new_vars):
         else:
             result[k] = v
 
-
 def _detect_host_os():
     if sys.platform in _PLATFORM_MAPPING:
         return _PLATFORM_MAPPING[sys.platform]
@@ -1900,7 +1884,6 @@ def _detect_host_os():
         return os.uname().sysname.lower()
     except AttributeError:
         return sys.platform
-
 
 class GitDependency(Dependency):
     """A Dependency object that represents a single git checkout."""
@@ -1961,7 +1944,6 @@ class GitDependency(Dependency):
             out_cb,
             print_outbuf=self.print_outbuf,
         )
-
 
 class GClient(GitDependency):
     """Object that represent a gclient checkout. A tree of Dependency(), one per
@@ -2369,7 +2351,7 @@ it or fix the checkout.
             return revision_overrides
         solutions_names = [s.name for s in self.dependencies]
         for index, revision in enumerate(self._options.revisions):
-            if not "@" in revision:
+            if "@" not in revision:
                 # Support for --revision 123
                 revision = "%s@%s" % (solutions_names[index], revision)
             name, rev = revision.split("@", 1)
@@ -2972,7 +2954,6 @@ it or fix the checkout.
     def target_cpu(self):
         return self._enforced_cpu
 
-
 class GcsDependency(Dependency):
     """A Dependency object that represents a single GCS bucket and object"""
 
@@ -3042,7 +3023,7 @@ class GcsDependency(Dependency):
         )
 
     @property
-    def gcs_file_name(self):
+    def gcs_file_name(self):  # noqa: F811
         # Replace forward slashes
         return self.object_name.replace("/", "_")
 
@@ -3310,7 +3291,6 @@ class GcsDependency(Dependency):
             self.url, self.root.root_dir, self.name, self.outbuf, out_cb
         )
 
-
 class CipdDependency(Dependency):
     """A Dependency object that represents a single CIPD package."""
 
@@ -3493,9 +3473,7 @@ class CipdDependency(Dependency):
             )
         return s
 
-
 #### gclient commands.
-
 
 @subcommand.usage("[command] [args ...]")
 @metrics.collector.collect_metrics("gclient recurse")
@@ -3567,7 +3545,6 @@ def CMDrecurse(parser, args):
         progress=not options.no_progress,
     )
 
-
 @subcommand.usage("[args ...]")
 @metrics.collector.collect_metrics("gclient fetch")
 def CMDfetch(parser, args):
@@ -3584,7 +3561,6 @@ def CMDfetch(parser, args):
         OptionParser(),
         ["--jobs=%d" % options.jobs, "--scm=git", "git", "fetch"] + args,
     )
-
 
 class Flattener(object):
     """Flattens a gclient solution."""
@@ -3764,7 +3740,6 @@ class Flattener(object):
             if d.should_recurse:
                 self._flatten_dep(d)
 
-
 @metrics.collector.collect_metrics("gclient gitmodules")
 def CMDgitmodules(parser, args):
     """Adds or updates Git Submodules based on the contents of the DEPS file.
@@ -3812,7 +3787,7 @@ def CMDgitmodules(parser, args):
     ls = gclient_eval.Parse(deps_content, options.deps_file, None, None)
 
     prefix_length = 0
-    if not "use_relative_paths" in ls or ls["use_relative_paths"] != True:
+    if "use_relative_paths" not in ls or ls["use_relative_paths"] != True:  # noqa: E712
         delta_path = os.path.relpath(deps_dir, os.path.abspath(gclient_path))
         if delta_path:
             prefix_length = len(delta_path.replace(os.path.sep, "/")) + 1
@@ -3838,8 +3813,8 @@ def CMDgitmodules(parser, args):
     if os.path.exists(options.output_gitmodules):
         dot_git_pattern = re.compile(r"^(\s*)url(\s*)=.*\.git$")
         with open(options.output_gitmodules) as f:
-            strip_git_suffix = not any(dot_git_pattern.match(l) for l in f)
-            set_recursedeps = any("gclient-recursedeps" in l for l in f)
+            strip_git_suffix = not any(dot_git_pattern.match(l) for l in f)  # noqa: E741
+            set_recursedeps = any("gclient-recursedeps" in l for l in f)  # noqa: E741
 
     recursedeps = ls.get("recursedeps")
     with open(options.output_gitmodules, "w", newline="") as f:
@@ -3888,7 +3863,6 @@ def CMDgitmodules(parser, args):
         ".gitmodules and gitlinks updated. Please check `git diff --staged` "
         "and commit those staged changes (`git commit` without -a)"
     )
-
 
 @metrics.collector.collect_metrics("gclient flatten")
 def CMDflatten(parser, args):
@@ -3948,7 +3922,6 @@ def CMDflatten(parser, args):
 
     return 0
 
-
 def _GNSettingsToLines(gn_args_file, gn_args):
     s = []
     if gn_args_file:
@@ -3960,7 +3933,6 @@ def _GNSettingsToLines(gn_args_file, gn_args):
         )
     return s
 
-
 def _AllowedHostsToLines(allowed_hosts):
     """Converts |allowed_hosts| set to list of lines for output."""
     if not allowed_hosts:
@@ -3970,7 +3942,6 @@ def _AllowedHostsToLines(allowed_hosts):
         s.append('  "%s",' % h)
     s.extend(["]", ""])
     return s
-
 
 def _DepsToLines(deps):
     # type: (Mapping[str, Dependency]) -> Sequence[str]
@@ -3982,7 +3953,6 @@ def _DepsToLines(deps):
         s.extend(dep.ToLines())
     s.extend(["}", ""])
     return s
-
 
 def _DepsToDotGraphLines(deps):
     # type: (Mapping[str, Dependency]) -> Sequence[str]
@@ -3996,7 +3966,6 @@ def _DepsToDotGraphLines(deps):
             graph_lines.append("\t%s" % line)
     graph_lines.append("}")
     return graph_lines
-
 
 def _DepsOsToLines(deps_os):
     """Converts |deps_os| dict to list of lines for output."""
@@ -4027,7 +3996,6 @@ def _DepsOsToLines(deps_os):
     s.extend(["}", ""])
     return s
 
-
 def _HooksToLines(name, hooks):
     """Converts |hooks| list to list of lines for output."""
     if not hooks:
@@ -4056,7 +4024,6 @@ def _HooksToLines(name, hooks):
         )
     s.extend(["]", ""])
     return s
-
 
 def _HooksOsToLines(hooks_os):
     """Converts |hooks| list to list of lines for output."""
@@ -4091,7 +4058,6 @@ def _HooksOsToLines(hooks_os):
     s.extend(["}", ""])
     return s
 
-
 def _VarsToLines(variables):
     """Converts |variables| dict to list of lines for output."""
     if not variables:
@@ -4108,7 +4074,6 @@ def _VarsToLines(variables):
         )
     s.extend(["}", ""])
     return s
-
 
 @metrics.collector.collect_metrics("gclient grep")
 def CMDgrep(parser, args):
@@ -4154,7 +4119,6 @@ def CMDgrep(parser, args):
         + args,
     )
 
-
 @metrics.collector.collect_metrics("gclient root")
 def CMDroot(parser, args):
     """Outputs the solution root (or current dir if there isn't one)."""
@@ -4164,7 +4128,6 @@ def CMDroot(parser, args):
         print(os.path.abspath(client.root_dir))
     else:
         print(os.path.abspath("."))
-
 
 @subcommand.usage("[url]")
 @metrics.collector.collect_metrics("gclient config")
@@ -4286,7 +4249,6 @@ def CMDconfig(parser, args):
     client.SaveConfig()
     return 0
 
-
 @subcommand.epilog("""Example:
   gclient pack > patch.txt
     generate simple patch for configured client and dependences
@@ -4319,7 +4281,6 @@ def CMDpack(parser, args):
         client.PrintLocationAndContents()
     return client.RunOnDeps("pack", args)
 
-
 @metrics.collector.collect_metrics("gclient status")
 def CMDstatus(parser, args):
     """Shows modification status for every dependencies."""
@@ -4344,7 +4305,6 @@ def CMDstatus(parser, args):
     if options.verbose:
         client.PrintLocationAndContents()
     return client.RunOnDeps("status", args)
-
 
 @subcommand.epilog("""Examples:
   gclient sync
@@ -4620,9 +4580,7 @@ def CMDsync(parser, args):
             json.dump({"solutions": slns}, f)
     return ret
 
-
 CMDupdate = CMDsync
-
 
 @metrics.collector.collect_metrics("gclient validate")
 def CMDvalidate(parser, args):
@@ -4637,7 +4595,6 @@ def CMDvalidate(parser, args):
     else:
         print("validate: FAILURE")
     return rv
-
 
 @metrics.collector.collect_metrics("gclient diff")
 def CMDdiff(parser, args):
@@ -4657,7 +4614,6 @@ def CMDdiff(parser, args):
     if options.verbose:
         client.PrintLocationAndContents()
     return client.RunOnDeps("diff", args)
-
 
 @metrics.collector.collect_metrics("gclient revert")
 def CMDrevert(parser, args):
@@ -4717,7 +4673,6 @@ def CMDrevert(parser, args):
         raise gclient_utils.Error("client not configured; see 'gclient config'")
     return client.RunOnDeps("revert", args)
 
-
 @metrics.collector.collect_metrics("gclient runhooks")
 def CMDrunhooks(parser, args):
     """Runs hooks for files that have been modified in the local working copy."""
@@ -4746,7 +4701,6 @@ def CMDrunhooks(parser, args):
     options.nohooks = False
     return client.RunOnDeps("runhooks", args)
 
-
 # TODO(crbug.com/1481266): Collect merics for installhooks.
 def CMDinstallhooks(parser, args):
     """Installs gclient git hooks.
@@ -4761,7 +4715,6 @@ def CMDinstallhooks(parser, args):
         raise gclient_utils.Error("client not configured; see 'gclient config'")
     client._InstallPreCommitHook()
     return 0
-
 
 @metrics.collector.collect_metrics("gclient revinfo")
 def CMDrevinfo(parser, args):
@@ -4821,7 +4774,6 @@ def CMDrevinfo(parser, args):
     client.PrintRevInfo()
     return 0
 
-
 # TODO(crbug.com/327270127): Collect metrics for getconfig.
 @subcommand.usage("[key1] [key2] ...")
 def CMDgetconfig(parser, args):
@@ -4863,7 +4815,6 @@ def CMDgetconfig(parser, args):
         else:
             print(json.dumps(val))
     return 0
-
 
 @metrics.collector.collect_metrics("gclient getdep")
 def CMDgetdep(parser, args):
@@ -4952,7 +4903,6 @@ def CMDgetdep(parser, args):
             except KeyError as e:
                 print(repr(e), file=sys.stderr)
                 sys.exit(2)
-
 
 @metrics.collector.collect_metrics("gclient setdep")
 def CMDsetdep(parser, args):
@@ -5120,8 +5070,8 @@ def CMDsetdep(parser, args):
                     )
                 git_module_name = name
                 if (
-                    not "use_relative_paths" in local_scope
-                    or local_scope["use_relative_paths"] != True
+                    "use_relative_paths" not in local_scope
+                    or local_scope["use_relative_paths"] != True  # noqa: E712
                 ):
                     deps_dir = os.path.dirname(
                         os.path.abspath(options.deps_file)
@@ -5169,7 +5119,6 @@ def CMDsetdep(parser, args):
             "Run gclient sync to update your local dependency checkout."
         )
 
-
 @metrics.collector.collect_metrics("gclient verify")
 def CMDverify(parser, args):
     """Verifies the DEPS file deps are only from allowed_hosts."""
@@ -5194,7 +5143,6 @@ def CMDverify(parser, args):
             "dependencies from disallowed hosts; check your DEPS file."
         )
     return 0
-
 
 @subcommand.epilog("""For more information on what metrics are we collecting and
 why, please read metrics.README.md or visit https://bit.ly/2ufRS4p""")
@@ -5231,7 +5179,6 @@ def CMDmetrics(parser, args):
     else:
         print("You have opted out. Please consider opting in.")
     return 0
-
 
 class OptionParser(optparse.OptionParser):
     gclientfile_default = os.environ.get("GCLIENT_FILE", ".gclient")
@@ -5333,14 +5280,12 @@ class OptionParser(optparse.OptionParser):
             options.force = None
         return (options, args)
 
-
 def disable_buffering():
     # Make stdout auto-flush so buildbot doesn't kill us during lengthy
     # operations. Python as a strong tendency to buffer sys.stdout.
     sys.stdout = gclient_utils.MakeFileAutoFlush(sys.stdout)
     # Make stdout annotated with the thread ids.
     sys.stdout = gclient_utils.MakeFileAnnotated(sys.stdout)
-
 
 def path_contains_tilde():
     for element in os.environ["PATH"].split(os.pathsep):
@@ -5351,7 +5296,6 @@ def path_contains_tilde():
         ):
             return True
     return False
-
 
 def can_run_gclient_and_helpers():
     if not sys.executable:
@@ -5370,7 +5314,6 @@ def can_run_gclient_and_helpers():
         )
         return False
     return True
-
 
 def main(argv):
     """Doesn't parse the arguments here, just find the right subcommand to
@@ -5409,7 +5352,6 @@ def main(argv):
     finally:
         gclient_utils.PrintWarnings()
     return 0
-
 
 if "__main__" == __name__:
     with metrics.collector.print_notice_and_exit():

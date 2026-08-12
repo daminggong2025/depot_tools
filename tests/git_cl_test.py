@@ -30,29 +30,22 @@ import metrics_utils
 # We have to disable monitoring before importing git_cl.
 metrics_utils.COLLECT_METRICS = False
 
-import auth
-import clang_format
-import contextlib
-import gclient_utils
-import gerrit_util
-import git_cl
-import git_common
-import git_footers
-import git_new_branch
-import owners_client
-import scm
-import subprocess2
-
-# TODO: Should fix these warnings.
-# pylint: disable=line-too-long
-
+import auth  # noqa: E402
+import contextlib  # noqa: E402
+import gclient_utils  # noqa: E402
+import gerrit_util  # noqa: E402
+import git_cl  # noqa: E402
+import git_common  # noqa: E402
+import git_footers  # noqa: E402
+import git_new_branch  # noqa: E402
+import owners_client  # noqa: E402
+import scm  # noqa: E402
+import subprocess2  # noqa: E402
 
 def callError(code=1, cmd="", cwd="", stdout=b"", stderr=b""):
     return subprocess2.CalledProcessError(code, cmd, cwd, stdout, stderr)
 
-
 CERR1 = callError(1)
-
 
 def getAccountDetailsMock(host, account_id="self", *, authenticator=None):
     if account_id == "self":
@@ -65,7 +58,6 @@ def getAccountDetailsMock(host, account_id="self", *, authenticator=None):
         }
     return None
 
-
 class TemporaryFileMock(object):
     def __init__(self):
         self.suffix = 0
@@ -74,7 +66,6 @@ class TemporaryFileMock(object):
     def __call__(self):
         self.suffix += 1
         yield "/tmp/fake-temp" + str(self.suffix)
-
 
 class ChangelistMock(object):
     # A class variable so we can access it when we don't have access to the
@@ -101,7 +92,6 @@ class ChangelistMock(object):
     def GetRemoteBranch(self):
         return ("origin", "refs/remotes/origin/main")
 
-
 class WatchlistsMock(object):
     def __init__(self, _):
         pass
@@ -110,17 +100,14 @@ class WatchlistsMock(object):
     def GetWatchersForPaths(_):
         return ["joe@example.com"]
 
-
 class CodereviewSettingsFileMock(object):
     def __init__(self):
         pass
 
-    # pylint: disable=no-self-use
     def read(self):
         return (
             "CODE_REVIEW_SERVER: gerrit.chromium.org\n" + "GERRIT_HOST: True\n"
         )
-
 
 class AuthenticatorMock(object):
     def __init__(self, *_args):
@@ -131,7 +118,6 @@ class AuthenticatorMock(object):
 
     def authorize(self, http):
         return http
-
 
 def CookiesAuthenticatorMockFactory(hosts_with_creds=None, same_auth=False):
     """Use to mock Gerrit/Git credentials from ~/.gitcookies.
@@ -147,7 +133,7 @@ def CookiesAuthenticatorMockFactory(hosts_with_creds=None, same_auth=False):
     """
 
     class CookiesAuthenticatorMock(git_cl.gerrit_util.CookiesAuthenticator):
-        def __init__(self):  # pylint: disable=super-init-not-called
+        def __init__(self):
             # Intentionally not calling super() because it reads actual cookie
             # files.
             pass
@@ -163,7 +149,6 @@ def CookiesAuthenticatorMockFactory(hosts_with_creds=None, same_auth=False):
 
     return CookiesAuthenticatorMock
 
-
 class MockChangelistWithBranchAndIssue:
     def __init__(self, branch, issue):
         self.branch = branch
@@ -175,14 +160,11 @@ class MockChangelistWithBranchAndIssue:
     def GetIssue(self):
         return self.issue
 
-
 class SystemExitMock(Exception):
     pass
 
-
 class ParserErrorMock(Exception):
     pass
-
 
 class TestGitClBasic(unittest.TestCase):
     def setUp(self):
@@ -608,7 +590,7 @@ class TestGitClBasic(unittest.TestCase):
         )
 
     def test_get_bug_line_values(self):
-        f = lambda p, bugs: list(git_cl._get_bug_line_values(p, bugs))
+        f = lambda p, bugs: list(git_cl._get_bug_line_values(p, bugs))  # noqa: E731
         self.assertEqual(f("", ""), [])
         self.assertEqual(f("", "123,v8:456"), ["123", "v8:456"])
         # Prefix that ends with colon.
@@ -695,7 +677,6 @@ class TestGitClBasic(unittest.TestCase):
         settings = git_cl.Settings()
         with mock.patch.object(settings, "_GetConfig", return_value="true"):
             self.assertTrue(settings.GetIsGerrit())
-
 
 class TestParseIssueURL(unittest.TestCase):
     def _test(self, arg, issue=None, patchset=None, hostname=None, fail=False):
@@ -807,7 +788,6 @@ class TestParseIssueURL(unittest.TestCase):
             "chromium-review.googlesource.com",
         )
 
-
 class GitCookiesCheckerTest(unittest.TestCase):
     def setUp(self):
         super(GitCookiesCheckerTest, self).setUp()
@@ -908,13 +888,12 @@ class GitCookiesCheckerTest(unittest.TestCase):
             }
 
         def by_line(text):
-            return [l.rstrip() for l in text.rstrip().splitlines()]
+            return [l.rstrip() for l in text.rstrip().splitlines()]  # noqa: E741
 
-        self.maxDiff = 10000  # pylint: disable=attribute-defined-outside-init
+        self.maxDiff = 10000
         self.assertEqual(
             by_line(sys.stdout.getvalue().strip()), by_line(expected)
         )
-
 
 class TestGitCl(unittest.TestCase):
     def setUp(self):
@@ -5210,7 +5189,6 @@ class TestGitCl(unittest.TestCase):
         cl = git_cl.Changelist(issue=123456)
         self.assertEqual(cl._GerritChangeIdentifier(), "123456")
 
-
 class ChangelistTest(unittest.TestCase):
     LAST_COMMIT_SUBJECT = "Fixes goat teleporter destination to be Australia"
 
@@ -6018,7 +5996,6 @@ class ChangelistTest(unittest.TestCase):
                     git_cl.Changelist._GerritURLRepoIdentity(x), want
                 )
 
-
 class CMDTestCaseBase(unittest.TestCase):
     _STATUSES = [
         "STATUS_UNSPECIFIED",
@@ -6103,7 +6080,6 @@ class CMDTestCaseBase(unittest.TestCase):
         ).start()
         mock.patch("git_common.is_dirty_git_tree", return_value=False).start()
         self.addCleanup(mock.patch.stopall)
-
 
 @unittest.skipIf(
     gclient_utils.IsEnvCog(), "not supported in non-git environment"
@@ -6216,7 +6192,6 @@ class CMDPresubmitTestCase(CMDTestCaseBase):
         mock_write_json.assert_called_once_with(
             "file.json", self._RUN_HOOK_RETURN
         )
-
 
 class CMDTryResultsTestCase(CMDTestCaseBase):
     _DEFAULT_REQUEST = {
@@ -6437,7 +6412,6 @@ class CMDTryResultsTestCase(CMDTestCaseBase):
             ],
             git_cl._filter_failed_for_retry(builds),
         )
-
 
 class CMDTryTestCase(CMDTestCaseBase):
     @unittest.skipIf(
@@ -6757,7 +6731,6 @@ class CMDTryTestCase(CMDTestCaseBase):
                 )
                 self.assertIn(expected_warning, git_cl.sys.stdout.getvalue())
 
-
 class CMDUploadTestCase(CMDTestCaseBase):
     def setUp(self):
         super(CMDUploadTestCase, self).setUp()
@@ -6769,7 +6742,6 @@ class CMDUploadTestCase(CMDTestCaseBase):
             "git_cl.Settings.GetSquashGerritUploads", return_value=True
         ).start()
         self.addCleanup(mock.patch.stopall)
-
 
 class MakeRequestsHelperTestCase(unittest.TestCase):
     def exampleGerritChange(self):
@@ -6872,7 +6844,6 @@ class MakeRequestsHelperTestCase(unittest.TestCase):
             requests[0]["properties"], {"category": "my-special-category"}
         )
 
-
 test_format_input_diff = """
 diff --git a/README.md b/README.md
 --- a/README.md
@@ -6923,13 +6894,11 @@ diff --git a/testing/xvfb_unittest.py b/testing/xvfb_unittest.py
 --- a/testing/xvfb_unittest.py
 +++ b/testing/xvfb_unittest.py
 @@ -18,7 +18,7 @@
- # pylint: disable=super-with-arguments
 
  TEST_FILE = __file__.replace('.pyc', '.py')
 -XVFB = TEST_FILE.replace('_unittest', '')
 +XVFB =      TEST_FILE.replace('_unittest', '')
  XVFB_TEST_SCRIPT = TEST_FILE.replace('_unittest', '_test_script')
-
 
 """
 
@@ -6944,7 +6913,6 @@ test_format_input_diff_windows = "\r\n".join(
         "+content",
     ]
 )
-
 
 class CMDFormatTestCase(unittest.TestCase):
     def setUp(self):
@@ -7804,7 +7772,6 @@ diff --git a/ui/webui/resources/tools/bar.html.ts b/ui/webui/resources/tools/bar
             os.remove(input_diff.name)
             os.chdir(previous_cwd)
 
-
 @unittest.skipIf(
     gclient_utils.IsEnvCog(), "not supported in non-git environment"
 )
@@ -7896,7 +7863,7 @@ class CMDStatusTestCase(CMDTestCaseBase):
     @mock.patch("git_cl.Settings.GetRoot", return_value="")
     @mock.patch("git_cl.Settings.IsStatusCommitOrderByDate", return_value=True)
     @mock.patch("scm.GIT.GetBranch", return_value="a")
-    def testStatusByDate(self, *_mocks):
+    def testStatusByDate(self, *_mocks):  # noqa: F811
         self.assertEqual(0, git_cl.main(["status", "--no-branch-color"]))
         self.maxDiff = None
         self.assertEqual(
@@ -7913,7 +7880,6 @@ class CMDStatusTestCase(CMDTestCaseBase):
             "Issue description:\n"
             "x\n",
         )
-
 
 @unittest.skipIf(
     gclient_utils.IsEnvCog(), "not supported in non-git environment"
@@ -8003,7 +7969,6 @@ class CMDOwnersTestCase(CMDTestCaseBase):
         self.assertIn("a@example.com", sys.stdout.getvalue())
         self.assertIn("b@example.com", sys.stdout.getvalue())
 
-
 class CMDLintTestCase(CMDTestCaseBase):
     bad_indent = "\n".join(
         [
@@ -8066,7 +8031,6 @@ class CMDLintTestCase(CMDTestCaseBase):
             "chg-2.cc:3:  (cpplint) Do not indent within a namespace",
             git_cl.sys.stderr.getvalue(),
         )
-
 
 class CMDCherryPickTestCase(CMDTestCaseBase):
     def testCreateCommitMessage(self):
@@ -8392,7 +8356,6 @@ Change-Id: I25699146b24c7ad8776f17775f489b9d41499595
             reviewers=["rubber-stamper@appspot.gserviceaccount.com"],
         )
 
-
 @unittest.skipIf(
     gclient_utils.IsEnvCog(), "not supported in non-git environment"
 )
@@ -8478,7 +8441,6 @@ class CMDSplitTestCase(CMDTestCaseBase):
         # Only accepts int args
         ensureFailure(["--target-range", "5", "six"])
 
-
 class TestMergeCommentsIntoThreads(unittest.TestCase):
     def test_merge_comments_into_threads(self):
         # A simple linear thread.
@@ -8550,7 +8512,6 @@ class TestMergeCommentsIntoThreads(unittest.TestCase):
         # Check thread 3 (c7)
         self.assertIn("c7", threads_by_root)
         self.assertEqual(get_ids(threads_by_root["c7"]), ["c7"])
-
 
 class BuildbucketBatchTest(unittest.TestCase):
     @mock.patch("subprocess2.communicate")
@@ -8631,7 +8592,6 @@ class BuildbucketBatchTest(unittest.TestCase):
         res = git_cl._ComputeFormatDiffLineRanges(["foo.py"], {"foo.py": diff})
         self.assertEqual({"foo.py": [(17, 17)]}, res)
 
-
 class TestRuffBatchIntegration(unittest.TestCase):
     def setUp(self):
         super(TestRuffBatchIntegration, self).setUp()
@@ -8678,7 +8638,6 @@ class TestRuffBatchIntegration(unittest.TestCase):
         self.assertEqual(
             json.dumps(expected_config).encode("utf-8"), call_kwargs["stdin"]
         )
-
 
 class TestFindGitDir(unittest.TestCase):
     def setUp(self):
@@ -8750,7 +8709,6 @@ class TestFindGitDir(unittest.TestCase):
             "builtins.open", side_effect=OSError("permission denied")
         ):
             self.assertIsNone(git_cl.FindGitDir(wt_root))
-
 
 if __name__ == "__main__":
     logging.basicConfig(

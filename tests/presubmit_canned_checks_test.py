@@ -12,7 +12,7 @@ from unittest import mock
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT_DIR)
 
-from testing_support.presubmit_canned_checks_test_mocks import (
+from testing_support.presubmit_canned_checks_test_mocks import (  # noqa: E402
     MockFile,
     MockAffectedFile,
     MockInputApi,
@@ -20,11 +20,7 @@ from testing_support.presubmit_canned_checks_test_mocks import (
     MockChange,
 )
 
-import presubmit_canned_checks
-
-# TODO: Should fix these warnings.
-# pylint: disable=line-too-long
-
+import presubmit_canned_checks  # noqa: E402
 
 class InclusiveLanguageCheckTest(unittest.TestCase):
     def testBlockedTerms(self):
@@ -409,7 +405,6 @@ class InclusiveLanguageCheckTest(unittest.TestCase):
         self.assertTrue(os.path.normpath("dir1/1.py") not in errors[0].message)
         self.assertTrue(os.path.normpath("dir2/2.py") in errors[0].message)
 
-
 class CheckLongLinesTest(unittest.TestCase):
     def testCheckJavaLongLines(self):
         test_cases = [
@@ -519,7 +514,6 @@ class CheckLongLinesTest(unittest.TestCase):
                             any(item in str(actual) for actual in all_items)
                         )
 
-
 class DescriptionChecksTest(unittest.TestCase):
     def testCheckDescriptionUsesColonInsteadOfEquals(self):
         input_api = MockInputApi()
@@ -575,7 +569,6 @@ class DescriptionChecksTest(unittest.TestCase):
             )
         )
         self.assertEqual(0, len(errors))
-
 
 class ChromiumDependencyMetadataCheckTest(unittest.TestCase):
     def testDefaultFileFilter(self):
@@ -648,7 +641,6 @@ class ChromiumDependencyMetadataCheckTest(unittest.TestCase):
             self.assertEqual(len(result.items), 1)
             self.assertEqual(result.items[0], test_file)
 
-
 class CheckUpdateOwnersFileReferences(unittest.TestCase):
     def testShowsWarningIfDeleting(self):
         input_api = MockInputApi()
@@ -688,7 +680,6 @@ class CheckUpdateOwnersFileReferences(unittest.TestCase):
             input_api, MockOutputApi()
         )
         self.assertEqual(0, len(results))
-
 
 class CheckNoNewGitFilesAddedInDependenciesTest(unittest.TestCase):
     @mock.patch("presubmit_canned_checks._readDeps")
@@ -750,7 +741,6 @@ class CheckNoNewGitFilesAddedInDependenciesTest(unittest.TestCase):
         )
 
         self.assertEqual(0, len(results))
-
 
 class CheckNewDEPSHooksHasRequiredReviewersTest(unittest.TestCase):
     def setUp(self):
@@ -875,7 +865,6 @@ class CheckNewDEPSHooksHasRequiredReviewersTest(unittest.TestCase):
                 else:
                     self.assertEqual(0, len(results))
 
-
 class CheckAyeAyeTest(unittest.TestCase):
     def setUp(self):
         super(CheckAyeAyeTest, self).setUp()
@@ -983,7 +972,6 @@ class CheckAyeAyeTest(unittest.TestCase):
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0].type, "error")
         self.assertIn("Failed to run.", results[0].message)
-
 
 class CheckForCommitObjectsTest(unittest.TestCase):
     def setUp(self):
@@ -1240,7 +1228,6 @@ class CheckForCommitObjectsTest(unittest.TestCase):
         self.assertNotIn("-r", ls_tree_cmd)
         self.assertIn("foo&bar.txt", ls_tree_cmd)
 
-
 class CheckPatchFormattedTest(unittest.TestCase):
     def setUp(self):
         self.input_api = MockInputApi()
@@ -1275,7 +1262,7 @@ class CheckPatchFormattedTest(unittest.TestCase):
         self.input_api.files = [file1, file2]
 
         # Filter to only include python files
-        file_filter = lambda f: f.LocalPath().endswith(".py")
+        file_filter = lambda f: f.LocalPath().endswith(".py")  # noqa: E731
 
         presubmit_canned_checks.CheckPatchFormatted(
             self.input_api, MockOutputApi(), file_filter=file_filter
@@ -1301,7 +1288,6 @@ class CheckPatchFormattedTest(unittest.TestCase):
         # Verify that both files are in the diff file
         self.assertIn("file1.cc", diff_content)
         self.assertIn("file2.py", diff_content)
-
 
 if __name__ == "__main__":
     unittest.main()

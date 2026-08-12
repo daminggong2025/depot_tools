@@ -13,9 +13,6 @@ import re
 import metadata.discover
 import metadata.validate
 
-# TODO: Should fix these warnings.
-# pylint: disable=line-too-long
-
 _HERE = _os.path.dirname(_os.path.abspath(__file__))
 
 # These filters will be disabled if callers do not explicitly supply a
@@ -69,14 +66,11 @@ OFF_UNLESS_MANUALLY_ENABLED_LINT_FILTERS = [
     "-whitespace/tab",
 ]
 
-
 # Git Tree Mode for a "gitlink" (submodule).
 # See https://git-scm.com/docs/git-ls-tree#_output_format
 _GIT_MODE_SUBMODULE = b"160000"
 
-
 ### Description checks
-
 
 def CheckChangeHasBugFieldFromChange(change, output_api, show_suggestions=True):
     """Requires that the changelist have a Bug: field. If show_suggestions is
@@ -106,10 +100,8 @@ def CheckChangeHasBugFieldFromChange(change, output_api, show_suggestions=True):
         )
     return results
 
-
 def CheckChangeHasBugField(input_api, output_api):
     return CheckChangeHasBugFieldFromChange(input_api.change, output_api)
-
 
 def CheckChangeHasNoUnwantedTagsFromChange(change, output_api):
     UNWANTED_TAGS = {
@@ -128,10 +120,8 @@ def CheckChangeHasNoUnwantedTagsFromChange(change, output_api):
 
     return [output_api.PresubmitError("\n".join(errors))] if errors else []
 
-
 def CheckChangeHasNoUnwantedTags(input_api, output_api):
     return CheckChangeHasNoUnwantedTagsFromChange(input_api.change, output_api)
-
 
 def CheckDoNotSubmitInDescription(input_api, output_api):
     """Checks that the user didn't add 'DO NOT ''SUBMIT' to the CL description."""
@@ -146,7 +136,6 @@ def CheckDoNotSubmitInDescription(input_api, output_api):
 
     return []
 
-
 def CheckChangeHasDescription(input_api, output_api):
     """Checks the CL description is not empty."""
     text = input_api.change.DescriptionText()
@@ -159,7 +148,6 @@ def CheckChangeHasDescription(input_api, output_api):
         ]
     return []
 
-
 def CheckChangeWasUploaded(input_api, output_api):
     """Checks that the issue was uploaded before committing."""
     if input_api.is_committing and not input_api.change.issue:
@@ -169,7 +157,6 @@ def CheckChangeWasUploaded(input_api, output_api):
             return [output_api.PresubmitNotifyResult(message)]
         return [output_api.PresubmitError(message)]
     return []
-
 
 def CheckDescriptionUsesColonInsteadOfEquals(input_api, output_api):
     """Checks that the CL description uses a colon after 'Bug' and 'Fixed' tags
@@ -189,9 +176,7 @@ def CheckDescriptionUsesColonInsteadOfEquals(input_api, output_api):
         ]
     return []
 
-
 ### Content checks
-
 
 def CheckAuthorizedAuthor(input_api, output_api, bot_allowlist=None):
     """For non-googler/chromites committers, verify the author's email address is
@@ -230,10 +215,8 @@ def CheckAuthorizedAuthor(input_api, output_api, bot_allowlist=None):
         return [
             error_type(
                 (
-                    # pylint: disable=line-too-long
                     "%s is not in AUTHORS file. If you are a new contributor, please visit\n"
                     "https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/contributing.md#Legal-stuff\n"
-                    # pylint: enable=line-too-long
                     'and read the "Legal stuff" section.\n'
                     "If you are a chromite, verify that the contributor "
                     "signed the CLA."
@@ -243,11 +226,10 @@ def CheckAuthorizedAuthor(input_api, output_api, bot_allowlist=None):
         ]
     return []
 
-
 def CheckDoNotSubmitInFiles(input_api, output_api):
     """Checks that the user didn't add 'DO NOT ''SUBMIT' to any files."""
     # We want to check every text file, not just source files.
-    file_filter = lambda x: x
+    file_filter = lambda x: x  # noqa: E731
 
     # Keyword is concatenated to avoid presubmit check rejecting the CL.
     keyword = "DO NOT " + "SUBMIT"
@@ -264,7 +246,6 @@ def CheckDoNotSubmitInFiles(input_api, output_api):
     if text:
         return [output_api.PresubmitError(text)]
     return []
-
 
 def CheckLargeScaleChange(input_api, output_api):
     """Checks if the change should go through the LSC process."""
@@ -286,10 +267,9 @@ def CheckLargeScaleChange(input_api, output_api):
         output_api.PresubmitPromptWarning(
             f"This change contains {size} files.\n"
             "Consider using the LSC (large scale change) process.\n"
-            "See https://chromium.googlesource.com/chromium/src/+/HEAD/docs/process/lsc/lsc_workflow.md."  # pylint: disable=line-too-long
+            "See https://chromium.googlesource.com/chromium/src/+/HEAD/docs/process/lsc/lsc_workflow.md."
         )
     ]
-
 
 def GetCppLintFilters(lint_filters=None):
     filters = OFF_UNLESS_MANUALLY_ENABLED_LINT_FILTERS[:]
@@ -297,7 +277,6 @@ def GetCppLintFilters(lint_filters=None):
         lint_filters = OFF_BY_DEFAULT_LINT_FILTERS
     filters.extend(lint_filters)
     return filters
-
 
 def CheckChangeLintsClean(
     input_api,
@@ -312,7 +291,6 @@ def CheckChangeLintsClean(
 
     cpplint = input_api.cpplint
     # Access to a protected member _XX of a client class
-    # pylint: disable=protected-access
     cpplint._cpplint_state.ResetErrorCounts()
 
     cpplint._SetFilters(",".join(GetCppLintFilters(lint_filters)))
@@ -322,11 +300,11 @@ def CheckChangeLintsClean(
     if input_api.is_windows:
         cpplint._SetOutputFormat("vs7")
 
-    if source_file_filter == None:
+    if source_file_filter == None:  # noqa: E711
         # The only valid extensions for cpplint are .cc, .h, .cpp, .cu, and .ch.
         # Only process those extensions which are used in Chromium.
         INCLUDE_CPP_FILES_ONLY = (r".*\.(cc|h|cpp)$",)
-        source_file_filter = lambda x: input_api.FilterSourceFile(
+        source_file_filter = lambda x: input_api.FilterSourceFile(  # noqa: E731
             x,
             files_to_check=INCLUDE_CPP_FILES_ONLY,
             files_to_skip=input_api.DEFAULT_FILES_TO_SKIP,
@@ -365,7 +343,6 @@ def CheckChangeLintsClean(
 
     return result
 
-
 def CheckChangeHasNoCR(input_api, output_api, source_file_filter=None):
     """Checks no '\r' (CR) character is in any source files."""
     cr_files = []
@@ -379,7 +356,6 @@ def CheckChangeHasNoCR(input_api, output_api, source_file_filter=None):
             )
         ]
     return []
-
 
 def CheckChangeHasOnlyOneEol(input_api, output_api, source_file_filter=None):
     """Checks the files ends with one and only one \n (LF)."""
@@ -400,7 +376,6 @@ def CheckChangeHasOnlyOneEol(input_api, output_api, source_file_filter=None):
             )
         ]
     return []
-
 
 def CheckChangeHasNoCrAndHasOnlyOneEol(
     input_api, output_api, source_file_filter=None
@@ -436,7 +411,6 @@ def CheckChangeHasNoCrAndHasOnlyOneEol(
         )
     return outputs
 
-
 def CheckGenderNeutral(input_api, output_api, source_file_filter=None):
     """Checks that there are no gendered pronouns in any of the text files to be
     submitted.
@@ -464,11 +438,9 @@ def CheckGenderNeutral(input_api, output_api, source_file_filter=None):
         ]
     return []
 
-
 def _ReportErrorFileAndLine(filename, line_num, dummy_line):
     """Default error formatter for _FindNewViolationsOfRule."""
     return "%s:%s" % (filename, line_num)
-
 
 def _GenerateAffectedFileExtList(input_api, source_file_filter):
     """Generate a list of (file, extension) tuples from affected files.
@@ -488,7 +460,6 @@ def _GenerateAffectedFileExtList(input_api, source_file_filter):
     ):
         extension = str(f.LocalPath()).rsplit(".", 1)[-1]
         yield (f, extension)
-
 
 def _FindNewViolationsOfRuleForList(
     callable_rule, file_ext_list, error_formatter=_ReportErrorFileAndLine
@@ -524,7 +495,6 @@ def _FindNewViolationsOfRuleForList(
 
     return errors
 
-
 def _FindNewViolationsOfRule(
     callable_rule,
     input_api,
@@ -551,7 +521,6 @@ def _FindNewViolationsOfRule(
         _GenerateAffectedFileExtList(input_api, source_file_filter),
         error_formatter,
     )
-
 
 def CheckChangeHasNoTabs(input_api, output_api, source_file_filter=None):
     """Checks that there are no tab characters in any of the text files to be
@@ -580,7 +549,6 @@ def CheckChangeHasNoTabs(input_api, output_api, source_file_filter=None):
         ]
     return []
 
-
 def CheckChangeTodoHasOwner(input_api, output_api, source_file_filter=None):
     """Checks that TODO comments have the issue number."""
     legacyTODO = "\\s*\\(.+\\)\\s*:"
@@ -595,7 +563,6 @@ def CheckChangeTodoHasOwner(input_api, output_api, source_file_filter=None):
     if errors:
         return [output_api.PresubmitPromptWarning("\n".join(errors))]
     return []
-
 
 def CheckChangeHasNoStrayWhitespace(
     input_api, output_api, source_file_filter=None
@@ -612,7 +579,6 @@ def CheckChangeHasNoStrayWhitespace(
             )
         ]
     return []
-
 
 def CheckLongLines(input_api, output_api, maxlen, source_file_filter=None):
     """Checks that there aren't any lines longer than maxlen characters in any of
@@ -863,9 +829,7 @@ def CheckLongLines(input_api, output_api, maxlen, source_file_filter=None):
 
     return []
 
-
 _BYPASS_CHECK_LICENSE_FOOTER = "Bypass-Check-License"
-
 
 def CheckLicense(
     input_api,
@@ -1060,7 +1024,6 @@ def CheckLicense(
         )
     return results
 
-
 def CheckChromiumDependencyMetadata(input_api, output_api, file_filter=None):
     """Check files for Chromium third party dependency metadata have sufficient
     information, and are correctly formatted.
@@ -1071,7 +1034,7 @@ def CheckChromiumDependencyMetadata(input_api, output_api, file_filter=None):
     # If the file filter is unspecified, filter to known Chromium metadata
     # files.
     if file_filter is None:
-        file_filter = lambda f: metadata.discover.is_metadata_file(
+        file_filter = lambda f: metadata.discover.is_metadata_file(  # noqa: E731
             f.LocalPath()
         )
 
@@ -1099,9 +1062,7 @@ def CheckChromiumDependencyMetadata(input_api, output_api, file_filter=None):
 
     return outputs
 
-
 ### Other checks
-
 
 _IGNORE_FREEZE_FOOTER = "Ignore-Freeze"
 
@@ -1121,14 +1082,12 @@ _CHROMIUM_FREEZES = [
     ),
 ]
 
-
 def CheckInfraFreeze(
     input_api, output_api, files_to_include=None, files_to_exclude=None
 ):
     return CheckChromiumInfraFreeze(
         input_api, output_api, files_to_include, files_to_exclude
     )
-
 
 def CheckChromiumInfraFreeze(
     input_api, output_api, files_to_include=None, files_to_exclude=None
@@ -1203,12 +1162,10 @@ def CheckChromiumInfraFreeze(
         )
     ]
 
-
 def CheckDoNotSubmit(input_api, output_api):
     return CheckDoNotSubmitInDescription(
         input_api, output_api
     ) + CheckDoNotSubmitInFiles(input_api, output_api)
-
 
 def CheckTreeIsOpen(
     input_api, output_api, url=None, closed=None, json_url=None
@@ -1265,7 +1222,6 @@ def CheckTreeIsOpen(
         ]
     return []
 
-
 def GetUnitTestsInDirectory(
     input_api,
     output_api,
@@ -1320,7 +1276,6 @@ def GetUnitTestsInDirectory(
         ]
     return GetUnitTests(input_api, output_api, unit_tests, env)
 
-
 def GetUnitTests(
     input_api,
     output_api,
@@ -1370,7 +1325,6 @@ def GetUnitTests(
             )
     return results
 
-
 def GetUnitTestsRecursively(
     input_api,
     output_api,
@@ -1416,7 +1370,6 @@ def GetUnitTestsRecursively(
         ]
 
     return GetUnitTests(input_api, output_api, tests, env)
-
 
 def GetPythonUnitTests(input_api, output_api, unit_tests, python3=False):
     """Run the unit tests out of process, capture the output and use the result
@@ -1466,7 +1419,6 @@ def GetPythonUnitTests(input_api, output_api, unit_tests, python3=False):
         )
     return results
 
-
 def RunUnitTestsInDirectory(input_api, *args, **kwargs):
     """Run tests in a directory serially.
 
@@ -1477,7 +1429,6 @@ def RunUnitTestsInDirectory(input_api, *args, **kwargs):
         GetUnitTestsInDirectory(input_api, *args, **kwargs), False
     )
 
-
 def RunUnitTests(input_api, *args, **kwargs):
     """Run tests serially.
 
@@ -1485,7 +1436,6 @@ def RunUnitTests(input_api, *args, **kwargs):
     input_api.RunTests.
     """
     return input_api.RunTests(GetUnitTests(input_api, *args, **kwargs), False)
-
 
 def RunPythonUnitTests(input_api, *args, **kwargs):
     """Run python tests in a directory serially.
@@ -1495,7 +1445,6 @@ def RunPythonUnitTests(input_api, *args, **kwargs):
     return input_api.RunTests(
         GetPythonUnitTests(input_api, *args, **kwargs), False
     )
-
 
 def _FetchAllFiles(input_api, files_to_check, files_to_skip):
     """Hack to fetch all files."""
@@ -1530,7 +1479,6 @@ def _FetchAllFiles(input_api, files_to_check, files_to_skip):
             ):
                 files.append(filepath)
     return files
-
 
 def GetPylint(
     input_api,
@@ -1586,7 +1534,7 @@ def GetPylint(
         )
         return input_api.re.escape(prefix) + regex
 
-    src_filter = lambda x: input_api.FilterSourceFile(
+    src_filter = lambda x: input_api.FilterSourceFile(  # noqa: E731
         x, map(rel_path, files_to_check), map(rel_path, files_to_skip)
     )
     if not input_api.AffectedSourceFiles(src_filter):
@@ -1685,7 +1633,6 @@ def GetPylint(
         GetPylintCmd(files, [], True),
     ]
 
-
 def RunPylint(input_api, *args, **kwargs):
     """Legacy presubmit function.
 
@@ -1693,7 +1640,6 @@ def RunPylint(input_api, *args, **kwargs):
     input_api.RunTests.
     """
     return input_api.RunTests(GetPylint(input_api, *args, **kwargs), False)
-
 
 def GetRuff(
     input_api,
@@ -1711,12 +1657,11 @@ def GetRuff(
     else:
         error_type = output_api.PresubmitPromptWarning
 
-    src_filter = lambda x: input_api.FilterSourceFile(
+    src_filter = lambda x: input_api.FilterSourceFile(  # noqa: E731
         x, files_to_check, files_to_skip
     )
     affected_files = [
-        f.AbsoluteLocalPath()
-        for f in input_api.AffectedSourceFiles(src_filter)
+        f.AbsoluteLocalPath() for f in input_api.AffectedSourceFiles(src_filter)
     ]
     if not affected_files:
         return []
@@ -1771,16 +1716,14 @@ def GetRuff(
 
     return commands
 
-
 def RunRuff(input_api, *args, **kwargs):
     """Legacy presubmit function for running Ruff."""
     return input_api.RunTests(GetRuff(input_api, *args, **kwargs), False)
 
-
 def CheckDirMetadataFormat(input_api, output_api, dirmd_bin=None):
     # TODO(crbug.com/1102997): Remove OWNERS once DIR_METADATA migration is
     # complete.
-    file_filter = lambda f: (
+    file_filter = lambda f: (  # noqa: E731
         input_api.basename(f.LocalPath()) in ("DIR_METADATA", "OWNERS")
     )
     affected_files = {
@@ -1825,7 +1768,6 @@ def CheckDirMetadataFormat(input_api, output_api, dirmd_bin=None):
         )
     return results
 
-
 def CheckNoNewMetadataInOwners(input_api, output_api):
     """Check that no metadata is added to OWNERS files."""
     if input_api.no_diffs:
@@ -1861,7 +1803,6 @@ def CheckNoNewMetadataInOwners(input_api, output_api):
         )
     ]
 
-
 def CheckOwnersDirMetadataExclusive(input_api, output_api):
     """Check that metadata in OWNERS files and DIR_METADATA files are mutually
     exclusive.
@@ -1870,7 +1811,7 @@ def CheckOwnersDirMetadataExclusive(input_api, output_api):
         r"^#\s*(TEAM|COMPONENT|OS|WPT-NOTIFY)+\s*:\s*\S+$",
         input_api.re.MULTILINE,
     )
-    file_filter = lambda f: (
+    file_filter = lambda f: (  # noqa: E731
         input_api.basename(f.LocalPath()) in ("OWNERS", "DIR_METADATA")
     )
     affected_dirs = {
@@ -1902,7 +1843,6 @@ def CheckOwnersDirMetadataExclusive(input_api, output_api):
         )
     ]
 
-
 def CheckOwnersFormat(input_api, output_api):
     if input_api.gerrit and input_api.gerrit.IsCodeOwnersEnabledOnRepo():
         return []
@@ -1921,7 +1861,6 @@ def CheckOwnersFormat(input_api, output_api):
             "plugins/code-owners/Documentation/index.html."
         )
     ]
-
 
 def CheckOwners(input_api, output_api, source_file_filter=None, allow_tbr=True):
     # Let Gerrit do this check rather than presubmits.
@@ -1950,7 +1889,6 @@ def CheckOwners(input_api, output_api, source_file_filter=None, allow_tbr=True):
             "plugins/code-owners/Documentation/index.html."
         )
     ]
-
 
 def GetCodereviewOwnerAndReviewers(
     input_api, _email_regexp=None, approval_needed=True
@@ -1981,7 +1919,6 @@ def GetCodereviewOwnerAndReviewers(
     )
     return owner_email, reviewers
 
-
 def _ReviewersFromChange(change):
     """Return the reviewers specified in the |change|, if any."""
     reviewers = set()
@@ -1991,10 +1928,8 @@ def _ReviewersFromChange(change):
     # Drop reviewers that aren't specified in email address format.
     return set(reviewer for reviewer in reviewers if "@" in reviewer)
 
-
 def _match_reviewer_email(r, owner_email, email_regexp):
     return email_regexp.match(r) and r != owner_email
-
 
 def CheckSingletonInHeaders(input_api, output_api, source_file_filter=None):
     """Deprecated, must be removed."""
@@ -2003,7 +1938,6 @@ def CheckSingletonInHeaders(input_api, output_api, source_file_filter=None):
             "CheckSingletonInHeaders is deprecated, please remove it."
         )
     ]
-
 
 def PanProjectChecks(
     input_api,
@@ -2054,10 +1988,10 @@ def PanProjectChecks(
     # presubmit_support.py InputApi.FilterSourceFile for the (simple) usage.
     files_to_skip = input_api.DEFAULT_FILES_TO_SKIP + excluded_paths
     files_to_check = input_api.DEFAULT_FILES_TO_CHECK + text_files
-    sources = lambda x: input_api.FilterSourceFile(
+    sources = lambda x: input_api.FilterSourceFile(  # noqa: E731
         x, files_to_skip=files_to_skip
     )
-    text_files = lambda x: input_api.FilterSourceFile(
+    text_files = lambda x: input_api.FilterSourceFile(  # noqa: E731
         x, files_to_skip=files_to_skip, files_to_check=files_to_check
     )
 
@@ -2077,7 +2011,7 @@ def PanProjectChecks(
 
     snapshot("checking owners files format")
     try:
-        if not "PRESUBMIT_SKIP_NETWORK" in _os.environ and owners_check:
+        if "PRESUBMIT_SKIP_NETWORK" not in _os.environ and owners_check:
             snapshot("checking owners")
             results.extend(
                 input_api.canned_checks.CheckOwnersFormat(input_api, output_api)
@@ -2170,7 +2104,6 @@ def PanProjectChecks(
     snapshot("done")
     return results
 
-
 def CheckPatchFormatted(
     input_api,
     output_api,
@@ -2251,7 +2184,6 @@ def CheckPatchFormatted(
         return [result_factory(msg)]
     return []
 
-
 def CheckGNFormatted(input_api, output_api):
     import gn
 
@@ -2282,7 +2214,6 @@ def CheckGNFormatted(input_api, output_api):
     # It's just a warning, so ignore other types of failures assuming they'll be
     # caught elsewhere.
     return warnings
-
 
 def CheckCIPDManifest(input_api, output_api, path=None, content=None):
     """Verifies that a CIPD ensure file manifest is valid against all platforms.
@@ -2316,7 +2247,7 @@ def CheckCIPDManifest(input_api, output_api, path=None, content=None):
         # quick and dirty parser to extract checked packages.
         packages = [
             l.split()[0]
-            for l in (ll.strip() for ll in content.splitlines())
+            for l in (ll.strip() for ll in content.splitlines())  # noqa: E741
             if " " in l and not l.startswith("$")
         ]
         name = "Check CIPD packages from string: %r" % (packages,)
@@ -2324,7 +2255,6 @@ def CheckCIPDManifest(input_api, output_api, path=None, content=None):
         raise Exception('Exactly one of "path" or "content" must be provided.')
 
     return input_api.Command(name, cmd, kwargs, output_api.PresubmitError)
-
 
 def CheckCIPDPackages(input_api, output_api, platforms, packages):
     """Verifies that all named CIPD packages can be resolved against all supplied
@@ -2340,7 +2270,6 @@ def CheckCIPDPackages(input_api, output_api, platforms, packages):
     for k, v in packages.items():
         manifest.append("%s %s" % (k, v))
     return CheckCIPDManifest(input_api, output_api, content="\n".join(manifest))
-
 
 def CheckCIPDClientDigests(input_api, output_api, client_version_file):
     """Verifies that *.digests file was correctly regenerated.
@@ -2367,7 +2296,6 @@ def CheckCIPDClientDigests(input_api, output_api, client_version_file):
         {"shell": True} if input_api.is_windows else {},  # to resolve cipd.bat
         output_api.PresubmitError,
     )
-
 
 def CheckForCommitObjects(input_api, output_api):
     """Validates that commit objects match DEPS.
@@ -2634,7 +2562,6 @@ def CheckForCommitObjects(input_api, output_api):
 
     return []
 
-
 def CheckForRecursedeps(input_api, output_api):
     """Checks that DEPS entries in recursedeps exist in deps."""
     # Run only if DEPS has been modified.
@@ -2714,13 +2641,11 @@ def CheckForRecursedeps(input_api, output_api):
 
     return errors
 
-
 def _readDeps(input_api):
     """Read DEPS file from the checkout disk. Extracted for testability."""
     deps_file = input_api.os_path.join(input_api.PresubmitLocalPath(), "DEPS")
     with open(deps_file) as f:
         return f.read()
-
 
 def CheckNoNewGitFilesAddedInDependencies(input_api, output_api):
     """Check if there are Git files in any DEPS dependencies. Error is returned
@@ -2755,7 +2680,6 @@ def CheckNoNewGitFilesAddedInDependencies(input_api, output_api):
             path = _os.path.dirname(path)
 
     return errors
-
 
 def CheckNewDEPSHooksHasRequiredReviewers(input_api, output_api):
     """Ensures proper review of CLs adding new DEPS hooks.
@@ -2826,7 +2750,6 @@ def CheckNewDEPSHooksHasRequiredReviewers(input_api, output_api):
         msg += f"\n * {r}"
     return [output_api.PresubmitError(msg)]
 
-
 @functools.lru_cache(maxsize=None)
 def _ParseDeps(contents):
     """Simple helper for parsing DEPS files."""
@@ -2851,7 +2774,6 @@ def _ParseDeps(contents):
 
     exec(contents, global_scope, local_scope)
     return local_scope
-
 
 def CheckVPythonSpec(input_api, output_api, file_filter=None):
     """Validates any changed .vpython, .vpython3, vpython.toml, or script files.
@@ -2979,7 +2901,6 @@ def CheckVPythonSpec(input_api, output_api, file_filter=None):
             )
         )
     return commands
-
 
 def CheckChangedLUCIConfigs(input_api, output_api):
     """Validates the changed config file against LUCI Config.
@@ -3242,7 +3163,6 @@ def CheckChangedLUCIConfigs(input_api, output_api):
                         )
     return outputs
 
-
 def CheckLucicfgGenOutput(input_api, output_api, entry_script):
     """Verifies configs produced by `lucicfg` are up-to-date and pass validation.
 
@@ -3279,14 +3199,13 @@ def CheckLucicfgGenOutput(input_api, output_api, entry_script):
         )
     ]
 
-
 def CheckJsonParses(input_api, output_api, file_filter=None):
     """Verifies that all JSON files at least parse as valid JSON. By default,
     file_filter will look for all files that end with .json"""
     import json
 
     if file_filter is None:
-        file_filter = lambda x: x.LocalPath().endswith(".json")
+        file_filter = lambda x: x.LocalPath().endswith(".json")  # noqa: E731
     affected_files = input_api.AffectedFiles(
         include_deletes=False, file_filter=file_filter
     )
@@ -3310,7 +3229,6 @@ def CheckJsonParses(input_api, output_api, file_filter=None):
                 )
     return warnings
 
-
 # string pattern, sequence of strings to show when pattern matches,
 # error flag. True if match is a presubmit error, otherwise it's a warning.
 _NON_INCLUSIVE_TERMS = (
@@ -3333,7 +3251,6 @@ _NON_INCLUSIVE_TERMS = (
         True,
     ),
 )
-
 
 def _GetMessageForMatchingTerm(
     input_api, affected_file, line_number, line, term, message
@@ -3377,7 +3294,6 @@ def _GetMessageForMatchingTerm(
             result.append("      %s" % message_line)
 
     return result
-
 
 def CheckInclusiveLanguage(
     input_api,
@@ -3483,7 +3399,6 @@ def CheckInclusiveLanguage(
         )
     return result
 
-
 def CheckUpdateOwnersFileReferences(input_api, output_api):
     """Checks whether an OWNERS file is being (re)moved and if so asks the
     contributor to update any file:// references to it."""
@@ -3502,7 +3417,6 @@ def CheckUpdateOwnersFileReferences(input_api, output_api):
             files,
         )
     ]
-
 
 def CheckValidHostsInDEPSOnUpload(input_api, output_api):
     """Checks that DEPS file deps are from allowed_hosts."""
@@ -3524,7 +3438,6 @@ def CheckValidHostsInDEPSOnUpload(input_api, output_api):
                 long_text=error.output,
             )
         ]
-
 
 def CheckAyeAye(input_api, output_api):
     """
@@ -3588,7 +3501,6 @@ def CheckAyeAye(input_api, output_api):
                 f"Unexpected error in CheckAyeAye: {type(e).__name__} - {e}"
             )
         ]
-
 
 def CheckSkillFiles(input_api, output_api):
     """Validates SKILL.md files have correct frontmatter and formatting."""

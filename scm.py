@@ -23,14 +23,10 @@ import gclient_utils
 import git_common
 import subprocess2
 
-# TODO: Should fix these warnings.
-# pylint: disable=line-too-long
-
 # constants used to identify the tree state of a directory.
 VERSIONED_NO = 0
 VERSIONED_DIR = 1
 VERSIONED_SUBMODULE = 2
-
 
 def determine_scm(root):
     """Similar to upload.py's version but much simpler.
@@ -51,11 +47,9 @@ def determine_scm(root):
     except (OSError, subprocess2.CalledProcessError):
         return "diff"
 
-
 GitConfigScope = Literal["system", "global", "local", "worktree"]
 GitScopeOrder: list[GitConfigScope] = ["system", "global", "local", "worktree"]
 GitFlatConfigData = Mapping[str, Mapping[str, Sequence[str]]]
-
 
 class GitConfigStateBase(metaclass=abc.ABCMeta):
     """GitConfigStateBase is the abstract base class for implementations of
@@ -157,13 +151,11 @@ class GitConfigStateBase(metaclass=abc.ABCMeta):
         Implementations MUST accept non-canonical `key` values.
         """
 
-
 class GitConfigUnsetMissingValue(ValueError):
     def __init__(self, key: str, scope: str) -> None:
         super().__init__(
             f"Cannot unset missing key {key!r} in scope {scope!r} with missing_ok=False."
         )
-
 
 class GitConfigUnsetMultipleValues(ValueError):
     def __init__(self, key: str, scope: str) -> None:
@@ -171,23 +163,19 @@ class GitConfigUnsetMultipleValues(ValueError):
             f"Cannot unset multi-value key {key!r} in scope {scope!r} with modify_all=False."
         )
 
-
 class GitConfigUneditableScope(ValueError):
     def __init__(self, scope: str) -> None:
         super().__init__(f"Cannot edit git config in scope {scope!r}.")
 
-
 class GitConfigUnknownScope(ValueError):
     def __init__(self, scope: str) -> None:
         super().__init__(f"Unknown git config scope {scope!r}.")
-
 
 class GitConfigInvalidKey(ValueError):
     def __init__(self, key: str) -> None:
         super().__init__(
             f"Invalid git config key {key!r}: does not contain a section."
         )
-
 
 def canonicalize_git_config_key(key: str) -> str:
     """Returns the canonicalized form of `key` for git config.
@@ -209,7 +197,6 @@ def canonicalize_git_config_key(key: str) -> str:
     if len(sections) == 2:
         return ".".join((sections[0].lower(), sections[1].lower()))
     raise GitConfigInvalidKey(key)
-
 
 class CachedGitConfigState(object):
     """This represents the observable git configuration state for a given
@@ -304,7 +291,7 @@ class CachedGitConfigState(object):
         'variable' will be lowercased, but 'subsection', if present, will not).
         """
         if pattern is None:
-            pred = lambda _: True
+            pred = lambda _: True  # noqa: E731
         else:
             pred = re.compile(pattern).match
         for key, values in sorted(
@@ -390,7 +377,6 @@ class CachedGitConfigState(object):
         # Once the underlying storage has set the value, we clear our cache so
         # the next getter will reload it.
         self.clear_cache()
-
 
 class GitConfigStateReal(GitConfigStateBase):
     """GitConfigStateReal implements CachedGitConfigState by actually interacting with
@@ -519,7 +505,6 @@ class GitConfigStateReal(GitConfigStateBase):
         # TODO(ayatane): We should lock per local repo scope as well
         # from a correctness perspective.
         return contextlib.nullcontext()
-
 
 class GitConfigStateTest(GitConfigStateBase):
     """A fake implementation of GitConfigStateBase for testing.
@@ -686,7 +671,6 @@ class GitConfigStateTest(GitConfigStateBase):
 
             pat = re.compile(value_pattern)
             cfg[key] = [v for v in cur if not pat.match(v)]
-
 
 class GIT(object):
     current_version = None
@@ -1268,7 +1252,6 @@ class GIT(object):
             return sha == rev.lower()
         return True
 
-
 class DIFF(object):
     @staticmethod
     def GetAllFiles(cwd):
@@ -1298,6 +1281,5 @@ class DIFF(object):
             dirnames[:] = [d for d in dirnames if should_recurse(dirpath, d)]
 
         return [os.path.relpath(p, cwd) for p in paths]
-
 
 # vim: sts=4:ts=4:sw=4:tw=80:et:
