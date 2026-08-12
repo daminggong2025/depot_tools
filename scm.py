@@ -24,7 +24,6 @@ import git_common
 import subprocess2
 
 # TODO: Should fix these warnings.
-# pylint: disable=line-too-long
 
 # constants used to identify the tree state of a directory.
 VERSIONED_NO = 0
@@ -304,7 +303,7 @@ class CachedGitConfigState(object):
         'variable' will be lowercased, but 'subsection', if present, will not).
         """
         if pattern is None:
-            pred = lambda _: True
+            pred = lambda _: True  # noqa: E731
         else:
             pred = re.compile(pattern).match
         for key, values in sorted(

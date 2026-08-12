@@ -8,7 +8,6 @@ potential conflicts during a git rebase-update with multiple stacked CLs.
 """
 
 import argparse
-import collections
 import git_common as git
 import sys
 

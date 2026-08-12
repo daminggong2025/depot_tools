@@ -4,8 +4,6 @@
 # found in the LICENSE file.
 """Unit tests for gclient_scm.py."""
 
-# pylint: disable=E1103
-
 from io import StringIO
 import json
 import logging
@@ -32,7 +30,6 @@ from testing_support import fake_repos
 from testing_support import test_case_utils
 
 # TODO: Should fix these warnings.
-# pylint: disable=line-too-long
 
 GIT = "git" if sys.platform != "win32" else "git.bat"
 
@@ -253,7 +250,6 @@ from :3
         return self.OptionsObject(*args, **kwargs)
 
     def checkstdout(self, expected):
-        # pylint: disable=no-member
         value = sys.stdout.getvalue()
         sys.stdout.close()
         # Check that the expected output appears.
@@ -849,7 +845,6 @@ class ManagedGitWrapperTestCaseMock(unittest.TestCase):
         return self.OptionsObject(*args, **kwargs)
 
     def checkstdout(self, expected):
-        # pylint: disable=no-member
         value = sys.stdout.getvalue()
         sys.stdout.close()
         # Check that the expected output appears.
@@ -874,7 +869,6 @@ class ManagedGitWrapperTestCaseMock(unittest.TestCase):
     @mock.patch("scm.GIT.IsValidRevision")
     @mock.patch("os.path.isdir", lambda _: True)
     def testGetUsableRevGit(self, mockIsValidRevision):
-        # pylint: disable=no-member
         options = self.Options(verbose=True)
 
         mockIsValidRevision.side_effect = lambda cwd, rev: rev != "1"
@@ -1224,13 +1218,11 @@ class ManagedGitWrapperTestCaseMock(unittest.TestCase):
 
 class UnmanagedGitWrapperTestCase(BaseGitWrapperTestCase):
     def checkInStdout(self, expected):
-        # pylint: disable=no-member
         value = sys.stdout.getvalue()
         sys.stdout.close()
         self.assertIn(expected, value)
 
     def checkNotInStdout(self, expected):
-        # pylint: disable=no-member
         value = sys.stdout.getvalue()
         sys.stdout.close()
         self.assertNotIn(expected, value)
@@ -2049,7 +2041,6 @@ class GerritChangesTest(fake_repos.FakeReposTestBase):
             self.githash("repo_1", 5), self.gitrevparse(self.root_dir)
         )
 
-        # pylint: disable=attribute-defined-outside-init
         self.options.download_topics = True
         git_wrapper.url = "https://test-repo.googlesource.com/repo_1.git"
         git_wrapper.apply_patch_ref(

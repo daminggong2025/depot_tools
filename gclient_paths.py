@@ -18,7 +18,6 @@ import gclient_utils
 import subprocess2
 
 # TODO: Should fix these warnings.
-# pylint: disable=line-too-long
 
 
 @functools.lru_cache

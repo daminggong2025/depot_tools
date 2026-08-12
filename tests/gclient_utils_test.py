@@ -17,7 +17,6 @@ import subprocess2
 from testing_support import trial_dir
 
 # TODO: Should fix these warnings.
-# pylint: disable=line-too-long
 
 
 class CheckCallAndFilterTestCase(unittest.TestCase):

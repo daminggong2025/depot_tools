@@ -16,15 +16,14 @@ import metrics_utils
 # We have to disable monitoring before importing gclient.
 metrics_utils.COLLECT_METRICS = False
 
-import gclient_eval
-import gclient_utils
+import gclient_eval  # noqa: E402
+import gclient_utils  # noqa: E402
 
 # TODO: Should fix these warnings.
-# pylint: disable=line-too-long
 
 
 def file_join(lines):
-    return "".join([l + "\n" for l in lines])
+    return "".join([l + "\n" for l in lines])  # noqa: E741
 
 
 class GClientEvalTest(unittest.TestCase):

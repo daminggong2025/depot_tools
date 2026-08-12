@@ -27,33 +27,33 @@ IMapIterator.next = wrapper(IMapIterator.next)
 IMapIterator.__next__ = IMapIterator.next
 # TODO(iannucci): Monkeypatch all other 'wait' methods too.
 
-import binascii
-import collections
-import contextlib
-import functools
-import logging
-import os
-import random
-import re
-import setup_color
-import shutil
-import signal
-import tempfile
-import textwrap
-import time
-import typing
-from typing import Any
-from typing import AnyStr
-from typing import Callable
-from typing import ContextManager
-from typing import Optional
-from typing import Tuple
+import binascii  # noqa: E402
+import collections  # noqa: E402
+import contextlib  # noqa: E402
+import functools  # noqa: E402
+import logging  # noqa: E402
+import os  # noqa: E402
+import random  # noqa: E402
+import re  # noqa: E402
+import setup_color  # noqa: E402
+import shutil  # noqa: E402
+import signal  # noqa: E402
+import tempfile  # noqa: E402
+import textwrap  # noqa: E402
+import time  # noqa: E402
+import typing  # noqa: E402
+from typing import Any  # noqa: E402
+from typing import AnyStr  # noqa: E402
+from typing import Callable  # noqa: E402
+from typing import ContextManager  # noqa: E402
+from typing import Optional  # noqa: E402
+from typing import Tuple  # noqa: E402
 
-import gclient_utils
-import scm
-import subprocess2
+import gclient_utils  # noqa: E402
+import scm  # noqa: E402
+import subprocess2  # noqa: E402
 
-from io import BytesIO
+from io import BytesIO  # noqa: E402
 
 ROOT = os.path.abspath(os.path.dirname(__file__))
 IS_WIN = sys.platform == "win32"
@@ -1085,7 +1085,7 @@ def get_dirty_files():
 
 
 def is_dirty_git_tree(cmd):
-    w = lambda s: sys.stderr.write(s + "\n")
+    w = lambda s: sys.stderr.write(s + "\n")  # noqa: E731
 
     dirty = get_dirty_files()
     if dirty:

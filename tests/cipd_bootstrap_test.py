@@ -11,7 +11,6 @@ import unittest
 import tempfile
 
 # TODO: Should fix these warnings.
-# pylint: disable=line-too-long
 
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
