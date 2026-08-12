@@ -1,0 +1,203 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "314ec877_5cad5243",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1429892
+      },
+      "writtenOn": "2026-08-12T07:47:57Z",
+      "side": 1,
+      "message": "I\u0027m stopping review here because there\u0027s enough repetitive comments that would be better off solved in a full CL sweep",
+      "revId": "9e296b60b423d0e34e8e30ef24944f59fce4f597",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "63a3557c_794efb5b",
+        "filename": "auth.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1429892
+      },
+      "writtenOn": "2026-08-12T07:47:57Z",
+      "side": 1,
+      "message": "orphaned comment?",
+      "range": {
+        "startLine": 20,
+        "startChar": 0,
+        "endLine": 20,
+        "endChar": 34
+      },
+      "revId": "9e296b60b423d0e34e8e30ef24944f59fce4f597",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1560b6a3_f945dbde",
+        "filename": "bootstrap/bootstrap.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 279,
+      "author": {
+        "id": 1429892
+      },
+      "writtenOn": "2026-08-12T07:47:57Z",
+      "side": 1,
+      "message": "unintended?",
+      "range": {
+        "startLine": 278,
+        "startChar": 0,
+        "endLine": 279,
+        "endChar": 73
+      },
+      "revId": "9e296b60b423d0e34e8e30ef24944f59fce4f597",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "323a3063_f324ac64",
+        "filename": "fetch_configs/android.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1429892
+      },
+      "writtenOn": "2026-08-12T07:47:57Z",
+      "side": 1,
+      "message": "orphaned comment?",
+      "revId": "9e296b60b423d0e34e8e30ef24944f59fce4f597",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5163b1a6_24a8f6a5",
+        "filename": "fetch_configs/android_internal.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1429892
+      },
+      "writtenOn": "2026-08-12T07:47:57Z",
+      "side": 1,
+      "message": "orphaned comment?",
+      "revId": "9e296b60b423d0e34e8e30ef24944f59fce4f597",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1f924b91_8678d182",
+        "filename": "fetch_configs/angle.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1429892
+      },
+      "writtenOn": "2026-08-12T07:47:57Z",
+      "side": 1,
+      "message": "orphaned comment?",
+      "revId": "9e296b60b423d0e34e8e30ef24944f59fce4f597",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "67ae567b_b73b2302",
+        "filename": "fetch_configs/breakpad.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1429892
+      },
+      "writtenOn": "2026-08-12T07:47:57Z",
+      "side": 1,
+      "message": "orphaned comment?",
+      "revId": "9e296b60b423d0e34e8e30ef24944f59fce4f597",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d8657b4e_c2452d35",
+        "filename": "fetch_configs/catapult.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1429892
+      },
+      "writtenOn": "2026-08-12T07:47:57Z",
+      "side": 1,
+      "message": "orphaned comment?",
+      "revId": "9e296b60b423d0e34e8e30ef24944f59fce4f597",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f1a7b208_73b0f4f8",
+        "filename": "fetch_configs/chrome.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1429892
+      },
+      "writtenOn": "2026-08-12T07:47:57Z",
+      "side": 1,
+      "message": "orphaned comment?",
+      "revId": "9e296b60b423d0e34e8e30ef24944f59fce4f597",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3f6fbe1e_fdc40a30",
+        "filename": "fetch_configs/chromium.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1429892
+      },
+      "writtenOn": "2026-08-12T07:47:57Z",
+      "side": 1,
+      "message": "orphaned comment?",
+      "revId": "9e296b60b423d0e34e8e30ef24944f59fce4f597",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c77d1968_fc15b842",
+        "filename": "fetch_configs/crashpad.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1429892
+      },
+      "writtenOn": "2026-08-12T07:47:57Z",
+      "side": 1,
+      "message": "orphaned comment?",
+      "revId": "9e296b60b423d0e34e8e30ef24944f59fce4f597",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
