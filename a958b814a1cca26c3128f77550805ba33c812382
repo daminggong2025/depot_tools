@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "12e4596a_7828f5f2",
+        "filename": "git_cache.py",
+        "patchSetId": 10
+      },
+      "lineNbr": 586,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-08-12T18:31:53Z",
+      "side": 1,
+      "message": "Please fix this WARNING reported by core-internals: [core-internals] The elements of this list are over-indented and spread across m...\n\n[core-internals] The elements of this list are over-indented and spread across multiple lines unnecessarily. It\u0027s more idiomatic to write this compactly on a single line, or use standard 4-space indentation.\n\n**Suggestion**\n\n```python\n                gitargs \u003d [\"init\", \"--bare\"]\n```",
+      "range": {
+        "startLine": 582,
+        "startChar": 0,
+        "endLine": 586,
+        "endChar": 0
+      },
+      "revId": "a958b814a1cca26c3128f77550805ba33c812382",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
