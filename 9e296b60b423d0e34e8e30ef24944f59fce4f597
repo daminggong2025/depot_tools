@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "7ce2dce2_2b0de21d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-08-12T08:23:51Z",
+      "side": 1,
+      "message": "Thanks for noticing! Did the sweep with agents",
+      "parentUuid": "314ec877_5cad5243",
+      "revId": "9e296b60b423d0e34e8e30ef24944f59fce4f597",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "63a3557c_794efb5b",
@@ -31,6 +49,30 @@
       "writtenOn": "2026-08-12T07:47:57Z",
       "side": 1,
       "message": "orphaned comment?",
+      "range": {
+        "startLine": 20,
+        "startChar": 0,
+        "endLine": 20,
+        "endChar": 34
+      },
+      "revId": "9e296b60b423d0e34e8e30ef24944f59fce4f597",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "79773eae_d5c3fd18",
+        "filename": "auth.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-08-12T08:23:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "63a3557c_794efb5b",
       "range": {
         "startLine": 20,
         "startChar": 0,
@@ -64,6 +106,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "04ff5585_d80d528e",
+        "filename": "bootstrap/bootstrap.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 279,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-08-12T08:23:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1560b6a3_f945dbde",
+      "range": {
+        "startLine": 278,
+        "startChar": 0,
+        "endLine": 279,
+        "endChar": 73
+      },
+      "revId": "9e296b60b423d0e34e8e30ef24944f59fce4f597",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "323a3063_f324ac64",
@@ -77,6 +143,24 @@
       "writtenOn": "2026-08-12T07:47:57Z",
       "side": 1,
       "message": "orphaned comment?",
+      "revId": "9e296b60b423d0e34e8e30ef24944f59fce4f597",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "22bb985a_d1fbfe8f",
+        "filename": "fetch_configs/android.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-08-12T08:23:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "323a3063_f324ac64",
       "revId": "9e296b60b423d0e34e8e30ef24944f59fce4f597",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -98,6 +182,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "91307973_3c07ec49",
+        "filename": "fetch_configs/android_internal.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-08-12T08:23:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5163b1a6_24a8f6a5",
+      "revId": "9e296b60b423d0e34e8e30ef24944f59fce4f597",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "1f924b91_8678d182",
@@ -111,6 +213,24 @@
       "writtenOn": "2026-08-12T07:47:57Z",
       "side": 1,
       "message": "orphaned comment?",
+      "revId": "9e296b60b423d0e34e8e30ef24944f59fce4f597",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "45c2c78a_e674d571",
+        "filename": "fetch_configs/angle.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-08-12T08:23:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1f924b91_8678d182",
       "revId": "9e296b60b423d0e34e8e30ef24944f59fce4f597",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -132,6 +252,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "956e49cc_c4d5742c",
+        "filename": "fetch_configs/breakpad.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-08-12T08:23:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "67ae567b_b73b2302",
+      "revId": "9e296b60b423d0e34e8e30ef24944f59fce4f597",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d8657b4e_c2452d35",
@@ -145,6 +283,24 @@
       "writtenOn": "2026-08-12T07:47:57Z",
       "side": 1,
       "message": "orphaned comment?",
+      "revId": "9e296b60b423d0e34e8e30ef24944f59fce4f597",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "cbfa40e5_0eb69c11",
+        "filename": "fetch_configs/catapult.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-08-12T08:23:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d8657b4e_c2452d35",
       "revId": "9e296b60b423d0e34e8e30ef24944f59fce4f597",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -166,6 +322,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "0c6e35f8_3150592d",
+        "filename": "fetch_configs/chrome.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-08-12T08:23:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f1a7b208_73b0f4f8",
+      "revId": "9e296b60b423d0e34e8e30ef24944f59fce4f597",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "3f6fbe1e_fdc40a30",
@@ -183,6 +357,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "eba10f35_d92efb70",
+        "filename": "fetch_configs/chromium.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-08-12T08:23:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3f6fbe1e_fdc40a30",
+      "revId": "9e296b60b423d0e34e8e30ef24944f59fce4f597",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "c77d1968_fc15b842",
@@ -196,6 +388,24 @@
       "writtenOn": "2026-08-12T07:47:57Z",
       "side": 1,
       "message": "orphaned comment?",
+      "revId": "9e296b60b423d0e34e8e30ef24944f59fce4f597",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5317438c_afddeb42",
+        "filename": "fetch_configs/crashpad.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-08-12T08:23:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c77d1968_fc15b842",
       "revId": "9e296b60b423d0e34e8e30ef24944f59fce4f597",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
