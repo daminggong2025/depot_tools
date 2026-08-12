@@ -52,7 +52,6 @@ def _bootstrap_concurrency():
 GSUTIL_CP_SEMAPHORE = threading.Semaphore(_bootstrap_concurrency())
 
 try:
-    # pylint: disable=undefined-variable
     WinErr = WindowsError
 except NameError:
 

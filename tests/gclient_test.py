@@ -26,13 +26,12 @@ import metrics_utils
 # We have to disable monitoring before importing gclient.
 metrics_utils.COLLECT_METRICS = False
 
-import gclient
-import gclient_eval
-import gclient_utils
-from testing_support import trial_dir
+import gclient  # noqa: E402
+import gclient_eval  # noqa: E402
+import gclient_utils  # noqa: E402
+from testing_support import trial_dir  # noqa: E402
 
 # TODO: Should fix these warnings.
-# pylint: disable=line-too-long
 
 
 def write(filename, content):
@@ -79,7 +78,6 @@ class SCMMock(object):
         self.unit_test.assertEqual("None", command)
         self.unit_test.processed.put((self.name, self.url))
 
-    # pylint: disable=no-self-use
     def DoesRemoteURLMatch(self, _):
         return True
 
@@ -367,7 +365,6 @@ class GclientTest(trial_dir.TestCase):
         )
         # TODO(ehmaldonado): Improve this test.
         # Make sure __str__() works fine.
-        # pylint: disable=protected-access
         obj.dependencies[0]._file_list.append("foo")
         str_obj = str(obj)
         self.assertEqual(322, len(str_obj), "%d\n%s" % (len(str_obj), str_obj))
@@ -2031,23 +2028,23 @@ class MergeVarsTest(unittest.TestCase):
         merge_vars = gclient.merge_vars
         Str = gclient_eval.ConstantString
 
-        l = {"foo": "bar", "baz": True}
+        l = {"foo": "bar", "baz": True}  # noqa: E741
         merge_vars(l, {"foo": Str("quux")})
         self.assertEqual(l, {"foo": "quux", "baz": True})
 
-        l = {"foo": "bar", "baz": True}
+        l = {"foo": "bar", "baz": True}  # noqa: E741
         merge_vars(l, {"foo": "quux"})
         self.assertEqual(l, {"foo": "quux", "baz": True})
 
-        l = {"foo": Str("bar"), "baz": True}
+        l = {"foo": Str("bar"), "baz": True}  # noqa: E741
         merge_vars(l, {"foo": Str("quux")})
         self.assertEqual(l, {"foo": Str("quux"), "baz": True})
 
-        l = {"foo": Str("bar"), "baz": True}
+        l = {"foo": Str("bar"), "baz": True}  # noqa: E741
         merge_vars(l, {"foo": Str("quux")})
         self.assertEqual(l, {"foo": Str("quux"), "baz": True})
 
-        l = {"foo": "bar"}
+        l = {"foo": "bar"}  # noqa: E741
         merge_vars(l, {"baz": True})
         self.assertEqual(l, {"foo": "bar", "baz": True})
 
