@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "f05f77e0_1baa1b6e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 9
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 4995882
+      },
+      "writtenOn": "2026-08-12T17:51:42Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "994e8626_145676c1",
+      "revId": "4b6c3ee307747e85bdf3b36ac9ca0a6aa2ce6905",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "47a30070_e99fbdcb",
@@ -31,6 +49,30 @@
       "writtenOn": "2026-08-11T23:41:31Z",
       "side": 1,
       "message": "let\u0027s link to a real bug (also see go/todo-style#format)\n\nalso please expand on the docstring (eg. GoB serves SHA-1 everywhere today, and probing costs significant time on large repos like chromium/src. Revisit when GoB exposes protocol-v2 object-format ...)",
+      "range": {
+        "startLine": 974,
+        "startChar": 10,
+        "endLine": 974,
+        "endChar": 14
+      },
+      "revId": "4b6c3ee307747e85bdf3b36ac9ca0a6aa2ce6905",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "75a87452_fa151cde",
+        "filename": "scm.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 974,
+      "author": {
+        "id": 4995882
+      },
+      "writtenOn": "2026-08-12T17:51:42Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "47a30070_e99fbdcb",
       "range": {
         "startLine": 974,
         "startChar": 10,
