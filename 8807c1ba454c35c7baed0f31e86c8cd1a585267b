@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f36ac035_e64fcd8c",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 4
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-08-12T23:12:31Z",
+      "side": 1,
+      "message": "nit: standalone \"checks\" isn\u0027t a widely used term in depot_tools, maybe `presubmit` instead?",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 7,
+        "endChar": 6
+      },
+      "revId": "8807c1ba454c35c7baed0f31e86c8cd1a585267b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
