@@ -22,6 +22,30 @@
       },
       "revId": "a5aa2343bbeead39c942b7fad89f68dc6550211a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e9829d73_d9eb2fbe",
+        "filename": "ruff_chromium",
+        "patchSetId": 1
+      },
+      "lineNbr": 526,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-08-13T09:42:42Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a52898ce_02b3d492",
+      "range": {
+        "startLine": 526,
+        "startChar": 0,
+        "endLine": 526,
+        "endChar": 0
+      },
+      "revId": "a5aa2343bbeead39c942b7fad89f68dc6550211a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
