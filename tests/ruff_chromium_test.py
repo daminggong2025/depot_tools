@@ -220,11 +220,15 @@ class TestShouldUseRuffRouting(unittest.TestCase):
 class TestTranslateArgs(unittest.TestCase):
     def test_translate_range_space(self):
         got = translate_args(["format", "--range", "5:1-10:1", "foo.py"])
+        self.assertEqual(got, ["--line", "5-9", "foo.py"])
+
+    def test_translate_range_space_in_place(self):
+        got = translate_args(["format", "-i", "--range", "5:1-10:1", "foo.py"])
         self.assertEqual(got, ["--line", "5-9", "foo.py", "-i"])
 
     def test_translate_range_equals(self):
         got = translate_args(["format", "--range=5:1-10:1", "foo.py"])
-        self.assertEqual(got, ["--line", "5-9", "foo.py", "-i"])
+        self.assertEqual(got, ["--line", "5-9", "foo.py"])
 
     def test_translate_diff_and_stdin(self):
         got = translate_args(["format", "--diff", "--range=1:10-3:20", "-"])
@@ -232,7 +236,23 @@ class TestTranslateArgs(unittest.TestCase):
 
     def test_translate_single_line_range(self):
         got = translate_args(["format", "--range=1:10-1:20", "foo.py"])
+        self.assertEqual(got, ["--line", "1-1", "foo.py"])
+
+    def test_translate_single_line_range_in_place(self):
+        got = translate_args(["format", "-i", "--range=1:10-1:20", "foo.py"])
         self.assertEqual(got, ["--line", "1-1", "foo.py", "-i"])
+
+    def test_translate_stdin_filename_stripped(self):
+        got = translate_args(
+            ["format", "--stdin-filename=/path/to/foo.py", "-"]
+        )
+        self.assertEqual(got, ["-"])
+
+    def test_translate_stdin_filename_space_separated(self):
+        got = translate_args(
+            ["format", "--stdin-filename", "/path/to/foo.py", "-"]
+        )
+        self.assertEqual(got, ["-"])
 
 
 class TestBatchMode(unittest.TestCase):
@@ -930,7 +950,13 @@ class TestRunRuffWithRanges(unittest.TestCase):
             mock_run.side_effect = [proc1, proc2]
 
             ret = run_ruff_with_ranges(
-                ["format", "--range=1:1-3:1", "--range=5:1-7:1", temp_path]
+                [
+                    "format",
+                    "-i",
+                    "--range=1:1-3:1",
+                    "--range=5:1-7:1",
+                    temp_path,
+                ]
             )
             self.assertEqual(ret, 0)
             self.assertEqual(mock_run.call_count, 2)
@@ -956,6 +982,35 @@ class TestRunRuffWithRanges(unittest.TestCase):
             )
             with open(temp_path, "rb") as f_out:
                 self.assertEqual(f_out.read(), b"final_out\n")
+        finally:
+            if os.path.exists(temp_path):
+                os.unlink(temp_path)
+
+    @patch("subprocess.run")
+    @patch("sys.stdout")
+    def test_sequential_chaining_stdout(self, mock_stdout, mock_run):
+        with tempfile.NamedTemporaryFile(
+            mode="wb", suffix=".py", delete=False
+        ) as f:
+            f.write(b"line1\nline2\nline3\nline4\nline5\nline6\nline7\n")
+            temp_path = f.name
+        try:
+            proc1 = Mock(returncode=0, stdout=b"int_out\n")
+            proc2 = Mock(returncode=0, stdout=b"final_out\n")
+            mock_run.side_effect = [proc1, proc2]
+
+            # Without -i: stream formatted content to stdout, leave disk untouched
+            ret = run_ruff_with_ranges(
+                ["format", "--range=1:1-3:1", "--range=5:1-7:1", temp_path]
+            )
+            self.assertEqual(ret, 0)
+            self.assertEqual(mock_run.call_count, 2)
+            mock_stdout.buffer.write.assert_called_once_with(b"final_out\n")
+            with open(temp_path, "rb") as f_out:
+                self.assertEqual(
+                    f_out.read(),
+                    b"line1\nline2\nline3\nline4\nline5\nline6\nline7\n",
+                )
         finally:
             if os.path.exists(temp_path):
                 os.unlink(temp_path)
@@ -1046,28 +1101,71 @@ class TestRunRuffWithRanges(unittest.TestCase):
             if os.path.exists(temp_path):
                 os.unlink(temp_path)
 
-    @patch("subprocess.call")
-    def test_run_ruff_direct_with_format(self, mock_call):
-        mock_call.return_value = 0
-        ret = run_ruff_with_ranges(["format", "file.py"])
-        self.assertEqual(ret, 0)
-        mock_call.assert_called_once()
-        args_passed = mock_call.call_args[0][0]
-        self.assertEqual(args_passed[1], "format")
-        self.assertEqual(args_passed[2], "file.py")
-        self.assertIn("--force-exclude", args_passed)
+    @patch("subprocess.run")
+    @patch("sys.stdout")
+    def test_run_ruff_direct_with_format(self, mock_stdout, mock_run):
+        with tempfile.NamedTemporaryFile(
+            mode="wb", suffix=".py", delete=False
+        ) as f:
+            f.write(b"x =   1\n")
+            temp_path = f.name
+        try:
+            mock_run.return_value = Mock(returncode=0, stdout=b"x = 1\n")
+            ret = run_ruff_with_ranges(["format", temp_path])
+            self.assertEqual(ret, 0)
+            mock_run.assert_called_once()
+            args_passed = mock_run.call_args[0][0]
+            self.assertEqual(args_passed[1], "format")
+            self.assertIn(f"--stdin-filename={temp_path}", args_passed)
+            self.assertIn("--force-exclude", args_passed)
+            mock_stdout.buffer.write.assert_called_once_with(b"x = 1\n")
+        finally:
+            if os.path.exists(temp_path):
+                os.unlink(temp_path)
 
     @patch("subprocess.call")
-    def test_run_ruff_direct_without_format(self, mock_call):
+    def test_run_ruff_direct_with_format_in_place(self, mock_call):
         mock_call.return_value = 0
-        ret = run_ruff_with_ranges(["file.py"])
-        self.assertEqual(ret, 0)
-        mock_call.assert_called_once()
-        args_passed = mock_call.call_args[0][0]
-        # Verify 'format' was inserted
-        self.assertEqual(args_passed[1], "format")
-        self.assertEqual(args_passed[2], "file.py")
-        self.assertIn("--force-exclude", args_passed)
+        with tempfile.NamedTemporaryFile(
+            mode="wb", suffix=".py", delete=False
+        ) as f:
+            f.write(b"x =   1\n")
+            temp_path = f.name
+        try:
+            ret = run_ruff_with_ranges(["format", "-i", temp_path])
+            self.assertEqual(ret, 0)
+            mock_call.assert_called_once()
+            args_passed = mock_call.call_args[0][0]
+            self.assertEqual(args_passed[1], "format")
+            self.assertNotIn("-i", args_passed)
+            self.assertIn(temp_path, args_passed)
+            self.assertIn("--force-exclude", args_passed)
+        finally:
+            if os.path.exists(temp_path):
+                os.unlink(temp_path)
+
+    @patch("subprocess.run")
+    @patch("sys.stdout")
+    def test_run_ruff_direct_without_format(self, mock_stdout, mock_run):
+        with tempfile.NamedTemporaryFile(
+            mode="wb", suffix=".py", delete=False
+        ) as f:
+            f.write(b"x =   1\n")
+            temp_path = f.name
+        try:
+            mock_run.return_value = Mock(returncode=0, stdout=b"x = 1\n")
+            ret = run_ruff_with_ranges([temp_path])
+            self.assertEqual(ret, 0)
+            mock_run.assert_called_once()
+            args_passed = mock_run.call_args[0][0]
+            # Verify 'format' was inserted
+            self.assertEqual(args_passed[1], "format")
+            self.assertIn(f"--stdin-filename={temp_path}", args_passed)
+            self.assertIn("--force-exclude", args_passed)
+            mock_stdout.buffer.write.assert_called_once_with(b"x = 1\n")
+        finally:
+            if os.path.exists(temp_path):
+                os.unlink(temp_path)
 
     @patch("subprocess.run")
     @patch("sys.stdout")
@@ -1109,17 +1207,89 @@ class TestRunRuffWithRanges(unittest.TestCase):
         self.assertIn("--stdin-filename", args_passed)
         self.assertIn("format", args_passed)
 
+    @patch("subprocess.run")
+    @patch("sys.stdout")
+    def test_run_ruff_direct_format_as_filename(self, mock_stdout, mock_run):
+        # Use a temporary file named 'format' to avoid subcommand ambiguity
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_format_file = os.path.join(temp_dir, "format")
+            with open(temp_format_file, "wb") as f:
+                f.write(b"x = 1\n")
+            mock_run.return_value = Mock(returncode=0, stdout=b"x = 1\n")
+            ret = run_ruff_with_ranges([temp_format_file])
+            self.assertEqual(ret, 0)
+            mock_run.assert_called_once()
+            args_passed = mock_run.call_args[0][0]
+            # Verify 'format' was inserted as subcommand, and temp_format_file remains
+            self.assertEqual(args_passed[1], "format")
+            self.assertIn(f"--stdin-filename={temp_format_file}", args_passed)
+
+    @patch("subprocess.run")
+    @patch("sys.stdout")
+    def test_run_ruff_multi_file_stdout(self, mock_stdout, mock_run):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            file1 = os.path.join(temp_dir, "file1.py")
+            file2 = os.path.join(temp_dir, "file2.py")
+            with open(file1, "wb") as f:
+                f.write(b"x =   1\n")
+            with open(file2, "wb") as f:
+                f.write(b"y =   2\n")
+
+            proc1 = Mock(returncode=0, stdout=b"x = 1\n")
+            proc2 = Mock(returncode=0, stdout=b"y = 2\n")
+            mock_run.side_effect = [proc1, proc2]
+
+            ret = run_ruff_with_ranges(["format", file1, file2])
+            self.assertEqual(ret, 0)
+            self.assertEqual(mock_run.call_count, 2)
+            self.assertEqual(mock_stdout.buffer.write.call_count, 2)
+            mock_stdout.buffer.write.assert_any_call(b"x = 1\n")
+            mock_stdout.buffer.write.assert_any_call(b"y = 2\n")
+            # Files on disk are left unchanged without -i
+            with open(file1, "rb") as f:
+                self.assertEqual(f.read(), b"x =   1\n")
+            with open(file2, "rb") as f:
+                self.assertEqual(f.read(), b"y =   2\n")
+
     @patch("subprocess.call")
-    def test_run_ruff_direct_format_as_filename(self, mock_call):
+    def test_run_ruff_multi_file_in_place_sanitizes_flags(self, mock_call):
         mock_call.return_value = 0
-        # Use './format' to avoid subcommand ambiguity
-        ret = run_ruff_with_ranges(["./format"])
-        self.assertEqual(ret, 0)
-        mock_call.assert_called_once()
-        args_passed = mock_call.call_args[0][0]
-        # Verify 'format' was inserted as subcommand, and './format' remains
-        self.assertEqual(args_passed[1], "format")
-        self.assertEqual(args_passed[2], "./format")
+        with tempfile.TemporaryDirectory() as temp_dir:
+            file1 = os.path.join(temp_dir, "file1.py")
+            file2 = os.path.join(temp_dir, "file2.py")
+            with open(file1, "wb") as f:
+                f.write(b"x = 1\n")
+            with open(file2, "wb") as f:
+                f.write(b"y = 2\n")
+
+            ret = run_ruff_with_ranges(["format", "-i", file1, file2])
+            self.assertEqual(ret, 0)
+            mock_call.assert_called_once()
+            args_passed = mock_call.call_args[0][0]
+            self.assertEqual(args_passed[1], "format")
+            # Verify -i is stripped before passing to native Ruff
+            self.assertNotIn("-i", args_passed)
+            self.assertIn(file1, args_passed)
+            self.assertIn(file2, args_passed)
+            self.assertIn("--force-exclude", args_passed)
+
+    @patch("subprocess.call")
+    def test_run_ruff_directory_with_in_place_sanitizes_flags(self, mock_call):
+        mock_call.return_value = 0
+        with tempfile.TemporaryDirectory() as temp_dir:
+            ret = run_ruff_with_ranges(["format", "-i", temp_dir])
+            self.assertEqual(ret, 0)
+            mock_call.assert_called_once()
+            args_passed = mock_call.call_args[0][0]
+            self.assertEqual(args_passed[1], "format")
+            self.assertNotIn("-i", args_passed)
+            self.assertIn(temp_dir, args_passed)
+            self.assertIn("--force-exclude", args_passed)
+
+    def test_run_ruff_directory_without_in_place_fails(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            ret = run_ruff_with_ranges(["format", temp_dir])
+            self.assertEqual(ret, 1)
 
 
 class TestSubcommands(unittest.TestCase):
