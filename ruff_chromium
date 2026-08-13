@@ -450,9 +450,6 @@ def dispatch_output(
     if has_check:
         return 1 if current_val != original_val else 0
 
-    if has_diff:
-        return 0
-
     if current_val != original_val:
         try:
             with open(target, "wb") as f:
@@ -586,8 +583,12 @@ def translate_args(args: list[str]) -> list[str]:
             has_stdin = True
             yapf_args.append(arg)
             i += 1
+        elif arg.startswith("--stdin-filename="):
+            i += 1
+        elif arg == "--stdin-filename":
+            i += 2
         elif arg.startswith("-"):
-            # Pass through other flags (like --stdin-filename)
+            # Pass through other flags
             yapf_args.append(arg)
             i += 1
         else:
