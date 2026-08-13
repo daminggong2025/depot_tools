@@ -16,6 +16,24 @@
       "message": "Removing this is intentional?",
       "revId": "23647f175d37b6e9ede15b9f54f4162b86ce6bac",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "498aab94_f10ae70e",
+        "filename": "ruff_chromium",
+        "patchSetId": 3
+      },
+      "lineNbr": 453,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-08-13T10:50:13Z",
+      "side": 0,
+      "message": "That was an accident, thanks for noticing",
+      "parentUuid": "f5efeec3_43e1ce61",
+      "revId": "23647f175d37b6e9ede15b9f54f4162b86ce6bac",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
