@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f5efeec3_43e1ce61",
+        "filename": "ruff_chromium",
+        "patchSetId": 3
+      },
+      "lineNbr": 453,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2026-08-13T10:48:42Z",
+      "side": 0,
+      "message": "Removing this is intentional?",
+      "revId": "23647f175d37b6e9ede15b9f54f4162b86ce6bac",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
