@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a52898ce_02b3d492",
+        "filename": "ruff_chromium",
+        "patchSetId": 1
+      },
+      "lineNbr": 526,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2026-08-13T09:41:27Z",
+      "side": 1,
+      "message": "Please fix this WARNING reported by autoreview issue finding: The error message on lines 529-532 mentions \"multi-range formatting requires...\", but because of the condition `not opts.target_files and \"-\" not in parsed_args.pass_through_args`, this error will be triggered even if there are 0 or 1 ranges specified (i.e., not multi-range). If a user forgets to specify a file entirely, this message will be misleading. Consider breaking these cases apart to provide a more specific error message.",
+      "range": {
+        "startLine": 526,
+        "startChar": 0,
+        "endLine": 526,
+        "endChar": 0
+      },
+      "revId": "a5aa2343bbeead39c942b7fad89f68dc6550211a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
