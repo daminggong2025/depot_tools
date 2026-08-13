@@ -39,6 +39,7 @@ join = gclient_scm.os.path.join
 
 TIMESTAMP_RE = re.compile(r"\[[0-9]{1,2}:[0-9]{2}:[0-9]{2}\] (.*)", re.DOTALL)
 
+
 def strip_timestamps(value):
     lines = value.splitlines(True)
     for i in range(len(lines)):
@@ -46,6 +47,7 @@ def strip_timestamps(value):
         if m:
             lines[i] = m.group(1)
     return "".join(lines)
+
 
 class BasicTests(unittest.TestCase):
     def setUp(self) -> None:
@@ -155,6 +157,7 @@ class BasicTests(unittest.TestCase):
             self.assertFalse(os.path.exists(checkout_path))
         finally:
             gclient_utils.rmtree(root_dir)
+
 
 class BaseGitWrapperTestCase(unittest.TestCase, test_case_utils.TestCaseUtils):
     """This class doesn't use pymox."""
@@ -337,6 +340,7 @@ from :3
         mock.patch("sys.stdout", StringIO()).start()
         self.addCleanup(mock.patch.stopall)
         self.addCleanup(gclient_utils.rmtree, self.root_dir)
+
 
 class ManagedGitWrapperTestCase(BaseGitWrapperTestCase):
     def testRevertMissing(self):
@@ -818,6 +822,7 @@ class ManagedGitWrapperTestCase(BaseGitWrapperTestCase):
         rev_info = git_wrapper.revinfo(options, (), None)
         self.assertEqual(rev_info, "069c602044c5388d2d15c3f875b057c852003458")
 
+
 class ManagedGitWrapperTestCaseMock(unittest.TestCase):
     class OptionsObject(object):
         def __init__(self, verbose=False, revision=None, force=False):
@@ -1208,6 +1213,7 @@ class ManagedGitWrapperTestCaseMock(unittest.TestCase):
             self.base_path, url, "origin", use_local=True
         )
 
+
 class UnmanagedGitWrapperTestCase(BaseGitWrapperTestCase):
     def checkInStdout(self, expected):
         value = sys.stdout.getvalue()
@@ -1439,6 +1445,7 @@ class UnmanagedGitWrapperTestCase(BaseGitWrapperTestCase):
         )
         self.checkstdout("________ unmanaged solution; skipping .\n")
 
+
 class CipdWrapperTestCase(unittest.TestCase):
     def setUp(self):
         # Create this before setting up mocks.
@@ -1525,6 +1532,7 @@ class CipdWrapperTestCase(unittest.TestCase):
         git_wrapper = self.createScmWithPackageThatSatisfies(lambda _: True)
         git_wrapper.update(None, (), [])
 
+
 class GcsWrapperTestCase(unittest.TestCase):
     def setUp(self):
         self.workdir = tempfile.mkdtemp()
@@ -1550,6 +1558,7 @@ class GcsWrapperTestCase(unittest.TestCase):
         git_wrapper = self.createScm()
         git_wrapper.update(None, (), [])
 
+
 class BranchHeadsFakeRepo(fake_repos.FakeReposBase):
     def populateGit(self):
         # Creates a tree that looks like this:
@@ -1567,6 +1576,7 @@ class BranchHeadsFakeRepo(fake_repos.FakeReposBase):
         self._commit_git("repo_1", {"commit 4": "touched"}, base=2)
         self._commit_git("repo_1", {"commit 5": "touched"}, base=2)
         self._create_ref("repo_1", "refs/branch-heads/5", 5)
+
 
 class BranchHeadsTest(fake_repos.FakeReposTestBase):
     FAKE_REPOS_CLASS = BranchHeadsFakeRepo
@@ -1635,6 +1645,7 @@ class BranchHeadsTest(fake_repos.FakeReposTestBase):
         self.setUpMirror()
         self.testCheckoutUpdatedBranchHeads()
 
+
 class GerritChangesFakeRepo(fake_repos.FakeReposBase):
     def populateGit(self):
         # Creates a tree that looks like this:
@@ -1690,6 +1701,7 @@ class GerritChangesFakeRepo(fake_repos.FakeReposBase):
         )
         self._commit_git("repo_1", {"commit 12": "touched"})
         self._create_ref("repo_1", "refs/heads/main-with-5", 12)
+
 
 class GerritChangesTest(fake_repos.FakeReposTestBase):
     FAKE_REPOS_CLASS = GerritChangesFakeRepo
@@ -2147,6 +2159,7 @@ class GerritChangesTest(fake_repos.FakeReposTestBase):
             self.githash("repo_1", 5), self.gitrevparse(self.root_dir)
         )
 
+
 class DepsChangesFakeRepo(fake_repos.FakeReposBase):
     def populateGit(self):
         self._commit_git("repo_1", {"DEPS": "versionA", "doesnotmatter": "B"})
@@ -2155,6 +2168,7 @@ class DepsChangesFakeRepo(fake_repos.FakeReposBase):
         self._commit_git("repo_1", {"DEPS": "versionB"})
         self._commit_git("repo_1", {"DEPS": "versionA", "doesnotmatter": "C"})
         self._create_ref("repo_1", "refs/heads/main", 4)
+
 
 class CheckDiffTest(fake_repos.FakeReposTestBase):
     FAKE_REPOS_CLASS = DepsChangesFakeRepo
@@ -2200,6 +2214,7 @@ class CheckDiffTest(fake_repos.FakeReposTestBase):
             )
         )
         self.assertFalse(git_wrapper.check_diff(self.githash("repo_1", 2)))
+
 
 class Submodules(BaseGitWrapperTestCase):
     submodule_hash = "1111111111111111111111111111111111111111"
@@ -2267,6 +2282,45 @@ class Submodules(BaseGitWrapperTestCase):
         self.assertEqual(git_wrapper.GetSubmoduleStateFromIndex(), {})
 
         self.assertEqual(git_wrapper.GetSubmoduleDiff(), {})
+
+    def testGetSubmoduleAssumeUnchanged(self):
+        git_wrapper = gclient_scm.GitWrapper(
+            self.url, self.root_dir, self.relpath
+        )
+        options = self.Options()
+        git_wrapper.update(options, None, [])
+        subprocess2.check_output(
+            [
+                "git",
+                "-C",
+                self.root_dir,
+                "update-index",
+                "--assume-unchanged",
+                "submodule",
+            ]
+        )
+        self.assertEqual(git_wrapper.GetSubmoduleStateFromIndex(), {})
+        self.assertEqual(git_wrapper.GetSubmoduleDiff(), {})
+
+    def testGetSubmoduleSkipWorktree(self):
+        git_wrapper = gclient_scm.GitWrapper(
+            self.url, self.root_dir, self.relpath
+        )
+        options = self.Options()
+        git_wrapper.update(options, None, [])
+        subprocess2.check_output(
+            [
+                "git",
+                "-C",
+                self.root_dir,
+                "update-index",
+                "--skip-worktree",
+                "submodule",
+            ]
+        )
+        self.assertEqual(git_wrapper.GetSubmoduleStateFromIndex(), {})
+        self.assertEqual(git_wrapper.GetSubmoduleDiff(), {})
+
 
 if "unittest.util" in __import__("sys").modules:
     # Show full diff in self.assertEqual.
