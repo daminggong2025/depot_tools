@@ -3,6 +3,52 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "ad6aaf66_2fda5be5",
+        "filename": "ruff_chromium",
+        "patchSetId": 1
+      },
+      "lineNbr": 395,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2026-08-13T09:46:14Z",
+      "side": 1,
+      "message": "Why is this change relevant to the inplace option?",
+      "range": {
+        "startLine": 395,
+        "startChar": 0,
+        "endLine": 395,
+        "endChar": 18
+      },
+      "revId": "a5aa2343bbeead39c942b7fad89f68dc6550211a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c680b226_8f6debd9",
+        "filename": "ruff_chromium",
+        "patchSetId": 1
+      },
+      "lineNbr": 516,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2026-08-13T09:46:14Z",
+      "side": 1,
+      "message": "same here.",
+      "range": {
+        "startLine": 516,
+        "startChar": 0,
+        "endLine": 516,
+        "endChar": 27
+      },
+      "revId": "a5aa2343bbeead39c942b7fad89f68dc6550211a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "a52898ce_02b3d492",
         "filename": "ruff_chromium",
         "patchSetId": 1
@@ -44,6 +90,23 @@
         "endLine": 526,
         "endChar": 0
       },
+      "revId": "a5aa2343bbeead39c942b7fad89f68dc6550211a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5191dbf6_e0c52a0f",
+        "filename": "ruff_chromium",
+        "patchSetId": 1
+      },
+      "lineNbr": 629,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2026-08-13T09:46:14Z",
+      "side": 1,
+      "message": "Why is this change necessary for the inplace option?",
       "revId": "a5aa2343bbeead39c942b7fad89f68dc6550211a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
