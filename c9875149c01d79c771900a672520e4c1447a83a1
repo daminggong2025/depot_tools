@@ -1,0 +1,141 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0a030479_67ce0bdb",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2026-08-13T09:48:16Z",
+      "side": 1,
+      "message": "Please fix this WARNING reported by code-review-workflow: [code-review-workflow] The commit message summary contains a trailing period, wh...\n\n[code-review-workflow] The commit message summary contains a trailing period, which violates the commit message guidelines.\n\n**Suggestion**\n\nRemove the trailing punctuation from the summary line:\n```text\nRuff: introduce -i inplace flag\n```",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 8,
+        "endChar": 0
+      },
+      "revId": "c9875149c01d79c771900a672520e4c1447a83a1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1ce1f5cc_04d13059",
+        "filename": "ruff_chromium",
+        "patchSetId": 2
+      },
+      "lineNbr": 478,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2026-08-13T09:48:16Z",
+      "side": 1,
+      "message": "Please fix this WARNING reported by core-internals: [core-internals] Writing directly to the target file is not atomic and risks tru...\n\n[core-internals] Writing directly to the target file is not atomic and risks truncating or corrupting the file if the process is interrupted (e.g., via Ctrl+C) or fails during the write.\n\n**Suggestion**\n\nWrite the formatted contents to a temporary file in the same directory first, then atomically replace the target file.\n\n```python\n                import os\n                import tempfile\n\n                dir_name \u003d os.path.dirname(target) or \".\"\n                fd, tmp_path \u003d tempfile.mkstemp(dir\u003ddir_name, prefix\u003dos.path.basename(target) + \".\")\n                try:\n                    with os.fdopen(fd, \"wb\") as f:\n                        f.write(current_val)\n                    os.replace(tmp_path, target)\n                except Exception:\n                    os.unlink(tmp_path)\n                    raise\n```\n\n**Reference**\n\nFilesystem Management guide: Destructive-path validation and configuration transactionality.",
+      "range": {
+        "startLine": 476,
+        "startChar": 0,
+        "endLine": 478,
+        "endChar": 0
+      },
+      "revId": "c9875149c01d79c771900a672520e4c1447a83a1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0fbddc6b_ded85213",
+        "filename": "ruff_chromium",
+        "patchSetId": 2
+      },
+      "lineNbr": 479,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2026-08-13T09:48:16Z",
+      "side": 1,
+      "message": "Please fix this WARNING reported by code-review-workflow: [code-review-workflow] Catching `Exception` is too broad and can obscure unexpec...\n\n[code-review-workflow] Catching `Exception` is too broad and can obscure unexpected, unrelated bugs (like `NameError` or `KeyboardInterrupt`). For file write operations, it is better to catch `OSError`.\n\n**Suggestion**\n\n```python\n            except OSError as e:\n```",
+      "range": {
+        "startLine": 478,
+        "startChar": 0,
+        "endLine": 479,
+        "endChar": 0
+      },
+      "revId": "c9875149c01d79c771900a672520e4c1447a83a1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "27bb6981_5c3f363f",
+        "filename": "ruff_chromium",
+        "patchSetId": 2
+      },
+      "lineNbr": 532,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2026-08-13T09:48:16Z",
+      "side": 1,
+      "message": "As L526 and L532 is the same check, it is better to unify and have conditional check in L525 inside the same block.",
+      "fixSuggestions": [
+        {
+          "fixId": "40404507_f49fa61e",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "ruff_chromium",
+              "range": {
+                "startLine": 525,
+                "startChar": 0,
+                "endLine": 527,
+                "endChar": 0
+              },
+              "replacement": "    if len(opts.target_files) !\u003d 1 or \"-\" in parsed_args.pass_through_args:\n        if len(parsed_args.ranges) \u003e 1:\n"
+            },
+            {
+              "path": "ruff_chromium",
+              "range": {
+                "startLine": 531,
+                "startChar": 0,
+                "endLine": 533,
+                "endChar": 0
+              },
+              "replacement": ""
+            }
+          ]
+        }
+      ],
+      "revId": "c9875149c01d79c771900a672520e4c1447a83a1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "334e8950_015b1957",
+        "filename": "ruff_chromium",
+        "patchSetId": 2
+      },
+      "lineNbr": 535,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2026-08-13T09:48:16Z",
+      "side": 1,
+      "message": "Please fix this WARNING reported by code-review-workflow: [code-review-workflow] `subprocess.call` is part of the legacy subprocess API. M...\n\n[code-review-workflow] `subprocess.call` is part of the legacy subprocess API. Modern Python code should prefer `subprocess.run`.\n\n**Suggestion**\n\n```python\n        return subprocess.run(cmd).returncode\n```",
+      "range": {
+        "startLine": 534,
+        "startChar": 0,
+        "endLine": 535,
+        "endChar": 0
+      },
+      "revId": "c9875149c01d79c771900a672520e4c1447a83a1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
