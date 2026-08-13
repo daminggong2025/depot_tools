@@ -62,6 +62,7 @@ class FormattingOptions(NamedTuple):
     has_format: bool
     has_diff: bool
     has_check: bool
+    has_in_place: bool
     subcommand: str | None
     target_files: list[str]
     chain_base_args: list[str]
@@ -318,6 +319,7 @@ def parse_formatting_options(pass_through_args: list[str]) -> FormattingOptions:
     has_format = False
     has_diff = False
     has_check = False
+    has_in_place = False
     subcommand: str | None = None
     target_files: list[str] = []
     chain_base_args: list[str] = []
@@ -349,7 +351,7 @@ def parse_formatting_options(pass_through_args: list[str]) -> FormattingOptions:
         elif arg == "--check":
             has_check = True
         elif arg in ("-i", "--in-place"):
-            pass
+            has_in_place = True
         elif arg in flags_with_values:
             chain_base_args.append(arg)
             skip_next = True
@@ -364,6 +366,7 @@ def parse_formatting_options(pass_through_args: list[str]) -> FormattingOptions:
         has_format=has_format,
         has_diff=has_diff,
         has_check=has_check,
+        has_in_place=has_in_place,
         subcommand=subcommand,
         target_files=target_files,
         chain_base_args=chain_base_args,
@@ -383,12 +386,24 @@ def execute_ranges_chain(
         chain_base_args: Base arguments for intermediate runs.
         subcmd_idx: The index of the subcommand 'format' in chain_base_args.
         ranges: The list of parsed LineRange items.
-        original_val: The original byte value read from disk.
+        original_val: The original byte value read from disk or stdin.
 
     Returns:
         A tuple of (exit_code, formatted_val).
     """
     current_val = original_val
+    if not ranges:
+        if subcmd_idx != -1:
+            step_args = chain_base_args
+        else:
+            step_args = ["format"] + chain_base_args
+        cmd = [get_ruff_bin()] + step_args
+        proc = subprocess.run(cmd, input=current_val, capture_output=True)
+        if proc.returncode != 0:
+            sys.stderr.buffer.write(proc.stderr)
+            return proc.returncode, b""
+        return 0, proc.stdout
+
     ranges.sort(key=lambda r: r.start)
     merged = merge_ranges(ranges)
     merged.reverse()
@@ -402,7 +417,7 @@ def execute_ranges_chain(
                 + chain_base_args[subcmd_idx + 1 :]
             )
         else:
-            step_args = [range_arg] + chain_base_args
+            step_args = ["format", range_arg] + chain_base_args
         cmd = [get_ruff_bin()] + step_args
         proc = subprocess.run(cmd, input=current_val, capture_output=True)
         if proc.returncode != 0:
@@ -420,15 +435,17 @@ def dispatch_output(
     current_val: bytes,
     has_check: bool,
     has_diff: bool,
+    has_in_place: bool,
 ) -> int:
-    """Emits diffs to stdout, returns checks, or writes formatted contents back to disk.
+    """Emits diffs to stdout, returns checks, writes formatted contents back to disk, or streams to stdout.
 
     Args:
-        target: Target filepath.
+        target: Target filepath (or '-' for stdin).
         original_val: The original byte contents of target.
         current_val: The formatted byte contents.
         has_check: True if '--check' was specified.
         has_diff: True if '--diff' was specified.
+        has_in_place: True if '-i' or '--in-place' was specified.
 
     Returns:
         Exit code (0 on success, non-zero on error or check failure).
@@ -453,13 +470,19 @@ def dispatch_output(
     if has_diff:
         return 0
 
-    if current_val != original_val:
-        try:
-            with open(target, "wb") as f:
-                f.write(current_val)
-        except Exception as e:
-            sys.stderr.write(f"failed to write {target}: {e}\n")
-            return 1
+    if has_in_place:
+        if target != "-" and current_val != original_val:
+            try:
+                with open(target, "wb") as f:
+                    f.write(current_val)
+            except Exception as e:
+                sys.stderr.write(f"failed to write {target}: {e}\n")
+                return 1
+        return 0
+
+    # Default (no -i): stream formatted contents to stdout
+    sys.stdout.buffer.write(current_val)
+    sys.stdout.buffer.flush()
     return 0
 
 
@@ -490,21 +513,25 @@ def run_ruff_with_ranges(args: list[str]) -> int:
             return 1
         opts = parse_formatting_options(parsed_args.pass_through_args)
 
-    # We are calling ruff as is if there is only one or no ranges.
-    if len(parsed_args.ranges) < 2:
+    if not opts.has_format:
+        if len(parsed_args.ranges) > 1:
+            sys.stderr.write(
+                "multiple ranges are only supported for the 'format' subcommand\n"
+            )
+            return 1
         cmd = [get_ruff_bin()] + ruff_args + ["--force-exclude"]
         return subprocess.call(cmd)
 
-    if not opts.has_format:
-        sys.stderr.write(
-            "multiple ranges are only supported for the 'format' subcommand\n"
-        )
-        return 1
     if len(opts.target_files) != 1 or "-" in parsed_args.pass_through_args:
-        sys.stderr.write(
-            "multi-range formatting requires exactly one target file on disk (stdin '-' is not supported)\n"
-        )
-        return 1
+        if len(parsed_args.ranges) > 1 or (
+            not opts.target_files and "-" not in parsed_args.pass_through_args
+        ):
+            sys.stderr.write(
+                "multi-range formatting requires exactly one target file on disk (stdin '-' is not supported)\n"
+            )
+            return 1
+        cmd = [get_ruff_bin()] + ruff_args + ["--force-exclude"]
+        return subprocess.call(cmd)
 
     target = opts.target_files[0]
 
@@ -531,7 +558,12 @@ def run_ruff_with_ranges(args: list[str]) -> int:
         return exit_code
 
     return dispatch_output(
-        target, original_val, formatted_val, opts.has_check, opts.has_diff
+        target,
+        original_val,
+        formatted_val,
+        opts.has_check,
+        opts.has_diff,
+        opts.has_in_place,
     )
 
 
@@ -547,6 +579,7 @@ def translate_args(args: list[str]) -> list[str]:
     yapf_args = []
     has_diff = False
     has_stdin = False
+    has_in_place = False
     files = []
 
     i = 0
@@ -554,6 +587,10 @@ def translate_args(args: list[str]) -> list[str]:
         arg = args[i]
         # YAPF takes options and files directly without a subcommand, so strip "format".
         if arg == "format":
+            i += 1
+            continue
+        elif arg in ("-i", "--in-place"):
+            has_in_place = True
             i += 1
             continue
         # Ruff uses --range start:col-end:col; YAPF uses --line start-end (line numbers only, no columns).
@@ -586,8 +623,12 @@ def translate_args(args: list[str]) -> list[str]:
             has_stdin = True
             yapf_args.append(arg)
             i += 1
+        elif arg.startswith("--stdin-filename="):
+            i += 1
+        elif arg == "--stdin-filename":
+            i += 2
         elif arg.startswith("-"):
-            # Pass through other flags (like --stdin-filename)
+            # Pass through other flags
             yapf_args.append(arg)
             i += 1
         else:
@@ -595,8 +636,7 @@ def translate_args(args: list[str]) -> list[str]:
             yapf_args.append(arg)
             i += 1
 
-    # Ruff formats files in-place by default; YAPF prints to stdout unless -i is explicitly passed.
-    if files and not has_diff and not has_stdin:
+    if has_in_place and files and not has_diff and not has_stdin:
         yapf_args.append("-i")
 
     return yapf_args
