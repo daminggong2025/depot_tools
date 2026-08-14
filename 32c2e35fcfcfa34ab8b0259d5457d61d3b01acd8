@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "1c0adcee_9bd7d9e0",
+        "filename": "tests/gclient_scm_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1126674
+      },
+      "writtenOn": "2026-08-14T18:15:06Z",
+      "side": 1,
+      "message": "Done. They reappear with `git cl format` though, so they are destined to reappear. Probably due to the switch to `ruff`.",
+      "parentUuid": "7623fddc_9244db30",
+      "range": {
+        "startLine": 41,
+        "startChar": 0,
+        "endLine": 41,
+        "endChar": 0
+      },
+      "revId": "32c2e35fcfcfa34ab8b0259d5457d61d3b01acd8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "18ea84a9_97e4fc58",
@@ -37,6 +61,30 @@
       "writtenOn": "2026-08-14T17:51:42Z",
       "side": 1,
       "message": "These tests are nearly identical, please parameterize them.",
+      "range": {
+        "startLine": 2286,
+        "startChar": 4,
+        "endLine": 2323,
+        "endChar": 0
+      },
+      "revId": "32c2e35fcfcfa34ab8b0259d5457d61d3b01acd8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "505377c1_5675efe3",
+        "filename": "tests/gclient_scm_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 2323,
+      "author": {
+        "id": 1126674
+      },
+      "writtenOn": "2026-08-14T18:15:06Z",
+      "side": 1,
+      "message": "Deleted the second one. The implementation is an allowlist, not a blocklist.",
+      "parentUuid": "18ea84a9_97e4fc58",
       "range": {
         "startLine": 2286,
         "startChar": 4,
