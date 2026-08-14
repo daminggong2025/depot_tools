@@ -126,20 +126,30 @@ vpython3 scripts/luci_triage.py check-test \
 
 ## 7. Get Test History
 
-Query LUCI Analysis for the historical verdicts of a specific test variant:
+Query LUCI Analysis for historical verdicts, daily aggregate pass/fail/flake breakdown, and regression start dates:
 
 ```bash
-scripts/luci_triage.py test-history \
-  --project <PROJECT> \
+# Formatted aggregate daily table (default):
+vpython3 scripts/luci_triage.py test-history \
   --test-id "<TEST_ID>" \
-  [--limit <LIMIT>] \
+  [--project <chromium|chrome>] \
   [--builder <BUILDER>] \
   [--bucket <BUCKET>] \
   [--device-os <DEVICE_OS>] \
   [--device-type <DEVICE_TYPE>] \
   [--os <OS>] \
-  [--test-suite <TEST_SUITE>]
+  [--test-suite <TEST_SUITE>] \
+  [--limit 1000] \
+  [--json] \
+  [--raw]
+
+# Machine-readable JSON output:
+vpython3 scripts/luci_triage.py test-history --test-id "<TEST_ID>" --json
 ```
+
+- **Pagination & Aggregation**: Automatically paginates through historical runs (up to `--limit`, default: 1000) and computes daily `Pass`, `Fail`, `Flake`, and `Fail Rate %`.
+- **Regression Detection**: Automatically identifies the timestamp/date when failures first began.
+- **Fuzzy Search Fallback**: If an exact test ID is not found, the tool automatically queries LUCI substring index and prints candidate matching test IDs.
 
 ## Implementation Notes
 
