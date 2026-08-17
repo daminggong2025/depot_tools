@@ -1,0 +1,412 @@
+#!/usr/bin/env vpython3
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+"""Unit tests for luci_triage.py."""
+
+import io
+import os
+import sys
+import unittest
+from unittest import mock
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import luci_triage
+
+SAMPLE_BUILD_ID = "8000000000000000001"
+SAMPLE_BUILD_ID_2 = "8000000000000000002"
+SAMPLE_BUILD_ID_3 = "8000000000000000003"
+SAMPLE_BUILD_NUM = 12345
+SAMPLE_CL = "123456"
+
+
+class TestLuciTriage(unittest.TestCase):
+    @mock.patch("luci_triage.subprocess.Popen")
+    def test_run_prpc_success(self, mock_popen):
+        mock_proc = mock.MagicMock()
+        mock_proc.communicate.return_value = ('{"foo": "bar"}', "")
+        mock_proc.returncode = 0
+        mock_popen.return_value.__enter__.return_value = mock_proc
+
+        res = luci_triage.run_prpc("service.example.com", "Method", {"k": "v"})
+        self.assertEqual(res, {"foo": "bar"})
+
+    @mock.patch("sys.stderr", new_callable=io.StringIO)
+    @mock.patch("luci_triage.subprocess.Popen")
+    def test_run_prpc_error(self, mock_popen, mock_stderr):
+        mock_proc = mock.MagicMock()
+        mock_proc.communicate.return_value = ("", "rpc error")
+        mock_proc.returncode = 1
+        mock_popen.return_value.__enter__.return_value = mock_proc
+
+        res = luci_triage.run_prpc("service.example.com", "Method", {"k": "v"})
+        self.assertIsNone(res)
+
+    @mock.patch("luci_triage.subprocess.run")
+    def test_is_authenticated(self, mock_run):
+        mock_run.return_value.returncode = 0
+        self.assertTrue(luci_triage.is_authenticated())
+
+        mock_run.return_value.returncode = 1
+        self.assertFalse(luci_triage.is_authenticated())
+
+        mock_run.side_effect = FileNotFoundError()
+        self.assertFalse(luci_triage.is_authenticated())
+
+    @mock.patch("luci_triage.run_prpc")
+    def test_resolve_build_id(self, mock_prpc):
+        mock_prpc.return_value = {"id": SAMPLE_BUILD_ID}
+        build_id = luci_triage.resolve_build_id(
+            "chromium", "ci", "android-13-x64-rel", SAMPLE_BUILD_NUM
+        )
+        self.assertEqual(build_id, SAMPLE_BUILD_ID)
+        mock_prpc.assert_called_once_with(
+            "cr-buildbucket.appspot.com",
+            "buildbucket.v2.Builds.GetBuild",
+            {
+                "builder": {
+                    "project": "chromium",
+                    "bucket": "ci",
+                    "builder": "android-13-x64-rel",
+                },
+                "buildNumber": SAMPLE_BUILD_NUM,
+            },
+        )
+
+    @mock.patch("luci_triage.run_prpc")
+    def test_get_build(self, mock_prpc):
+        mock_prpc.return_value = {
+            "id": SAMPLE_BUILD_ID,
+            "status": "SUCCESS",
+        }
+        data = luci_triage.get_build(f"b{SAMPLE_BUILD_ID}")
+        self.assertEqual(data["status"], "SUCCESS")
+        mock_prpc.assert_called_once_with(
+            "cr-buildbucket.appspot.com",
+            "buildbucket.v2.Builds.GetBuild",
+            {
+                "id": SAMPLE_BUILD_ID,
+                "mask": {
+                    "fields": "id,builder,number,status,summaryMarkdown,output"
+                },
+            },
+        )
+
+    @mock.patch("luci_triage.run_prpc")
+    def test_find_cl_builds_with_patchset(self, mock_prpc):
+        mock_prpc.return_value = {
+            "builds": [
+                {
+                    "builder": {"builder": "linux-rel"},
+                    "status": "FAILURE",
+                    "id": SAMPLE_BUILD_ID,
+                },
+                {
+                    "builder": {"builder": "mac-rel"},
+                    "status": "STARTED",
+                    "id": SAMPLE_BUILD_ID_2,
+                },
+                {
+                    "builder": {"builder": "android-arm64-rel"},
+                    "status": "SUCCESS",
+                    "id": SAMPLE_BUILD_ID_3,
+                },
+            ]
+        }
+        # Default filters out SUCCESS and STARTED
+        failed = luci_triage.find_cl_builds(SAMPLE_CL, patchset=1)
+        self.assertEqual(len(failed), 1)
+        self.assertEqual(failed[0]["builder"], "linux-rel")
+
+        # show_all includes SUCCESS and STARTED
+        all_builds = luci_triage.find_cl_builds(
+            SAMPLE_CL, patchset=1, show_all=True
+        )
+        self.assertEqual(len(all_builds), 3)
+
+    @mock.patch("luci_triage.subprocess.check_output")
+    @mock.patch("luci_triage.run_prpc")
+    def test_find_cl_builds_default_patchset(
+        self, mock_prpc, mock_check_output
+    ):
+        gerrit_json = (
+            ")]}'\n"
+            '{"current_revision": "rev1", "revisions": {"rev1": {"_number": 3}}}'
+        )
+        mock_check_output.return_value = gerrit_json.encode("utf-8")
+        mock_prpc.return_value = {
+            "builds": [
+                {
+                    "builder": {"builder": "linux-rel"},
+                    "status": "FAILURE",
+                    "id": SAMPLE_BUILD_ID,
+                }
+            ]
+        }
+        builds = luci_triage.find_cl_builds(SAMPLE_CL)
+        self.assertEqual(len(builds), 1)
+        mock_prpc.assert_called_once_with(
+            "cr-buildbucket.appspot.com",
+            "buildbucket.v2.Builds.SearchBuilds",
+            {
+                "predicate": {
+                    "gerritChanges": [
+                        {
+                            "host": "chromium-review.googlesource.com",
+                            "change": int(SAMPLE_CL),
+                            "patchset": 3,
+                        }
+                    ]
+                }
+            },
+        )
+
+    @mock.patch("luci_triage.run_prpc")
+    def test_list_failures_grouped_by_task(self, mock_prpc):
+        mock_prpc.return_value = {
+            "testVariants": [
+                {
+                    "testId": "ninja://test/Class#methodA",
+                    "status": "UNEXPECTED",
+                    "results": [
+                        {
+                            "result": {
+                                "name": "invocations/task-task123/tests/testA/results/1",
+                                "status": "FAIL",
+                                "failureReason": {
+                                    "primaryErrorMessage": "AssertionError"
+                                },
+                            }
+                        }
+                    ],
+                },
+                {
+                    "testId": "ninja://test/Class#methodB",
+                    "status": "FLAKY",
+                    "results": [
+                        {
+                            "result": {
+                                "name": "invocations/task-task123/tests/testB/results/1",
+                                "status": "FAIL",
+                            }
+                        }
+                    ],
+                },
+                {
+                    "testId": "ninja://test/Class#methodC",
+                    "status": "EXONERATED",
+                    "results": [
+                        {
+                            "result": {
+                                "name": "invocations/task-task123/tests/testC/results/1",
+                                "status": "FAIL",
+                            }
+                        }
+                    ],
+                },
+            ]
+        }
+
+        # Default excludes EXONERATED, includes FLAKY and UNEXPECTED
+        res = luci_triage.list_failures(f"b{SAMPLE_BUILD_ID}")
+        self.assertIn("task123", res)
+        self.assertEqual(len(res["task123"]), 2)
+        self.assertEqual(res["task123"][0]["id"], "ninja://test/Class#methodA")
+        self.assertEqual(res["task123"][0]["err"], "AssertionError")
+
+        # Ignore flaky
+        res_no_flake = luci_triage.list_failures(
+            SAMPLE_BUILD_ID, ignore_flaky=True
+        )
+        self.assertEqual(len(res_no_flake["task123"]), 1)
+        self.assertEqual(
+            res_no_flake["task123"][0]["id"], "ninja://test/Class#methodA"
+        )
+
+        # Include exonerated
+        res_exonerated = luci_triage.list_failures(
+            SAMPLE_BUILD_ID, include_exonerated=True
+        )
+        self.assertEqual(len(res_exonerated["task123"]), 3)
+
+        # Limit results
+        res_limit = luci_triage.list_failures(SAMPLE_BUILD_ID, limit=1)
+        self.assertEqual(len(res_limit["task123"]), 1)
+
+    @mock.patch("luci_triage.run_prpc")
+    def test_list_failures_pagination(self, mock_prpc):
+        mock_prpc.side_effect = [
+            {
+                "testVariants": [
+                    {
+                        "testId": "ninja://test/Class#method1",
+                        "status": "UNEXPECTED",
+                        "results": [
+                            {
+                                "result": {
+                                    "name": "invocations/task-task1/tests/test1/results/1",
+                                    "status": "FAIL",
+                                }
+                            }
+                        ],
+                    }
+                ],
+                "nextPageToken": "token123",
+            },
+            {
+                "testVariants": [
+                    {
+                        "testId": "ninja://test/Class#method2",
+                        "status": "UNEXPECTED",
+                        "results": [
+                            {
+                                "result": {
+                                    "name": "invocations/task-task2/tests/test2/results/1",
+                                    "status": "FAIL",
+                                }
+                            }
+                        ],
+                    }
+                ]
+            },
+        ]
+        res = luci_triage.list_failures(SAMPLE_BUILD_ID)
+        self.assertEqual(len(res), 2)
+        self.assertIn("task1", res)
+        self.assertIn("task2", res)
+
+    @mock.patch("luci_triage.subprocess.check_output")
+    @mock.patch("luci_triage.run_prpc")
+    def test_fetch_log_snippet_regex(self, mock_prpc, mock_check_output):
+        mock_prpc.return_value = {
+            "artifacts": [
+                {
+                    "artifactId": "test_log",
+                    "fetchUrl": "https://logs.example.com/log.txt",
+                }
+            ]
+        }
+        sample_log = (
+            "Line 1\n"
+            "Line 2\n"
+            "org.junit.ComparisonFailure: expected:<[a]> but was:<[b]>\n"
+            "  at java.lang.AssertionError\n"
+            "Line 5\n"
+        )
+        mock_check_output.return_value = sample_log.encode("utf-8")
+
+        output = luci_triage.fetch_log_snippet(
+            "invocations/task-123/tests/foo/results/1"
+        )
+        self.assertIn("AssertionError", output)
+
+    @mock.patch("luci_triage.subprocess.check_output")
+    @mock.patch("luci_triage.run_prpc")
+    def test_fetch_log_snippet_raw(self, mock_prpc, mock_check_output):
+        mock_prpc.return_value = {
+            "artifacts": [
+                {
+                    "artifactId": "stdout",
+                    "fetchUrl": "https://logs.example.com/stdout.txt",
+                }
+            ]
+        }
+        sample_log = "Raw log output without matches"
+        mock_check_output.return_value = sample_log.encode("utf-8")
+
+        output = luci_triage.fetch_log_snippet(
+            "invocations/task-123/tests/foo/results/1", raw=True
+        )
+        self.assertEqual(output, sample_log)
+
+    @mock.patch("luci_triage.is_authenticated")
+    @mock.patch("luci_triage.run_prpc")
+    def test_fetch_log_snippet_no_artifacts(
+        self, mock_prpc, mock_is_authenticated
+    ):
+        mock_prpc.return_value = {}
+        mock_is_authenticated.return_value = False
+
+        output = luci_triage.fetch_log_snippet(
+            "invocations/task-123/tests/foo/results/1"
+        )
+        self.assertIn("No artifacts found", output)
+        self.assertIn("bb auth-login", output)
+
+    @mock.patch("luci_triage.run_prpc")
+    def test_check_test(self, mock_prpc):
+        mock_prpc.return_value = {
+            "testResults": [
+                {
+                    "testId": "ninja://chrome/android:apk/Class#testMethod",
+                    "status": "PASS",
+                    "expected": True,
+                }
+            ]
+        }
+        res = luci_triage.check_test(f"b{SAMPLE_BUILD_ID}", "testMethod")
+        self.assertEqual(len(res), 1)
+        self.assertEqual(res[0]["status"], "PASS")
+        mock_prpc.assert_called_once_with(
+            "results.api.luci.app",
+            "luci.resultdb.v1.ResultDB.QueryTestResults",
+            {
+                "invocations": [f"invocations/build-{SAMPLE_BUILD_ID}"],
+                "predicate": {
+                    "testIdRegexp": ".*testMethod.*",
+                    "expectancy": "ALL",
+                },
+                "pageSize": 1000,
+            },
+        )
+
+    @mock.patch("luci_triage.run_prpc")
+    def test_test_history(self, mock_prpc):
+        mock_prpc.return_value = {
+            "verdicts": [
+                {
+                    "testId": "ninja://chrome/android:apk/Class#testMethod",
+                    "status": "EXPECTED",
+                }
+            ]
+        }
+        verdicts = luci_triage.test_history(
+            "chromium",
+            "ninja://chrome/android:apk/Class#testMethod",
+            limit=5,
+            builder="android-13-x64-rel",
+            bucket="ci",
+            device_os="Android 13",
+            device_type="generic_x86_64",
+            os="Ubuntu",
+            test_suite="chrome_public_test_apk",
+        )
+        self.assertEqual(len(verdicts), 1)
+        self.assertEqual(verdicts[0]["status"], "EXPECTED")
+        mock_prpc.assert_called_once_with(
+            "analysis.api.luci.app",
+            "luci.analysis.v1.TestHistory.Query",
+            {
+                "project": "chromium",
+                "testId": "ninja://chrome/android:apk/Class#testMethod",
+                "predicate": {
+                    "variantPredicate": {
+                        "contains": {
+                            "def": {
+                                "builder": "android-13-x64-rel",
+                                "bucket": "ci",
+                                "device_os": "Android 13",
+                                "device_type": "generic_x86_64",
+                                "os": "Ubuntu",
+                                "test_suite": "chrome_public_test_apk",
+                            }
+                        }
+                    }
+                },
+                "pageSize": 5,
+            },
+        )
+
+
+if __name__ == "__main__":
+    unittest.main()
