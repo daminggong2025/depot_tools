@@ -19,6 +19,7 @@ import fetch_log
 import find_cl_builds
 import list_failures
 import luci_client
+import test_history
 
 SAMPLE_BUILDER = "android-13-x64-rel"
 SAMPLE_CL = "8260911"
@@ -230,6 +231,63 @@ class TestCheckTestInBuildIntegration(BaseLuciIntegrationTestCase):
             )
             for tr in res[:2]:
                 print(f"       - {tr.get('id')} ({tr.get('status')})")
+
+
+class TestTestHistoryIntegration(BaseLuciIntegrationTestCase):
+    def test_fetch_test_history_verdicts(self):
+        for test_id, suite, label, query in [
+            (
+                SAMPLE_JAVA_TEST_ID,
+                "chrome_public_test_apk",
+                "Java JUnit",
+                SAMPLE_JAVA_TEST_QUERY,
+            ),
+            (
+                SAMPLE_CPP_TEST_ID,
+                "base_unittests",
+                "C++ GTest",
+                SAMPLE_CPP_TEST_QUERY,
+            ),
+        ]:
+            verdicts = test_history.fetch_test_history_verdicts(
+                "chromium",
+                test_id,
+                limit=5,
+                builder=SAMPLE_BUILDER,
+                test_suite=suite,
+                verbose=False,
+            )
+            self.assertGreaterEqual(len(verdicts), 1)
+            daily = test_history.aggregate_by_day(verdicts)
+            self.assertGreaterEqual(len(daily), 1)
+            table = test_history.format_summary_table(daily, test_id)
+            self.assertIn("Test History Aggregate Summary", table)
+            print(
+                f"[PASS] test_history ({label}): Queried {len(verdicts)} verdict(s) for "
+                f"{query} on {SAMPLE_BUILDER}\n"
+                f"{table}"
+            )
+
+    def test_query_tests_fuzzy_search(self):
+        for query, expected_id, label in [
+            (
+                SAMPLE_JAVA_TEST_QUERY,
+                SAMPLE_JAVA_TEST_ID,
+                "Java JUnit",
+            ),
+            (
+                SAMPLE_CPP_TEST_QUERY,
+                SAMPLE_CPP_TEST_ID,
+                "C++ GTest",
+            ),
+        ]:
+            candidates = test_history.query_tests("chromium", query)
+            self.assertGreater(len(candidates), 0)
+            self.assertIn(expected_id, candidates)
+            print(
+                f"[PASS] query_tests ({label}): Resolved '{query}' -> "
+                f"{len(candidates)} candidate(s) including canonical ID"
+            )
 
 
 if __name__ == "__main__":
