@@ -306,7 +306,7 @@ def check_test(build_id, test_regex):
             "luci.resultdb.v1.ResultDB.QueryTestResults",
             payload,
         )
-        if not result:
+        if result is None:
             print("Error: Failed to query ResultDB", file=sys.stderr)
             break
 
