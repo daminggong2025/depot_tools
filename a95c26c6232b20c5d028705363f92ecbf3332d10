@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1236deba_06fa078d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 12
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1241393
+      },
+      "writtenOn": "2026-08-17T22:46:25Z",
+      "side": 1,
+      "message": "To iterate on this without breaking the script, I generated both unit but more importantly integration tests that check real builds and do some basic checks + output the results:\n\n```\n@ ~/lib/depot_tools (ltr-split)$ agents/skills/luci-test-results/scripts/luci_triage_integration_test.py\n\n\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\n[LUCI Integration Test] Starting live endpoint validation\n\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\u003d\n[DISCOVERY] Latest SUCCESS CI build: android-13-x64-rel/20473 (id: 8673188935984533969)\n[DISCOVERY] Latest FAILURE CI build: android-13-x64-rel/20406 (id: 8673534943512166561)\n[DISCOVERY] Target Test Queries: \u0027ExampleFreshCtaTest\u0027 (Java), \u0027JSONReaderTest\u0027 (C++ GTest)\n--------------------------------------------------------------------------------\n[PASS] check_test (Java): Found 2 test result(s) for \u0027ExampleFreshCtaTest\u0027 in build 8673188935984533969:\n       - ://chrome/android\\:chrome_public_test_apk!junit:org.chromium.chrome.browser:ExampleFreshCtaTest#testStartOnBlankPage (PASS)\n       - ://chrome/android\\:chrome_public_test_apk!junit:org.chromium.chrome.browser:ExampleFreshCtaTest#testStartOnNtp (PASS)\n[PASS] check_test (C++): Found 58 test result(s) for \u0027JSONReaderTest\u0027 in build 8673188935984533969:\n       - ://base\\:base_unittests!gtest::JSONReaderTest#ASCIIControlCodes (PASS)\n       - ://base\\:base_unittests!gtest::JSONReaderTest#ArrayTrailingComma (PASS)\n.[PASS] find_cl_builds (latest patchset via Gerrit): Found 6 non-success build(s) for CL 8260911\n[PASS] find_cl_builds (show_all\u003dTrue): Found 61 total build(s) for latest patchset\n.[PASS] get_build: Build 8673188935984533969 status \u003d SUCCESS\n.[PASS] list_failures_and_fetch_log: Build 8673534943512166561 has 44 failing task(s).\n       Fetched log snippet for ://chrome/test\\:unit_tests!gtest::ReadAloudPlaybackControllerTest#InitializeAudioInvalidSharedMemoryReportsBadMessage (1285 bytes).\n       Log preview: [ RUN      ] ReadAloudPlaybackControllerTest.InitializeAudioInvalidSharedMemoryReportsBadMessage...\n.[PASS] resolve_build_id: android-13-x64-rel/20473 -\u003e 8673188935984533969\n.[PASS] test_history (Java JUnit): Queried 5 verdict(s) for junit:org.chromium.chrome.browser:ExampleFreshCtaTest#testStartOnBlankPage on android-13-x64-rel\n[PASS] test_history (C++ GTest): Queried 5 verdict(s) for gtest::JSONReaderTest#ASCIIControlCodes on android-13-x64-rel\n.\n----------------------------------------------------------------------\nRan 6 tests in 6.168s\n\nOK\n\n```",
+      "revId": "a95c26c6232b20c5d028705363f92ecbf3332d10",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
