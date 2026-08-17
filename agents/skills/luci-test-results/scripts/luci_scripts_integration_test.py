@@ -19,6 +19,7 @@ import fetch_log
 import find_cl_builds
 import list_failures
 import luci_client
+import test_history
 
 SAMPLE_BUILDER = "android-13-x64-rel"
 SAMPLE_CL = "8260911"
@@ -204,6 +205,28 @@ class TestCheckTestInBuildIntegration(BaseLuciIntegrationTestCase):
         )
         for tr in res:
             print(f"       - {tr.get('id')} ({tr.get('status')})")
+
+
+class TestTestHistoryIntegration(BaseLuciIntegrationTestCase):
+    def test_fetch_test_history_verdicts(self):
+        verdicts = test_history.fetch_test_history_verdicts(
+            "chromium",
+            SAMPLE_TEST_ID,
+            limit=5,
+            builder=SAMPLE_BUILDER,
+            test_suite="chrome_public_test_apk",
+            verbose=False,
+        )
+        self.assertGreaterEqual(len(verdicts), 1)
+        daily = test_history.aggregate_by_day(verdicts)
+        self.assertGreaterEqual(len(daily), 1)
+        table = test_history.format_summary_table(daily, SAMPLE_TEST_ID)
+        self.assertIn("Test History Aggregate Summary", table)
+        print(
+            f"[PASS] test_history: Queried {len(verdicts)} verdict(s) for "
+            f"{SAMPLE_TEST_QUERY} on {SAMPLE_BUILDER}\n"
+            f"{table}"
+        )
 
 
 if __name__ == "__main__":
