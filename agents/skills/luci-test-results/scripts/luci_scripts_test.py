@@ -16,6 +16,7 @@ import fetch_log
 import find_cl_builds
 import list_failures
 import luci_client
+import test_history
 
 
 class TestLuciClient(unittest.TestCase):
@@ -367,6 +368,52 @@ class TestCheckTestInBuild(unittest.TestCase):
                 "pageSize": 1000,
             },
         )
+
+
+class TestTestHistory(unittest.TestCase):
+    @mock.patch("test_history.run_prpc")
+    def test_pagination_and_aggregation(self, mock_prpc):
+        # Page 1
+        page1 = {
+            "verdicts": [
+                {
+                    "testId": "ninja://test/Test#method",
+                    "partitionTime": "2026-08-14T10:00:00Z",
+                    "status": "UNEXPECTED",
+                    "variantHash": "var1",
+                }
+            ],
+            "nextPageToken": "token123",
+        }
+        # Page 2
+        page2 = {
+            "verdicts": [
+                {
+                    "testId": "ninja://test/Test#method",
+                    "partitionTime": "2026-08-13T10:00:00Z",
+                    "status": "EXPECTED",
+                    "variantHash": "var1",
+                }
+            ]
+        }
+        mock_prpc.side_effect = [page1, page2]
+
+        verdicts = test_history.fetch_test_history_verdicts(
+            "chromium", "ninja://test/Test#method", limit=2, verbose=False
+        )
+        self.assertEqual(len(verdicts), 2)
+
+        daily = test_history.aggregate_by_day(verdicts)
+        self.assertEqual(daily["2026-08-14"]["FAIL"], 1)
+        self.assertEqual(daily["2026-08-14"]["FAIL_RATE"], 100.0)
+        self.assertEqual(daily["2026-08-13"]["PASS"], 1)
+        self.assertEqual(daily["2026-08-13"]["FAIL_RATE"], 0.0)
+
+        table = test_history.format_summary_table(
+            daily, "ninja://test/Test#method"
+        )
+        self.assertIn("2026-08-14", table)
+        self.assertIn("Failures detected starting on 2026-08-14", table)
 
 
 if __name__ == "__main__":
