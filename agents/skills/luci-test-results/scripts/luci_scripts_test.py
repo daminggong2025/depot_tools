@@ -2,13 +2,13 @@
 # Copyright 2026 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Unit and integration tests for luci_triage.py.
+"""Unit and integration tests for modular luci-test-results scripts.
 
 Can be run in two modes:
 1. Unit test mode (default): Uses mocks for hermetic execution.
-   vpython3 luci_triage_test.py
+   vpython3 luci_scripts_test.py
 2. Live integration test mode: Invokes real LUCI RPCs against live endpoints.
-   INTEGRATION_TEST=1 vpython3 luci_triage_test.py
+   INTEGRATION_TEST=1 vpython3 luci_scripts_test.py
 """
 
 import io
@@ -18,11 +18,15 @@ import unittest
 from unittest import mock
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-import luci_triage
+import check_test_in_build
+import fetch_log
+import find_cl_builds
+import list_failures
+import luci_client
 
 # Realistic reference fixtures used for both mock and live modes
-SAMPLE_BUILD_ID = "8673534943512166561"  # CI build 20406 (failing build)
-SAMPLE_BUILD_ID_SUCCESS = "8673194207881096913"  # CI build 20472
+SAMPLE_BUILD_ID = "8673534943512166561"
+SAMPLE_BUILD_ID_SUCCESS = "8673194207881096913"
 SAMPLE_BUILD_ID_2 = "8673446654073668161"
 SAMPLE_BUILD_ID_3 = "8673446654073668177"
 SAMPLE_BUILD_NUM = 20472
@@ -44,44 +48,35 @@ SAMPLE_RESULT_NAME = (
 RUN_INTEGRATION = os.environ.get("INTEGRATION_TEST") in ("1", "true", "True")
 
 # Save real functions for live passthrough
-_REAL_RUN_PRPC = luci_triage.run_prpc
-_REAL_CHECK_OUTPUT = luci_triage.subprocess.check_output
-_REAL_RUN = luci_triage.subprocess.run
-_REAL_POPEN = luci_triage.subprocess.Popen
+_REAL_RUN_PRPC = luci_client.run_prpc
+_REAL_CHECK_OUTPUT = fetch_log.subprocess.check_output
+_REAL_RUN = luci_client.subprocess.run
+_REAL_POPEN = luci_client.subprocess.Popen
 
 
-def patch_prpc(**kwargs):
+def patch_module_prpc(module_name, **kwargs):
     if RUN_INTEGRATION:
-        return mock.patch("luci_triage.run_prpc", side_effect=_REAL_RUN_PRPC)
-    return mock.patch("luci_triage.run_prpc", **kwargs)
-
-
-def patch_check_output(**kwargs):
-    if RUN_INTEGRATION:
-        return mock.patch(
-            "luci_triage.subprocess.check_output",
-            side_effect=_REAL_CHECK_OUTPUT,
-        )
-    return mock.patch("luci_triage.subprocess.check_output", **kwargs)
+        return mock.patch(f"{module_name}.run_prpc", side_effect=_REAL_RUN_PRPC)
+    return mock.patch(f"{module_name}.run_prpc", **kwargs)
 
 
 def patch_popen(**kwargs):
     if RUN_INTEGRATION:
         return mock.patch(
-            "luci_triage.subprocess.Popen", side_effect=_REAL_POPEN
+            "luci_client.subprocess.Popen", side_effect=_REAL_POPEN
         )
-    return mock.patch("luci_triage.subprocess.Popen", **kwargs)
+    return mock.patch("luci_client.subprocess.Popen", **kwargs)
 
 
 def patch_run(**kwargs):
     if RUN_INTEGRATION:
-        return mock.patch("luci_triage.subprocess.run", side_effect=_REAL_RUN)
-    return mock.patch("luci_triage.subprocess.run", **kwargs)
+        return mock.patch("luci_client.subprocess.run", side_effect=_REAL_RUN)
+    return mock.patch("luci_client.subprocess.run", **kwargs)
 
 
-class TestLuciTriage(unittest.TestCase):
+class TestLuciClient(unittest.TestCase):
     def setUp(self):
-        if RUN_INTEGRATION and not luci_triage.is_authenticated():
+        if RUN_INTEGRATION and not luci_client.is_authenticated():
             self.skipTest("Not authenticated to LUCI (run 'bb auth-login')")
 
     @patch_popen()
@@ -95,7 +90,7 @@ class TestLuciTriage(unittest.TestCase):
             mock_proc.returncode = 0
             mock_popen.return_value.__enter__.return_value = mock_proc
 
-        res = luci_triage.run_prpc(
+        res = luci_client.run_prpc(
             "cr-buildbucket.appspot.com",
             "buildbucket.v2.Builds.GetBuild",
             {"id": SAMPLE_BUILD_ID_SUCCESS},
@@ -112,10 +107,10 @@ class TestLuciTriage(unittest.TestCase):
             mock_proc.returncode = 1
             mock_popen.return_value.__enter__.return_value = mock_proc
 
-        res = luci_triage.run_prpc(
+        res = luci_client.run_prpc(
             "cr-buildbucket.appspot.com",
             "buildbucket.v2.Builds.GetBuild",
-            {"id": "0"},  # Invalid build ID
+            {"id": "0"},
         )
         self.assertIsNone(res)
 
@@ -123,20 +118,22 @@ class TestLuciTriage(unittest.TestCase):
     def test_is_authenticated(self, mock_run):
         if not RUN_INTEGRATION:
             mock_run.return_value.returncode = 0
-            self.assertTrue(luci_triage.is_authenticated())
+            self.assertTrue(luci_client.is_authenticated())
             mock_run.return_value.returncode = 1
-            self.assertFalse(luci_triage.is_authenticated())
+            self.assertFalse(luci_client.is_authenticated())
             mock_run.side_effect = FileNotFoundError()
-            self.assertFalse(luci_triage.is_authenticated())
+            self.assertFalse(luci_client.is_authenticated())
         else:
-            self.assertTrue(luci_triage.is_authenticated())
+            self.assertTrue(luci_client.is_authenticated())
 
-    @patch_prpc()
+    @mock.patch("luci_client.run_prpc")
     def test_resolve_build_id(self, mock_prpc):
-        if not RUN_INTEGRATION:
+        if RUN_INTEGRATION:
+            mock_prpc.side_effect = _REAL_RUN_PRPC
+        else:
             mock_prpc.return_value = {"id": SAMPLE_BUILD_ID_SUCCESS}
 
-        build_id = luci_triage.resolve_build_id(
+        build_id = luci_client.resolve_build_id(
             "chromium", "ci", SAMPLE_BUILDER, SAMPLE_BUILD_NUM
         )
         self.assertEqual(build_id, SAMPLE_BUILD_ID_SUCCESS)
@@ -153,15 +150,17 @@ class TestLuciTriage(unittest.TestCase):
             },
         )
 
-    @patch_prpc()
+    @mock.patch("luci_client.run_prpc")
     def test_get_build(self, mock_prpc):
-        if not RUN_INTEGRATION:
+        if RUN_INTEGRATION:
+            mock_prpc.side_effect = _REAL_RUN_PRPC
+        else:
             mock_prpc.return_value = {
                 "id": SAMPLE_BUILD_ID_SUCCESS,
                 "status": "SUCCESS",
             }
 
-        data = luci_triage.get_build(f"b{SAMPLE_BUILD_ID_SUCCESS}")
+        data = luci_client.get_build(f"b{SAMPLE_BUILD_ID_SUCCESS}")
         self.assertEqual(data["status"], "SUCCESS")
         mock_prpc.assert_called_once_with(
             "cr-buildbucket.appspot.com",
@@ -174,7 +173,13 @@ class TestLuciTriage(unittest.TestCase):
             },
         )
 
-    @patch_prpc()
+
+class TestFindClBuilds(unittest.TestCase):
+    def setUp(self):
+        if RUN_INTEGRATION and not luci_client.is_authenticated():
+            self.skipTest("Not authenticated to LUCI (run 'bb auth-login')")
+
+    @patch_module_prpc("find_cl_builds")
     def test_find_cl_builds_with_patchset(self, mock_prpc):
         if not RUN_INTEGRATION:
             mock_prpc.return_value = {
@@ -197,8 +202,8 @@ class TestLuciTriage(unittest.TestCase):
                 ]
             }
 
-        failed = luci_triage.find_cl_builds(SAMPLE_CL, patchset=1)
-        all_builds = luci_triage.find_cl_builds(
+        failed = find_cl_builds.find_cl_builds(SAMPLE_CL, patchset=1)
+        all_builds = find_cl_builds.find_cl_builds(
             SAMPLE_CL, patchset=1, show_all=True
         )
         self.assertGreater(len(all_builds), 0)
@@ -208,12 +213,15 @@ class TestLuciTriage(unittest.TestCase):
             self.assertEqual(failed[0]["builder"], "linux-rel")
             self.assertEqual(len(all_builds), 3)
 
-    @patch_check_output()
-    @patch_prpc()
+    @mock.patch("find_cl_builds.subprocess.check_output")
+    @mock.patch("find_cl_builds.run_prpc")
     def test_find_cl_builds_default_patchset(
         self, mock_prpc, mock_check_output
     ):
-        if not RUN_INTEGRATION:
+        if RUN_INTEGRATION:
+            mock_prpc.side_effect = _REAL_RUN_PRPC
+            mock_check_output.side_effect = _REAL_CHECK_OUTPUT
+        else:
             gerrit_json = (
                 ")]}'\n"
                 '{"current_revision": "rev1", "revisions": {"rev1": {"_number": 3}}}'
@@ -229,7 +237,7 @@ class TestLuciTriage(unittest.TestCase):
                 ]
             }
 
-        builds = luci_triage.find_cl_builds(SAMPLE_CL)
+        builds = find_cl_builds.find_cl_builds(SAMPLE_CL)
         self.assertGreaterEqual(len(builds), 0)
         if not RUN_INTEGRATION:
             self.assertEqual(len(builds), 1)
@@ -249,7 +257,13 @@ class TestLuciTriage(unittest.TestCase):
                 },
             )
 
-    @patch_prpc()
+
+class TestListFailures(unittest.TestCase):
+    def setUp(self):
+        if RUN_INTEGRATION and not luci_client.is_authenticated():
+            self.skipTest("Not authenticated to LUCI (run 'bb auth-login')")
+
+    @patch_module_prpc("list_failures")
     def test_list_failures_grouped_by_task(self, mock_prpc):
         if not RUN_INTEGRATION:
             mock_prpc.return_value = {
@@ -296,7 +310,7 @@ class TestLuciTriage(unittest.TestCase):
                 ]
             }
 
-        res = luci_triage.list_failures(f"b{SAMPLE_BUILD_ID}")
+        res = list_failures.list_failures(f"b{SAMPLE_BUILD_ID}")
         self.assertGreater(len(res), 0)
         first_task = next(iter(res))
         self.assertIn("id", res[first_task][0])
@@ -308,23 +322,23 @@ class TestLuciTriage(unittest.TestCase):
             self.assertEqual(res[SAMPLE_TASK_ID][0]["id"], SAMPLE_TEST_ID)
             self.assertEqual(res[SAMPLE_TASK_ID][0]["err"], "AssertionError")
 
-            res_no_flake = luci_triage.list_failures(
+            res_no_flake = list_failures.list_failures(
                 SAMPLE_BUILD_ID, ignore_flaky=True
             )
             self.assertEqual(len(res_no_flake[SAMPLE_TASK_ID]), 1)
 
-            res_exonerated = luci_triage.list_failures(
+            res_exonerated = list_failures.list_failures(
                 SAMPLE_BUILD_ID, include_exonerated=True
             )
             self.assertEqual(len(res_exonerated[SAMPLE_TASK_ID]), 3)
 
-            res_limit = luci_triage.list_failures(SAMPLE_BUILD_ID, limit=1)
+            res_limit = list_failures.list_failures(SAMPLE_BUILD_ID, limit=1)
             self.assertEqual(len(res_limit[SAMPLE_TASK_ID]), 1)
 
-    @patch_prpc()
+    @patch_module_prpc("list_failures")
     def test_list_failures_pagination(self, mock_prpc):
         if RUN_INTEGRATION:
-            res = luci_triage.list_failures(SAMPLE_BUILD_ID)
+            res = list_failures.list_failures(SAMPLE_BUILD_ID)
             self.assertGreater(len(res), 0)
         else:
             mock_prpc.side_effect = [
@@ -362,15 +376,24 @@ class TestLuciTriage(unittest.TestCase):
                     ]
                 },
             ]
-            res = luci_triage.list_failures(SAMPLE_BUILD_ID)
+            res = list_failures.list_failures(SAMPLE_BUILD_ID)
             self.assertEqual(len(res), 2)
             self.assertIn("task1", res)
             self.assertIn("task2", res)
 
-    @patch_check_output()
-    @patch_prpc()
+
+class TestFetchLog(unittest.TestCase):
+    def setUp(self):
+        if RUN_INTEGRATION and not luci_client.is_authenticated():
+            self.skipTest("Not authenticated to LUCI (run 'bb auth-login')")
+
+    @mock.patch("fetch_log.subprocess.check_output")
+    @mock.patch("fetch_log.run_prpc")
     def test_fetch_log_snippet_regex(self, mock_prpc, mock_check_output):
-        if not RUN_INTEGRATION:
+        if RUN_INTEGRATION:
+            mock_prpc.side_effect = _REAL_RUN_PRPC
+            mock_check_output.side_effect = _REAL_CHECK_OUTPUT
+        else:
             mock_prpc.return_value = {
                 "artifacts": [
                     {
@@ -388,13 +411,16 @@ class TestLuciTriage(unittest.TestCase):
             )
             mock_check_output.return_value = sample_log.encode("utf-8")
 
-        output = luci_triage.fetch_log_snippet(SAMPLE_RESULT_NAME)
+        output = fetch_log.fetch_log_snippet(SAMPLE_RESULT_NAME)
         self.assertIn("[ RUN      ]", output)
 
-    @patch_check_output()
-    @patch_prpc()
+    @mock.patch("fetch_log.subprocess.check_output")
+    @mock.patch("fetch_log.run_prpc")
     def test_fetch_log_snippet_raw(self, mock_prpc, mock_check_output):
-        if not RUN_INTEGRATION:
+        if RUN_INTEGRATION:
+            mock_prpc.side_effect = _REAL_RUN_PRPC
+            mock_check_output.side_effect = _REAL_CHECK_OUTPUT
+        else:
             mock_prpc.return_value = {
                 "artifacts": [
                     {
@@ -406,30 +432,36 @@ class TestLuciTriage(unittest.TestCase):
             sample_log = "Raw log output without matches"
             mock_check_output.return_value = sample_log.encode("utf-8")
 
-        output = luci_triage.fetch_log_snippet(SAMPLE_RESULT_NAME, raw=True)
+        output = fetch_log.fetch_log_snippet(SAMPLE_RESULT_NAME, raw=True)
         self.assertIsNotNone(output)
         self.assertGreater(len(output), 0)
 
     @mock.patch("sys.stderr", new_callable=io.StringIO)
-    @mock.patch("luci_triage.is_authenticated")
-    @patch_prpc()
+    @mock.patch("fetch_log.is_authenticated")
+    @mock.patch("fetch_log.run_prpc")
     def test_fetch_log_snippet_no_artifacts(
         self, mock_prpc, mock_is_authenticated, mock_stderr
     ):
         if RUN_INTEGRATION:
-            output = luci_triage.fetch_log_snippet("invocations/nonexistent")
+            output = fetch_log.fetch_log_snippet("invocations/nonexistent")
             self.assertIn("No artifacts found", output)
         else:
             mock_prpc.return_value = {}
             mock_is_authenticated.return_value = False
-            output = luci_triage.fetch_log_snippet(
+            output = fetch_log.fetch_log_snippet(
                 "invocations/task-123/tests/foo/results/1"
             )
             self.assertIn("No artifacts found", output)
             self.assertIn("bb auth-login", output)
 
-    @patch_prpc()
-    def test_check_test(self, mock_prpc):
+
+class TestCheckTestInBuild(unittest.TestCase):
+    def setUp(self):
+        if RUN_INTEGRATION and not luci_client.is_authenticated():
+            self.skipTest("Not authenticated to LUCI (run 'bb auth-login')")
+
+    @patch_module_prpc("check_test_in_build")
+    def test_check_test_in_build(self, mock_prpc):
         if not RUN_INTEGRATION:
             mock_prpc.return_value = {
                 "testResults": [
@@ -441,7 +473,9 @@ class TestLuciTriage(unittest.TestCase):
                 ]
             }
 
-        res = luci_triage.check_test(f"b{SAMPLE_BUILD_ID}", SAMPLE_TEST_QUERY)
+        res = check_test_in_build.check_test_in_build(
+            f"b{SAMPLE_BUILD_ID}", SAMPLE_TEST_QUERY
+        )
         self.assertGreater(len(res), 0)
         self.assertTrue(
             any(
@@ -462,48 +496,6 @@ class TestLuciTriage(unittest.TestCase):
                         "expectancy": "ALL",
                     },
                     "pageSize": 1000,
-                },
-            )
-
-    @patch_prpc()
-    def test_test_history(self, mock_prpc):
-        if not RUN_INTEGRATION:
-            mock_prpc.return_value = {
-                "verdicts": [
-                    {
-                        "testId": SAMPLE_TEST_ID,
-                        "status": "EXPECTED",
-                    }
-                ]
-            }
-
-        verdicts = luci_triage.test_history(
-            "chromium",
-            SAMPLE_TEST_ID,
-            limit=5,
-            builder=SAMPLE_BUILDER,
-            test_suite="unit_tests",
-        )
-        self.assertGreaterEqual(len(verdicts), 1)
-        if not RUN_INTEGRATION:
-            self.assertEqual(verdicts[0]["status"], "EXPECTED")
-            mock_prpc.assert_called_once_with(
-                "analysis.api.luci.app",
-                "luci.analysis.v1.TestHistory.Query",
-                {
-                    "project": "chromium",
-                    "testId": SAMPLE_TEST_ID,
-                    "predicate": {
-                        "variantPredicate": {
-                            "contains": {
-                                "def": {
-                                    "builder": SAMPLE_BUILDER,
-                                    "test_suite": "unit_tests",
-                                }
-                            }
-                        }
-                    },
-                    "pageSize": 5,
                 },
             )
 
