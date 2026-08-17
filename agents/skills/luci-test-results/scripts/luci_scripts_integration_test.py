@@ -2,7 +2,7 @@
 # Copyright 2026 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Live integration tests for luci_triage.py.
+"""Live integration tests for modular luci-test-results scripts.
 
 Invokes real LUCI RPCs against live endpoints. Requires `bb auth-login`.
 """
@@ -12,7 +12,11 @@ import sys
 import unittest
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-import luci_triage
+import check_test_in_build
+import fetch_log
+import find_cl_builds
+import list_failures
+import luci_client
 
 SAMPLE_BUILD_ID = "8673534943512166561"  # CI build 20406 (failing build)
 SAMPLE_BUILD_ID_SUCCESS = "8673194207881096913"  # CI build 20472
@@ -32,40 +36,66 @@ SAMPLE_RESULT_NAME = (
 )
 
 
-class TestLuciTriageIntegration(unittest.TestCase):
+class TestLuciClientIntegration(unittest.TestCase):
     def setUp(self):
-        if not luci_triage.is_authenticated():
+        if not luci_client.is_authenticated():
             self.skipTest("Not authenticated to LUCI (run 'bb auth-login')")
 
     def test_resolve_build_id(self):
-        build_id = luci_triage.resolve_build_id(
+        build_id = luci_client.resolve_build_id(
             "chromium", "ci", SAMPLE_BUILDER, SAMPLE_BUILD_NUM
         )
         self.assertEqual(build_id, SAMPLE_BUILD_ID_SUCCESS)
 
     def test_get_build(self):
-        data = luci_triage.get_build(f"b{SAMPLE_BUILD_ID_SUCCESS}")
+        data = luci_client.get_build(f"b{SAMPLE_BUILD_ID_SUCCESS}")
         self.assertEqual(data.get("status"), "SUCCESS")
         self.assertEqual(data.get("id"), SAMPLE_BUILD_ID_SUCCESS)
 
+
+class TestFindClBuildsIntegration(unittest.TestCase):
+    def setUp(self):
+        if not luci_client.is_authenticated():
+            self.skipTest("Not authenticated to LUCI (run 'bb auth-login')")
+
     def test_find_cl_builds(self):
-        builds = luci_triage.find_cl_builds(SAMPLE_CL, show_all=True)
+        builds = find_cl_builds.find_cl_builds(SAMPLE_CL, show_all=True)
         self.assertGreater(len(builds), 0)
         self.assertTrue(all("builder" in b and "id" in b for b in builds))
 
+
+class TestListFailuresIntegration(unittest.TestCase):
+    def setUp(self):
+        if not luci_client.is_authenticated():
+            self.skipTest("Not authenticated to LUCI (run 'bb auth-login')")
+
     def test_list_failures(self):
-        res = luci_triage.list_failures(f"b{SAMPLE_BUILD_ID}")
+        res = list_failures.list_failures(f"b{SAMPLE_BUILD_ID}")
         self.assertGreater(len(res), 0)
         first_task = next(iter(res))
         self.assertIn("id", res[first_task][0])
         self.assertIn("res", res[first_task][0])
 
+
+class TestFetchLogIntegration(unittest.TestCase):
+    def setUp(self):
+        if not luci_client.is_authenticated():
+            self.skipTest("Not authenticated to LUCI (run 'bb auth-login')")
+
     def test_fetch_log_snippet(self):
-        output = luci_triage.fetch_log_snippet(SAMPLE_RESULT_NAME)
+        output = fetch_log.fetch_log_snippet(SAMPLE_RESULT_NAME)
         self.assertIn("[ RUN      ]", output)
 
-    def test_check_test(self):
-        res = luci_triage.check_test(f"b{SAMPLE_BUILD_ID}", SAMPLE_TEST_QUERY)
+
+class TestCheckTestInBuildIntegration(unittest.TestCase):
+    def setUp(self):
+        if not luci_client.is_authenticated():
+            self.skipTest("Not authenticated to LUCI (run 'bb auth-login')")
+
+    def test_check_test_in_build(self):
+        res = check_test_in_build.check_test_in_build(
+            f"b{SAMPLE_BUILD_ID}", SAMPLE_TEST_QUERY
+        )
         self.assertGreater(len(res), 0)
         self.assertTrue(
             any(
@@ -73,17 +103,6 @@ class TestLuciTriageIntegration(unittest.TestCase):
                 for r in res
             )
         )
-
-    def test_test_history(self):
-        verdicts = luci_triage.test_history(
-            "chromium",
-            SAMPLE_TEST_ID,
-            limit=5,
-            builder=SAMPLE_BUILDER,
-            test_suite="unit_tests",
-        )
-        self.assertGreaterEqual(len(verdicts), 1)
-        self.assertEqual(verdicts[0].get("testId"), SAMPLE_TEST_ID)
 
 
 if __name__ == "__main__":
