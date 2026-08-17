@@ -23,6 +23,7 @@ import fetch_log
 import find_cl_builds
 import list_failures
 import luci_client
+import test_history
 
 # Realistic reference fixtures used for both mock and live modes
 SAMPLE_BUILD_ID = "8673534943512166561"
@@ -498,6 +499,70 @@ class TestCheckTestInBuild(unittest.TestCase):
                     "pageSize": 1000,
                 },
             )
+
+
+class TestTestHistory(unittest.TestCase):
+    def setUp(self):
+        if RUN_INTEGRATION and not luci_client.is_authenticated():
+            self.skipTest("Not authenticated to LUCI (run 'bb auth-login')")
+
+    @mock.patch("test_history.run_prpc")
+    def test_pagination_and_aggregation(self, mock_prpc):
+        if RUN_INTEGRATION:
+            mock_prpc.side_effect = _REAL_RUN_PRPC
+            verdicts = test_history.fetch_test_history_verdicts(
+                "chromium",
+                SAMPLE_TEST_ID,
+                limit=5,
+                builder=SAMPLE_BUILDER,
+                test_suite="unit_tests",
+                verbose=False,
+            )
+            self.assertGreaterEqual(len(verdicts), 1)
+            daily = test_history.aggregate_by_day(verdicts)
+            self.assertGreaterEqual(len(daily), 1)
+            table = test_history.format_summary_table(daily, SAMPLE_TEST_ID)
+            self.assertIn("Test History Aggregate Summary", table)
+        else:
+            # Page 1
+            page1 = {
+                "verdicts": [
+                    {
+                        "testId": SAMPLE_TEST_ID,
+                        "partitionTime": "2026-08-14T10:00:00Z",
+                        "status": "UNEXPECTED",
+                        "variantHash": "var1",
+                    }
+                ],
+                "nextPageToken": "token123",
+            }
+            # Page 2
+            page2 = {
+                "verdicts": [
+                    {
+                        "testId": SAMPLE_TEST_ID,
+                        "partitionTime": "2026-08-13T10:00:00Z",
+                        "status": "EXPECTED",
+                        "variantHash": "var1",
+                    }
+                ]
+            }
+            mock_prpc.side_effect = [page1, page2]
+
+            verdicts = test_history.fetch_test_history_verdicts(
+                "chromium", SAMPLE_TEST_ID, limit=2, verbose=False
+            )
+            self.assertEqual(len(verdicts), 2)
+
+            daily = test_history.aggregate_by_day(verdicts)
+            self.assertEqual(daily["2026-08-14"]["FAIL"], 1)
+            self.assertEqual(daily["2026-08-14"]["FAIL_RATE"], 100.0)
+            self.assertEqual(daily["2026-08-13"]["PASS"], 1)
+            self.assertEqual(daily["2026-08-13"]["FAIL_RATE"], 0.0)
+
+            table = test_history.format_summary_table(daily, SAMPLE_TEST_ID)
+            self.assertIn("2026-08-14", table)
+            self.assertIn("Failures detected starting on 2026-08-14", table)
 
 
 if __name__ == "__main__":
