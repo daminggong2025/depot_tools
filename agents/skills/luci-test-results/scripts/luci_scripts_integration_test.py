@@ -2,7 +2,7 @@
 # Copyright 2026 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Live integration tests for luci_triage.py.
+"""Live integration tests for modular luci-test-results scripts.
 
 Dynamically discovers fresh CI builds and tests against live endpoints.
 Prints structured test results for LLM agent confirmation.
@@ -14,7 +14,11 @@ import sys
 import unittest
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-import luci_triage
+import check_test_in_build
+import fetch_log
+import find_cl_builds
+import list_failures
+import luci_client
 
 SAMPLE_BUILDER = "android-13-x64-rel"
 SAMPLE_CL = "8260911"
@@ -29,19 +33,38 @@ SAMPLE_CPP_TEST_ID = (
 )
 
 
-class TestLuciTriageIntegration(unittest.TestCase):
+class BaseLuciIntegrationTestCase(unittest.TestCase):
+    success_build_id = None
+    success_build_num = None
+    failure_build_id = None
+    failure_build_num = None
+    _discovery_done = False
+
     @classmethod
     def setUpClass(cls):
+        if BaseLuciIntegrationTestCase._discovery_done:
+            cls.success_build_id = BaseLuciIntegrationTestCase.success_build_id
+            cls.success_build_num = (
+                BaseLuciIntegrationTestCase.success_build_num
+            )
+            cls.failure_build_id = BaseLuciIntegrationTestCase.failure_build_id
+            cls.failure_build_num = (
+                BaseLuciIntegrationTestCase.failure_build_num
+            )
+            return
+
         print("\n" + "=" * 80)
-        print("[LUCI Integration Test] Starting live endpoint validation")
+        print(
+            "[LUCI Integration Test] Starting modular live endpoint validation"
+        )
         print("=" * 80)
 
-        if not luci_triage.is_authenticated():
+        if not luci_client.is_authenticated():
             print("[AUTH] Not authenticated to LUCI (run 'bb auth-login')")
             return
 
         # Dynamically discover the latest SUCCESS CI build
-        res_success = luci_triage.run_prpc(
+        res_success = luci_client.run_prpc(
             "cr-buildbucket.appspot.com",
             "buildbucket.v2.Builds.SearchBuilds",
             {
@@ -68,7 +91,7 @@ class TestLuciTriageIntegration(unittest.TestCase):
             cls.success_build_num = None
 
         # Dynamically discover the latest FAILURE CI build
-        res_fail = luci_triage.run_prpc(
+        res_fail = luci_client.run_prpc(
             "cr-buildbucket.appspot.com",
             "buildbucket.v2.Builds.SearchBuilds",
             {
@@ -100,14 +123,22 @@ class TestLuciTriageIntegration(unittest.TestCase):
         )
         print("-" * 80)
 
-    def setUp(self):
-        if not luci_triage.is_authenticated():
-            self.skipTest("Not authenticated to LUCI (run 'bb auth-login')")
-        if not self.success_build_id:
-            self.skipTest("Could not discover latest CI build for builder")
+        BaseLuciIntegrationTestCase.success_build_id = cls.success_build_id
+        BaseLuciIntegrationTestCase.success_build_num = cls.success_build_num
+        BaseLuciIntegrationTestCase.failure_build_id = cls.failure_build_id
+        BaseLuciIntegrationTestCase.failure_build_num = cls.failure_build_num
+        BaseLuciIntegrationTestCase._discovery_done = True
 
+    def setUp(self):
+        if not luci_client.is_authenticated():
+            self.skipTest("Not authenticated to LUCI (run 'bb auth-login')")
+
+
+class TestLuciClientIntegration(BaseLuciIntegrationTestCase):
     def test_resolve_build_id(self):
-        build_id = luci_triage.resolve_build_id(
+        if not self.success_build_num:
+            self.skipTest("Could not discover latest CI build number")
+        build_id = luci_client.resolve_build_id(
             "chromium", "ci", SAMPLE_BUILDER, self.success_build_num
         )
         self.assertEqual(build_id, self.success_build_id)
@@ -117,7 +148,9 @@ class TestLuciTriageIntegration(unittest.TestCase):
         )
 
     def test_get_build(self):
-        data = luci_triage.get_build(f"b{self.success_build_id}")
+        if not self.success_build_id:
+            self.skipTest("Could not discover latest CI build ID")
+        data = luci_client.get_build(f"b{self.success_build_id}")
         self.assertEqual(data.get("status"), "SUCCESS")
         self.assertEqual(data.get("id"), self.success_build_id)
         print(
@@ -125,8 +158,10 @@ class TestLuciTriageIntegration(unittest.TestCase):
             f"{data.get('status')}"
         )
 
+
+class TestFindClBuildsIntegration(BaseLuciIntegrationTestCase):
     def test_find_cl_builds(self):
-        builds = luci_triage.find_cl_builds(SAMPLE_CL, show_all=True)
+        builds = find_cl_builds.find_cl_builds(SAMPLE_CL, show_all=True)
         self.assertGreater(len(builds), 0)
         self.assertTrue(all("builder" in b and "id" in b for b in builds))
         sample_builder = builds[0]["builder"]
@@ -135,45 +170,13 @@ class TestLuciTriageIntegration(unittest.TestCase):
             f"{SAMPLE_CL} (sample builder: {sample_builder})"
         )
 
-    def test_check_test_in_build(self):
-        for query, lang in [
-            (SAMPLE_JAVA_TEST_QUERY, "Java"),
-            (SAMPLE_CPP_TEST_QUERY, "C++"),
-        ]:
-            res = luci_triage.check_test(f"b{self.success_build_id}", query)
-            self.assertGreater(len(res), 0)
-            self.assertTrue(any(query in r.get("id", "") for r in res))
-            print(
-                f"[PASS] check_test ({lang}): Found {len(res)} test result(s) for "
-                f"'{query}' in build {self.success_build_id}:"
-            )
-            for tr in res[:2]:
-                print(f"       - {tr.get('id')} ({tr.get('status')})")
 
-    def test_test_history(self):
-        for test_id, suite, label in [
-            (SAMPLE_JAVA_TEST_ID, "chrome_public_test_apk", "Java JUnit"),
-            (SAMPLE_CPP_TEST_ID, "base_unittests", "C++ GTest"),
-        ]:
-            verdicts = luci_triage.test_history(
-                "chromium",
-                test_id,
-                limit=5,
-                builder=SAMPLE_BUILDER,
-                test_suite=suite,
-            )
-            self.assertGreaterEqual(len(verdicts), 1)
-            self.assertEqual(verdicts[0].get("testId"), test_id)
-            print(
-                f"[PASS] test_history ({label}): Queried {len(verdicts)} verdict(s)"
-                f" for {test_id.split('!')[-1]} on {SAMPLE_BUILDER}"
-            )
-
+class TestListFailuresIntegration(BaseLuciIntegrationTestCase):
     def test_list_failures_and_fetch_log(self):
         if not self.failure_build_id:
             self.skipTest("No recent failing build found for builder")
 
-        res = luci_triage.list_failures(f"b{self.failure_build_id}")
+        res = list_failures.list_failures(f"b{self.failure_build_id}")
         self.assertGreater(len(res), 0)
         first_task = next(iter(res))
         self.assertIn("id", res[first_task][0])
@@ -181,7 +184,7 @@ class TestLuciTriageIntegration(unittest.TestCase):
 
         first_res_name = res[first_task][0]["res"]
         first_test_id = res[first_task][0]["id"]
-        output = luci_triage.fetch_log_snippet(first_res_name)
+        output = fetch_log.fetch_log_snippet(first_res_name)
         self.assertGreater(len(output), 0)
 
         preview = output.strip().split("\n")[0][:100]
@@ -191,6 +194,27 @@ class TestLuciTriageIntegration(unittest.TestCase):
             f"       Fetched log snippet for {first_test_id} ({len(output)} bytes).\n"
             f"       Log preview: {preview}..."
         )
+
+
+class TestCheckTestInBuildIntegration(BaseLuciIntegrationTestCase):
+    def test_check_test_in_build(self):
+        if not self.success_build_id:
+            self.skipTest("Could not discover latest CI build ID")
+        for query, lang in [
+            (SAMPLE_JAVA_TEST_QUERY, "Java"),
+            (SAMPLE_CPP_TEST_QUERY, "C++"),
+        ]:
+            res = check_test_in_build.check_test_in_build(
+                f"b{self.success_build_id}", query
+            )
+            self.assertGreater(len(res), 0)
+            self.assertTrue(any(query in r.get("id", "") for r in res))
+            print(
+                f"[PASS] check_test_in_build ({lang}): Found {len(res)} test result(s) for "
+                f"'{query}' in build {self.success_build_id}:"
+            )
+            for tr in res[:2]:
+                print(f"       - {tr.get('id')} ({tr.get('status')})")
 
 
 if __name__ == "__main__":
