@@ -17,6 +17,7 @@ import fetch_log
 import find_cl_builds
 import list_failures
 import luci_client
+import test_history
 
 SAMPLE_BUILD_ID = "8673534943512166561"  # CI build 20406 (failing build)
 SAMPLE_BUILD_ID_SUCCESS = "8673194207881096913"  # CI build 20472
@@ -103,6 +104,27 @@ class TestCheckTestInBuildIntegration(unittest.TestCase):
                 for r in res
             )
         )
+
+
+class TestTestHistoryIntegration(unittest.TestCase):
+    def setUp(self):
+        if not luci_client.is_authenticated():
+            self.skipTest("Not authenticated to LUCI (run 'bb auth-login')")
+
+    def test_fetch_test_history_verdicts(self):
+        verdicts = test_history.fetch_test_history_verdicts(
+            "chromium",
+            SAMPLE_TEST_ID,
+            limit=5,
+            builder=SAMPLE_BUILDER,
+            test_suite="unit_tests",
+            verbose=False,
+        )
+        self.assertGreaterEqual(len(verdicts), 1)
+        daily = test_history.aggregate_by_day(verdicts)
+        self.assertGreaterEqual(len(daily), 1)
+        table = test_history.format_summary_table(daily, SAMPLE_TEST_ID)
+        self.assertIn("Test History Aggregate Summary", table)
 
 
 if __name__ == "__main__":
