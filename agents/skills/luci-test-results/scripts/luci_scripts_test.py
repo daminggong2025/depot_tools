@@ -2,7 +2,7 @@
 # Copyright 2026 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Unit tests for luci_triage.py."""
+"""Unit tests for modular luci-test-results scripts."""
 
 import os
 import sys
@@ -10,14 +10,18 @@ import unittest
 from unittest import mock
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-import luci_triage
+import check_test_in_build
+import fetch_log
+import find_cl_builds
+import list_failures
+import luci_client
 
 
-class TestLuciTriage(unittest.TestCase):
-    @mock.patch("luci_triage.run_prpc")
+class TestLuciClient(unittest.TestCase):
+    @mock.patch("luci_client.run_prpc")
     def test_resolve_build_id(self, mock_prpc):
         mock_prpc.return_value = {"id": "8673466777718303649"}
-        build_id = luci_triage.resolve_build_id(
+        build_id = luci_client.resolve_build_id(
             "chromium", "ci", "android-13-x64-rel", 20418
         )
         self.assertEqual(build_id, "8673466777718303649")
@@ -34,43 +38,18 @@ class TestLuciTriage(unittest.TestCase):
             },
         )
 
-    @mock.patch("luci_triage.run_prpc")
+    @mock.patch("luci_client.run_prpc")
     def test_get_build(self, mock_prpc):
         mock_prpc.return_value = {
             "id": "8673466777718303649",
             "status": "SUCCESS",
         }
-        data = luci_triage.get_build("b8673466777718303649")
+        data = luci_client.get_build("b8673466777718303649")
         self.assertEqual(data["status"], "SUCCESS")
 
-    @mock.patch("luci_triage.run_prpc")
-    def test_find_cl_builds(self, mock_prpc):
-        mock_prpc.return_value = {
-            "builds": [
-                {
-                    "builder": {"builder": "linux-rel"},
-                    "status": "FAILURE",
-                    "id": "8673459280982416865",
-                },
-                {
-                    "builder": {"builder": "android-arm64-rel"},
-                    "status": "SUCCESS",
-                    "id": "8673459280266077729",
-                },
-            ]
-        }
-        # Default filters out SUCCESS
-        failed = luci_triage.find_cl_builds("8260911", patchset=1)
-        self.assertEqual(len(failed), 1)
-        self.assertEqual(failed[0]["builder"], "linux-rel")
 
-        # show_all includes SUCCESS
-        all_builds = luci_triage.find_cl_builds(
-            "8260911", patchset=1, show_all=True
-        )
-        self.assertEqual(len(all_builds), 2)
-
-    @mock.patch("luci_triage.run_prpc")
+class TestListFailures(unittest.TestCase):
+    @mock.patch("list_failures.run_prpc")
     def test_list_failures_grouped_by_task(self, mock_prpc):
         mock_prpc.return_value = {
             "testVariants": [
@@ -105,14 +84,14 @@ class TestLuciTriage(unittest.TestCase):
         }
 
         # All failures
-        res = luci_triage.list_failures("8673466777718303649")
+        res = list_failures.list_failures("8673466777718303649")
         self.assertIn("task123", res)
         self.assertEqual(len(res["task123"]), 2)
         self.assertEqual(res["task123"][0]["id"], "ninja://test/Class#methodA")
         self.assertEqual(res["task123"][0]["err"], "AssertionError")
 
         # Ignore flaky
-        res_no_flake = luci_triage.list_failures(
+        res_no_flake = list_failures.list_failures(
             "8673466777718303649", ignore_flaky=True
         )
         self.assertEqual(len(res_no_flake["task123"]), 1)
@@ -120,8 +99,10 @@ class TestLuciTriage(unittest.TestCase):
             res_no_flake["task123"][0]["id"], "ninja://test/Class#methodA"
         )
 
-    @mock.patch("luci_triage.subprocess.check_output")
-    @mock.patch("luci_triage.run_prpc")
+
+class TestFetchLog(unittest.TestCase):
+    @mock.patch("fetch_log.subprocess.check_output")
+    @mock.patch("fetch_log.run_prpc")
     def test_fetch_log_snippet_regex(self, mock_prpc, mock_check_output):
         mock_prpc.return_value = {
             "artifacts": [
@@ -140,13 +121,15 @@ class TestLuciTriage(unittest.TestCase):
         )
         mock_check_output.return_value = sample_log.encode("utf-8")
 
-        output = luci_triage.fetch_log_snippet(
+        output = fetch_log.fetch_log_snippet(
             "invocations/task-123/tests/foo/results/1"
         )
         self.assertIn("AssertionError", output)
 
-    @mock.patch("luci_triage.run_prpc")
-    def test_check_test(self, mock_prpc):
+
+class TestCheckTestInBuild(unittest.TestCase):
+    @mock.patch("check_test_in_build.run_prpc")
+    def test_check_test_in_build(self, mock_prpc):
         mock_prpc.return_value = {
             "testResults": [
                 {
@@ -156,9 +139,40 @@ class TestLuciTriage(unittest.TestCase):
                 }
             ]
         }
-        res = luci_triage.check_test("8673466777718303649", "testMethod")
+        res = check_test_in_build.check_test_in_build(
+            "8673466777718303649", "testMethod"
+        )
         self.assertEqual(len(res), 1)
         self.assertEqual(res[0]["status"], "PASS")
+
+
+class TestFindClBuilds(unittest.TestCase):
+    @mock.patch("find_cl_builds.run_prpc")
+    def test_find_cl_builds(self, mock_prpc):
+        mock_prpc.return_value = {
+            "builds": [
+                {
+                    "builder": {"builder": "linux-rel"},
+                    "status": "FAILURE",
+                    "id": "8673459280982416865",
+                },
+                {
+                    "builder": {"builder": "android-arm64-rel"},
+                    "status": "SUCCESS",
+                    "id": "8673459280266077729",
+                },
+            ]
+        }
+        # Default filters out SUCCESS
+        failed = find_cl_builds.find_cl_builds("8260911", patchset=1)
+        self.assertEqual(len(failed), 1)
+        self.assertEqual(failed[0]["builder"], "linux-rel")
+
+        # show_all includes SUCCESS
+        all_builds = find_cl_builds.find_cl_builds(
+            "8260911", patchset=1, show_all=True
+        )
+        self.assertEqual(len(all_builds), 2)
 
 
 if __name__ == "__main__":
