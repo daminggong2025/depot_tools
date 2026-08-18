@@ -8,6 +8,7 @@
 
 from __future__ import annotations
 
+import ast
 import base64
 import collections
 import datetime
@@ -135,7 +136,7 @@ DEFAULT_NEW_BRANCH = "refs/remotes/origin/main"
 DEFAULT_BUILDBUCKET_HOST = "cr-buildbucket.appspot.com"
 
 # Valid extensions for files we want to lint.
-DEFAULT_LINT_REGEX = r"(.*\.cpp|.*\.cc|.*\.h)"
+DEFAULT_LINT_REGEX = r"(.*\.cpp|.*\.cc|.*\.h|.*\.py)"
 DEFAULT_LINT_IGNORE_REGEX = r"$^"
 
 # File name for yapf style config files.
@@ -6016,10 +6017,146 @@ def FindFilesForLint(options, args):
     return cwd, files
 
 
+_dir_linter_cache: dict[tuple[str, str | None], tuple[str, str | None] | None] = {}
+
+
+def _InspectPresubmitForPythonLinter(
+    presubmit_path: str,
+) -> tuple[str, str | None] | None:
+    """Inspects a PRESUBMIT.py file to detect configured Python linter.
+
+    Returns:
+        ("ruff", None) if Ruff is configured.
+        ("pylint", version_str) if Pylint is configured.
+        None if neither is configured.
+    """
+    try:
+        with open(presubmit_path, "r", encoding="utf-8", errors="ignore") as f:
+            content = f.read()
+    except Exception:
+        return None
+
+    # Try AST parsing first
+    try:
+        tree = ast.parse(content, filename=presubmit_path)
+        has_ruff = False
+        pylint_version = None
+
+        for node in ast.walk(tree):
+            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                if node.name in ("CheckRuff",):
+                    has_ruff = True
+                elif node.name in ("CheckPylint",) and pylint_version is None:
+                    pylint_version = "2.7"
+            elif isinstance(node, ast.Call):
+                func_name = ""
+                if isinstance(node.func, ast.Name):
+                    func_name = node.func.id
+                elif isinstance(node.func, ast.Attribute):
+                    func_name = node.func.attr
+
+                if func_name in ("RunRuff", "GetRuff", "CheckRuff"):
+                    has_ruff = True
+                elif func_name in ("RunPylint", "GetPylint", "CheckPylint"):
+                    version = "2.7"
+                    for kw in node.keywords:
+                        if kw.arg == "version":
+                            if isinstance(kw.value, ast.Constant):
+                                version = str(kw.value.value)
+                            elif isinstance(kw.value, ast.Str):
+                                version = kw.value.s
+                            elif isinstance(kw.value, (ast.Num, ast.UnaryOp)):
+                                try:
+                                    version = str(ast.literal_eval(kw.value))
+                                except Exception:
+                                    pass
+                    pylint_version = version
+
+        if has_ruff:
+            return ("ruff", None)
+        if pylint_version is not None:
+            return ("pylint", pylint_version)
+    except Exception:
+        pass
+
+    # Regex fallback in case of syntax issues or dynamic AST structures
+    if re.search(r"\b(?:RunRuff|GetRuff|CheckRuff)\b", content):
+        return ("ruff", None)
+
+    pylint_version_match = re.search(
+        r"\b(?:RunPylint|GetPylint)\s*\([^)]*version\s*=\s*['\"]?([0-9.]+)['\"]?",
+        content,
+    )
+    if pylint_version_match:
+        return ("pylint", pylint_version_match.group(1))
+
+    if re.search(r"\b(?:RunPylint|GetPylint|CheckPylint)\b", content):
+        return ("pylint", "2.7")
+
+    return None
+
+
+def _GetPythonLinterForFile(
+    file_path: str, root_dir: str | None = None
+) -> tuple[str, str | None] | None:
+    """Finds the nearest ancestor PRESUBMIT.py and returns the linter configuration.
+
+    Returns:
+        ("ruff", None) or ("pylint", version_str) or None.
+    """
+    abs_path = os.path.realpath(os.path.abspath(file_path))
+    search_dir = (
+        os.path.dirname(abs_path)
+        if (os.path.isfile(abs_path) or not os.path.exists(abs_path))
+        else abs_path
+    )
+    abs_root = os.path.realpath(os.path.abspath(root_dir)) if root_dir else None
+
+    traversed_dirs = []
+    linter_info = None
+
+    while True:
+        cache_key = (search_dir, abs_root)
+        if cache_key in _dir_linter_cache:
+            linter_info = _dir_linter_cache[cache_key]
+            break
+
+        traversed_dirs.append(search_dir)
+        presubmit_file = os.path.join(search_dir, "PRESUBMIT.py")
+        if os.path.isfile(presubmit_file):
+            info = _InspectPresubmitForPythonLinter(presubmit_file)
+            if info:
+                linter_info = info
+                break
+
+        if abs_root and search_dir == abs_root:
+            break
+
+        # Stop at repo borders (.git, .gclient) unless inherit-review-settings-ok is present.
+        has_inherit_ok = os.path.isfile(
+            os.path.join(search_dir, "inherit-review-settings-ok")
+        )
+        if not has_inherit_ok:
+            if os.path.exists(
+                os.path.join(search_dir, ".git")
+            ) or os.path.isfile(os.path.join(search_dir, ".gclient")):
+                break
+
+        parent_dir = os.path.realpath(os.path.dirname(search_dir))
+        if parent_dir == search_dir:
+            break
+        search_dir = parent_dir
+
+    for d in traversed_dirs:
+        _dir_linter_cache[(d, abs_root)] = linter_info
+
+    return linter_info
+
+
 @subcommand.usage("[files ...]")
 @metrics.collector.collect_metrics("git cl lint")
 def CMDlint(parser, args):
-    """Runs cpplint on the current changelist or given files.
+    """Runs linters (cpplint for C++, Ruff/Pylint for Python) on the current changelist or given files.
 
     positional arguments:
       files           Files to lint. If omitted, lint all the affected files.
@@ -6031,46 +6168,148 @@ def CMDlint(parser, args):
         metavar="-x,+y",
         help="Comma-separated list of cpplint's category-filters",
     )
+    parser.add_option(
+        "--fix",
+        action="store_true",
+        default=False,
+        help="Auto-fix lint errors (supported for Ruff; dormant for Pylint)",
+    )
     options, args = parser.parse_args(args)
     root_path, files = FindFilesForLint(options, args)
     if files is None:
         return 1
 
-    # Access to a protected member _XX of a client class
-    try:
-        import cpplint
-        import cpplint_chromium
+    if not files:
+        return 0
 
-        # Process cpplint arguments, if any.
-        filters = presubmit_canned_checks.GetCppLintFilters(options.filter)
-        command = ["--filter=" + ",".join(filters)]
-        command.extend(files)
-        files_to_lint = cpplint.ParseArguments(command)
-    except ImportError:
-        print(
-            "Your depot_tools is missing cpplint.py and/or cpplint_chromium.py."
-        )
-        return 1
+    cpp_files = []
+    python_files = []
+    if len(files) == 1 and files[0] == "-":
+        cpp_files = ["-"]
+    else:
+        for f in files:
+            ext = os.path.splitext(f)[1].lower()
+            if ext == ".py":
+                python_files.append(f)
+            else:
+                cpp_files.append(f)
 
-    # Change the current working directory before calling lint so that it
-    # shows the correct base.
-    previous_cwd = os.getcwd()
-    try:
-        os.chdir(root_path)
-        extra_check_functions = [
-            cpplint_chromium.CheckPointerDeclarationWhitespace
-        ]
-        for file in files_to_lint:
-            cpplint.ProcessFile(
-                file,
-                cpplint._cpplint_state.verbose_level,
-                extra_check_functions,
+    cpp_errors = 0
+    if cpp_files:
+        try:
+            import cpplint
+            import cpplint_chromium
+
+            # Process cpplint arguments, if any.
+            filters = presubmit_canned_checks.GetCppLintFilters(options.filter)
+            command = ["--filter=" + ",".join(filters)]
+            command.extend(cpp_files)
+            files_to_lint = cpplint.ParseArguments(command)
+        except ImportError:
+            print(
+                "Your depot_tools is missing cpplint.py and/or cpplint_chromium.py."
             )
-    finally:
-        os.chdir(previous_cwd)
+            return 1
 
-    print("Total errors found: %d\n" % cpplint._cpplint_state.error_count)
-    if cpplint._cpplint_state.error_count != 0:
+        # Change the current working directory before calling lint so that it
+        # shows the correct base.
+        previous_cwd = os.getcwd()
+        try:
+            os.chdir(root_path)
+            extra_check_functions = [
+                cpplint_chromium.CheckPointerDeclarationWhitespace
+            ]
+            for file in files_to_lint:
+                cpplint.ProcessFile(
+                    file,
+                    cpplint._cpplint_state.verbose_level,
+                    extra_check_functions,
+                )
+        finally:
+            os.chdir(previous_cwd)
+
+        cpp_errors = cpplint._cpplint_state.error_count
+        if not python_files:
+            print("Total errors found: %d\n" % cpp_errors)
+        else:
+            print("cpplint: %d errors found.\n" % cpp_errors)
+
+    py_errors = 0
+    if python_files:
+        ruff_files = []
+        pylint_files = collections.defaultdict(list)
+        skipped_py_files = []
+
+        for f in python_files:
+            f_abs = os.path.join(root_path, f) if not os.path.isabs(f) else f
+            linter_info = _GetPythonLinterForFile(f_abs, root_dir=root_path)
+            if not linter_info:
+                skipped_py_files.append(f)
+                continue
+            linter, version = linter_info
+            if linter == "ruff":
+                ruff_files.append(f)
+            elif linter == "pylint":
+                pylint_files[version or "2.7"].append(f)
+
+        if skipped_py_files:
+            for f in skipped_py_files:
+                print(
+                    "Skipping %s: no Python linter configured in ancestor PRESUBMIT.py"
+                    % f
+                )
+
+        if ruff_files:
+            tool = os.path.join(DEPOT_TOOLS, "ruff_chromium")
+            if not os.path.exists(tool):
+                print(
+                    "Error: ruff_chromium wrapper not found at %s. Please"
+                    " update depot_tools." % tool
+                )
+                py_errors += 1
+            else:
+                chunk_size = 50 if sys.platform == "win32" else len(ruff_files)
+                for i in range(0, len(ruff_files), chunk_size):
+                    chunk = ruff_files[i : i + chunk_size]
+                    cmd = ["vpython3", tool, "check"]
+                    if options.fix:
+                        cmd.append("--fix")
+                    cmd.extend(chunk)
+                    code = subprocess2.call(
+                        cmd,
+                        cwd=root_path,
+                    )
+                    if code != 0:
+                        py_errors += 1
+
+        if options.fix and pylint_files:
+            print(
+                "Note: --fix is only supported for Ruff and has no effect on"
+                " Pylint."
+            )
+
+        for version, flist in pylint_files.items():
+            tool = os.path.join(DEPOT_TOOLS, f"pylint-{version}")
+            if not os.path.exists(tool):
+                print("Error: Pylint wrapper not found at %s" % tool)
+                py_errors += 1
+                continue
+
+            stdin_data = "\n".join(flist).encode("utf-8")
+            code = subprocess2.call(
+                ["vpython3", tool, "--args-on-stdin"],
+                stdin=stdin_data,
+                cwd=root_path,
+            )
+            if code != 0:
+                py_errors += 1
+
+    if cpp_files and python_files:
+        total_errors = cpp_errors + py_errors
+        if total_errors > 0:
+            print("Total errors found across linters: %d\n" % total_errors)
+
+    if cpp_errors != 0 or py_errors != 0:
         return 1
     return 0
 
