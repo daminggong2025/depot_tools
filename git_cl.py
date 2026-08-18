@@ -8987,6 +8987,8 @@ def _FindFilesToFormat(
             return diffs.keys(), diffs
 
     if opts.full:
+        if files:
+            return [f for f in files if os.path.exists(f)], None
         files = RunGitDiffCmd(
             ["--name-only", "--diff-filter=d"], upstream_commit, files
         ).splitlines()
@@ -9011,6 +9013,11 @@ def CMDformat(parser: optparse.OptionParser, args: list[str]):
     """
     clang_exts = [".cc", ".cpp", ".h", ".m", ".mm", ".proto"]
     GN_EXTS = [".gn", ".gni", ".typemap"]
+    parser.add_option(
+        "--stdin-path",
+        dest="stdin_path",
+        help="Format the single file content provided on stdin with the given path.",
+    )
     parser.add_option(
         "--full",
         action="store_true",
@@ -9116,9 +9123,14 @@ def CMDformat(parser: optparse.OptionParser, args: list[str]):
         "--ktfmt",
         dest="ktfmt",
         action="store_true",
-        default=False,
-        help="Temporary until on by default. "
-        "Enables formatting of .kt files using ktfmt.",
+        default=None,
+        help="Enables formatting of .kt files using ktfmt.",
+    )
+    parser.add_option(
+        "--no-ktfmt",
+        dest="ktfmt",
+        action="store_false",
+        help="Disable auto-formatting of .kt files.",
     )
     parser.add_option(
         "--lucicfg",
@@ -9130,6 +9142,29 @@ def CMDformat(parser: optparse.OptionParser, args: list[str]):
     upstream_commit: str | None = None
     upstream_branch: str | None = opts.upstream
     top_dir: str | None = None
+    temp_file: str | None = None
+
+    if opts.stdin_path:
+        opts.full = True
+        stdin_bytes = sys.stdin.buffer.read()
+        if not stdin_bytes:
+            return 0
+        try:
+            top_dir = settings.GetRoot()
+        except Exception:
+            top_dir = None
+        top_dir = top_dir or gclient_paths.GetPrimarySolutionPath() or os.getcwd()
+        target_dir = os.path.dirname(os.path.join(top_dir, opts.stdin_path))
+        os.makedirs(target_dir, exist_ok=True)
+        with tempfile.NamedTemporaryFile(
+            dir=target_dir,
+            prefix=".git_cl_fmt_",
+            suffix="_" + os.path.basename(opts.stdin_path),
+            delete=False,
+        ) as f:
+            f.write(stdin_bytes)
+            temp_file = f.name
+        files = [temp_file]
 
     if opts.input_diff_file:
         if opts.full:
@@ -9138,7 +9173,7 @@ def CMDformat(parser: optparse.OptionParser, args: list[str]):
                 file=sys.stderr,
             )
             return 1
-        if files:
+        if files and not temp_file:
             print(
                 "No file paths to format are allowed "
                 "if --input_diff_file is given.",
@@ -9173,7 +9208,7 @@ def CMDformat(parser: optparse.OptionParser, args: list[str]):
             upstream_commit = RunGit(
                 ["merge-base", "HEAD", upstream_branch]
             ).strip()
-        if not upstream_commit:
+        if not upstream_commit and not (opts.full and files):
             DieWithError(
                 "Could not find base commit for this branch. "
                 "Are you in detached state?"
@@ -9223,8 +9258,26 @@ def CMDformat(parser: optparse.OptionParser, args: list[str]):
         ]
         if not paths:
             continue
-        ret = format_func(opts, paths, top_dir, diffs)
+        try:
+            if temp_file:
+                null_fd = os.open(os.devnull, os.O_WRONLY)
+                saved_stdout = os.dup(1)
+                os.dup2(null_fd, 1)
+                os.close(null_fd)
+            ret = format_func(opts, paths, top_dir, diffs)
+        finally:
+            if temp_file:
+                os.dup2(saved_stdout, 1)
+                os.close(saved_stdout)
         return_value = return_value or ret
+
+    if temp_file:
+        try:
+            with open(temp_file, "rb") as f:
+                sys.stdout.buffer.write(f.read())
+        finally:
+            if os.path.exists(temp_file):
+                os.remove(temp_file)
 
     return return_value
 
