@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "00300c52_91b3fb9e",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 12
+      },
+      "lineNbr": 1756,
+      "author": {
+        "id": 1429892
+      },
+      "writtenOn": "2026-08-18T06:25:57Z",
+      "side": 1,
+      "message": "Hmm\n\n```sh\nprintf \u0027x \u003d 1\\n\u0027 \u003e test.py\nuvx ruff@0.15.17 check test.py 1\u003e/tmp/stdout.txt\ncat /tmp/stdout.txt  # All checks passed!\n```\n\nShould we pass `--quiet` here or somewhere between here and https://source.chromium.org/chromium/chromium/tools/depot_tools/+/main:ruff_chromium;l\u003d471;drc\u003d732902ab86f8bd629bee00af102d5aa2d9336166",
+      "range": {
+        "startLine": 1756,
+        "startChar": 0,
+        "endLine": 1756,
+        "endChar": 62
+      },
+      "revId": "3fa220a0d7dc4fb4ae2ca00e4dcc0533e9b29204",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
