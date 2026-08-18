@@ -8060,6 +8060,148 @@ class CMDLintTestCase(CMDTestCaseBase):
             git_cl.sys.stderr.getvalue(),
         )
 
+    @mock.patch("git_cl._GetPythonLinterForFile", return_value=("ruff", None))
+    @mock.patch("git_cl.subprocess2.call", return_value=0)
+    def testLintPythonRuff(self, mock_call, _mock_linter):
+        self.assertEqual(0, git_cl.main(["lint", "test.py"]))
+        expected_tool = os.path.join(git_cl.DEPOT_TOOLS, "ruff_chromium")
+        mock_call.assert_called_once_with(
+            ["vpython3", expected_tool, "check", "test.py"],
+            cwd=mock.ANY,
+            shell=sys.platform == "win32",
+        )
+
+    @mock.patch("git_cl._GetPythonLinterForFile", return_value=("ruff", None))
+    @mock.patch("git_cl.subprocess2.call", return_value=0)
+    def testLintPythonRuffFix(self, mock_call, _mock_linter):
+        self.assertEqual(0, git_cl.main(["lint", "--fix", "test.py"]))
+        expected_tool = os.path.join(git_cl.DEPOT_TOOLS, "ruff_chromium")
+        mock_call.assert_called_once_with(
+            ["vpython3", expected_tool, "check", "--fix", "test.py"],
+            cwd=mock.ANY,
+            shell=sys.platform == "win32",
+        )
+
+    @mock.patch(
+        "git_cl._GetPythonLinterForFile", return_value=("pylint", "3.2")
+    )
+    @mock.patch("git_cl.subprocess2.call", return_value=0)
+    @mock.patch("os.path.exists", return_value=True)
+    def testLintPythonPylint(self, _mock_exists, mock_call, _mock_linter):
+        self.assertEqual(0, git_cl.main(["lint", "test.py"]))
+        tool_name = (
+            "pylint-3.2.bat" if sys.platform == "win32" else "pylint-3.2"
+        )
+        expected_tool = os.path.join(git_cl.DEPOT_TOOLS, tool_name)
+        expected_cmd = (
+            [expected_tool, "--args-on-stdin"]
+            if sys.platform == "win32"
+            else ["vpython3", expected_tool, "--args-on-stdin"]
+        )
+        mock_call.assert_called_once_with(
+            expected_cmd,
+            stdin=b"test.py",
+            cwd=mock.ANY,
+            shell=sys.platform == "win32",
+        )
+
+    @mock.patch(
+        "git_cl._GetPythonLinterForFile", return_value=("pylint", "2.7")
+    )
+    @mock.patch("git_cl.subprocess2.call", return_value=0)
+    @mock.patch("os.path.exists", return_value=True)
+    def testLintPythonPylintFixDormant(
+        self, _mock_exists, mock_call, _mock_linter
+    ):
+        self.assertEqual(0, git_cl.main(["lint", "--fix", "test.py"]))
+        tool_name = (
+            "pylint-2.7.bat" if sys.platform == "win32" else "pylint-2.7"
+        )
+        expected_tool = os.path.join(git_cl.DEPOT_TOOLS, tool_name)
+        expected_cmd = (
+            [expected_tool, "--args-on-stdin"]
+            if sys.platform == "win32"
+            else ["vpython3", expected_tool, "--args-on-stdin"]
+        )
+        mock_call.assert_called_once_with(
+            expected_cmd,
+            stdin=b"test.py",
+            cwd=mock.ANY,
+            shell=sys.platform == "win32",
+        )
+
+    @mock.patch("git_cl._GetPythonLinterForFile", return_value=None)
+    @mock.patch("git_cl.subprocess2.call")
+    def testLintPythonSkippedNoConfig(self, mock_call, _mock_linter):
+        self.assertEqual(0, git_cl.main(["lint", "test.py"]))
+        mock_call.assert_not_called()
+
+    def testInspectPresubmitForPythonLinter(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            ruff_presubmit = os.path.join(temp_dir, "PRESUBMIT.py")
+            with open(ruff_presubmit, "w", encoding="utf-8") as f:
+                f.write(
+                    "def CheckRuff(input_api, output_api):\n"
+                    "    return input_api.RunTests(input_api.canned_checks.GetRuff(input_api, output_api))\n"
+                )
+            self.assertEqual(
+                ("ruff", None),
+                git_cl._InspectPresubmitForPythonLinter(ruff_presubmit),
+            )
+
+            pylint32_presubmit = os.path.join(temp_dir, "pylint32_PRESUBMIT.py")
+            with open(pylint32_presubmit, "w", encoding="utf-8") as f:
+                f.write(
+                    "def CheckPylint(input_api, output_api):\n"
+                    "    return input_api.canned_checks.RunPylint(input_api, output_api, version='3.2')\n"
+                )
+            self.assertEqual(
+                ("pylint", "3.2"),
+                git_cl._InspectPresubmitForPythonLinter(pylint32_presubmit),
+            )
+
+            pylint_default_presubmit = os.path.join(
+                temp_dir, "pylint_default_PRESUBMIT.py"
+            )
+            with open(pylint_default_presubmit, "w", encoding="utf-8") as f:
+                f.write(
+                    "def CheckPylint(input_api, output_api):\n"
+                    "    return input_api.canned_checks.RunPylint(input_api, output_api)\n"
+                )
+            self.assertEqual(
+                ("pylint", "2.7"),
+                git_cl._InspectPresubmitForPythonLinter(
+                    pylint_default_presubmit
+                ),
+            )
+
+            empty_presubmit = os.path.join(temp_dir, "empty_PRESUBMIT.py")
+            with open(empty_presubmit, "w", encoding="utf-8") as f:
+                f.write("# No python checks\n")
+            self.assertIsNone(
+                git_cl._InspectPresubmitForPythonLinter(empty_presubmit)
+            )
+
+    def testGetPythonLinterForFileAncestorWalk(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            top_presubmit = os.path.join(temp_dir, "PRESUBMIT.py")
+            with open(top_presubmit, "w", encoding="utf-8") as f:
+                f.write(
+                    "def Check(input_api, output_api): return"
+                    " input_api.canned_checks.RunRuff(input_api, output_api)\n"
+                )
+            sub_dir = os.path.join(temp_dir, "sub", "dir")
+            os.makedirs(sub_dir)
+            target_file = os.path.join(sub_dir, "target.py")
+            with open(target_file, "w", encoding="utf-8") as f:
+                f.write("print('hello')\n")
+
+            git_cl._dir_linter_cache.clear()
+            self.assertEqual(
+                ("ruff", None),
+                git_cl._GetPythonLinterForFile(target_file, root_dir=temp_dir),
+            )
+
 
 class CMDCherryPickTestCase(CMDTestCaseBase):
     def testCreateCommitMessage(self):
