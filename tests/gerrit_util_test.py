@@ -12,12 +12,13 @@ import subprocess
 import sys
 import unittest
 
+import io
 from io import StringIO
 from pathlib import Path
 from typing import Optional
 from unittest import mock
-
-import httplib2
+import urllib.error
+import urllib.request
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -244,7 +245,17 @@ class CookiesAuthenticatorTest(unittest.TestCase):
 class GceAuthenticatorTest(unittest.TestCase):
     def setUp(self):
         super(GceAuthenticatorTest, self).setUp()
-        mock.patch("httplib2.Http").start()
+        default_resp = mock.MagicMock(
+            status=200,
+            reason="OK",
+            headers={"metadata-flavor": "Google"},
+            read=mock.Mock(return_value=b""),
+        )
+        default_resp.__enter__.return_value = default_resp
+        self.mock_open = mock.patch(
+            "urllib.request.OpenerDirector.open",
+            return_value=default_resp,
+        ).start()
         mock.patch("os.getenv", return_value=None).start()
         mock.patch("gerrit_util.time_sleep").start()
         mock.patch("gerrit_util.time_time").start()
@@ -271,78 +282,118 @@ class GceAuthenticatorTest(unittest.TestCase):
         os.getenv.assert_called_once_with("SKIP_GCE_AUTH_FOR_GIT")
 
     def testIsGce_Error(self):
-        httplib2.Http().request.side_effect = httplib2.HttpLib2Error
+        self.mock_open.side_effect = urllib.error.URLError("error")
         self.assertFalse(self.GceAuthenticator.is_applicable())
 
     def testIsGce_500(self):
-        httplib2.Http().request.return_value = (mock.Mock(status=500), None)
+        self.mock_open.side_effect = urllib.error.HTTPError(
+            "", 500, "Server Error", {}, io.BytesIO(b"")
+        )
         self.assertFalse(self.GceAuthenticator.is_applicable())
         last_call = gerrit_util.time_sleep.mock_calls[-1]
         self.assertLessEqual(last_call, mock.call(43.0))
 
     def testIsGce_FailsThenSucceeds(self):
-        response = mock.Mock(status=200)
-        response.get.return_value = "Google"
-        httplib2.Http().request.side_effect = [
-            (mock.Mock(status=500), None),
-            (response, "who cares"),
+        response = mock.MagicMock(
+            status=200,
+            reason="OK",
+            headers={"metadata-flavor": "Google"},
+            read=mock.Mock(return_value=b"who cares"),
+        )
+        response.__enter__.return_value = response
+        self.mock_open.side_effect = [
+            urllib.error.HTTPError(
+                "", 500, "Server Error", {}, io.BytesIO(b"")
+            ),
+            response,
         ]
         self.assertTrue(self.GceAuthenticator.is_applicable())
 
     def testIsGce_MetadataFlavorIsNotGoogle(self):
-        response = mock.Mock(status=200)
-        response.get.return_value = None
-        httplib2.Http().request.return_value = (response, "who cares")
+        response = mock.MagicMock(
+            status=200,
+            reason="OK",
+            headers={},
+            read=mock.Mock(return_value=b"who cares"),
+        )
+        response.__enter__.return_value = response
+        self.mock_open.return_value = response
         self.assertFalse(self.GceAuthenticator.is_applicable())
-        response.get.assert_called_once_with("metadata-flavor")
 
     def testIsGce_ResultIsCached(self):
-        response = mock.Mock(status=200)
-        response.get.return_value = "Google"
-        httplib2.Http().request.side_effect = [(response, "who cares")]
+        response = mock.MagicMock(
+            status=200,
+            reason="OK",
+            headers={"metadata-flavor": "Google"},
+            read=mock.Mock(return_value=b"who cares"),
+        )
+        response.__enter__.return_value = response
+        self.mock_open.side_effect = [response]
         self.assertTrue(self.GceAuthenticator.is_applicable())
         self.assertTrue(self.GceAuthenticator.is_applicable())
-        httplib2.Http().request.assert_called_once()
+        self.mock_open.assert_called_once()
 
     def testGetAuthHeader_Error(self):
-        httplib2.Http().request.side_effect = httplib2.HttpLib2Error
+        self.mock_open.side_effect = urllib.error.URLError("error")
         self.assertAuthenticatedToken(None)
 
     def testGetAuthHeader_500(self):
-        httplib2.Http().request.return_value = (mock.Mock(status=500), None)
+        self.mock_open.side_effect = urllib.error.HTTPError(
+            "", 500, "Server Error", {}, io.BytesIO(b"")
+        )
         self.assertAuthenticatedToken(None)
 
     def testGetAuthHeader_Non200(self):
-        httplib2.Http().request.return_value = (mock.Mock(status=403), None)
+        self.mock_open.side_effect = urllib.error.HTTPError(
+            "", 403, "Forbidden", {}, io.BytesIO(b"")
+        )
         self.assertAuthenticatedToken(None)
 
     def testGetAuthHeader_OK(self):
-        httplib2.Http().request.return_value = (
-            mock.Mock(status=200),
-            '{"expires_in": 125, "token_type": "TYPE", "access_token": "TOKEN"}',
+        response = mock.MagicMock(
+            status=200,
+            reason="OK",
+            headers={},
+            read=mock.Mock(
+                return_value=b'{"expires_in": 125, "token_type": "TYPE", "access_token": "TOKEN"}'
+            ),
         )
+        response.__enter__.return_value = response
+        self.mock_open.return_value = response
         gerrit_util.time_time.return_value = 0
         self.assertAuthenticatedToken("TYPE TOKEN")
 
     def testGetAuthHeader_Cache(self):
-        httplib2.Http().request.return_value = (
-            mock.Mock(status=200),
-            '{"expires_in": 125, "token_type": "TYPE", "access_token": "TOKEN"}',
+        response = mock.MagicMock(
+            status=200,
+            reason="OK",
+            headers={},
+            read=mock.Mock(
+                return_value=b'{"expires_in": 125, "token_type": "TYPE", "access_token": "TOKEN"}'
+            ),
         )
+        response.__enter__.return_value = response
+        self.mock_open.return_value = response
         gerrit_util.time_time.return_value = 0
         self.assertAuthenticatedToken("TYPE TOKEN")
         self.assertAuthenticatedToken("TYPE TOKEN")
-        httplib2.Http().request.assert_called_once()
+        self.mock_open.assert_called_once()
 
     def testGetAuthHeader_CacheOld(self):
-        httplib2.Http().request.return_value = (
-            mock.Mock(status=200),
-            '{"expires_in": 125, "token_type": "TYPE", "access_token": "TOKEN"}',
+        response = mock.MagicMock(
+            status=200,
+            reason="OK",
+            headers={},
+            read=mock.Mock(
+                return_value=b'{"expires_in": 125, "token_type": "TYPE", "access_token": "TOKEN"}'
+            ),
         )
+        response.__enter__.return_value = response
+        self.mock_open.return_value = response
         gerrit_util.time_time.side_effect = [0, 100, 200]
         self.assertAuthenticatedToken("TYPE TOKEN")
         self.assertAuthenticatedToken("TYPE TOKEN")
-        self.assertEqual(2, len(httplib2.Http().request.mock_calls))
+        self.assertEqual(2, self.mock_open.call_count)
 
     def testAttemptAuthenticateWithReAuth(self):
         authn = self.GceAuthenticator()
@@ -1133,8 +1184,8 @@ class SSOAuthenticatorTest(unittest.TestCase):
                 "Authorization": "Basic REALLY_COOL_TOKEN",
             },
         )
-        self.assertEqual(parsed.proxy.proxy_host, b"localhost")
-        self.assertEqual(parsed.proxy.proxy_port, 12345)
+        self.assertEqual(parsed.proxy_host, "localhost")
+        self.assertEqual(parsed.proxy_port, 12345)
 
         c = parsed.cookies._cookies
         self.assertEqual(
@@ -1158,8 +1209,8 @@ class SSOAuthenticatorTest(unittest.TestCase):
                 "Authorization": "Basic REALLY_COOL_TOKEN",
             },
         )
-        self.assertEqual(info.proxy.proxy_host, b"localhost")
-        self.assertEqual(info.proxy.proxy_port, 12345)
+        self.assertEqual(info.proxy_host, "localhost")
+        self.assertEqual(info.proxy_port, 12345)
         c = info.cookies._cookies
         self.assertEqual(
             c["login.example.com"]["/"]["SSO"].value, "TUVFUE1PUlAK"
