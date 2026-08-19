@@ -12,6 +12,7 @@ from __future__ import annotations
 import base64
 import contextlib
 import functools
+import http.client
 import http.cookiejar
 import json
 import logging
@@ -20,6 +21,7 @@ import random
 import re
 import shutil
 import socket
+import ssl
 import subprocess
 import sys
 import tempfile
@@ -1250,6 +1252,52 @@ class ReqParams(TypedDict):
     body: Optional[str]
 
 
+class _ThreadLocalConnectionPool(threading.local):
+    """Thread-local connection pool for reusing Keep-Alive TLS connections."""
+
+    def __init__(self):
+        super().__init__()
+        self._clients: Dict[Tuple, httplib2.Http] = {}
+
+    def get_client(
+        self, timeout: int, proxy_info: Optional[httplib2.ProxyInfo]
+    ) -> httplib2.Http:
+        if not hasattr(self, "_clients"):
+            self._clients = {}
+        proxy_key = None
+        if proxy_info:
+            proxy_key = (
+                getattr(proxy_info, "proxy_type", None),
+                getattr(proxy_info, "proxy_host", None),
+                getattr(proxy_info, "proxy_port", None),
+                getattr(proxy_info, "proxy_user", None),
+                getattr(proxy_info, "proxy_pass", None),
+            )
+        key = (timeout, proxy_key)
+        if key not in self._clients:
+            self._clients[key] = httplib2.Http(
+                timeout=timeout, proxy_info=proxy_info
+            )
+        return self._clients[key]
+
+    def close_host_connection(self, host: str) -> None:
+        """Evicts and closes stale sockets for a host upon network/socket error."""
+        if not hasattr(self, "_clients"):
+            return
+        for client in self._clients.values():
+            for conn_key in list(client.connections.keys()):
+                if host in str(conn_key):
+                    conn = client.connections.pop(conn_key, None)
+                    if conn:
+                        try:
+                            conn.close()
+                        except Exception:
+                            pass
+
+
+_POOL = _ThreadLocalConnectionPool()
+
+
 class HttpConn(httplib2.Http):
     """HttpConn is an httplib2.Http with additional request-specific fields."""
 
@@ -1261,6 +1309,7 @@ class HttpConn(httplib2.Http):
         req_method: str,
         req_headers: Dict[str, str],
         req_body: Optional[str],
+        timeout: int = 300,
         **kwargs,
     ) -> None:
         self.req_host = req_host
@@ -1268,7 +1317,29 @@ class HttpConn(httplib2.Http):
         self.req_method = req_method
         self.req_headers = req_headers
         self.req_body = req_body
-        super().__init__(*args, **kwargs)
+        self.req_timeout = timeout
+        super().__init__(*args, timeout=timeout, **kwargs)
+
+    def request(
+        self,
+        uri,
+        method="GET",
+        body=None,
+        headers=None,
+        redirections=httplib2.DEFAULT_MAX_REDIRECTS,
+        connection_type=None,
+    ):
+        client = _POOL.get_client(
+            timeout=self.req_timeout, proxy_info=self.proxy_info
+        )
+        return client.request(
+            uri,
+            method=method,
+            body=body,
+            headers=headers,
+            redirections=redirections,
+            connection_type=connection_type,
+        )
 
     @property
     def req_params(self) -> ReqParams:
@@ -1426,7 +1497,15 @@ def ReadHttpResponse(
         before_response = time.time()
         try:
             response, contents = conn.request(**conn.req_params)
-        except socket.timeout:
+        except (
+            socket.timeout,
+            socket.error,
+            http.client.HTTPException,
+            httplib2.HttpLib2Error,
+            ssl.SSLError,
+        ) as e:
+            LOGGER.debug("Request failed with network/socket error: %s", e)
+            _POOL.close_host_connection(conn.req_host)
             if idx < max_tries - 1:
                 sleep_time = log_retry_and_sleep(sleep_time, idx, max_tries)
                 continue
