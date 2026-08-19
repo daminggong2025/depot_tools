@@ -3,6 +3,23 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "2ff91fe9_9c561c19",
+        "filename": "git_cl.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 9017,
+      "author": {
+        "id": 1450817
+      },
+      "writtenOn": "2026-08-19T00:18:09Z",
+      "side": 1,
+      "message": "We should make the flag name consistent with existing formatters:\n\nEither `--stdin-filepath` (prettier), `--stdin-filename` (ruff/black/eslint), or `--assume-filename` (clang-format)",
+      "revId": "84430c9e90c66126c3501b06addf8b46af56d19f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "3bafa06f_6e7c37c1",
         "filename": "git_cl.py",
         "patchSetId": 1
