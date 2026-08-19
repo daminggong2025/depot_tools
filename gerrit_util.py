@@ -16,6 +16,7 @@ import http.cookiejar
 import json
 import logging
 import os
+import queue
 import random
 import re
 import shutil
@@ -30,7 +31,7 @@ import urllib.parse
 from dataclasses import dataclass
 from io import StringIO
 from multiprocessing.pool import ThreadPool
-from typing import Any, Container, Dict
+from typing import Any, Callable, Container, Dict
 from typing import NamedTuple, List, Optional
 from typing import Tuple, TypedDict, cast
 from typing import Generator
@@ -1058,50 +1059,11 @@ class GitCredsAuthenticator(_Authenticator):
 
         This method caches positive results in the user's Git config.
         """
-        cwd = os.getcwd()
-        LOGGER.debug("Checking Gerrit account existence for %r", host)
-        hosts = scm.GIT.GetConfigList(cwd, "depot-tools.hosthasaccount")
-        if host in hosts:
-            # If a user deletes their Gerrit account, then this cache
-            # might be stale.  This should be a rare case and a user can
-            # just delete this from their Git config.
-            LOGGER.debug(
-                "Using cached account existence for Gerrit host %r", host
-            )
+        try:
+            EnsureAccountExists(host, authenticator=cls())
             return True
-        try:
-            info = GetAccountDetails(host, authenticator=cls())
-        except auth.GitLoginRequiredError:
-            LOGGER.debug(
-                "Cannot check Gerrit account existence; missing git-credential-luci login"
-            )
+        except (auth.GitLoginRequiredError, GerritError):
             return False
-        except GerritError as e:
-            if e.http_status == 400:
-                # This is likely because the user doesn't have an
-                # account on the Gerrit host.
-                LOGGER.debug(
-                    "Gerrit account check returned 400; likely account missing"
-                )
-                return False
-            raise
-        if "email" not in info:
-            LOGGER.debug("Gerrit account does not exist on %r", host)
-            return False
-        LOGGER.debug("Gerrit account exists on %r", host)
-        try:
-            scm.GIT.SetConfig(
-                cwd, "depot-tools.hostHasAccount", host, append=True
-            )
-        except subprocess2.CalledProcessError as e:
-            # This may be called outside of a Git repository (e.g., when
-            # fetching from scratch), in which case we don't have a Git
-            # repository to cache the results of our check, so skip the
-            # caching.
-            LOGGER.debug(
-                "Got error trying to cache 'depot-tools.hostHasAccount': %s", e
-            )
-        return True
 
     @functools.cache
     def is_applicable(self, *, gerrit_host: Optional[str] = None):
@@ -2374,6 +2336,158 @@ def GetAccountDetails(
         host, "/accounts/%s" % account_id, authenticator=authenticator
     )
     return ReadHttpJsonResponse(conn, accept_statuses=[200, 404])
+
+
+def InvalidateAccountCache(host: str, email: Optional[str] = None) -> None:
+    """Evicts cached account existence entry for host/email from Git config."""
+    cwd = os.getcwd()
+    try:
+        hosts = scm.GIT.GetConfigList(cwd, "depot-tools.hosthasaccount")
+        if not hosts:
+            return
+        if not email:
+            try:
+                email = scm.GIT.GetConfig(cwd, "user.email")
+            except Exception:
+                pass
+
+        target = f"{host}:{email}" if email else host
+        new_hosts = [
+            h
+            for h in hosts
+            if h != target
+            and h != host
+            and (not email or not h.startswith(f"{host}:{email}"))
+        ]
+        if len(new_hosts) == len(hosts):
+            return
+
+        scm.GIT.SetConfig(cwd, "depot-tools.hostHasAccount", None)
+        for h in new_hosts:
+            scm.GIT.SetConfig(cwd, "depot-tools.hostHasAccount", h, append=True)
+    except Exception as e:
+        LOGGER.debug("Could not invalidate account cache: %s", e)
+
+
+def EnsureAccountExists(
+    host: str,
+    *,
+    force: bool = False,
+    authenticator: Optional[_Authenticator] = None,
+) -> None:
+    """Verifies that the user has an active account on the given Gerrit host.
+
+    Caches positive results in the local Git config under 'depot-tools.hosthasaccount'
+    (keyed by 'host:email') to avoid redundant ~500ms network RPCs on subsequent
+    operations while safely supporting multiple accounts.
+
+    Raises:
+        GerritError: If the account does not exist (400/404) or on HTTP failure.
+        auth.GitLoginRequiredError: If user is not authenticated.
+    """
+    cwd = os.getcwd()
+    email = None
+    try:
+        email = scm.GIT.GetConfig(cwd, "user.email")
+    except Exception:
+        pass
+
+    cache_entry = f"{host}:{email}" if email else host
+    if not force:
+        try:
+            hosts = scm.GIT.GetConfigList(cwd, "depot-tools.hosthasaccount")
+            if cache_entry in hosts or host in hosts:
+                LOGGER.debug(
+                    "Using cached account existence for Gerrit host %r",
+                    cache_entry,
+                )
+                return
+        except Exception:
+            pass
+
+    try:
+        info = GetAccountDetails(host, authenticator=authenticator)
+    except GerritError as e:
+        InvalidateAccountCache(host, email)
+        if e.http_status == 400:
+            raise GerritError(
+                400,
+                f"Account does not exist on Gerrit host '{host}'. "
+                f"Please log into https://{host} in your browser first to activate your account.",
+            ) from e
+        raise
+    except Exception:
+        InvalidateAccountCache(host, email)
+        raise
+
+    if not info or ("email" not in info and "_account_id" not in info):
+        InvalidateAccountCache(host, email)
+        raise GerritError(
+            404,
+            f"Account not found on Gerrit host '{host}'. "
+            f"Please log into https://{host} in your browser first to activate your account.",
+        )
+
+    account_email = email or info.get("email")
+    entry_to_cache = f"{host}:{account_email}" if account_email else host
+
+    LOGGER.debug("Gerrit account exists on %r", entry_to_cache)
+    try:
+        hosts = scm.GIT.GetConfigList(cwd, "depot-tools.hosthasaccount")
+        if entry_to_cache not in hosts:
+            scm.GIT.SetConfig(
+                cwd, "depot-tools.hostHasAccount", entry_to_cache, append=True
+            )
+    except (subprocess2.CalledProcessError, OSError, Exception) as e:
+        LOGGER.debug("Could not cache 'depot-tools.hostHasAccount': %s", e)
+
+
+def AsyncEnsureAccountExists(
+    host: str,
+    *,
+    force: bool = False,
+    authenticator: Optional[_Authenticator] = None,
+) -> Callable[[], None]:
+    """Starts account existence verification in a background worker thread.
+
+    Returns a callable that blocks until verification finishes and raises any
+    exception encountered during verification.
+    """
+    cwd = os.getcwd()
+    email = None
+    try:
+        email = scm.GIT.GetConfig(cwd, "user.email")
+    except Exception:
+        pass
+
+    cache_entry = f"{host}:{email}" if email else host
+    if not force:
+        try:
+            hosts = scm.GIT.GetConfigList(cwd, "depot-tools.hosthasaccount")
+            if cache_entry in hosts or host in hosts:
+                return lambda: None
+        except Exception:
+            pass
+
+    result_queue: queue.Queue = queue.Queue(maxsize=1)
+
+    def _worker():
+        try:
+            EnsureAccountExists(host, force=force, authenticator=authenticator)
+            result_queue.put((None, None))
+        except Exception as e:
+            result_queue.put((None, e))
+
+    thread = threading.Thread(target=_worker, daemon=True)
+    thread.start()
+
+    def _join():
+        thread.join()
+        _, exc = result_queue.get()
+        if exc:
+            raise exc
+
+    return _join
 
 
 class EmailRecord(TypedDict):
