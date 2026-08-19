@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f8df2dc5_7520f86c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1391646
+      },
+      "writtenOn": "2026-08-19T09:14:47Z",
+      "side": 1,
+      "message": "more context: \u003chttps://chromium.slack.com/archives/CGGPN5GDT/p1784697647053239\u003e",
+      "revId": "360fd8e091bef3e18f51f7347d8d38007d43654d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
