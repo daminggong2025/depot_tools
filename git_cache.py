@@ -23,6 +23,7 @@ import lockfile
 import metrics
 import scm
 import subcommand
+import utils
 
 # Analogous to gc.autopacklimit git config.
 GC_AUTOPACKLIMIT = 50
@@ -71,8 +72,6 @@ class Mirror(object):
         os.path.dirname(os.path.abspath(__file__)), "gsutil.py"
     )
     cachepath_lock = threading.Lock()
-
-    UNSET_CACHEPATH = object()
 
     # Used for tests
     _GIT_CONFIG_LOCATION = []
@@ -225,17 +224,14 @@ class Mirror(object):
                     )
                 except subprocess.CalledProcessError:
                     cachepath = os.environ.get(
-                        "GIT_CACHE_PATH", cls.UNSET_CACHEPATH
+                        "GIT_CACHE_PATH",
+                        os.path.join(
+                            utils.depot_tools_cache_dir(), "git_cache"
+                        ),
                     )
                 setattr(cls, "cachepath", cachepath)
 
-            ret = getattr(cls, "cachepath")
-            if ret is cls.UNSET_CACHEPATH:
-                raise RuntimeError(
-                    "No cache.cachepath git configuration or "
-                    "$GIT_CACHE_PATH is set."
-                )
-            return ret
+            return getattr(cls, "cachepath")
 
     @staticmethod
     def _GetMostRecentCacheDirectory(ls_out_set):
@@ -1146,9 +1142,9 @@ class OptionParser(optparse.OptionParser):
             "-c",
             "--cache-dir",
             help=(
-                "Path to the directory containing the caches. Normally "
-                "deduced from git config cache.cachepath or "
-                "$GIT_CACHE_PATH."
+                "Path to the directory containing the caches. By default, "
+                "this is taken from `git config cache.cachepath`, "
+                "`$GIT_CACHE_PATH`, or otherwise chosen automatically."
             ),
         )
         self.add_option(
