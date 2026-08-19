@@ -3664,9 +3664,13 @@ class Changelist(object):
 
             git_push_metadata["execution_time"] = execution_time
             git_push_metadata["exit_code"] = push_returncode
-            self._WriteGitPushTraces(trace_name, traces_dir, git_push_metadata)
+            has_error = push_returncode != 0 or sys.exc_info()[0] is not None
+            if has_error or os.environ.get("GIT_CL_TRACE") == "1":
+                self._WriteGitPushTraces(
+                    trace_name, traces_dir, git_push_metadata
+                )
+                self._CleanUpOldTraces()
 
-            self._CleanUpOldTraces()
             gclient_utils.rmtree(traces_dir)
 
         return push_stdout
