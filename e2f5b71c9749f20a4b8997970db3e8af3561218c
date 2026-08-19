@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1e492667_0f0abfe7",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3355336
+      },
+      "writtenOn": "2026-08-19T01:10:57Z",
+      "side": 1,
+      "message": "There\u0027s a remaining usage in my_activity.py which is probably delete-able since it references monorail, but defer that to a separate CL.",
+      "revId": "e2f5b71c9749f20a4b8997970db3e8af3561218c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
