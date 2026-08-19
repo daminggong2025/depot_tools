@@ -27,7 +27,7 @@ class TraceUtilsTest(unittest.TestCase):
         shutil.rmtree(self.tmpdir)
 
     def test_trace_basic(self):
-        trace_utils.collector.start(self.trace_file)
+        trace_utils.collector.start(self.trace_file, process_name="gclient")
 
         # Test context manager.
         with trace_utils.trace(
@@ -120,6 +120,29 @@ class TraceUtilsTest(unittest.TestCase):
         finally:
             os.environ.pop("GCLIENT_TRACE", None)
 
+    def test_trace_presubmit_env_var(self):
+        try:
+            os.environ["PRESUBMIT_TRACE"] = self.trace_file
+            collector = trace_utils.TraceCollector()
+            self.assertTrue(collector.enabled)
+            self.assertEqual(collector.filepath, self.trace_file)
+
+            with trace_utils.trace("presubmit_test"):
+                time.sleep(0.005)
+
+            collector.close()
+            self.assertTrue(os.path.exists(self.trace_file))
+            with open(self.trace_file, "r") as f:
+                data = json.load(f)
+            process_events = [
+                e for e in data["traceEvents"] if e.get("name") == "process_name"
+            ]
+            self.assertEqual(
+                process_events[0]["args"]["name"], "trace_utils_test"
+            )
+        finally:
+            os.environ.pop("PRESUBMIT_TRACE", None)
+
     def test_trace_env_var_default_path(self):
         try:
             os.environ["GCLIENT_TRACE"] = "1"
@@ -133,7 +156,25 @@ class TraceUtilsTest(unittest.TestCase):
         collector = trace_utils.TraceCollector()
         collector.start()
         self.assertTrue(collector.enabled)
-        self.assertEqual(collector.filepath, "/tmp/gclient_trace.json")
+        self.assertEqual(collector.filepath, "/tmp/depot_tools_trace.json")
+
+    def test_trace_merge_existing_file(self):
+        collector1 = trace_utils.TraceCollector()
+        collector1.start(self.trace_file, process_name="proc1")
+        collector1.add_complete_event("event1", "cat1", 1000, 500)
+        collector1.close()
+
+        collector2 = trace_utils.TraceCollector()
+        collector2.start(self.trace_file, process_name="proc2")
+        collector2.add_complete_event("event2", "cat2", 2000, 500)
+        collector2.close()
+
+        with open(self.trace_file, "r") as f:
+            data = json.load(f)
+
+        event_names = [e.get("name") for e in data["traceEvents"]]
+        self.assertIn("event1", event_names)
+        self.assertIn("event2", event_names)
 
 
 if __name__ == "__main__":
