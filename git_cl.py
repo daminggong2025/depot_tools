@@ -12,6 +12,7 @@ import base64
 import collections
 import datetime
 import fnmatch
+import functools
 import itertools
 import json
 import logging
@@ -900,29 +901,56 @@ def _GetCommitCountSummary(
     return f"{count} commit{'s'[: count != 1]}"
 
 
-def _prepare_superproject_push_option() -> str | None:
+@functools.lru_cache(maxsize=8)
+def _get_superproject_push_option(canonical_cwd: str) -> Optional[str]:
+    try:
+        gclient_root = gclient_paths.FindGclientRoot(canonical_cwd)
+        if not gclient_root:
+            return None
+
+        superproject_url = gclient_paths.GetGClientPrimarySolutionURL(
+            gclient_root
+        )
+        if not superproject_url:
+            return None
+
+        parsed_url = urllib.parse.urlparse(superproject_url)
+        host = (parsed_url.hostname or "").removesuffix(".googlesource.com")
+        project = parsed_url.path.strip("/").removesuffix(".git")
+        if not host or not project:
+            return None
+
+        soln_root = gclient_paths.GetPrimarySolutionPath(canonical_cwd)
+        if not soln_root or not os.path.isdir(soln_root):
+            return None
+
+        code, rev = RunGitWithCode(
+            ["rev-parse", "--verify", "refs/heads/main"],
+            suppress_stderr=True,
+            cwd=soln_root,
+        )
+        if code != 0 or not rev.strip():
+            return None
+
+        return f"custom-keyed-value=rootRepo:{host}/{project}@{rev.strip()}"
+    except Exception:
+        return None
+
+
+def _prepare_superproject_push_option(
+    cwd: Optional[str] = None,
+) -> Optional[str]:
     """Returns the push option specifying the root repo of a gclient checkout.
 
     The push option will be formatted:
-        'custom-keyed-value=rootRepo:{host}/{project}@{ref}'
+        'custom-keyed-value=rootRepo:{host}/{project}@{rev}'
 
     For chromium/src the entire push option would be:
         'custom-keyed-value=rootRepo:chromium/chromium/src@d3adb33f'.
     """
-    gclient_root = gclient_paths.FindGclientRoot(os.getcwd())
-    if not gclient_root:
-        return None
-
-    superproject_url = gclient_paths.GetGClientPrimarySolutionURL(gclient_root)
-    if not superproject_url:
-        return None
-
-    parsed_url = urllib.parse.urlparse(superproject_url)
-    host = parsed_url.netloc.removesuffix(".googlesource.com")
-    project = parsed_url.path.strip("/").removesuffix(".git")
-    soln_root = gclient_paths.GetPrimarySolutionPath()
-    rev = RunGitSilent(["rev-parse", "refs/heads/main"], cwd=soln_root).strip()
-    return f"custom-keyed-value=rootRepo:{host}/{project}@{rev}"
+    if not cwd:
+        cwd = os.getcwd()
+    return _get_superproject_push_option(os.path.abspath(cwd))
 
 
 @dataclasses.dataclass
