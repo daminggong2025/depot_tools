@@ -17,6 +17,7 @@ import watchlists
 class WatchlistsTest(unittest.TestCase):
     def setUp(self):
         super(WatchlistsTest, self).setUp()
+        watchlists._ParseAndCompileWatchlistRules.cache_clear()
         mock.patch("watchlists.Watchlists._HasWatchlistsFile").start()
         mock.patch("watchlists.Watchlists._ContentsOfWatchlistsFile").start()
         mock.patch("watchlists.logging.error").start()
@@ -37,6 +38,22 @@ class WatchlistsTest(unittest.TestCase):
 
         wl = watchlists.Watchlists("/a/path")
         self.assertEqual(wl.GetWatchersForPaths(["some_path"]), [])
+
+    def testNonDictWatchlistsFileOK(self):
+        """Test that non-dict AST literals do not cause crashes."""
+        for contents in [
+            "42",
+            "'hello'",
+            "[1, 2, 3]",
+            "{'WATCHLIST_DEFINITIONS': 123, 'WATCHLISTS': {}}",
+        ]:
+            watchlists.Watchlists._HasWatchlistsFile.return_value = True
+            watchlists.Watchlists._ContentsOfWatchlistsFile.return_value = (
+                contents
+            )
+            wl = watchlists.Watchlists("/a/path")
+            self.assertEqual(wl.GetWatchersForPaths(["some_path"]), [])
+            watchlists.logging.error.assert_called()
 
     def testNoWatchers(self):
         contents = """{
@@ -170,6 +187,63 @@ class WatchlistsTest(unittest.TestCase):
 
         wl = watchlists.Watchlists("/a/path")
         self.assertEqual(wl.GetWatchersForPaths(["rce"]), [])
+        watchlists.logging.error.assert_called()
+
+    def testRulesParsingIsCached(self):
+        """Test that multiple Watchlists instances reuse compiled rules via cache."""
+        contents = """{
+        'WATCHLIST_DEFINITIONS': {
+          'a_module': {
+            'filepath': 'a_module',
+          },
+        },
+        'WATCHLISTS': {
+          'a_module': ['user@example.com'],
+        },
+      }"""
+        watchlists.Watchlists._HasWatchlistsFile.return_value = True
+        watchlists.Watchlists._ContentsOfWatchlistsFile.return_value = contents
+
+        with mock.patch(
+            "watchlists._ParseAndCompileWatchlistRules",
+            wraps=watchlists._ParseAndCompileWatchlistRules,
+        ) as mock_parse:
+            wl1 = watchlists.Watchlists("/a/path")
+            self.assertEqual(
+                wl1.GetWatchersForPaths(["a_module"]), ["user@example.com"]
+            )
+            wl2 = watchlists.Watchlists("/a/path")
+            self.assertEqual(
+                wl2.GetWatchersForPaths(["a_module"]), ["user@example.com"]
+            )
+            self.assertEqual(mock_parse.call_count, 2)
+            cache_info = watchlists._ParseAndCompileWatchlistRules.cache_info()
+            self.assertGreaterEqual(cache_info.hits, 1)
+
+    def testInvalidRegexHandledGracefully(self):
+        """Test that an invalid regular expression logs an error but does not crash."""
+        contents = """{
+        'WATCHLIST_DEFINITIONS': {
+          'bad_regex': {
+            'filepath': '[invalid regex(',
+          },
+          'good_module': {
+            'filepath': 'good_module',
+          },
+        },
+        'WATCHLISTS': {
+          'bad_regex': ['bad@example.com'],
+          'good_module': ['good@example.com'],
+        },
+      }"""
+        watchlists.Watchlists._HasWatchlistsFile.return_value = True
+        watchlists.Watchlists._ContentsOfWatchlistsFile.return_value = contents
+
+        wl = watchlists.Watchlists("/a/path")
+        self.assertEqual(
+            wl.GetWatchersForPaths(["good_module"]), ["good@example.com"]
+        )
+        self.assertEqual(wl.GetWatchersForPaths(["bad_regex"]), [])
         watchlists.logging.error.assert_called()
 
 
