@@ -52,6 +52,24 @@
       "parentUuid": "32d55e5c_ca553b59",
       "revId": "e21955f712eec607f7074dfdc02cd8340e12674d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9788954b_0ff1f815",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 4422564
+      },
+      "writtenOn": "2026-08-20T00:08:33Z",
+      "side": 1,
+      "message": "Thank you! I commented on that CL.",
+      "parentUuid": "83e5f409_3b5bf794",
+      "revId": "e21955f712eec607f7074dfdc02cd8340e12674d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
