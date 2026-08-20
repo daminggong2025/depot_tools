@@ -24,6 +24,7 @@ import stat
 import sys
 import tempfile
 import textwrap
+import threading
 import time
 import dataclasses
 import typing
@@ -1614,6 +1615,21 @@ class Changelist(object):
         with great care.
     """
 
+    # Process-wide cache of change details to share across Changelist instances
+    # (e.g. between CMDupload and child instances created in UploadAllSquashed).
+    # Maps (gerrit_host, issue_str) -> [(options_frozenset, detail_dict), ...]
+    _DETAIL_CACHE: dict[tuple[str, str], list[tuple[frozenset[str], dict]]] = {}
+    _DETAIL_CACHE_LOCK: threading.Lock = threading.Lock()
+    # In-flight async warming threads: (gerrit_host, issue_str) -> (Thread, err_fn, options_frozenset)
+    _ASYNC_DETAIL_THREADS: dict[
+        tuple[str, str],
+        tuple[
+            threading.Thread,
+            Callable[[], Optional[Exception]],
+            frozenset[str],
+        ],
+    ] = {}
+
     def __init__(
         self, branchref=None, issue=None, codereview_host=None, commit_date=None
     ):
@@ -1648,8 +1664,6 @@ class Changelist(object):
             None  # e.g. https://chromium-review.googlesource.com
         )
         self._owners_client = None
-        # Map from change number (issue) to its detail cache.
-        self._detail_cache = {}
 
         if codereview_host is not None:
             assert not codereview_host.startswith("https://"), codereview_host
@@ -3142,32 +3156,150 @@ class Changelist(object):
             self.GetGerritHost(), self._GerritChangeIdentifier()
         )
 
+    def AsyncWarmChangeDetail(
+        self, options: Optional[Sequence[str]] = None
+    ) -> Callable[[], None]:
+        """Asynchronously pre-warms change details in a background thread.
+
+        Args:
+            options: Gerrit query options to fetch.
+
+        Returns:
+            A callable join function that blocks until completion and raises any errors.
+        """
+        issue = self.GetIssue()
+        if not issue:
+            return lambda: None
+
+        host = self.GetGerritHost()
+
+        options_list = list(
+            options
+            or [
+                "DETAILED_ACCOUNTS",
+                "CURRENT_REVISION",
+                "CURRENT_COMMIT",
+                "LABELS",
+            ]
+        )
+        # Normalize options before building options_set
+        if any(
+            o.upper() in ("CURRENT_REVISION", "ALL_REVISIONS")
+            for o in options_list
+        ):
+            if not any(o.upper() == "CURRENT_COMMIT" for o in options_list):
+                options_list.append("CURRENT_COMMIT")
+
+        cache_key = (host, str(issue))
+        options_set = frozenset(o.upper() for o in options_list)
+
+        with self._DETAIL_CACHE_LOCK:
+            for cached_options_set, _ in self._DETAIL_CACHE.get(cache_key, []):
+                if options_set.issubset(cached_options_set):
+                    return lambda: None
+
+            if cache_key in self._ASYNC_DETAIL_THREADS:
+                (
+                    thread,
+                    get_err,
+                    active_options,
+                ) = self._ASYNC_DETAIL_THREADS[cache_key]
+                if thread.is_alive() and options_set.issubset(active_options):
+
+                    def _join():
+                        thread.join()
+                        err = get_err()
+                        if err:
+                            raise err
+
+                    return _join
+
+            error_box = [None]
+
+            def _fetch():
+                try:
+                    self._GetChangeDetail(options_list)
+                except Exception as e:
+                    error_box[0] = e
+                finally:
+                    with self._DETAIL_CACHE_LOCK:
+                        if (
+                            self._ASYNC_DETAIL_THREADS.get(cache_key, (None,))[
+                                0
+                            ]
+                            is thread
+                        ):
+                            del self._ASYNC_DETAIL_THREADS[cache_key]
+
+            thread = threading.Thread(target=_fetch, daemon=True)
+            thread.start()
+            self._ASYNC_DETAIL_THREADS[cache_key] = (
+                thread,
+                lambda: error_box[0],
+                options_set,
+            )
+
+        def _join():
+            thread.join()
+            if error_box[0]:
+                raise error_box[0]
+
+        return _join
+
     def _GetChangeDetail(self, options=None):
         """Returns details of associated Gerrit change and caching results."""
-        options = options or []
+        options = list(options or [])
         assert self.GetIssue(), "issue is required to query Gerrit"
+        host = self.GetGerritHost()
 
         # Optimization to avoid multiple RPCs:
-        if "CURRENT_REVISION" in options or "ALL_REVISIONS" in options:
-            options.append("CURRENT_COMMIT")
+        if any(
+            o.upper() in ("CURRENT_REVISION", "ALL_REVISIONS") for o in options
+        ):
+            if not any(o.upper() == "CURRENT_COMMIT" for o in options):
+                options.append("CURRENT_COMMIT")
 
         # Normalize issue and options for consistent keys in cache.
-        cache_key = str(self.GetIssue())
+        cache_key = (host, str(self.GetIssue()))
         options_set = frozenset(o.upper() for o in options)
 
-        for cached_options_set, data in self._detail_cache.get(cache_key, []):
-            # Assumption: data fetched before with extra options is suitable
-            # for return for a smaller set of options.
-            # For example, if we cached data for
-            #     options=[CURRENT_REVISION, DETAILED_FOOTERS]
-            #   and request is for options=[CURRENT_REVISION],
-            # THEN we can return prior cached data.
-            if options_set.issubset(cached_options_set):
-                return data
+        thread_to_wait = None
+        get_err = None
+        with self._DETAIL_CACHE_LOCK:
+            for cached_options_set, data in self._DETAIL_CACHE.get(
+                cache_key, []
+            ):
+                # Assumption: data fetched before with extra options is suitable
+                # for return for a smaller set of options.
+                # For example, if we cached data for
+                #     options=[CURRENT_REVISION, DETAILED_FOOTERS]
+                #   and request is for options=[CURRENT_REVISION],
+                # THEN we can return prior cached data.
+                if options_set.issubset(cached_options_set):
+                    return data
+
+            thread_info = self._ASYNC_DETAIL_THREADS.get(cache_key)
+            if thread_info and threading.current_thread() != thread_info[0]:
+                thread_to_wait, get_err, active_options = thread_info
+                # Only wait if in-flight thread will fulfill this request.
+                if not options_set.issubset(active_options):
+                    thread_to_wait = None
+
+        if thread_to_wait:
+            thread_to_wait.join()
+            err = get_err()
+            if err:
+                raise err
+            with self._DETAIL_CACHE_LOCK:
+                for cached_options_set, data in self._DETAIL_CACHE.get(
+                    cache_key, []
+                ):
+                    if options_set.issubset(cached_options_set):
+                        return data
 
         try:
             data = gerrit_util.GetChangeDetail(
-                self.GetGerritHost(),
+                host,
                 self._GerritChangeIdentifier(),
                 options_set,
             )
@@ -3178,7 +3310,10 @@ class Changelist(object):
                 )
             raise
 
-        self._detail_cache.setdefault(cache_key, []).append((options_set, data))
+        with self._DETAIL_CACHE_LOCK:
+            self._DETAIL_CACHE.setdefault(cache_key, []).append(
+                (options_set, data)
+            )
         return data
 
     def _GetChangeCommit(self, revision: str = "current") -> dict:
@@ -6627,17 +6762,16 @@ def CMDupload(parser, args):
         # Load default for user, repo, squash=true, in this order.
         options.squash = settings.GetSquashGerritUploads()
 
-    # Warm change details cache now to avoid RPCs later, reducing latency for
-    # developers.
-    if cl.GetIssue():
-        cl._GetChangeDetail(
-            [
-                "DETAILED_ACCOUNTS",
-                "CURRENT_REVISION",
-                "CURRENT_COMMIT",
-                "LABELS",
-            ]
-        )
+    # Warm change details cache in the background now to avoid blocking RPCs
+    # later, reducing latency for developers.
+    cl.AsyncWarmChangeDetail(
+        [
+            "DETAILED_ACCOUNTS",
+            "CURRENT_REVISION",
+            "CURRENT_COMMIT",
+            "LABELS",
+        ]
+    )
 
     if options.retry_failed and not cl.GetIssue():
         print("No previous patchsets, so --retry-failed has no effect.")
