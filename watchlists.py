@@ -18,10 +18,68 @@ changes to WATCHLISTS files.
 """
 
 import ast
+from collections.abc import Iterable
+import functools
 import logging
 import os
 import re
 import sys
+from typing import Any, Dict, Tuple
+
+
+@functools.lru_cache(maxsize=8)
+def _ParseAndCompileWatchlistRules(
+    contents: str, rules_filepath: str
+) -> Tuple[Dict[str, Any], Dict[str, Any], Dict[str, Any]]:
+    """Parses and compiles WATCHLISTS rules with LRU caching."""
+    if not contents:
+        return {}, {}, {}
+
+    try:
+        watchlists_data = ast.literal_eval(contents)
+    except Exception as e:
+        logging.error("Cannot parse %s: %s", rules_filepath, e)
+        return {}, {}, {}
+
+    if not isinstance(watchlists_data, dict):
+        logging.error("WATCHLISTS content in %s must be a dict", rules_filepath)
+        return {}, {}, {}
+
+    defns = watchlists_data.get("WATCHLIST_DEFINITIONS")
+    if not isinstance(defns, dict) or not defns:
+        logging.error("WATCHLIST_DEFINITIONS not defined in %s", rules_filepath)
+        return {}, {}, {}
+    watchlists = watchlists_data.get("WATCHLISTS")
+    if not isinstance(watchlists, dict) or not watchlists:
+        logging.error("WATCHLISTS not defined in %s", rules_filepath)
+        return {}, {}, {}
+
+    # Compile the regular expressions ahead of time to avoid creating them
+    # on-the-fly multiple times per file.
+    path_regexps = {}
+    for name, rule in defns.items():
+        if not isinstance(rule, dict):
+            continue
+        filepath = rule.get("filepath")
+        if not filepath:
+            continue
+        try:
+            if not isinstance(filepath, str):
+                raise TypeError(
+                    f"filepath must be a string, got {type(filepath).__name__}"
+                )
+            path_regexps[name] = re.compile(filepath)
+        except (re.error, TypeError) as e:
+            logging.error(
+                "Invalid regex for %s in %s: %s", name, rules_filepath, e
+            )
+
+    # Verify that all watchlist names are defined.
+    for name in watchlists:
+        if name not in defns:
+            logging.error("%s not defined in %s", name, rules_filepath)
+
+    return defns, watchlists, path_regexps
 
 
 class Watchlists(object):
@@ -37,32 +95,33 @@ class Watchlists(object):
 
     _RULES = "WATCHLISTS"
     _RULES_FILENAME = _RULES
-    _repo_root = None
-    _defns = {}  # Definitions
-    _path_regexps = {}  # Name -> Regular expression mapping
-    _watchlists = {}  # name to email mapping
 
     def __init__(self, repo_root):
         self._repo_root = repo_root
+        self._defns = {}
+        self._watchlists = {}
+        self._path_regexps = {}
         self._LoadWatchlistRules()
 
     def _GetRulesFilePath(self):
         """Returns path to WATCHLISTS file."""
+        if not self._repo_root:
+            return ""
         return os.path.join(self._repo_root, self._RULES_FILENAME)
 
     def _HasWatchlistsFile(self):
         """Determine if watchlists are available for this repo."""
+        if not self._repo_root:
+            return False
         return os.path.exists(self._GetRulesFilePath())
 
     def _ContentsOfWatchlistsFile(self):
         """Read the WATCHLISTS file and return its contents."""
         try:
-            watchlists_file = open(self._GetRulesFilePath())
-            contents = watchlists_file.read()
-            watchlists_file.close()
-            return contents
-        except IOError as e:
-            logging.error("Cannot read %s: %s" % (self._GetRulesFilePath(), e))
+            with open(self._GetRulesFilePath(), "r", encoding="utf-8") as f:
+                return f.read()
+        except (IOError, OSError, ValueError) as e:
+            logging.error("Cannot read %s: %s", self._GetRulesFilePath(), e)
             return ""
 
     def _LoadWatchlistRules(self):
@@ -71,44 +130,20 @@ class Watchlists(object):
             return
 
         contents = self._ContentsOfWatchlistsFile()
-        watchlists_data = None
-        try:
-            watchlists_data = ast.literal_eval(contents)
-        except Exception as e:
-            logging.error("Cannot parse %s. %s" % (self._GetRulesFilePath(), e))
+        if not contents:
             return
 
-        defns = watchlists_data.get("WATCHLIST_DEFINITIONS")
-        if not defns:
-            logging.error(
-                "WATCHLIST_DEFINITIONS not defined in %s"
-                % self._GetRulesFilePath()
-            )
-            return
-        watchlists = watchlists_data.get("WATCHLISTS")
-        if not watchlists:
-            logging.error(
-                "WATCHLISTS not defined in %s" % self._GetRulesFilePath()
-            )
-            return
-        self._defns = defns
-        self._watchlists = watchlists
-
-        # Compile the regular expressions ahead of time to avoid creating them
-        # on-the-fly multiple times per file.
-        self._path_regexps = {}
-        for name, rule in defns.items():
-            filepath = rule.get("filepath")
-            if not filepath:
-                continue
-            self._path_regexps[name] = re.compile(filepath)
-
-        # Verify that all watchlist names are defined
-        for name in watchlists:
-            if name not in defns:
-                logging.error(
-                    "%s not defined in %s" % (name, self._GetRulesFilePath())
-                )
+        defns, watchlists, path_regexps = _ParseAndCompileWatchlistRules(
+            contents, self._GetRulesFilePath()
+        )
+        self._defns = {
+            k: dict(v) if isinstance(v, dict) else v for k, v in defns.items()
+        }
+        self._watchlists = {
+            k: list(v) if isinstance(v, (list, set, tuple)) else v
+            for k, v in watchlists.items()
+        }
+        self._path_regexps = dict(path_regexps)
 
     def GetWatchersForPaths(self, paths):
         """Fetch the list of watchers for |paths|
@@ -119,15 +154,28 @@ class Watchlists(object):
         Returns:
             [u1@chromium.org, u2@gmail.com, ...]
         """
+        if not paths or not self._path_regexps:
+            return []
+
         watchers = set()  # A set, to avoid duplicates
         for path in paths:
-            path = path.replace(os.sep, "/")
+            if not isinstance(path, str) or not path:
+                continue
+            path = path.replace("\\", "/")
+            if path.startswith("./"):
+                path = path[2:]
             for name, rule in self._path_regexps.items():
                 if name not in self._watchlists:
                     continue
                 if rule.search(path):
-                    for watchlist in self._watchlists[name]:
-                        watchers.add(watchlist)
+                    emails = self._watchlists[name]
+                    if isinstance(emails, str):
+                        if emails:
+                            watchers.add(emails)
+                    elif isinstance(emails, Iterable):
+                        for watchlist in emails:
+                            if isinstance(watchlist, str) and watchlist:
+                                watchers.add(watchlist)
         return sorted(watchers)
 
 
