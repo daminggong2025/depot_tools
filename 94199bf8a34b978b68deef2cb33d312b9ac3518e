@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "39ead39f_f97ca236",
+        "filename": "git_cl.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 3194,
+      "author": {
+        "id": 1000266
+      },
+      "writtenOn": "2026-08-21T02:36:23Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b1c45e98_2c66e0d3",
+      "range": {
+        "startLine": 3187,
+        "startChar": 12,
+        "endLine": 3194,
+        "endChar": 41
+      },
+      "revId": "94199bf8a34b978b68deef2cb33d312b9ac3518e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "f6ef617f_dfaa74a2",
@@ -37,6 +61,30 @@
       "writtenOn": "2026-08-21T00:24:06Z",
       "side": 1,
       "message": "I\u0027ve missed the point why does this have to be a single element list when we always get the first element of it? Maybe just have it be a variable?",
+      "range": {
+        "startLine": 3217,
+        "startChar": 12,
+        "endLine": 3217,
+        "endChar": 30
+      },
+      "revId": "94199bf8a34b978b68deef2cb33d312b9ac3518e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a1cdbb92_7d534a71",
+        "filename": "git_cl.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 3217,
+      "author": {
+        "id": 1000266
+      },
+      "writtenOn": "2026-08-21T02:36:23Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f6ef617f_dfaa74a2",
       "range": {
         "startLine": 3217,
         "startChar": 12,
@@ -70,6 +118,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "79b4c071_62ad274d",
+        "filename": "git_cl.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 3249,
+      "author": {
+        "id": 1000266
+      },
+      "writtenOn": "2026-08-21T02:36:23Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e111391e_96a78cc0",
+      "range": {
+        "startLine": 3249,
+        "startChar": 31,
+        "endLine": 3249,
+        "endChar": 43
+      },
+      "revId": "94199bf8a34b978b68deef2cb33d312b9ac3518e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "7f3a1845_c984f7c3",
@@ -83,6 +155,30 @@
       "writtenOn": "2026-08-21T00:24:06Z",
       "side": 1,
       "message": "Ditto on a lot of normalizations",
+      "range": {
+        "startLine": 3257,
+        "startChar": 11,
+        "endLine": 3257,
+        "endChar": 21
+      },
+      "revId": "94199bf8a34b978b68deef2cb33d312b9ac3518e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9ed917dd_0357d379",
+        "filename": "git_cl.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 3257,
+      "author": {
+        "id": 1000266
+      },
+      "writtenOn": "2026-08-21T02:36:23Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7f3a1845_c984f7c3",
       "range": {
         "startLine": 3257,
         "startChar": 11,
