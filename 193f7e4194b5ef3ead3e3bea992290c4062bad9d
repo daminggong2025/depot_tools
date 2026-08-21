@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6f44d7de_7a18d3ca",
+        "filename": "gerrit_util.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 1255,
+      "author": {
+        "id": 3355336
+      },
+      "writtenOn": "2026-08-21T00:20:20Z",
+      "side": 0,
+      "message": "Unfortunately someone landed a keep-alive change right before this and unfortunately the impl is tightly coupled to httplib2.\n\nSpoke with them and I think the way to go is to land this first and then look into migrating to the requests lib.",
+      "revId": "193f7e4194b5ef3ead3e3bea992290c4062bad9d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
