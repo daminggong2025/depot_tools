@@ -10,9 +10,11 @@ from __future__ import annotations
 
 import base64
 import collections
+import concurrent.futures
 import datetime
 import fnmatch
 import functools
+import io
 import itertools
 import json
 import logging
@@ -8880,6 +8882,49 @@ FormatterFunction = Callable[
 ]
 
 
+class _ThreadLocalStream:
+    """Thread-local stream proxy that routes text and binary writes to a per-thread buffer.
+
+    When multiple formatters run concurrently (e.g. clang-format, ruff, gn format),
+    each worker thread may write diffs, status messages, or warnings directly to
+    sys.stdout or sys.stderr (via print(), sys.stdout.write(), or sys.stdout.buffer.write()).
+    This proxy intercepts writes in each worker thread and redirects them into an
+    isolated thread-local memory buffer (io.BytesIO).
+
+    Any write from an unmanaged thread (or the main thread when no buffer is active)
+    transparently falls back to the underlying default stream.
+    """
+
+    def __init__(self, fallback_stream):
+        self._fallback = fallback_stream
+        self._local = threading.local()
+
+    def set_buffer(self, buf: Optional[io.BytesIO]):
+        self._local.buf = buf
+
+    def get_buffer(self) -> Optional[io.BytesIO]:
+        return getattr(self._local, "buf", None)
+
+    def write(self, s):
+        buf = self.get_buffer()
+        if buf is not None:
+            if isinstance(s, str):
+                buf.write(s.encode("utf-8", "replace"))
+            else:
+                buf.write(s)
+        else:
+            self._fallback.write(s)
+
+    def flush(self):
+        buf = self.get_buffer()
+        if buf is None:
+            self._fallback.flush()
+
+    @property
+    def buffer(self):
+        return self
+
+
 def _SplitDiffsByFile(diff_string: str) -> Dict[str, str]:  # noqa: F821
     """Split a given diff string into per-file patches.
 
@@ -9155,7 +9200,7 @@ def CMDformat(parser: optparse.OptionParser, args: list[str]):
     if opts.lucicfg:
         formatters.append(([".star"], _RunLUCICfgFormat, []))
 
-    return_value = 0
+    tasks: list[tuple[FormatterFunction, list[str]]] = []
     for item in formatters:
         file_types, format_func, exclude_types = item
 
@@ -9165,12 +9210,74 @@ def CMDformat(parser: optparse.OptionParser, args: list[str]):
             if p.lower().endswith(tuple(file_types))
             and not p.lower().endswith(tuple(exclude_types))
         ]
-        if not paths:
-            continue
-        ret = format_func(opts, paths, top_dir, diffs)
-        return_value = return_value or ret
+        if paths:
+            tasks.append((format_func, paths))
 
-    return return_value
+    if not tasks:
+        return 0
+
+    # If only a single language formatter is needed, run it directly on the main
+    # thread to avoid thread pool and buffer allocation overhead.
+    if len(tasks) == 1:
+        format_func, paths = tasks[0]
+        return format_func(opts, paths, top_dir, diffs)
+
+    # For multi-language changes, execute formatters concurrently across CPU
+    # cores. To prevent concurrent threads from interleaving stdout/stderr
+    # (e.g. diffs during git cl format --diff, or unformatted warnings during
+    # git cl upload --dry-run), install thread-local proxies and buffer each
+    # formatter's output independently.
+    stdout_proxy = _ThreadLocalStream(sys.stdout)
+    stderr_proxy = _ThreadLocalStream(sys.stderr)
+
+    def _RunWorker(
+        format_func: FormatterFunction, paths: list[str]
+    ) -> tuple[int, bytes, bytes]:
+        out_buf = io.BytesIO()
+        err_buf = io.BytesIO()
+        stdout_proxy.set_buffer(out_buf)
+        stderr_proxy.set_buffer(err_buf)
+        try:
+            ret = format_func(opts, paths, top_dir, diffs)
+            return ret, out_buf.getvalue(), err_buf.getvalue()
+        finally:
+            stdout_proxy.set_buffer(None)
+            stderr_proxy.set_buffer(None)
+
+    orig_stdout, orig_stderr = sys.stdout, sys.stderr
+    sys.stdout, sys.stderr = stdout_proxy, stderr_proxy
+    try:
+        with concurrent.futures.ThreadPoolExecutor(
+            max_workers=min(len(tasks), 8)
+        ) as executor:
+            # Submit all language formatters concurrently.
+            futures = [
+                executor.submit(_RunWorker, func, paths)
+                for func, paths in tasks
+            ]
+            return_value = 0
+            # Iterate through futures in original task order so that outputs
+            # (diffs, notices, errors) are emitted deterministically and sequentially.
+            for future in futures:
+                ret, out_bytes, err_bytes = future.result()
+                if out_bytes:
+                    if hasattr(orig_stdout, "buffer"):
+                        orig_stdout.buffer.write(out_bytes)
+                    else:
+                        orig_stdout.write(out_bytes.decode("utf-8", "replace"))
+                    orig_stdout.flush()
+                if err_bytes:
+                    if hasattr(orig_stderr, "buffer"):
+                        orig_stderr.buffer.write(err_bytes)
+                    else:
+                        orig_stderr.write(err_bytes.decode("utf-8", "replace"))
+                    orig_stderr.flush()
+                # Deterministically preserve the highest error code (e.g. exit
+                # code 2 from unformatted patches vs generic failure code 1).
+                return_value = max(return_value, ret)
+            return return_value
+    finally:
+        sys.stdout, sys.stderr = orig_stdout, orig_stderr
 
 
 @subcommand.usage("<codereview url or issue id>")
