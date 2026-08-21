@@ -684,6 +684,7 @@ class PresubmitUnittest(PresubmitTestsBase):
             fake_presubmit,
         )
         self.assertEqual(["baz", "quux"], [r._items for r in result])
+        executer.Cleanup()
 
         self.assertEqual(
             os.remove.mock_calls, [mock.call("baz"), mock.call("quux")]
@@ -2134,6 +2135,61 @@ class InputApiUnittest(PresubmitTestsBase):
             TypeError, input_api.CreateTemporaryFile, delete=False
         )
         self.assertEqual(["foo", "bar"], input_api._named_temporary_files)
+
+    def testCreateTemporaryDirectory(self):
+        input_api = presubmit.InputApi(
+            self.fake_change,
+            presubmit_path="foo/path/PRESUBMIT.py",
+            is_committing=False,
+            gerrit_obj=None,
+            verbose=False,
+        )
+        self.assertEqual(0, len(input_api._temporary_directories))
+        temp_dir = input_api.CreateTemporaryDirectory()
+        self.assertTrue(os.path.isdir(temp_dir))
+        self.assertEqual(1, len(input_api._temporary_directories))
+        self.assertEqual(temp_dir, input_api._temporary_directories[0].name)
+        input_api._temporary_directories[0].cleanup()
+
+    def testRunTestsParallelFalseSynchronous(self):
+        input_api = presubmit.InputApi(
+            self.fake_change,
+            presubmit_path="foo/path/PRESUBMIT.py",
+            is_committing=False,
+            gerrit_obj=None,
+            verbose=False,
+            parallel=True,
+        )
+        queued_parallel_test = presubmit.CommandData(
+            name="queued_parallel_test",
+            cmd=["python", "-c", ""],
+            kwargs={},
+            message=presubmit.OutputApi.PresubmitError,
+        )
+        # Queue a parallel test first.
+        input_api.RunTests([queued_parallel_test], parallel=True)
+        self.assertEqual(1, len(input_api.thread_pool._tests))
+
+        sync_test = presubmit.CommandData(
+            name="sync_test",
+            cmd=["python", "-c", ""],
+            kwargs={},
+            message=presubmit.OutputApi.PresubmitError,
+        )
+        with mock.patch.object(
+            input_api.thread_pool,
+            "CallCommand",
+            return_value=presubmit.OutputApi.PresubmitError("error"),
+        ) as mock_call:
+            msgs = input_api.RunTests([sync_test], parallel=False)
+            self.assertEqual(1, len(msgs))
+            mock_call.assert_called_once_with(sync_test)
+            # The queued parallel test should remain untouched in the pool.
+            self.assertEqual(1, len(input_api.thread_pool._tests))
+            self.assertEqual(
+                queued_parallel_test, input_api.thread_pool._tests[0]
+            )
+            self.assertEqual(0, len(input_api.thread_pool._nonparallel_tests))
 
 
 class OutputApiUnittest(PresubmitTestsBase):
