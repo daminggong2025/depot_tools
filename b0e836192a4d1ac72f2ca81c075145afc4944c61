@@ -22,6 +22,30 @@
       },
       "revId": "b0e836192a4d1ac72f2ca81c075145afc4944c61",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e3caf9b5_932ef83b",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2026-08-21T17:08:59Z",
+      "side": 1,
+      "message": "I did not intentionally omit it, but I don\u0027t think any delete verbs were used by depot_tools at the time.",
+      "parentUuid": "4a2080d9_3fda89e5",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 10,
+        "endChar": 20
+      },
+      "revId": "b0e836192a4d1ac72f2ca81c075145afc4944c61",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
