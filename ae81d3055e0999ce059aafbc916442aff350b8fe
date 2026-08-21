@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8df26c1f_b942f750",
+        "filename": "watchlists.py",
+        "patchSetId": 11
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-08-21T00:32:42Z",
+      "side": 1,
+      "message": "I would either extend the description or make that anamed tuple to explain what gets returned.",
+      "range": {
+        "startLine": 33,
+        "startChar": 5,
+        "endLine": 34,
+        "endChar": 64
+      },
+      "revId": "ae81d3055e0999ce059aafbc916442aff350b8fe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
