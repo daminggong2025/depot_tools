@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import base64
 import collections
+import concurrent.futures
 import datetime
 import fnmatch
 import functools
@@ -9155,7 +9156,7 @@ def CMDformat(parser: optparse.OptionParser, args: list[str]):
     if opts.lucicfg:
         formatters.append(([".star"], _RunLUCICfgFormat, []))
 
-    return_value = 0
+    tasks: list[tuple[FormatterFunction, list[str]]] = []
     for item in formatters:
         file_types, format_func, exclude_types = item
 
@@ -9165,10 +9166,29 @@ def CMDformat(parser: optparse.OptionParser, args: list[str]):
             if p.lower().endswith(tuple(file_types))
             and not p.lower().endswith(tuple(exclude_types))
         ]
-        if not paths:
-            continue
-        ret = format_func(opts, paths, top_dir, diffs)
-        return_value = return_value or ret
+        if paths:
+            tasks.append((format_func, paths))
+
+    if not tasks:
+        return 0
+
+    if len(tasks) == 1:
+        format_func, paths = tasks[0]
+        return format_func(opts, paths, top_dir, diffs)
+
+    return_value = 0
+    with concurrent.futures.ThreadPoolExecutor(
+        max_workers=min(len(tasks), 8)
+    ) as executor:
+        future_to_func = {
+            executor.submit(
+                format_func, opts, paths, top_dir, diffs
+            ): format_func
+            for format_func, paths in tasks
+        }
+        for future in concurrent.futures.as_completed(future_to_func):
+            ret = future.result()
+            return_value = return_value or ret
 
     return return_value
 
