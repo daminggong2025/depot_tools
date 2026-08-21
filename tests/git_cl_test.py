@@ -8505,6 +8505,146 @@ diff --git a/ui/webui/resources/tools/bar.html.ts b/ui/webui/resources/tools/bar
             os.remove(input_diff.name)
             os.chdir(previous_cwd)
 
+    @mock.patch("git_cl._RunGnFormat", return_value=0)
+    @mock.patch("git_cl._RunPythonFormat", return_value=0)
+    @mock.patch("git_cl._RunClangFormatDiff", return_value=0)
+    def testConcurrentMultiLanguageFormat(
+        self, clang_formatter, python_formatter, gn_formatter
+    ):
+        multi_lang_diff = """
+diff --git a/test.cc b/test.cc
+--- a/test.cc
++++ b/test.cc
+@@ -1,1 +1,1 @@
+-int a = 1;
++int a = 2;
+diff --git a/test.py b/test.py
+--- a/test.py
++++ b/test.py
+@@ -1,1 +1,1 @@
+-x = 1
++x = 2
+diff --git a/BUILD.gn b/BUILD.gn
+--- a/BUILD.gn
++++ b/BUILD.gn
+@@ -1,1 +1,1 @@
+-sources = []
++sources = [ "a.cc" ]
+        """
+        with tempfile.NamedTemporaryFile(mode="w+", delete=False) as input_diff:
+            input_diff.write(multi_lang_diff)
+
+        try:
+            previous_cwd = os.getcwd()
+            os.chdir(self._top_dir)
+            ret = git_cl.main(
+                [
+                    "format",
+                    "--input_diff_file",
+                    input_diff.name,
+                    "--presubmit",
+                    "--python",
+                ]
+            )
+            self.assertEqual(0, ret)
+            clang_formatter.assert_called_once_with(
+                mock.ANY, ["test.cc"], mock.ANY, mock.ANY
+            )
+            python_formatter.assert_called_once_with(
+                mock.ANY, ["test.py"], mock.ANY, mock.ANY
+            )
+            gn_formatter.assert_called_once_with(
+                mock.ANY, ["BUILD.gn"], mock.ANY, mock.ANY
+            )
+        finally:
+            os.remove(input_diff.name)
+            os.chdir(previous_cwd)
+
+    @mock.patch("git_cl._RunGnFormat", return_value=2)
+    @mock.patch("git_cl._RunPythonFormat", return_value=0)
+    @mock.patch("git_cl._RunClangFormatDiff", return_value=0)
+    def testConcurrentMultiLanguageFormatNonZeroReturn(
+        self, clang_formatter, python_formatter, gn_formatter
+    ):
+        multi_lang_diff = """
+diff --git a/test.cc b/test.cc
+--- a/test.cc
++++ b/test.cc
+@@ -1,1 +1,1 @@
+-int a = 1;
++int a = 2;
+diff --git a/BUILD.gn b/BUILD.gn
+--- a/BUILD.gn
++++ b/BUILD.gn
+@@ -1,1 +1,1 @@
+-sources = []
++sources = [ "a.cc" ]
+        """
+        with tempfile.NamedTemporaryFile(mode="w+", delete=False) as input_diff:
+            input_diff.write(multi_lang_diff)
+
+        try:
+            previous_cwd = os.getcwd()
+            os.chdir(self._top_dir)
+            ret = git_cl.main(
+                [
+                    "format",
+                    "--input_diff_file",
+                    input_diff.name,
+                    "--presubmit",
+                    "--dry-run",
+                ]
+            )
+            self.assertEqual(2, ret)
+            clang_formatter.assert_called_once()
+            gn_formatter.assert_called_once()
+        finally:
+            os.remove(input_diff.name)
+            os.chdir(previous_cwd)
+
+    @mock.patch("git_cl._RunGnFormat", return_value=0)
+    @mock.patch("git_cl._RunPythonFormat", return_value=0)
+    @mock.patch("git_cl._RunClangFormatDiff", return_value=0)
+    def testMultiLanguageFormatDiffSequential(
+        self, clang_formatter, python_formatter, gn_formatter
+    ):
+        multi_lang_diff = """
+diff --git a/test.cc b/test.cc
+--- a/test.cc
++++ b/test.cc
+@@ -1,1 +1,1 @@
+-int a = 1;
++int a = 2;
+diff --git a/test.py b/test.py
+--- a/test.py
++++ b/test.py
+@@ -1,1 +1,1 @@
+-x = 1
++x = 2
+        """
+        with tempfile.NamedTemporaryFile(mode="w+", delete=False) as input_diff:
+            input_diff.write(multi_lang_diff)
+
+        try:
+            previous_cwd = os.getcwd()
+            os.chdir(self._top_dir)
+            ret = git_cl.main(
+                [
+                    "format",
+                    "--input_diff_file",
+                    input_diff.name,
+                    "--presubmit",
+                    "--diff",
+                    "--python",
+                ]
+            )
+            self.assertEqual(0, ret)
+            clang_formatter.assert_called_once()
+            python_formatter.assert_called_once()
+        finally:
+            os.remove(input_diff.name)
+            os.chdir(previous_cwd)
+
 
 @unittest.skipIf(
     gclient_utils.IsEnvCog(), "not supported in non-git environment"
