@@ -10,9 +10,11 @@ from __future__ import annotations
 
 import base64
 import collections
+import concurrent.futures
 import datetime
 import fnmatch
 import functools
+import io
 import itertools
 import json
 import logging
@@ -210,15 +212,42 @@ def GetNoGitPagerEnv():
 
 
 def RunCommand(args, error_ok=False, error_message=None, shell=False, **kwargs):
+    capture_stderr = "stderr" not in kwargs
+    if capture_stderr:
+        kwargs["stderr"] = subprocess2.PIPE
+    stdin_data = kwargs.pop("stdin", None)
     try:
-        stdout = subprocess2.check_output(args, shell=shell, **kwargs)
-        return stdout.decode("utf-8", "replace")
+        (stdout, stderr), code = subprocess2.communicate(
+            args,
+            stdin=stdin_data,
+            shell=shell,
+            stdout=subprocess2.PIPE,
+            **kwargs,
+        )
+        if capture_stderr and stderr:
+            sys.stderr.flush()
+            if hasattr(sys.stderr, "buffer"):
+                sys.stderr.buffer.write(stderr)
+            else:
+                sys.stderr.write(stderr.decode("utf-8", "replace"))
+            sys.stderr.flush()
+
+        out_str = stdout.decode("utf-8", "replace") if stdout else ""
+        if code != 0:
+            raise subprocess2.CalledProcessError(
+                code, args, kwargs.get("cwd"), stdout, stderr
+            )
+        return out_str
     except subprocess2.CalledProcessError as e:
         logging.debug("Failed running %s", args)
         if not error_ok:
-            message = error_message or e.stdout.decode("utf-8", "replace") or ""
+            message = (
+                error_message
+                or (e.stdout.decode("utf-8", "replace") if e.stdout else "")
+                or ""
+            )
             DieWithError('Command "%s" failed.\n%s' % (" ".join(args), message))
-        out = e.stdout.decode("utf-8", "replace")
+        out = e.stdout.decode("utf-8", "replace") if e.stdout else ""
         if e.stderr:
             out += e.stderr.decode("utf-8", "replace")
         return out
@@ -8208,6 +8237,38 @@ def RunGitDiffCmd(
     return output
 
 
+def _RunFormatterSubprocess(
+    cmd: list[str],
+    cwd: Optional[str] = None,
+    shell: bool = False,
+    stdin: Optional[bytes] = None,
+) -> int:
+    """Runs a formatter subprocess, capturing stdout/stderr and routing them to sys.stdout/sys.stderr."""
+    (stdout, stderr), code = subprocess2.communicate(
+        cmd,
+        cwd=cwd,
+        shell=shell,
+        stdin=stdin,
+        stdout=subprocess2.PIPE,
+        stderr=subprocess2.PIPE,
+    )
+    if stdout:
+        sys.stdout.flush()
+        if hasattr(sys.stdout, "buffer"):
+            sys.stdout.buffer.write(stdout)
+        else:
+            sys.stdout.write(stdout.decode("utf-8", "replace"))
+        sys.stdout.flush()
+    if stderr:
+        sys.stderr.flush()
+        if hasattr(sys.stderr, "buffer"):
+            sys.stderr.buffer.write(stderr)
+        else:
+            sys.stderr.write(stderr.decode("utf-8", "replace"))
+        sys.stderr.flush()
+    return code
+
+
 def _RunClangFormatDiff(opts, paths, top_dir, diffs):
     """Runs clang-format-diff and sets a return value if necessary."""
     # Set to 2 to signal to CheckPatchFormatted() that this patch isn't
@@ -8421,7 +8482,7 @@ def _RunKtfmt(opts, paths, top_dir, diffs):
         cmd += ["--set-exit-if-changed", "--dry-run"]
 
     for paths_batch in _SplitArgsByCmdLineLimit(paths):
-        ktfmt_exitcode = subprocess2.call(cmd + paths_batch, shell=False)
+        ktfmt_exitcode = _RunFormatterSubprocess(cmd + paths_batch, shell=False)
         if opts.dry_run and ktfmt_exitcode != 0:
             return 2
 
@@ -8449,7 +8510,9 @@ def _RunRustFmt(opts, paths, top_dir, diffs):
         cmd.append("--check")
 
     for paths_batch in _SplitArgsByCmdLineLimit(paths):
-        rustfmt_exitcode = subprocess2.call(cmd + paths_batch, shell=False)
+        rustfmt_exitcode = _RunFormatterSubprocess(
+            cmd + paths_batch, shell=False
+        )
         if opts.dry_run and rustfmt_exitcode != 0:
             return 2
 
@@ -8475,7 +8538,7 @@ def _RunSwiftFormat(opts, paths, top_dir, diffs):
     else:
         cmd += ["format", "-i"]
     cmd += paths
-    swift_format_exitcode = subprocess2.call(cmd, stderr=subprocess2.STDOUT)
+    swift_format_exitcode = _RunFormatterSubprocess(cmd)
 
     if opts.dry_run and swift_format_exitcode != 0:
         return 2
@@ -8684,7 +8747,7 @@ def _RunMarkdownFormat(
     elif opts.dry_run:
         cmd.append("--check")
 
-    exit_code = subprocess2.call(cmd + paths)
+    exit_code = _RunFormatterSubprocess(cmd + paths)
     if exit_code == 2:
         return_value = 2
 
@@ -8750,7 +8813,7 @@ def _RunLitTemplateFormatter(
 
     return_value = 0
     for paths_batch in _SplitArgsByCmdLineLimit(paths):
-        exit_code = subprocess2.call(cmd + paths_batch, cwd=top_dir)
+        exit_code = _RunFormatterSubprocess(cmd + paths_batch, cwd=top_dir)
         if exit_code != 0:
             if opts.dry_run:
                 return_value = 2
@@ -8766,7 +8829,7 @@ def _RunGnFormat(opts, paths, top_dir, diffs):
         cmd.append("--dry-run")
     return_value = 0
     for path in paths:
-        gn_ret = subprocess2.call(
+        gn_ret = _RunFormatterSubprocess(
             cmd + [path], shell=sys.platform.startswith("win"), cwd=top_dir
         )
         if opts.diff and gn_ret == 2:
@@ -8809,7 +8872,7 @@ def _RunMojomFormat(opts, paths, top_dir, diffs):
         cmd.append("--dry-run")
     cmd.extend(paths)
 
-    ret = subprocess2.call(cmd)
+    ret = _RunFormatterSubprocess(cmd)
     if opts.dry_run and ret != 0:
         return 2
 
@@ -8868,7 +8931,7 @@ def _RunLUCICfgFormat(opts, paths, top_dir, diffs):
         cmd.append("--dry-run")
     cmd.extend(paths)
 
-    ret = subprocess2.call(cmd)
+    ret = _RunFormatterSubprocess(cmd)
     if opts.dry_run and ret != 0:
         return 2
 
@@ -8878,6 +8941,62 @@ def _RunLUCICfgFormat(opts, paths, top_dir, diffs):
 FormatterFunction = Callable[
     [optparse.Values, list[str], str, Optional[Mapping[str, str]]], int
 ]
+
+
+class _ThreadLocalStream:
+    """Thread-local stream proxy that routes text and binary writes to a per-thread buffer.
+
+    When multiple formatters run concurrently (e.g. clang-format, ruff, gn format),
+    each worker thread may write diffs, status messages, or warnings directly to
+    sys.stdout or sys.stderr (via print(), sys.stdout.write(), or sys.stdout.buffer.write()).
+    This proxy intercepts writes in each worker thread and redirects them into an
+    isolated thread-local memory buffer (io.BytesIO).
+
+    Any write from an unmanaged thread (or the main thread when no buffer is active)
+    transparently falls back to the underlying default stream.
+    """
+
+    def __init__(self, fallback_stream):
+        self._fallback = fallback_stream
+        self._local = threading.local()
+
+    def set_buffer(self, buf: Optional[io.BytesIO]):
+        self._local.buf = buf
+
+    def get_buffer(self) -> Optional[io.BytesIO]:
+        return getattr(self._local, "buf", None)
+
+    def write(self, s):
+        buf = self.get_buffer()
+        if buf is not None:
+            if isinstance(s, str):
+                buf.write(s.encode("utf-8", "replace"))
+                return len(s)
+            return buf.write(s)
+        if isinstance(s, bytes):
+            if hasattr(self._fallback, "buffer"):
+                return self._fallback.buffer.write(s)
+            return self._fallback.write(s.decode("utf-8", "replace"))
+        return self._fallback.write(s)
+
+    def writelines(self, lines):
+        for line in lines:
+            self.write(line)
+
+    def flush(self):
+        buf = self.get_buffer()
+        if buf is None:
+            self._fallback.flush()
+
+    @property
+    def buffer(self):
+        return self
+
+    def __getattr__(self, name):
+        # Delegate unknown stream attributes (e.g. isatty(), encoding, fileno())
+        # to the fallback stream so formatters and libraries inspect stream
+        # capabilities transparently.
+        return getattr(self._fallback, name)
 
 
 def _SplitDiffsByFile(diff_string: str) -> Dict[str, str]:  # noqa: F821
@@ -9155,7 +9274,7 @@ def CMDformat(parser: optparse.OptionParser, args: list[str]):
     if opts.lucicfg:
         formatters.append(([".star"], _RunLUCICfgFormat, []))
 
-    return_value = 0
+    tasks: list[tuple[FormatterFunction, list[str]]] = []
     for item in formatters:
         file_types, format_func, exclude_types = item
 
@@ -9165,12 +9284,93 @@ def CMDformat(parser: optparse.OptionParser, args: list[str]):
             if p.lower().endswith(tuple(file_types))
             and not p.lower().endswith(tuple(exclude_types))
         ]
-        if not paths:
-            continue
-        ret = format_func(opts, paths, top_dir, diffs)
-        return_value = return_value or ret
+        if paths:
+            tasks.append((format_func, paths))
 
-    return return_value
+    if not tasks:
+        return 0
+
+    # If only a single language formatter is needed, run it directly on the main
+    # thread to avoid thread pool and buffer allocation overhead.
+    if len(tasks) == 1:
+        format_func, paths = tasks[0]
+        return format_func(opts, paths, top_dir, diffs)
+
+    # For multi-language changes, execute formatters concurrently across CPU
+    # cores. To prevent concurrent threads from interleaving stdout/stderr
+    # (e.g. diffs during git cl format --diff, or unformatted warnings during
+    # git cl upload --dry-run), install thread-local proxies and buffer each
+    # formatter's output independently.
+    stdout_proxy = _ThreadLocalStream(sys.stdout)
+    stderr_proxy = _ThreadLocalStream(sys.stderr)
+
+    def _RunWorker(
+        format_func: FormatterFunction, paths: list[str]
+    ) -> tuple[int, bytes, bytes]:
+        out_buf = io.BytesIO()
+        err_buf = io.BytesIO()
+        stdout_proxy.set_buffer(out_buf)
+        stderr_proxy.set_buffer(err_buf)
+        try:
+            ret = format_func(opts, paths, top_dir, diffs)
+            return ret, out_buf.getvalue(), err_buf.getvalue()
+        except BaseException:
+            out_bytes = out_buf.getvalue()
+            if out_bytes:
+                if hasattr(orig_stdout, "buffer"):
+                    orig_stdout.buffer.write(out_bytes)
+                else:
+                    orig_stdout.write(out_bytes.decode("utf-8", "replace"))
+                orig_stdout.flush()
+
+            err_bytes = err_buf.getvalue()
+            if err_bytes:
+                if hasattr(orig_stderr, "buffer"):
+                    orig_stderr.buffer.write(err_bytes)
+                else:
+                    orig_stderr.write(err_bytes.decode("utf-8", "replace"))
+                orig_stderr.flush()
+            raise
+        finally:
+            stdout_proxy.set_buffer(None)
+            stderr_proxy.set_buffer(None)
+
+    orig_stdout, orig_stderr = sys.stdout, sys.stderr
+    sys.stdout, sys.stderr = stdout_proxy, stderr_proxy
+    try:
+        with concurrent.futures.ThreadPoolExecutor(
+            max_workers=min(len(tasks), 8)
+        ) as executor:
+            # Submit all language formatters concurrently.
+            futures = [
+                executor.submit(_RunWorker, func, paths)
+                for func, paths in tasks
+            ]
+            return_value = 0
+            # Iterate through futures in original task order so that outputs
+            # (diffs, notices, errors) are emitted deterministically and sequentially.
+            for future in futures:
+                ret, out_bytes, err_bytes = future.result()
+                if out_bytes:
+                    if hasattr(orig_stdout, "buffer"):
+                        orig_stdout.buffer.write(out_bytes)
+                    else:
+                        orig_stdout.write(out_bytes.decode("utf-8", "replace"))
+                    orig_stdout.flush()
+                if err_bytes:
+                    if hasattr(orig_stderr, "buffer"):
+                        orig_stderr.buffer.write(err_bytes)
+                    else:
+                        orig_stderr.write(err_bytes.decode("utf-8", "replace"))
+                    orig_stderr.flush()
+                # Deterministically preserve error codes (prioritizing code 2
+                # from unformatted dry-run checks over other non-zero/negative codes).
+                if ret != 0:
+                    if return_value == 0 or ret == 2:
+                        return_value = ret
+            return return_value
+    finally:
+        sys.stdout, sys.stderr = orig_stdout, orig_stderr
 
 
 @subcommand.usage("<codereview url or issue id>")
