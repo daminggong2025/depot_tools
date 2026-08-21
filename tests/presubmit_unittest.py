@@ -2350,6 +2350,39 @@ class AffectedFileUnittest(PresubmitTestsBase):
             ).Extension()
             self.assertEqual(expectedExtension, extension)
 
+    def testOldContentsCached(self):
+        diff_cache = mock.MagicMock()
+        diff_cache.GetOldContents.return_value = "old line 1\nold line 2"
+        af = presubmit.GitAffectedFile(
+            "foo/blat.cc", "M", self.fake_root_dir, diff_cache
+        )
+        self.assertEqual(["old line 1", "old line 2"], af.OldContents())
+        self.assertEqual(["old line 1", "old line 2"], af.OldContents())
+        diff_cache.GetOldContents.assert_called_once_with(
+            presubmit.normpath("foo/blat.cc"), self.fake_root_dir
+        )
+
+    def testGitDiffCacheGetOldContentsCached(self):
+        with mock.patch(
+            "scm.GIT.GetOldContents", return_value="content"
+        ) as mock_get:
+            diff_cache = presubmit._GitDiffCache("upstream", "HEAD")
+            res1 = diff_cache.GetOldContents("foo.cc", self.fake_root_dir)
+            res2 = diff_cache.GetOldContents("foo.cc", self.fake_root_dir)
+            self.assertEqual("content", res1)
+            self.assertEqual("content", res2)
+            mock_get.assert_called_once_with(
+                self.fake_root_dir, "foo.cc", branch="upstream"
+            )
+
+    def testProvidedDiffCacheGetOldContentsCached(self):
+        diff_cache = presubmit._ProvidedDiffCache("diff content")
+        diff_cache._old_contents_by_file["foo.cc"] = "cached old"
+        self.assertEqual(
+            "cached old",
+            diff_cache.GetOldContents("foo.cc", self.fake_root_dir),
+        )
+
 
 class ChangeUnittest(PresubmitTestsBase):
     def testAffectedFiles(self):
