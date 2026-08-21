@@ -6825,7 +6825,7 @@ class CMDPresubmitTestCase(CMDTestCaseBase):
             committing=True,
             may_prompt=False,
             verbose=0,
-            parallel=None,
+            parallel=True,
             upstream="upstream",
             description="fetch description",
             all_files=None,
@@ -6841,7 +6841,7 @@ class CMDPresubmitTestCase(CMDTestCaseBase):
             committing=True,
             may_prompt=False,
             verbose=0,
-            parallel=None,
+            parallel=True,
             upstream="upstream",
             description="get description",
             all_files=None,
@@ -6856,8 +6856,23 @@ class CMDPresubmitTestCase(CMDTestCaseBase):
             committing=True,
             may_prompt=False,
             verbose=0,
-            parallel=None,
+            parallel=True,
             upstream="custom_branch",
+            description="fetch description",
+            all_files=None,
+            files=None,
+            resultdb=None,
+            realm=None,
+        )
+
+    def testNoParallelOption(self):
+        self.assertEqual(0, git_cl.main(["presubmit", "--no-parallel"]))
+        git_cl.Changelist.RunHook.assert_called_once_with(
+            committing=True,
+            may_prompt=False,
+            verbose=0,
+            parallel=False,
+            upstream="upstream",
             description="fetch description",
             all_files=None,
             files=None,
