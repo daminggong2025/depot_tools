@@ -74,6 +74,30 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "7626c327_3891bd2d",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2026-08-21T17:16:53Z",
+      "side": 1,
+      "message": "No concerns for me :)",
+      "parentUuid": "e0f67029_3a1724a3",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 10,
+        "endChar": 20
+      },
+      "revId": "b0e836192a4d1ac72f2ca81c075145afc4944c61",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "89538406_1c6f3d52",
         "filename": "/PATCHSET_LEVEL",
         "patchSetId": 2
