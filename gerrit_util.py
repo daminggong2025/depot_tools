@@ -99,11 +99,12 @@ def __fixed_rewrite_proxy(self: httplib2.socks.socksocket, header: bytes):
         if hdr.lower().startswith(b"host:"):
             host = hdr
         elif hdr.lower().split(b" ")[0] in (
+            b"delete",
             b"get",
             b"head",
+            b"patch",
             b"post",
             b"put",
-            b"patch",
         ):
             endpt = hdr
     if host and endpt:
