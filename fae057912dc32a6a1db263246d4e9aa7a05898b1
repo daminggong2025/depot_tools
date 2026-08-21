@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0ccfa695_1e5329a4",
+        "filename": "git_cl.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 905,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-08-21T01:39:16Z",
+      "side": 1,
+      "message": "Please use Optional, or types are supported only from py 3.10 and we still need to support py 3.9, same everywhere below.",
+      "range": {
+        "startLine": 905,
+        "startChar": 57,
+        "endLine": 905,
+        "endChar": 67
+      },
+      "revId": "fae057912dc32a6a1db263246d4e9aa7a05898b1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
