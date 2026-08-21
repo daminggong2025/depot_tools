@@ -16,6 +16,7 @@ import io
 import shutil
 import sys
 import tempfile
+import time
 import threading
 import unittest
 
@@ -7747,7 +7748,7 @@ class CMDFormatTestCase(unittest.TestCase):
         with open(foo_md, "r") as f:
             self.assertEqual("#  Hello\n\nworld  ", f.read())
 
-    @mock.patch("git_cl.subprocess2.call")
+    @mock.patch("git_cl._RunFormatterSubprocess")
     def testMarkdownFormatDiff(self, mock_call):
         self._make_markdown_config("agents")
         foo_md = os.path.join(self._top_dir, "agents/foo.md")
@@ -7788,7 +7789,7 @@ class CMDFormatTestCase(unittest.TestCase):
         self.assertEqual(expected_diff, stdout_val)
 
     @mock.patch("gclient_paths.GetPrimarySolutionPath")
-    @mock.patch("git_cl.subprocess2.call")
+    @mock.patch("git_cl._RunFormatterSubprocess")
     def testLitTemplateFormatter(self, mock_call, mock_solution_path):
         """Note: This test does not run the real formatter. It validates that
         the correct arguments are passed to it and that it is invoked for
@@ -8174,7 +8175,7 @@ class CMDFormatTestCase(unittest.TestCase):
             ]
         )
 
-    @mock.patch("subprocess2.call")
+    @mock.patch("git_cl._RunFormatterSubprocess")
     def testLUCICfgFormatWorks(self, mock_call):
         """Checks if lucicfg is given then input file path."""
         mock_opts = mock.Mock(dry_run=False)
@@ -8190,7 +8191,7 @@ class CMDFormatTestCase(unittest.TestCase):
         )
         self.assertEqual(ret, 0)
 
-    @mock.patch("subprocess2.call")
+    @mock.patch("git_cl._RunFormatterSubprocess")
     def testLUCICfgFormatWithDryRun(self, mock_call):
         """Tests the command with --dry-run."""
         mock_opts = mock.Mock(dry_run=True)
@@ -8205,7 +8206,7 @@ class CMDFormatTestCase(unittest.TestCase):
             ]
         )
 
-    @mock.patch("subprocess2.call")
+    @mock.patch("git_cl._RunFormatterSubprocess")
     def testLUCICfgFormatWithDryRunReturnCode(self, mock_call):
         """Tests that it returns 2 for non-zero exit codes."""
         mock_opts = mock.Mock(dry_run=True)
@@ -8501,6 +8502,535 @@ diff --git a/ui/webui/resources/tools/bar.html.ts b/ui/webui/resources/tools/bar
                 mock.ANY,
                 mock.ANY,
             )
+        finally:
+            os.remove(input_diff.name)
+            os.chdir(previous_cwd)
+
+    @mock.patch("concurrent.futures.ThreadPoolExecutor")
+    @mock.patch("git_cl._RunClangFormatDiff", return_value=0)
+    def testSingleLanguageFormatSynchronous(
+        self, clang_formatter, mock_executor
+    ):
+        """Tests that single-language changes execute synchronously without ThreadPoolExecutor."""
+        single_lang_diff = """
+diff --git a/test.cc b/test.cc
+--- a/test.cc
++++ b/test.cc
+@@ -1,1 +1,1 @@
+-int a = 1;
++int a = 2;
+        """
+        with tempfile.NamedTemporaryFile(mode="w+", delete=False) as input_diff:
+            input_diff.write(single_lang_diff)
+
+        try:
+            previous_cwd = os.getcwd()
+            os.chdir(self._top_dir)
+            ret = git_cl.main(
+                [
+                    "format",
+                    "--input_diff_file",
+                    input_diff.name,
+                    "--presubmit",
+                ]
+            )
+            self.assertEqual(0, ret)
+            clang_formatter.assert_called_once()
+            mock_executor.assert_not_called()
+        finally:
+            os.remove(input_diff.name)
+            os.chdir(previous_cwd)
+
+    @mock.patch("git_cl._RunGnFormat", return_value=0)
+    @mock.patch("git_cl._RunPythonFormat", return_value=0)
+    @mock.patch("git_cl._RunClangFormatDiff", return_value=0)
+    def testConcurrentMultiLanguageFormat(
+        self, clang_formatter, python_formatter, gn_formatter
+    ):
+        multi_lang_diff = """
+diff --git a/test.cc b/test.cc
+--- a/test.cc
++++ b/test.cc
+@@ -1,1 +1,1 @@
+-int a = 1;
++int a = 2;
+diff --git a/test.py b/test.py
+--- a/test.py
++++ b/test.py
+@@ -1,1 +1,1 @@
+-x = 1
++x = 2
+diff --git a/BUILD.gn b/BUILD.gn
+--- a/BUILD.gn
++++ b/BUILD.gn
+@@ -1,1 +1,1 @@
+-sources = []
++sources = [ "a.cc" ]
+        """
+        with tempfile.NamedTemporaryFile(mode="w+", delete=False) as input_diff:
+            input_diff.write(multi_lang_diff)
+
+        try:
+            previous_cwd = os.getcwd()
+            os.chdir(self._top_dir)
+            ret = git_cl.main(
+                [
+                    "format",
+                    "--input_diff_file",
+                    input_diff.name,
+                    "--presubmit",
+                    "--python",
+                ]
+            )
+            self.assertEqual(0, ret)
+            clang_formatter.assert_called_once_with(
+                mock.ANY, ["test.cc"], mock.ANY, mock.ANY
+            )
+            python_formatter.assert_called_once_with(
+                mock.ANY, ["test.py"], mock.ANY, mock.ANY
+            )
+            gn_formatter.assert_called_once_with(
+                mock.ANY, ["BUILD.gn"], mock.ANY, mock.ANY
+            )
+        finally:
+            os.remove(input_diff.name)
+            os.chdir(previous_cwd)
+
+    @mock.patch("git_cl._RunGnFormat", return_value=2)
+    @mock.patch("git_cl._RunPythonFormat", return_value=0)
+    @mock.patch("git_cl._RunClangFormatDiff", return_value=0)
+    def testConcurrentMultiLanguageFormatNonZeroReturn(
+        self, clang_formatter, python_formatter, gn_formatter
+    ):
+        multi_lang_diff = """
+diff --git a/test.cc b/test.cc
+--- a/test.cc
++++ b/test.cc
+@@ -1,1 +1,1 @@
+-int a = 1;
++int a = 2;
+diff --git a/BUILD.gn b/BUILD.gn
+--- a/BUILD.gn
++++ b/BUILD.gn
+@@ -1,1 +1,1 @@
+-sources = []
++sources = [ "a.cc" ]
+        """
+        with tempfile.NamedTemporaryFile(mode="w+", delete=False) as input_diff:
+            input_diff.write(multi_lang_diff)
+
+        try:
+            previous_cwd = os.getcwd()
+            os.chdir(self._top_dir)
+            ret = git_cl.main(
+                [
+                    "format",
+                    "--input_diff_file",
+                    input_diff.name,
+                    "--presubmit",
+                    "--dry-run",
+                ]
+            )
+            self.assertEqual(2, ret)
+            clang_formatter.assert_called_once()
+            gn_formatter.assert_called_once()
+        finally:
+            os.remove(input_diff.name)
+            os.chdir(previous_cwd)
+
+    @mock.patch("git_cl._RunGnFormat", return_value=1)
+    @mock.patch("git_cl._RunPythonFormat", return_value=0)
+    @mock.patch("git_cl._RunClangFormatDiff", return_value=2)
+    def testConcurrentMultiLanguageFormatMixedExitCodes(
+        self, clang_formatter, python_formatter, gn_formatter
+    ):
+        """Tests that the highest non-zero exit code (e.g. 2 over 1) is preserved."""
+        multi_lang_diff = """
+diff --git a/test.cc b/test.cc
+--- a/test.cc
++++ b/test.cc
+@@ -1,1 +1,1 @@
+-int a = 1;
++int a = 2;
+diff --git a/test.py b/test.py
+--- a/test.py
++++ b/test.py
+@@ -1,1 +1,1 @@
+-x = 1
++x = 2
+diff --git a/BUILD.gn b/BUILD.gn
+--- a/BUILD.gn
++++ b/BUILD.gn
+@@ -1,1 +1,1 @@
+-sources = []
++sources = [ "a.cc" ]
+        """
+        with tempfile.NamedTemporaryFile(mode="w+", delete=False) as input_diff:
+            input_diff.write(multi_lang_diff)
+
+        try:
+            previous_cwd = os.getcwd()
+            os.chdir(self._top_dir)
+            ret = git_cl.main(
+                [
+                    "format",
+                    "--input_diff_file",
+                    input_diff.name,
+                    "--presubmit",
+                    "--python",
+                ]
+            )
+            # max(2, 0, 1) == 2
+            self.assertEqual(2, ret)
+            clang_formatter.assert_called_once()
+            python_formatter.assert_called_once()
+            gn_formatter.assert_called_once()
+        finally:
+            os.remove(input_diff.name)
+            os.chdir(previous_cwd)
+
+    @mock.patch("git_cl._RunGnFormat", return_value=-9)
+    @mock.patch("git_cl._RunPythonFormat", return_value=0)
+    @mock.patch("git_cl._RunClangFormatDiff", return_value=0)
+    def testConcurrentMultiLanguageFormatNegativeExitCodePreserved(
+        self, clang_formatter, python_formatter, gn_formatter
+    ):
+        """Tests that negative return codes (e.g. -9 from SIGKILL) are not swallowed by 0."""
+        multi_lang_diff = """
+diff --git a/test.cc b/test.cc
+--- a/test.cc
++++ b/test.cc
+@@ -1,1 +1,1 @@
+-int a = 1;
++int a = 2;
+diff --git a/BUILD.gn b/BUILD.gn
+--- a/BUILD.gn
++++ b/BUILD.gn
+@@ -1,1 +1,1 @@
+-sources = []
++sources = [ "a.cc" ]
+        """
+        with tempfile.NamedTemporaryFile(mode="w+", delete=False) as input_diff:
+            input_diff.write(multi_lang_diff)
+
+        try:
+            previous_cwd = os.getcwd()
+            os.chdir(self._top_dir)
+            ret = git_cl.main(
+                [
+                    "format",
+                    "--input_diff_file",
+                    input_diff.name,
+                    "--presubmit",
+                ]
+            )
+            self.assertEqual(-9, ret)
+        finally:
+            os.remove(input_diff.name)
+            os.chdir(previous_cwd)
+
+    def testConcurrentMultiLanguageFormatDieWithErrorFlushesBuffer(self):
+        """Tests that exceptions/DieWithError in workers flush buffered stderr before exiting."""
+        multi_lang_diff = """
+diff --git a/test.cc b/test.cc
+--- a/test.cc
++++ b/test.cc
+@@ -1,1 +1,1 @@
+-int a = 1;
++int a = 2;
+diff --git a/BUILD.gn b/BUILD.gn
+--- a/BUILD.gn
++++ b/BUILD.gn
+@@ -1,1 +1,1 @@
+-sources = []
++sources = [ "a.cc" ]
+        """
+
+        def failing_gn(opts, paths, top_dir, diffs):
+            print("CRITICAL GN FAILURE MESSAGE", file=sys.stderr)
+            sys.exit(1)
+
+        with tempfile.NamedTemporaryFile(mode="w+", delete=False) as input_diff:
+            input_diff.write(multi_lang_diff)
+
+        try:
+            previous_cwd = os.getcwd()
+            os.chdir(self._top_dir)
+            with (
+                mock.patch("git_cl._RunClangFormatDiff", return_value=0),
+                mock.patch("git_cl._RunGnFormat", side_effect=failing_gn),
+                mock.patch("sys.stderr", new_callable=io.StringIO) as fake_err,
+            ):
+                with self.assertRaises(SystemExit) as cm:
+                    git_cl.main(
+                        [
+                            "format",
+                            "--input_diff_file",
+                            input_diff.name,
+                            "--presubmit",
+                        ]
+                    )
+                self.assertEqual(1, cm.exception.code)
+                self.assertIn(
+                    "CRITICAL GN FAILURE MESSAGE", fake_err.getvalue()
+                )
+        finally:
+            os.remove(input_diff.name)
+            os.chdir(previous_cwd)
+
+    def testThreadLocalStreamIsolation(self):
+        """Tests that _ThreadLocalStream isolates output between concurrent threads."""
+        fallback = io.StringIO()
+        stream = git_cl._ThreadLocalStream(fallback)
+
+        buf1 = io.BytesIO()
+        buf2 = io.BytesIO()
+
+        def worker1():
+            # Attach buffer for thread 1 and write both text and binary data.
+            stream.set_buffer(buf1)
+            n_str = stream.write("worker1_line1\n")
+            self.assertEqual(len("worker1_line1\n"), n_str)
+            n_bytes = stream.buffer.write(b"worker1_bytes\n")
+            self.assertEqual(len(b"worker1_bytes\n"), n_bytes)
+            stream.writelines(["worker1_line2\n", "worker1_line3\n"])
+            stream.flush()
+            stream.set_buffer(None)
+
+        def worker2():
+            # Attach buffer for thread 2 and write both text and binary data.
+            stream.set_buffer(buf2)
+            stream.write("worker2_line1\n")
+            stream.buffer.write(b"worker2_bytes\n")
+            stream.flush()
+            stream.set_buffer(None)
+
+        t1 = threading.Thread(target=worker1)
+        t2 = threading.Thread(target=worker2)
+        t1.start()
+        t2.start()
+        t1.join()
+        t2.join()
+
+        # Verify each thread's writes were isolated to its own buffer.
+        self.assertEqual(
+            b"worker1_line1\nworker1_bytes\nworker1_line2\nworker1_line3\n",
+            buf1.getvalue(),
+        )
+        self.assertEqual(b"worker2_line1\nworker2_bytes\n", buf2.getvalue())
+
+        # Main thread without an attached buffer must transparently fall back to the default stream.
+        stream.write("fallback_msg\n")
+        self.assertEqual("fallback_msg\n", fallback.getvalue())
+
+        # Main thread writing bytes to a fallback without .buffer (e.g. io.StringIO) should decode cleanly.
+        stream.buffer.write(b"fallback_bytes_str\n")
+        self.assertEqual(
+            "fallback_msg\nfallback_bytes_str\n", fallback.getvalue()
+        )
+
+        # Test fallback with a stream that has a .buffer (e.g. TextIOWrapper-like)
+        raw_fallback = io.BytesIO()
+        text_fallback = io.TextIOWrapper(raw_fallback, encoding="utf-8")
+        stream_with_buf = git_cl._ThreadLocalStream(text_fallback)
+        stream_with_buf.buffer.write(b"fallback_bytes\n")
+        text_fallback.flush()
+        self.assertEqual(b"fallback_bytes\n", raw_fallback.getvalue())
+
+        # Test attribute delegation (__getattr__) for stream properties
+        self.assertEqual(text_fallback.encoding, stream_with_buf.encoding)
+        self.assertEqual(text_fallback.isatty(), stream_with_buf.isatty())
+
+    def testRunFormatterSubprocessCapturesOutputAndExitCode(self):
+        """Tests that _RunFormatterSubprocess captures stdout/stderr and returns exit code."""
+        out = io.StringIO()
+        err = io.StringIO()
+        with mock.patch("sys.stdout", out), mock.patch("sys.stderr", err):
+            code = git_cl._RunFormatterSubprocess(
+                [
+                    sys.executable,
+                    "-c",
+                    r"import sys; sys.stdout.buffer.write(b'proc_out\n'); sys.stderr.buffer.write(b'proc_err\n'); sys.exit(2)",
+                ]
+            )
+            self.assertEqual(2, code)
+            self.assertEqual("proc_out\n", out.getvalue().replace("\r\n", "\n"))
+            self.assertEqual("proc_err\n", err.getvalue().replace("\r\n", "\n"))
+
+    def testRunFormatterSubprocessWithThreadLocalStream(self):
+        """Tests that _RunFormatterSubprocess writes are intercepted by _ThreadLocalStream."""
+        fallback = io.StringIO()
+        stream = git_cl._ThreadLocalStream(fallback)
+        buf = io.BytesIO()
+        stream.set_buffer(buf)
+
+        with mock.patch("sys.stdout", stream):
+            code = git_cl._RunFormatterSubprocess(
+                [
+                    sys.executable,
+                    "-c",
+                    r"import sys; sys.stdout.buffer.write(b'captured_subprocess_output\n')",
+                ]
+            )
+            self.assertEqual(0, code)
+            self.assertEqual(
+                b"captured_subprocess_output\n",
+                buf.getvalue().replace(b"\r\n", b"\n"),
+            )
+            self.assertEqual("", fallback.getvalue())
+
+    def testRunFormatterSubprocessFlushesStreams(self):
+        """Tests that _RunFormatterSubprocess flushes stdout/stderr after writing output."""
+        mock_stdout = mock.MagicMock()
+        mock_stderr = mock.MagicMock()
+        with (
+            mock.patch("sys.stdout", mock_stdout),
+            mock.patch("sys.stderr", mock_stderr),
+        ):
+            code = git_cl._RunFormatterSubprocess(
+                [
+                    sys.executable,
+                    "-c",
+                    r"import sys; sys.stdout.buffer.write(b'out\n'); "
+                    r"sys.stderr.buffer.write(b'err\n'); sys.exit(0)",
+                ]
+            )
+            self.assertEqual(0, code)
+            mock_stdout.flush.assert_called_once()
+            mock_stderr.flush.assert_called_once()
+
+    def testRunCommandRoutesStderrToSysStderr(self):
+        """Tests that RunCommand routes subprocess stderr through sys.stderr and flushes it."""
+        mock.patch.stopall()
+        try:
+            mock_err = io.StringIO()
+            with mock.patch("sys.stderr", mock_err):
+                out = git_cl.RunCommand(
+                    [
+                        sys.executable,
+                        "-c",
+                        r"import sys; sys.stdout.buffer.write(b'cmd_out\n'); "
+                        r"sys.stderr.buffer.write(b'cmd_err\n'); sys.exit(0)",
+                    ]
+                )
+                self.assertEqual("cmd_out\n", out.replace("\r\n", "\n"))
+                self.assertEqual(
+                    "cmd_err\n", mock_err.getvalue().replace("\r\n", "\n")
+                )
+        finally:
+            self.setUp()
+
+    def testConcurrentMultiLanguageFormatOutputCapture(self):
+        """Tests that concurrent formatters have their stdout/stderr captured and emitted in order."""
+        multi_lang_diff = """
+diff --git a/test.cc b/test.cc
+--- a/test.cc
++++ b/test.cc
+@@ -1,1 +1,1 @@
+-int a = 1;
++int a = 2;
+diff --git a/test.py b/test.py
+--- a/test.py
++++ b/test.py
+@@ -1,1 +1,1 @@
+-x = 1
++x = 2
+diff --git a/BUILD.gn b/BUILD.gn
+--- a/BUILD.gn
++++ b/BUILD.gn
+@@ -1,1 +1,1 @@
+-sources = []
++sources = [ "a.cc" ]
+        """
+
+        def fake_clang(opts, paths, top_dir, diffs):
+            time.sleep(0.02)
+            sys.stdout.write("CLANG_DIFF_OUTPUT\n")
+            return 0
+
+        def fake_python(opts, paths, top_dir, diffs):
+            time.sleep(0.01)
+            sys.stdout.write("PYTHON_DIFF_OUTPUT\n")
+            return 0
+
+        def fake_gn(opts, paths, top_dir, diffs):
+            sys.stdout.write("GN_DIFF_OUTPUT\n")
+            return 0
+
+        with tempfile.NamedTemporaryFile(mode="w+", delete=False) as input_diff:
+            input_diff.write(multi_lang_diff)
+
+        try:
+            previous_cwd = os.getcwd()
+            os.chdir(self._top_dir)
+            with (
+                mock.patch(
+                    "git_cl._RunClangFormatDiff", side_effect=fake_clang
+                ),
+                mock.patch("git_cl._RunPythonFormat", side_effect=fake_python),
+                mock.patch("git_cl._RunGnFormat", side_effect=fake_gn),
+                mock.patch("sys.stdout", new_callable=io.StringIO) as fake_out,
+            ):
+                ret = git_cl.main(
+                    [
+                        "format",
+                        "--input_diff_file",
+                        input_diff.name,
+                        "--presubmit",
+                        "--diff",
+                        "--python",
+                    ]
+                )
+                self.assertEqual(0, ret)
+                # Output should be emitted in deterministic formatter order regardless
+                # of thread completion order.
+                self.assertEqual(
+                    "GN_DIFF_OUTPUT\nCLANG_DIFF_OUTPUT\nPYTHON_DIFF_OUTPUT\n",
+                    fake_out.getvalue(),
+                )
+        finally:
+            os.remove(input_diff.name)
+            os.chdir(previous_cwd)
+
+    @mock.patch("git_cl._RunGnFormat", return_value=0)
+    @mock.patch("git_cl._RunPythonFormat", return_value=0)
+    @mock.patch("git_cl._RunClangFormatDiff", return_value=0)
+    def testMultiLanguageFormatDiffSequential(
+        self, clang_formatter, python_formatter, gn_formatter
+    ):
+        multi_lang_diff = """
+diff --git a/test.cc b/test.cc
+--- a/test.cc
++++ b/test.cc
+@@ -1,1 +1,1 @@
+-int a = 1;
++int a = 2;
+diff --git a/test.py b/test.py
+--- a/test.py
++++ b/test.py
+@@ -1,1 +1,1 @@
+-x = 1
++x = 2
+        """
+        with tempfile.NamedTemporaryFile(mode="w+", delete=False) as input_diff:
+            input_diff.write(multi_lang_diff)
+
+        try:
+            previous_cwd = os.getcwd()
+            os.chdir(self._top_dir)
+            ret = git_cl.main(
+                [
+                    "format",
+                    "--input_diff_file",
+                    input_diff.name,
+                    "--presubmit",
+                    "--diff",
+                    "--python",
+                ]
+            )
+            self.assertEqual(0, ret)
+            clang_formatter.assert_called_once()
+            python_formatter.assert_called_once()
         finally:
             os.remove(input_diff.name)
             os.chdir(previous_cwd)
