@@ -16,6 +16,75 @@
       "message": "PTAL",
       "revId": "efb056f4af501cde8cbec1cb5c299d2bda77b562",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7124ae3a_76947041",
+        "filename": "git_common.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 662,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-08-21T18:52:20Z",
+      "side": 1,
+      "message": "use f strings",
+      "range": {
+        "startLine": 654,
+        "startChar": 12,
+        "endLine": 662,
+        "endChar": 9
+      },
+      "revId": "efb056f4af501cde8cbec1cb5c299d2bda77b562",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a22ad318_582ef0ac",
+        "filename": "git_common.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 937,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-08-21T18:52:20Z",
+      "side": 1,
+      "message": "https://git-scm.com/docs/git-replay/2.53.0 doesn\u0027t support --ref",
+      "range": {
+        "startLine": 937,
+        "startChar": 11,
+        "endLine": 937,
+        "endChar": 38
+      },
+      "revId": "efb056f4af501cde8cbec1cb5c299d2bda77b562",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1bb38598_022f0a0e",
+        "filename": "git_rebase_update.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 288,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-08-21T18:52:20Z",
+      "side": 1,
+      "message": "is this necessary? since rebase on L293 should checkout `branch` anyway",
+      "range": {
+        "startLine": 287,
+        "startChar": 0,
+        "endLine": 288,
+        "endChar": 35
+      },
+      "revId": "efb056f4af501cde8cbec1cb5c299d2bda77b562",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
