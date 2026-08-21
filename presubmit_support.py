@@ -796,7 +796,7 @@ class InputApi(object):
         gerrit_obj,
         dry_run=None,
         thread_pool=None,
-        parallel=False,
+        parallel=True,
         no_diffs=False,
     ):
         """Builds an InputApi object.
@@ -872,8 +872,9 @@ class InputApi(object):
         # We carry the canned checks so presubmit scripts can easily use them.
         self.canned_checks = presubmit_canned_checks
 
-        # Temporary files we must manually remove at the end of a run.
+        # Temporary files and directories we must manually remove at the end of a run.
         self._named_temporary_files = []
+        self._temporary_directories = []
 
         self.owners_client = None
         if self.gerrit and "PRESUBMIT_SKIP_NETWORK" not in self.environ:
@@ -1092,6 +1093,14 @@ class InputApi(object):
         self._named_temporary_files.append(temp_file.name)
         return temp_file
 
+    def CreateTemporaryDirectory(self, **kwargs):
+        """Returns a temporary directory name that is automatically cleaned up
+        after all presubmit checks (including deferred parallel tests) finish.
+        """
+        temp_dir = self.tempfile.TemporaryDirectory(**kwargs)
+        self._temporary_directories.append(temp_dir)
+        return temp_dir.name
+
     def ListSubmodules(self):
         """Returns submodule paths for current change's repo."""
         return self.change._repo_submodules()
@@ -1115,10 +1124,11 @@ class InputApi(object):
                     t.kwargs["cwd"] = self.PresubmitLocalPath()
         self.thread_pool.AddTests(tests, parallel)
         # When self.parallel is True (i.e. --parallel is passed as an option)
-        # RunTests doesn't actually run tests. It adds them to a ThreadPool that
-        # will run all tests once all PRESUBMIT files are processed.
-        # Otherwise, it will run them and return the results.
-        if not self.parallel:
+        # RunTests doesn't actually run tests if parallel is True. It adds them to a
+        # ThreadPool that will run all tests once all PRESUBMIT files are processed.
+        # Otherwise (if global parallel is False OR this test batch explicitly
+        # requested parallel=False), run tests immediately and return the results.
+        if not self.parallel or not parallel:
             msgs.extend(self.thread_pool.RunAsync())
         return msgs
 
@@ -1981,7 +1991,7 @@ class PresubmitExecuter(object):
         gerrit_obj,
         dry_run=None,
         thread_pool=None,
-        parallel=False,
+        parallel=True,
         no_diffs=False,
     ):
         """
@@ -2005,6 +2015,7 @@ class PresubmitExecuter(object):
         self.thread_pool = thread_pool
         self.parallel = parallel
         self.no_diffs = no_diffs
+        self.input_apis = []
 
     def ExecPresubmitScript(self, script_text, presubmit_path):
         """Executes a single presubmit script.
@@ -2046,6 +2057,7 @@ class PresubmitExecuter(object):
             parallel=self.parallel,
             no_diffs=self.no_diffs,
         )
+        self.input_apis.append(input_api)
         output_api = OutputApi(self.committing)
         context = {}
 
@@ -2137,12 +2149,25 @@ class PresubmitExecuter(object):
                         output_api.more_cc = []
 
         finally:
-            for f in input_api._named_temporary_files:
-                os.remove(f)
+            pass
 
         self.more_cc = sorted(set(self.more_cc))
 
         return results
+
+    def Cleanup(self):
+        """Cleans up temporary files and directories created by presubmit checks."""
+        for input_api in self.input_apis:
+            for f in input_api._named_temporary_files:
+                try:
+                    os.remove(f)
+                except OSError:
+                    pass
+            for d in input_api._temporary_directories:
+                try:
+                    d.cleanup()
+                except OSError:
+                    pass
 
     def _run_check_function(self, function_name, context, sink, presubmit_path):
         """Evaluates and returns the result of a given presubmit function.
@@ -2241,7 +2266,7 @@ def DoPresubmitChecks(
     may_prompt,
     gerrit_obj,
     dry_run=None,
-    parallel=False,
+    parallel=True,
     json_output=None,
     no_diffs=False,
 ):
@@ -2308,17 +2333,22 @@ def DoPresubmitChecks(
             results += executer.ExecPresubmitScript(
                 default_presubmit, fake_path
             )
-        for filename in presubmit_files:
-            filename = os.path.abspath(filename)
-            # Accept CRLF presubmit script.
-            presubmit_script = gclient_utils.FileRead(filename).replace(
-                "\r\n", "\n"
-            )
-            if verbose:
-                sys.stdout.write("Running %s\n" % filename)
-            results += executer.ExecPresubmitScript(presubmit_script, filename)
+        try:
+            for filename in presubmit_files:
+                filename = os.path.abspath(filename)
+                # Accept CRLF presubmit script.
+                presubmit_script = gclient_utils.FileRead(filename).replace(
+                    "\r\n", "\n"
+                )
+                if verbose:
+                    sys.stdout.write("Running %s\n" % filename)
+                results += executer.ExecPresubmitScript(
+                    presubmit_script, filename
+                )
 
-        results += thread_pool.RunAsync()
+            results += thread_pool.RunAsync()
+        finally:
+            executer.Cleanup()
 
         messages = {}
         should_prompt = False
@@ -2783,8 +2813,15 @@ def main(argv=None):
         "--parallel",
         action="store_true",
         help="Run all tests specified by input_api.RunTests in "
-        "all PRESUBMIT files in parallel.",
+        "all PRESUBMIT files in parallel (default: True).",
     )
+    parser.add_argument(
+        "--no-parallel",
+        action="store_false",
+        dest="parallel",
+        help="Do not run presubmit tests in parallel.",
+    )
+    parser.set_defaults(parallel=True)
     parser.add_argument(
         "--json_output",
         help="Write presubmit results to json output. If '-' "
