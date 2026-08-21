@@ -2151,8 +2151,7 @@ class Changelist(object):
             args.extend(["--end_commit", end_commit])
         if may_prompt:
             args.append("--may_prompt")
-        if parallel:
-            args.append("--parallel")
+        args.append("--parallel" if parallel else "--no-parallel")
         if all_files:
             args.append("--all_files")
         if files:
@@ -6269,8 +6268,15 @@ def CMDpresubmit(parser, args):
     parser.add_option(
         "--parallel",
         action="store_true",
+        default=True,
         help="Run all tests specified by input_api.RunTests in all "
-        "PRESUBMIT files in parallel.",
+        "PRESUBMIT files in parallel (default: True).",
+    )
+    parser.add_option(
+        "--no-parallel",
+        action="store_false",
+        dest="parallel",
+        help="Do not run presubmit tests in parallel.",
     )
     parser.add_option(
         "--resultdb",
@@ -6615,8 +6621,15 @@ def CMDupload(parser, args):
     parser.add_option(
         "--parallel",
         action="store_true",
+        default=True,
         help="Run all tests specified by input_api.RunTests in all "
-        "PRESUBMIT files in parallel.",
+        "PRESUBMIT files in parallel (default: True).",
+    )
+    parser.add_option(
+        "--no-parallel",
+        action="store_false",
+        dest="parallel",
+        help="Do not run presubmit tests in parallel.",
     )
     parser.add_option(
         "--no-autocc",
@@ -7371,8 +7384,15 @@ def CMDland(parser, args):
     parser.add_option(
         "--parallel",
         action="store_true",
+        default=True,
         help="Run all tests specified by input_api.RunTests in all "
-        "PRESUBMIT files in parallel.",
+        "PRESUBMIT files in parallel (default: True).",
+    )
+    parser.add_option(
+        "--no-parallel",
+        action="store_false",
+        dest="parallel",
+        help="Do not run presubmit tests in parallel.",
     )
     parser.add_option(
         "--resultdb",
