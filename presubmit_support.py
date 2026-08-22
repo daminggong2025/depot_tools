@@ -263,9 +263,38 @@ class ThreadPool(object):
 
         if test.output_parser:
             try:
-                results = test.output_parser(stdout)
-                if results:
-                    return results
+                accepts_code = False
+                try:
+                    sig = inspect.signature(test.output_parser)
+                    pos_params = [
+                        p
+                        for p in sig.parameters.values()
+                        if p.kind
+                        in (
+                            inspect.Parameter.POSITIONAL_ONLY,
+                            inspect.Parameter.POSITIONAL_OR_KEYWORD,
+                        )
+                    ]
+                    has_varargs = any(
+                        p.kind == inspect.Parameter.VAR_POSITIONAL
+                        for p in sig.parameters.values()
+                    )
+                    if (
+                        len(pos_params) >= 2
+                        and pos_params[1].default is inspect.Parameter.empty
+                    ) or has_varargs:
+                        accepts_code = True
+                except (ValueError, TypeError):
+                    accepts_code = False
+
+                if accepts_code:
+                    results = test.output_parser(returncode, stdout)
+                    if results is not None:
+                        return results
+                else:
+                    results = test.output_parser(stdout)
+                    if results:
+                        return results
             except Exception:
                 return error_results(
                     f"Exception while parsing:\n{stdout}",
