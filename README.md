@@ -118,3 +118,5 @@ https://github.com/google/styleguide/tree/gh-pages/cpplint. Unfortunately, that
 repository is not maintained any more.
 If you want to update `cpplint.py` in `depot_tools`, just upload a patch to do
 so. We will figure out a long-term strategy via issue https://crbug.com/916550.
+
+<!-- baseline benchmark test -->
