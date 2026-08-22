@@ -13,6 +13,7 @@ import collections
 import datetime
 import fnmatch
 import functools
+import hashlib
 import itertools
 import json
 import logging
@@ -6331,7 +6332,7 @@ def CMDpresubmit(parser, args):
     return 0
 
 
-def GenerateGerritChangeId(message):
+def GenerateGerritChangeId(message: str) -> str:
     """Returns the Change ID footer value (Ixxxxxx...xxx).
 
     Works the same way as
@@ -6344,9 +6345,7 @@ def GenerateGerritChangeId(message):
     lines = []
     tree_hash = RunGitSilent(["write-tree"])
     lines.append("tree %s" % tree_hash.strip())
-    code, parent = RunGitWithCode(
-        ["rev-parse", "HEAD~0"], suppress_stderr=False
-    )
+    code, parent = RunGitWithCode(["rev-parse", "HEAD~0"], suppress_stderr=True)
     if code == 0:
         lines.append("parent %s" % parent.strip())
     author = RunGitSilent(["var", "GIT_AUTHOR_IDENT"])
@@ -6358,11 +6357,13 @@ def GenerateGerritChangeId(message):
     # whitespace. This code is not doing this, but it clearly won't decrease
     # entropy.
     lines.append(message)
-    change_hash = RunCommand(
-        ["git", "hash-object", "-t", "commit", "--stdin"],
-        stdin=("\n".join(lines)).encode(),
-    )
-    return "I%s" % change_hash.strip()
+
+    # Compute the Git loose commit object SHA-1 hash in-memory instead of
+    # shelling out to `git hash-object -t commit --stdin`.
+    payload = ("\n".join(lines)).encode("utf-8")
+    header = f"commit {len(payload)}\0".encode("ascii")
+    change_hash = hashlib.sha1(header + payload).hexdigest()
+    return "I%s" % change_hash
 
 
 def GetTargetRef(remote, remote_branch, target_branch) -> Optional[str]:
