@@ -830,6 +830,28 @@ class PresubmitUnittest(PresubmitTestsBase):
         self.assertEqual(sys.stdout.getvalue().count("??"), 0)
         self.assertEqual(sys.stdout.getvalue().count(RUNNING_PY_CHECKS_TEXT), 1)
 
+    @mock.patch("presubmit_support.PresubmitExecuter")
+    def testDoPresubmitChecksDefaultParallel(self, mock_executer_cls):
+        mock_executer = mock.MagicMock()
+        mock_executer.ExecPresubmitScript.return_value = []
+        mock_executer.more_cc = []
+        mock_executer_cls.return_value = mock_executer
+        change = self.ExampleChange()
+
+        presubmit.DoPresubmitChecks(
+            change=change,
+            committing=False,
+            verbose=False,
+            default_presubmit=None,
+            may_prompt=False,
+            gerrit_obj=None,
+        )
+
+        mock_executer_cls.assert_called_once()
+        args, _ = mock_executer_cls.call_args
+        # parallel is the 7th positional argument (index 6) to PresubmitExecuter
+        self.assertTrue(args[6])
+
     @mock.patch("scm.GIT.GetBranch", return_value="fallback-branch")
     def testDoPresubmitChecksUsesProvidedBranchName(self, mock_get_branch):
         """Verifies that DoPresubmitChecks uses the branch name provided."""
@@ -5138,6 +5160,50 @@ class ThreadPoolTest(unittest.TestCase):
         self.assertIn("error 1", message_strs)
         self.assertIn("error 2", message_strs)
         self.assertIn("warning 1", message_strs)
+
+    def testOutputParserWithReturncode(self):
+        def FakePopen(cmd, **kwargs):
+            if cmd[0] == "code_2":
+                return mock.Mock(returncode=2)
+            if cmd[0] == "code_1_suppressed":
+                return mock.Mock(returncode=1)
+            return mock.Mock(returncode=0)
+
+        subprocess.Popen.side_effect = FakePopen
+
+        def parse_with_code(code, output):
+            if code == 2:
+                return [
+                    presubmit.OutputApi.PresubmitPromptWarning(
+                        "custom warning for code 2"
+                    )
+                ]
+            if code == 1:
+                return []  # Suppress exit code 1
+            return []
+
+        mock_tests = [
+            presubmit.CommandData(
+                name="code_2",
+                cmd=["code_2"],
+                kwargs={},
+                output_parser=parse_with_code,
+            ),
+            presubmit.CommandData(
+                name="code_1_suppressed",
+                cmd=["code_1_suppressed"],
+                kwargs={},
+                output_parser=parse_with_code,
+            ),
+        ]
+
+        t = presubmit.ThreadPool(1)
+        t.AddTests(mock_tests)
+        messages = t.RunAsync()
+        message_strs = [r._message for r in messages]
+
+        self.assertEqual(1, len(messages))
+        self.assertIn("custom warning for code 2", message_strs)
 
 
 if __name__ == "__main__":

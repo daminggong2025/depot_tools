@@ -6272,15 +6272,15 @@ def CMDpresubmit(parser, args):
         "--parallel",
         action="store_true",
         help="Run all tests specified by input_api.RunTests in all "
-        "PRESUBMIT files in parallel (default: True).",
+        "PRESUBMIT files in parallel.",
     )
     parser.add_option(
         "--no-parallel",
         action="store_false",
         dest="parallel",
-        help="Do not run presubmit tests in parallel.",
+        help="Run all tests specified by input_api.RunTests in all "
+        "PRESUBMIT files sequentially.",
     )
-    parser.set_defaults(parallel=True)
     parser.add_option(
         "--resultdb",
         action="store_true",
@@ -6625,15 +6625,15 @@ def CMDupload(parser, args):
         "--parallel",
         action="store_true",
         help="Run all tests specified by input_api.RunTests in all "
-        "PRESUBMIT files in parallel (default: True).",
+        "PRESUBMIT files in parallel.",
     )
     parser.add_option(
         "--no-parallel",
         action="store_false",
         dest="parallel",
-        help="Do not run presubmit tests in parallel.",
+        help="Run all tests specified by input_api.RunTests in all "
+        "PRESUBMIT files sequentially.",
     )
-    parser.set_defaults(parallel=True)
     parser.add_option(
         "--no-autocc",
         action="store_true",
@@ -7388,15 +7388,15 @@ def CMDland(parser, args):
         "--parallel",
         action="store_true",
         help="Run all tests specified by input_api.RunTests in all "
-        "PRESUBMIT files in parallel (default: True).",
+        "PRESUBMIT files in parallel.",
     )
     parser.add_option(
         "--no-parallel",
         action="store_false",
         dest="parallel",
-        help="Do not run presubmit tests in parallel.",
+        help="Run all tests specified by input_api.RunTests in all "
+        "PRESUBMIT files sequentially.",
     )
-    parser.set_defaults(parallel=True)
     parser.add_option(
         "--resultdb",
         action="store_true",
@@ -8923,9 +8923,13 @@ def _FindFilesToFormat(
     Deleted files are always excluded in the return.
     """
     if opts.input_diff_file:
-        with open(opts.input_diff_file, encoding="utf-8") as f:
-            diffs = _SplitDiffsByFile(f.read())
-            return diffs.keys(), diffs
+        if opts.input_diff_file == "-":
+            diff_text = sys.stdin.read()
+        else:
+            with open(opts.input_diff_file, encoding="utf-8") as f:
+                diff_text = f.read()
+        diffs = _SplitDiffsByFile(diff_text)
+        return diffs.keys(), diffs
 
     if opts.full:
         files = RunGitDiffCmd(
