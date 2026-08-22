@@ -123,6 +123,15 @@ class MockInputApi(object):
     def AffectedSourceFiles(self, file_filter=None):
         return self.AffectedFiles(file_filter=file_filter)
 
+    def AffectedTestableFiles(self, file_filter=None):
+        return [
+            f
+            for f in self.AffectedFiles(
+                include_deletes=False, file_filter=file_filter
+            )
+            if f.IsTestableFile()
+        ]
+
     def FilterSourceFile(
         self,
         file,
@@ -283,6 +292,9 @@ class MockFile(object):
 
     def Action(self):
         return self._action
+
+    def IsTestableFile(self):
+        return self._action != "D"
 
     def ChangedContents(self):
         return self._changed_contents
