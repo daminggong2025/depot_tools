@@ -3,6 +3,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import io
 import json
 import os.path
 import subprocess
@@ -901,6 +902,8 @@ class CheckAyeAyeTest(unittest.TestCase):
         ).start()
         self.mock_exists.return_value = True
 
+        self.input_api.files = [MockAffectedFile("foo.py", ["def foo(): pass"])]
+
     def test_ayeaye_findings_with_errors(self):
         # Simulate run_alint JSON output containing both errors and warnings
         json_output = json.dumps(
@@ -1012,6 +1015,69 @@ class CheckAyeAyeTest(unittest.TestCase):
         self.assertEqual(results[0].type, "error")
         self.assertIn("Failed to run.", results[0].message)
 
+    def test_ayeaye_with_upstream_branch(self):
+        json_output = json.dumps({"errors": [], "warnings": []}).encode("utf-8")
+        self.mock_proc.communicate.return_value = (json_output, b"")
+        self.mock_proc.returncode = 0
+        self.input_api.change.UpstreamBranch = lambda: "origin/main"
+
+        results = presubmit_canned_checks.CheckAyeAye(
+            self.input_api, self.output_api
+        )
+        self.assertEqual(len(results), 0)
+        self.mock_popen.assert_called_once()
+        called_args = self.mock_popen.call_args[0][0]
+        self.assertIn("--commit", called_args)
+        self.assertIn("origin/main", called_args)
+
+    def test_ayeaye_with_head_upstream_forwarded(self):
+        json_output = json.dumps({"errors": [], "warnings": []}).encode("utf-8")
+        self.mock_proc.communicate.return_value = (json_output, b"")
+        self.mock_proc.returncode = 0
+        self.input_api.change.UpstreamBranch = lambda: "HEAD"
+
+        results = presubmit_canned_checks.CheckAyeAye(
+            self.input_api, self.output_api
+        )
+        self.assertEqual(len(results), 0)
+        self.mock_popen.assert_called_once()
+        called_args = self.mock_popen.call_args[0][0]
+        self.assertIn("--commit", called_args)
+        self.assertIn("HEAD", called_args)
+
+    def test_ayeaye_with_none_upstream_ignored(self):
+        json_output = json.dumps({"errors": [], "warnings": []}).encode("utf-8")
+        self.mock_proc.communicate.return_value = (json_output, b"")
+        self.mock_proc.returncode = 0
+        self.input_api.change.UpstreamBranch = lambda: None
+
+        results = presubmit_canned_checks.CheckAyeAye(
+            self.input_api, self.output_api
+        )
+        self.assertEqual(len(results), 0)
+        self.mock_popen.assert_called_once()
+        called_args = self.mock_popen.call_args[0][0]
+        self.assertNotIn("--commit", called_args)
+
+    def test_ayeaye_early_exit_deletions_only(self):
+        deleted_file = MockAffectedFile("foo.py", [], action="D")
+        self.input_api.files = [deleted_file]
+
+        results = presubmit_canned_checks.CheckAyeAye(
+            self.input_api, self.output_api
+        )
+        self.assertEqual(len(results), 0)
+        self.mock_popen.assert_not_called()
+
+    def test_ayeaye_early_exit_empty_files(self):
+        self.input_api.files = []
+
+        results = presubmit_canned_checks.CheckAyeAye(
+            self.input_api, self.output_api
+        )
+        self.assertEqual(len(results), 0)
+        self.mock_popen.assert_not_called()
+
 
 class RunAlintTest(unittest.TestCase):
     def test_parse_alint_output(self):
@@ -1032,6 +1098,57 @@ class RunAlintTest(unittest.TestCase):
             parsed["warnings"],
             ["This is a warning.", "Another warning."],
         )
+
+    def test_main_invocation_passes_flags_after_separator(self):
+        mock_proc = mock.Mock()
+        mock_proc.communicate.return_value = (
+            b'{"errors": [], "warnings": []}',
+            b"",
+        )
+        mock_proc.returncode = 0
+
+        with (
+            mock.patch.object(
+                subprocess, "Popen", return_value=mock_proc
+            ) as mock_popen,
+            mock.patch.object(os, "chdir") as mock_chdir,
+            mock.patch.object(
+                sys,
+                "argv",
+                [
+                    "run_alint.py",
+                    "/path/to/alint",
+                    "/fake/repo",
+                    "-t=30s",
+                    "--commit",
+                    "origin/main",
+                ],
+            ),
+            mock.patch.object(sys, "stdout", new_callable=io.StringIO),
+        ):
+            code = run_alint.main()
+            self.assertEqual(code, 0)
+            mock_chdir.assert_called_once_with("/fake/repo")
+            mock_popen.assert_called_once()
+            cmd = mock_popen.call_args[0][0]
+            self.assertEqual(
+                cmd,
+                [
+                    "/path/to/alint",
+                    "--",
+                    "-t=30s",
+                    "--commit",
+                    "origin/main",
+                ],
+            )
+
+    def test_main_insufficient_arguments(self):
+        with (
+            mock.patch.object(sys, "argv", ["run_alint.py"]),
+            mock.patch.object(sys, "stdout", new_callable=io.StringIO),
+        ):
+            code = run_alint.main()
+            self.assertEqual(code, 3)
 
 
 class CheckForCommitObjectsTest(unittest.TestCase):
@@ -1295,28 +1412,7 @@ class CheckPatchFormattedTest(unittest.TestCase):
         self.input_api = MockInputApi()
         self.input_api.change.RepositoryRoot = lambda: ROOT_DIR
         self.input_api.presubmit_local_path = os.path.join(ROOT_DIR, "subdir")
-
-        # Mock CreateTemporaryFile to accumulate writes into a string
-        self.mock_temp_file = mock.MagicMock()
-        self.mock_temp_file.__enter__.return_value = self.mock_temp_file
-        self.mock_temp_file.name = "mock_temp_file"
-        self.mock_temp_file.write_content = ""
-
-        def mock_write(content):
-            self.mock_temp_file.write_content += content.decode("utf-8")
-
-        self.mock_temp_file.write.side_effect = mock_write
-        self.input_api.CreateTemporaryFile = mock.Mock(
-            return_value=self.mock_temp_file
-        )
-
-        # Mock git_cl.RunGitWithCode
-        self.patcher = mock.patch("git_cl.RunGitWithCode")
-        self.mock_run_git = self.patcher.start()
-        self.mock_run_git.return_value = (0, "")
-
-    def tearDown(self):
-        self.patcher.stop()
+        self.output_api = MockOutputApi()
 
     def testCheckPatchFormatted_WithFileFilter(self):
         file1 = MockAffectedFile("file1.cc", ["int main() {}"])
@@ -1326,30 +1422,100 @@ class CheckPatchFormattedTest(unittest.TestCase):
         # Filter to only include python files
         file_filter = lambda f: f.LocalPath().endswith(".py")  # noqa: E731
 
-        presubmit_canned_checks.CheckPatchFormatted(
-            self.input_api, MockOutputApi(), file_filter=file_filter
-        )
+        with mock.patch.object(
+            self.input_api, "RunTests", return_value=[]
+        ) as mock_run_tests:
+            presubmit_canned_checks.CheckPatchFormatted(
+                self.input_api, self.output_api, file_filter=file_filter
+            )
+            mock_run_tests.assert_called_once()
+            cmd_obj = mock_run_tests.call_args[0][0][0]
+            stdin_content = cmd_obj.kwargs["stdin"].decode("utf-8")
 
-        diff_content = self.mock_temp_file.write_content
-
-        # Verify that only file2.py's diff is in the diff file
-        self.assertIn("file2.py", diff_content)
-        self.assertNotIn("file1.cc", diff_content)
+            # Verify that only file2.py's diff is in the diff stream
+            self.assertIn("file2.py", stdin_content)
+            self.assertNotIn("file1.cc", stdin_content)
 
     def testCheckPatchFormatted_WithoutFileFilter(self):
         file1 = MockAffectedFile("file1.cc", ["int main() {}"])
         file2 = MockAffectedFile("file2.py", ["def main(): pass"])
         self.input_api.files = [file1, file2]
 
-        presubmit_canned_checks.CheckPatchFormatted(
-            self.input_api, MockOutputApi()
+        with mock.patch.object(
+            self.input_api, "RunTests", return_value=[]
+        ) as mock_run_tests:
+            presubmit_canned_checks.CheckPatchFormatted(
+                self.input_api, self.output_api
+            )
+            mock_run_tests.assert_called_once()
+            cmd_obj = mock_run_tests.call_args[0][0][0]
+            stdin_content = cmd_obj.kwargs["stdin"].decode("utf-8")
+
+            # Verify that both files are in the diff stream
+            self.assertIn("file1.cc", stdin_content)
+            self.assertIn("file2.py", stdin_content)
+
+    def testCheckPatchFormatted_OutputParser(self):
+        file1 = MockAffectedFile("file1.cc", ["int main() {}"])
+        self.input_api.files = [file1]
+
+        with mock.patch.object(self.input_api, "RunTests") as mock_run_tests:
+            presubmit_canned_checks.CheckPatchFormatted(
+                self.input_api, self.output_api
+            )
+            cmd_obj = mock_run_tests.call_args[0][0][0]
+            parser = cmd_obj.output_parser
+
+            # Exit code 0 -> returns None to allow test.info success logging
+            self.assertIsNone(parser(0, ""))
+
+            # Exit code 2 -> format warning
+            results = parser(2, "Formatting error in file1.cc")
+            self.assertEqual(1, len(results))
+            self.assertEqual("warning", results[0].type)
+            self.assertIn("git cl format", results[0].message)
+
+            # Exit code 1 with bypass_warnings=True -> suppressed
+            self.assertEqual([], parser(1, "Tool error"))
+
+    def testMockInputApiRunTestsLegacyParserExitCode(self):
+        # Legacy 1-arg parser returning [] on failure falls through to error
+        def legacy_parser(output):
+            return []
+
+        def returncode_aware_parser(code, output):
+            if code == 1:
+                return []  # Suppress
+            return []
+
+        from testing_support.presubmit_canned_checks_test_mocks import (
+            MockCommand,
         )
 
-        diff_content = self.mock_temp_file.write_content
+        cmd1 = MockCommand(
+            "legacy_fail", ["fake_cmd"], {}, output_parser=legacy_parser
+        )
+        cmd2 = MockCommand(
+            "code_aware_suppressed",
+            ["fake_cmd"],
+            {},
+            output_parser=returncode_aware_parser,
+        )
 
-        # Verify that both files are in the diff file
-        self.assertIn("file1.cc", diff_content)
-        self.assertIn("file2.py", diff_content)
+        with mock.patch.object(
+            self.input_api.subprocess, "Popen"
+        ) as mock_popen:
+            mock_proc = mock.Mock()
+            mock_proc.returncode = 1
+            mock_proc.communicate.return_value = (b"output", b"")
+            mock_popen.return_value = mock_proc
+
+            results1 = self.input_api.RunTests([cmd1])
+            self.assertEqual(1, len(results1))
+            self.assertIn("legacy_fail", results1[0].message)
+
+            results2 = self.input_api.RunTests([cmd2])
+            self.assertEqual(0, len(results2))
 
 
 if __name__ == "__main__":
