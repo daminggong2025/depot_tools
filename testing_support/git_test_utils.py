@@ -310,11 +310,31 @@ class GitRepo(object):
         )
         self.git("config", "user.name", "testcase")
         self.git("config", "user.email", "testcase@example.com")
-        for commit in schema.walk():
-            self._add_schema_commit(commit, schema.data_for(commit.name))
-            self.last_commit = self[commit.name]
-        if schema.main:
-            self.git("update-ref", "refs/heads/main", self[schema.main])
+
+        marks_file = os.path.join(self.repo_path, ".git", "marks.txt")
+        stream, last_commit_name, marks = self._generate_fast_import(schema)
+        rslt = self.git(
+            "fast-import",
+            "--quiet",
+            f"--export-marks={marks_file}",
+            input=stream,
+        )
+        assert rslt.retcode == 0, f"fast-import failed with {rslt.retcode}"
+
+        if os.path.exists(marks_file):
+            mark_to_commit = {v: k for k, v in marks.items()}
+            with open(marks_file, "r", encoding="utf-8") as f:
+                for line in f:
+                    line = line.strip()
+                    if line:
+                        mark_str, sha = line.split(" ", 1)
+                        mark_id = int(mark_str.lstrip(":"))
+                        if mark_id in mark_to_commit:
+                            self.commit_map[mark_to_commit[mark_id]] = sha
+
+        if last_commit_name:
+            self.last_commit = self[last_commit_name]
+            self.git("checkout", "--detach", "-q", self.last_commit)
 
     def __getitem__(self, commit_name):
         """Gets the hash of a commit by its schema name.
@@ -325,60 +345,143 @@ class GitRepo(object):
         """
         return self.commit_map[commit_name]
 
-    def _add_schema_commit(self, commit, commit_data):
-        commit_data = commit_data or {}
+    def _generate_fast_import(self, schema):
+        stream = bytearray()
+        marks = {}
+        file_modes = {}
+        date_val = self._date
+        last_commit_name = None
 
+        for i, commit in enumerate(schema.walk(), start=1):
+            marks[commit.name] = i
+            data = schema.data_for(commit.name) or {}
+
+            parent_modes = {}
+            if commit.parents:
+                parent_modes = file_modes.get(list(commit.parents)[0], {})
+
+            commit_bytes, current_modes, date_val = (
+                self._format_fast_import_commit(
+                    commit=commit,
+                    mark=i,
+                    data=data,
+                    marks=marks,
+                    parent_modes=parent_modes,
+                    date_val=date_val,
+                )
+            )
+            stream.extend(commit_bytes)
+            file_modes[commit.name] = current_modes
+            last_commit_name = commit.name
+
+        if schema.main:
+            stream.extend(
+                f"reset refs/heads/{DEFAULT_BRANCH}\nfrom :{marks[schema.main]}\n".encode(
+                    "utf-8"
+                )
+            )
+
+        self._date = date_val
+        return stream, last_commit_name, marks
+
+    def _format_fast_import_commit(
+        self, commit, mark, data, marks, parent_modes, date_val
+    ):
+        stream = bytearray()
+
+        # Author and Committer timestamps
+        author_date = data.get(self.AUTHOR_DATE, date_val)
+        if self.AUTHOR_DATE not in data:
+            date_val += datetime.timedelta(days=1)
+        committer_date = data.get(self.COMMITTER_DATE, date_val)
+        if self.COMMITTER_DATE not in data:
+            date_val += datetime.timedelta(days=1)
+
+        def _to_utc_epoch(dt):
+            if dt.tzinfo is None:
+                dt = dt.replace(tzinfo=datetime.timezone.utc)
+            return int(dt.timestamp())
+
+        author_name = data.get(self.AUTHOR_NAME, self.DEFAULT_AUTHOR_NAME)
+        author_email = data.get(self.AUTHOR_EMAIL, self.DEFAULT_AUTHOR_EMAIL)
+        committer_name = data.get(
+            self.COMMITTER_NAME, self.DEFAULT_COMMITTER_NAME
+        )
+        committer_email = data.get(
+            self.COMMITTER_EMAIL, self.DEFAULT_COMMITTER_EMAIL
+        )
+
+        stream.extend(f"commit refs/tags/tag_{commit.name}\n".encode("utf-8"))
+        stream.extend(f"mark :{mark}\n".encode("utf-8"))
+        stream.extend(
+            f"author {author_name} <{author_email}> {_to_utc_epoch(author_date)} +0000\n".encode(
+                "utf-8"
+            )
+        )
+        stream.extend(
+            f"committer {committer_name} <{committer_email}> {_to_utc_epoch(committer_date)} +0000\n".encode(
+                "utf-8"
+            )
+        )
+        msg = f"{commit.name}\n".encode("utf-8")
+        stream.extend(f"data {len(msg)}\n".encode("utf-8") + msg)
+
+        current_modes = dict(parent_modes)
         if commit.parents:
             parents = list(commit.parents)
-            self.git("checkout", "--detach", "-q", self[parents[0]])
-            if len(parents) > 1:
-                self.git(
-                    "merge",
-                    "--no-commit",
-                    "-q",
-                    *[self[x] for x in parents[1:]],
-                )
+            stream.extend(f"from :{marks[parents[0]]}\n".encode("utf-8"))
+            for p in parents[1:]:
+                stream.extend(f"merge :{marks[p]}\n".encode("utf-8"))
         else:
-            self.git("checkout", "--orphan", "root_%s" % commit.name)
-            self.git("rm", "-rf", ".")
+            stream.extend(b"deleteall\n")
 
-        env = self.get_git_commit_env(commit_data)
-
-        for fname, file_data in commit_data.items():
-            # If it isn't a string, it's one of the special keys.
-            if not isinstance(fname, str):
+        for path, fdata in data.items():
+            if not isinstance(path, str):
                 continue
-
-            deleted = False
-            if "data" in file_data:
-                data = file_data.get("data")
-                if data is None:
-                    deleted = True
-                    self.git("rm", fname)
-                else:
-                    path = os.path.join(self.repo_path, fname)
-                    pardir = os.path.dirname(path)
-                    if not os.path.exists(pardir):
-                        os.makedirs(pardir)
-                    with open(path, "wb") as f:
-                        f.write(data)
-
-            mode = file_data.get("mode")
-            if mode and not deleted:
-                os.chmod(path, mode)
-
-            self.git("add", fname)
-
-        rslt = self.git("commit", "--allow-empty", "-m", commit.name, env=env)
-        assert rslt.retcode == 0, "Failed to commit %s" % str(commit)
-        self.commit_map[commit.name] = self.git(
-            "rev-parse", "HEAD"
-        ).stdout.strip()
-        self.git("tag", "tag_%s" % commit.name, self[commit.name])
-        if commit.is_branch:
-            self.git(
-                "branch", "-f", "branch_%s" % commit.name, self[commit.name]
+            assert "data" in fdata, (
+                f"File entry '{path}' in commit '{commit.name}' must specify 'data'"
             )
+            content = fdata["data"]
+            if content is None:
+                stream.extend(f"D {path}\n".encode("utf-8"))
+                current_modes.pop(path, None)
+            else:
+                mode_val = fdata.get("mode")
+                if mode_val is not None:
+                    if isinstance(mode_val, int):
+                        mode = "100755" if (mode_val & 0o111) else "100644"
+                    else:
+                        mode = str(mode_val)
+                elif path in current_modes:
+                    mode = current_modes[path]
+                else:
+                    mode = "100644"
+                current_modes[path] = mode
+
+                if isinstance(content, str):
+                    content = content.encode("utf-8")
+                stream.extend(
+                    f"M {mode} inline {path}\ndata {len(content)}\n".encode(
+                        "utf-8"
+                    )
+                    + content
+                    + b"\n"
+                )
+
+        if not commit.parents:
+            stream.extend(
+                f"reset refs/heads/root_{commit.name}\nfrom :{mark}\n".encode(
+                    "utf-8"
+                )
+            )
+        if commit.is_branch:
+            stream.extend(
+                f"reset refs/heads/branch_{commit.name}\nfrom :{mark}\n".encode(
+                    "utf-8"
+                )
+            )
+
+        return stream, current_modes, date_val
 
     def get_git_commit_env(self, commit_data=None):
         commit_data = commit_data or {}
