@@ -2238,35 +2238,59 @@ def CheckPatchFormatted(
 
 
 def CheckGNFormatted(input_api, output_api):
-    import gn
+    affected_files = [
+        f
+        for f in input_api.AffectedFiles(
+            include_deletes=False,
+            file_filter=lambda x: x.LocalPath().endswith(
+                (".gn", ".gni", ".typemap")
+            ),
+        )
+    ]
+    if not affected_files:
+        return []
 
-    affected_files = input_api.AffectedFiles(
-        include_deletes=False,
-        file_filter=lambda x: (
-            x.LocalPath().endswith(".gn")
-            or x.LocalPath().endswith(".gni")
-            or x.LocalPath().endswith(".typemap")
-        ),
-    )
-    warnings = []
-    for f in affected_files:
-        cmd = [
-            input_api.os_path.join(_HERE, "gn.py"),
-            "format",
-            "--dry-run",
-            f.AbsoluteLocalPath(),
-        ]
-        rc = gn.main(cmd)
-        if rc == 2:
-            warnings.append(
-                output_api.PresubmitPromptWarning(
-                    "%s requires formatting. Please run:\n  gn format %s"
-                    % (f.AbsoluteLocalPath(), f.LocalPath())
+    local_path_by_abs = {
+        input_api.os_path.normpath(f.AbsoluteLocalPath()): f.LocalPath()
+        for f in affected_files
+    }
+
+    def parse_output(output):
+        warnings = []
+        for line in output.splitlines():
+            raw_path = line.strip()
+            if not raw_path:
+                continue
+            norm_path = input_api.os_path.normpath(raw_path)
+            if norm_path in local_path_by_abs:
+                local_path = local_path_by_abs[norm_path]
+                warnings.append(
+                    output_api.PresubmitPromptWarning(
+                        "%s requires formatting. Please run:\n  gn format %s"
+                        % (raw_path, local_path)
+                    )
                 )
+        return warnings
+
+    cmd = [
+        input_api.python3_executable,
+        input_api.os_path.join(_HERE, "gn.py"),
+        "format",
+        "--dry-run",
+    ] + [f.AbsoluteLocalPath() for f in affected_files]
+
+    # Use input_api.Command so that the check can run concurrently with other
+    # checks when "git cl presubmit --parallel" is used.
+    return input_api.RunTests(
+        [
+            input_api.Command(
+                name="Check GN formatting",
+                cmd=cmd,
+                kwargs={"cwd": input_api.change.RepositoryRoot()},
+                output_parser=parse_output,
             )
-    # It's just a warning, so ignore other types of failures assuming they'll be
-    # caught elsewhere.
-    return warnings
+        ]
+    )
 
 
 def CheckCIPDManifest(input_api, output_api, path=None, content=None):
