@@ -1593,6 +1593,68 @@ class ExtractGitPathFromGitBatTest(GitCommonTestBase):
         self.assertEqual(actual, expected)
 
 
+class GitRepoFastImportTest(unittest.TestCase):
+    def testComplexSchema(self):
+        schema = git_test_utils.GitRepoSchema(
+            """
+            A B C D
+              B E
+            X Y
+            """,
+            content_fn=lambda c: {
+                "file1": {"data": f"content_{c}".encode("utf-8")},
+                "exec.sh": (
+                    {"data": b"#!/bin/sh\n", "mode": 0o755}
+                    if c == "A"
+                    else {"data": None}
+                ),
+            },
+        )
+        repo = schema.reify()
+        self.addCleanup(repo.nuke)
+
+        # Verify branches and roots
+        branches = set(
+            repo.git(
+                "for-each-ref", "--format=%(refname:short)", "refs/heads"
+            ).stdout.splitlines()
+        )
+        self.assertEqual(
+            branches,
+            {
+                "branch_D",
+                "branch_E",
+                "branch_Y",
+                "main",
+                "root_A",
+                "root_X",
+            },
+        )
+
+        # Verify tags
+        tags = set(repo.git("tag").stdout.split())
+        self.assertEqual(
+            tags,
+            {
+                "tag_A",
+                "tag_B",
+                "tag_C",
+                "tag_D",
+                "tag_E",
+                "tag_X",
+                "tag_Y",
+            },
+        )
+
+        # Verify file deletion and mode
+        self.assertEqual(
+            repo.git("ls-tree", "tag_A", "exec.sh").stdout.split()[0], "100755"
+        )
+        self.assertEqual(
+            repo.git("ls-tree", "tag_B", "exec.sh").stdout.strip(), ""
+        )
+
+
 if __name__ == "__main__":
     sys.exit(
         coverage_utils.covered_main(
