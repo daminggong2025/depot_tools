@@ -5139,6 +5139,50 @@ class ThreadPoolTest(unittest.TestCase):
         self.assertIn("error 2", message_strs)
         self.assertIn("warning 1", message_strs)
 
+    def testOutputParserWithReturncode(self):
+        def FakePopen(cmd, **kwargs):
+            if cmd[0] == "code_2":
+                return mock.Mock(returncode=2)
+            if cmd[0] == "code_1_suppressed":
+                return mock.Mock(returncode=1)
+            return mock.Mock(returncode=0)
+
+        subprocess.Popen.side_effect = FakePopen
+
+        def parse_with_code(code, output):
+            if code == 2:
+                return [
+                    presubmit.OutputApi.PresubmitPromptWarning(
+                        "custom warning for code 2"
+                    )
+                ]
+            if code == 1:
+                return []  # Suppress exit code 1
+            return []
+
+        mock_tests = [
+            presubmit.CommandData(
+                name="code_2",
+                cmd=["code_2"],
+                kwargs={},
+                output_parser=parse_with_code,
+            ),
+            presubmit.CommandData(
+                name="code_1_suppressed",
+                cmd=["code_1_suppressed"],
+                kwargs={},
+                output_parser=parse_with_code,
+            ),
+        ]
+
+        t = presubmit.ThreadPool(1)
+        t.AddTests(mock_tests)
+        messages = t.RunAsync()
+        message_strs = [r._message for r in messages]
+
+        self.assertEqual(1, len(messages))
+        self.assertIn("custom warning for code 2", message_strs)
+
 
 if __name__ == "__main__":
     import unittest
