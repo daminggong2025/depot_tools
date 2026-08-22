@@ -263,9 +263,14 @@ class ThreadPool(object):
 
         if test.output_parser:
             try:
-                results = test.output_parser(stdout)
-                if results:
-                    return results
+                try:
+                    results = test.output_parser(returncode, stdout)
+                    if results is not None:
+                        return results
+                except TypeError:
+                    results = test.output_parser(stdout)
+                    if results:
+                        return results
             except Exception:
                 return error_results(
                     f"Exception while parsing:\n{stdout}",
