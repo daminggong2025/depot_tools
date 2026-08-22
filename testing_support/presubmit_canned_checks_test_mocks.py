@@ -123,6 +123,11 @@ class MockInputApi(object):
     def AffectedSourceFiles(self, file_filter=None):
         return self.AffectedFiles(file_filter=file_filter)
 
+    def AffectedTestableFiles(self, file_filter=None):
+        return self.AffectedFiles(
+            include_deletes=False, file_filter=file_filter
+        )
+
     def FilterSourceFile(
         self,
         file,
