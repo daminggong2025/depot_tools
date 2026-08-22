@@ -263,9 +263,14 @@ class ThreadPool(object):
 
         if test.output_parser:
             try:
-                results = test.output_parser(stdout)
-                if results:
-                    return results
+                try:
+                    results = test.output_parser(returncode, stdout)
+                    if results is not None:
+                        return results
+                except TypeError:
+                    results = test.output_parser(stdout)
+                    if results:
+                        return results
             except Exception:
                 return error_results(
                     f"Exception while parsing:\n{stdout}",
@@ -796,7 +801,7 @@ class InputApi(object):
         gerrit_obj,
         dry_run=None,
         thread_pool=None,
-        parallel=True,
+        parallel=False,
         no_diffs=False,
     ):
         """Builds an InputApi object.
@@ -1981,7 +1986,7 @@ class PresubmitExecuter(object):
         gerrit_obj,
         dry_run=None,
         thread_pool=None,
-        parallel=True,
+        parallel=False,
         no_diffs=False,
     ):
         """
@@ -2241,7 +2246,7 @@ def DoPresubmitChecks(
     may_prompt,
     gerrit_obj,
     dry_run=None,
-    parallel=True,
+    parallel=False,
     json_output=None,
     no_diffs=False,
 ):
@@ -2783,15 +2788,8 @@ def main(argv=None):
         "--parallel",
         action="store_true",
         help="Run all tests specified by input_api.RunTests in "
-        "all PRESUBMIT files in parallel (default: True).",
+        "all PRESUBMIT files in parallel.",
     )
-    parser.add_argument(
-        "--no-parallel",
-        action="store_false",
-        dest="parallel",
-        help="Do not run presubmit tests in parallel.",
-    )
-    parser.set_defaults(parallel=True)
     parser.add_argument(
         "--json_output",
         help="Write presubmit results to json output. If '-' "

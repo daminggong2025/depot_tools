@@ -6018,7 +6018,6 @@ class ChangelistTest(unittest.TestCase):
                 "--name",
                 "main",
                 "--upload",
-                "--no-parallel",
                 "--json_output",
                 "/tmp/fake-temp2",
                 "--description_file",
@@ -6091,7 +6090,6 @@ class ChangelistTest(unittest.TestCase):
                 "--name",
                 "main",
                 "--upload",
-                "--no-parallel",
                 "--json_output",
                 "/tmp/fake-temp2",
                 "--description_file",
@@ -6142,7 +6140,6 @@ class ChangelistTest(unittest.TestCase):
                 "--name",
                 "main",
                 "--upload",
-                "--no-parallel",
                 "--json_output",
                 "/tmp/fake-temp2",
                 "--description_file",
@@ -6828,7 +6825,7 @@ class CMDPresubmitTestCase(CMDTestCaseBase):
             committing=True,
             may_prompt=False,
             verbose=0,
-            parallel=True,
+            parallel=None,
             upstream="upstream",
             description="fetch description",
             all_files=None,
@@ -6844,7 +6841,7 @@ class CMDPresubmitTestCase(CMDTestCaseBase):
             committing=True,
             may_prompt=False,
             verbose=0,
-            parallel=True,
+            parallel=None,
             upstream="upstream",
             description="get description",
             all_files=None,
@@ -6859,23 +6856,8 @@ class CMDPresubmitTestCase(CMDTestCaseBase):
             committing=True,
             may_prompt=False,
             verbose=0,
-            parallel=True,
+            parallel=None,
             upstream="custom_branch",
-            description="fetch description",
-            all_files=None,
-            files=None,
-            resultdb=None,
-            realm=None,
-        )
-
-    def testNoParallelOption(self):
-        self.assertEqual(0, git_cl.main(["presubmit", "--no-parallel"]))
-        git_cl.Changelist.RunHook.assert_called_once_with(
-            committing=True,
-            may_prompt=False,
-            verbose=0,
-            parallel=False,
-            upstream="upstream",
             description="fetch description",
             all_files=None,
             files=None,
@@ -8304,6 +8286,51 @@ class CMDFormatTestCase(unittest.TestCase):
             )
         finally:
             os.remove(input_diff.name)
+            os.chdir(previous_cwd)
+
+    @mock.patch("git_cl._IsRuffBatchSupported", return_value=False)
+    @mock.patch("git_cl._RunClangFormatDiff", return_value=0)
+    def testInputDiffFile_Stdin(self, clang_formatter, mock_supported):
+        """Tests git cl format with --input_diff_file - reading from stdin."""
+        previous_cwd = os.getcwd()
+        os.chdir(self._top_dir)
+        try:
+            with mock.patch("sys.stdin", io.StringIO(test_format_input_diff)):
+                ret = git_cl.main(
+                    [
+                        "format",
+                        "--input_diff_file",
+                        "-",
+                        "--presubmit",
+                        "--dry-run",
+                        "--python",
+                    ]
+                )
+            self.assertEqual(0, ret)
+
+            clang_formatter.assert_called_with(
+                mock.ANY,
+                ["net/base/net_error_details.h", "net/base/net_error_list.h"],
+                mock.ANY,
+                mock.ANY,
+            )
+            git_cl.RunCommand.assert_called_with(
+                [
+                    "vpython3",
+                    mock.ANY,
+                    "--style",
+                    mock.ANY,
+                    "testing/xvfb_unittest.py",
+                    "-l",
+                    "18-24",
+                    "--diff",
+                ],
+                cwd=self._top_dir,
+                error_ok=True,
+                shell=mock.ANY,
+                stderr=-1,
+            )
+        finally:
             os.chdir(previous_cwd)
 
     @mock.patch("git_cl._RunClangFormatDiff", return_value=0)

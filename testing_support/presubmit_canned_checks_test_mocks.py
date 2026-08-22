@@ -178,13 +178,22 @@ class MockInputApi(object):
                     stdout.decode() if isinstance(stdout, bytes) else stdout
                 )
                 if parser:
-                    parse_results = parser(stdout_str)
-                    if parse_results:
-                        if isinstance(parse_results, (list, tuple)):
-                            results.extend(parse_results)
-                        else:
-                            results.append(parse_results)
-                        continue
+                    try:
+                        parse_results = parser(p.returncode, stdout_str)
+                        if parse_results is not None:
+                            if isinstance(parse_results, (list, tuple)):
+                                results.extend(parse_results)
+                            else:
+                                results.append(parse_results)
+                            continue
+                    except TypeError:
+                        parse_results = parser(stdout_str)
+                        if parse_results:
+                            if isinstance(parse_results, (list, tuple)):
+                                results.extend(parse_results)
+                            else:
+                                results.append(parse_results)
+                            continue
 
                 if p.returncode:
                     msg_type = test.message or MockOutputApi.PresubmitError
