@@ -4,6 +4,7 @@
 
 from collections import defaultdict
 import fnmatch
+import io
 import json
 import logging
 import os
@@ -172,19 +173,36 @@ class MockInputApi(object):
         for test in tests:
             parser = test.output_parser or output_parser
             try:
-                p = self.subprocess.Popen(test.cmd, **test.kwargs)
-                stdout, _ = p.communicate()
+                kwargs = test.kwargs.copy()
+                stdin_data = kwargs.pop("stdin", None)
+                if stdin_data is not None and not isinstance(
+                    stdin_data, (int, io.IOBase)
+                ):
+                    kwargs["stdin"] = self.subprocess.PIPE
+                p = self.subprocess.Popen(test.cmd, **kwargs)
+                stdout, _ = p.communicate(
+                    input=stdin_data if isinstance(stdin_data, bytes) else None
+                )
                 stdout_str = (
                     stdout.decode() if isinstance(stdout, bytes) else stdout
                 )
                 if parser:
-                    parse_results = parser(stdout_str)
-                    if parse_results:
-                        if isinstance(parse_results, (list, tuple)):
-                            results.extend(parse_results)
-                        else:
-                            results.append(parse_results)
-                        continue
+                    try:
+                        parse_results = parser(p.returncode, stdout_str)
+                        if parse_results is not None:
+                            if isinstance(parse_results, (list, tuple)):
+                                results.extend(parse_results)
+                            else:
+                                results.append(parse_results)
+                            continue
+                    except TypeError:
+                        parse_results = parser(stdout_str)
+                        if parse_results:
+                            if isinstance(parse_results, (list, tuple)):
+                                results.extend(parse_results)
+                            else:
+                                results.append(parse_results)
+                            continue
 
                 if p.returncode:
                     msg_type = test.message or MockOutputApi.PresubmitError
