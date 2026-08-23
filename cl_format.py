@@ -5,20 +5,17 @@
 """Code formatting subsystem for git cl format."""
 
 import collections
+import concurrent.futures
 import fnmatch
+import io
 import json
 import multiprocessing.pool
-import clang_format
-import google_java_format
-import ktfmt
-import metrics_xml_format
 import optparse
-import rustfmt
-import shutil
-import swift_format
 import os
 import re
+import shutil
 import sys
+import threading
 from typing import (
     Any,
     Callable,
@@ -29,55 +26,20 @@ from typing import (
     Tuple,
 )
 
+import clang_format
 import gclient_paths
 import gclient_utils
+import google_java_format
+import ktfmt
 import metrics
+import metrics_xml_format
+import rustfmt
 import subprocess2
+import swift_format
 import utils
 
 # Subcommand decorator support
 import subcommand
-
-# Constants
-DEPOT_TOOLS = os.path.dirname(os.path.abspath(__file__))
-YAPF_CONFIG_FILENAME = ".style.yapf"
-
-
-# Lazy helpers delegating to git_cl to eliminate circular module initialization
-def Changelist(*args, **kwargs):
-    import git_cl
-
-    return git_cl.Changelist(*args, **kwargs)
-
-
-def DieWithError(*args, **kwargs):
-    import git_cl
-
-    return git_cl.DieWithError(*args, **kwargs)
-
-
-def RunCommand(*args, **kwargs):
-    import git_cl
-
-    return git_cl.RunCommand(*args, **kwargs)
-
-
-def RunGit(*args, **kwargs):
-    import git_cl
-
-    return git_cl.RunGit(*args, **kwargs)
-
-
-def RunGitDiffCmd(*args, **kwargs):
-    import git_cl
-
-    return git_cl.RunGitDiffCmd(*args, **kwargs)
-
-
-def _SplitArgsByCmdLineLimit(*args, **kwargs):
-    import git_cl
-
-    return git_cl._SplitArgsByCmdLineLimit(*args, **kwargs)
 
 
 def _ComputeFormatDiffLineRanges(files, diffs, expand=0):
@@ -143,6 +105,48 @@ def _ComputeFormatDiffLineRanges(files, diffs, expand=0):
                 line_diffs[file].append((diff_start, diff_end))
 
     return line_diffs
+
+
+# Constants
+DEPOT_TOOLS = os.path.dirname(os.path.abspath(__file__))
+YAPF_CONFIG_FILENAME = ".style.yapf"
+
+
+# Lazy helpers delegating to git_cl to eliminate circular module initialization
+def Changelist(*args, **kwargs):
+    import git_cl
+
+    return git_cl.Changelist(*args, **kwargs)
+
+
+def DieWithError(*args, **kwargs):
+    import git_cl
+
+    return git_cl.DieWithError(*args, **kwargs)
+
+
+def RunCommand(*args, **kwargs):
+    import git_cl
+
+    return git_cl.RunCommand(*args, **kwargs)
+
+
+def RunGit(*args, **kwargs):
+    import git_cl
+
+    return git_cl.RunGit(*args, **kwargs)
+
+
+def RunGitDiffCmd(*args, **kwargs):
+    import git_cl
+
+    return git_cl.RunGitDiffCmd(*args, **kwargs)
+
+
+def _SplitArgsByCmdLineLimit(*args, **kwargs):
+    import git_cl
+
+    return git_cl._SplitArgsByCmdLineLimit(*args, **kwargs)
 
 
 def _FindYapfConfigFile(fpath, yapf_config_cache, top_dir=None):
@@ -435,6 +439,22 @@ def _RunGoogleJavaFormat(opts, paths, top_dir, diffs):
             )
         return stdout
 
+    parent_out_buf = getattr(sys.stdout, "get_buffer", lambda: None)()
+    parent_err_buf = getattr(sys.stderr, "get_buffer", lambda: None)()
+
+    def _RunFormatWorker(cmd, path, range_args, out_buf, err_buf, **kwds):
+        if out_buf and hasattr(sys.stdout, "set_buffer"):
+            sys.stdout.set_buffer(out_buf)
+        if err_buf and hasattr(sys.stderr, "set_buffer"):
+            sys.stderr.set_buffer(err_buf)
+        try:
+            return RunFormat(cmd, path, range_args, **kwds)
+        finally:
+            if hasattr(sys.stdout, "set_buffer"):
+                sys.stdout.set_buffer(None)
+            if hasattr(sys.stderr, "set_buffer"):
+                sys.stderr.set_buffer(None)
+
     results = []
     kwds = {"error_ok": True, "cwd": top_dir}
     with multiprocessing.pool.ThreadPool() as pool:
@@ -450,7 +470,15 @@ def _RunGoogleJavaFormat(opts, paths, top_dir, diffs):
 
             results.append(
                 pool.apply_async(
-                    RunFormat, args=[cmd, path, range_args], kwds=kwds
+                    _RunFormatWorker,
+                    args=[
+                        cmd,
+                        path,
+                        range_args,
+                        parent_out_buf,
+                        parent_err_buf,
+                    ],
+                    kwds=kwds,
                 )
             )
 
@@ -500,7 +528,7 @@ def _RunKtfmt(opts, paths, top_dir, diffs):
         cmd += ["--set-exit-if-changed", "--dry-run"]
 
     for paths_batch in _SplitArgsByCmdLineLimit(paths):
-        ktfmt_exitcode = subprocess2.call(cmd + paths_batch, shell=False)
+        ktfmt_exitcode = _RunFormatterSubprocess(cmd + paths_batch, shell=False)
         if opts.dry_run and ktfmt_exitcode != 0:
             return 2
 
@@ -527,7 +555,9 @@ def _RunRustFmt(opts, paths, top_dir, diffs):
         cmd.append("--check")
 
     for paths_batch in _SplitArgsByCmdLineLimit(paths):
-        rustfmt_exitcode = subprocess2.call(cmd + paths_batch, shell=False)
+        rustfmt_exitcode = _RunFormatterSubprocess(
+            cmd + paths_batch, shell=False
+        )
         if opts.dry_run and rustfmt_exitcode != 0:
             return 2
 
@@ -552,7 +582,7 @@ def _RunSwiftFormat(opts, paths, top_dir, diffs):
     else:
         cmd += ["format", "-i"]
     cmd += paths
-    swift_format_exitcode = subprocess2.call(cmd, stderr=subprocess2.STDOUT)
+    swift_format_exitcode = _RunFormatterSubprocess(cmd)
 
     if opts.dry_run and swift_format_exitcode != 0:
         return 2
@@ -644,20 +674,30 @@ def _RunPythonFormat(
             shell=sys.platform == "win32",
         )
 
+        def _WriteBytes(stream, data):
+            if not data:
+                return
+            if hasattr(stream, "buffer"):
+                stream.buffer.write(data)
+            else:
+                stream.write(
+                    data.decode("utf-8", errors="replace")
+                    if isinstance(data, bytes)
+                    else data
+                )
+
         if code == 1:
-            if stderr:
-                sys.stderr.buffer.write(stderr)
+            _WriteBytes(sys.stderr, stderr)
             return 1
         if code == 2:
             if opts.diff and stdout:
-                sys.stdout.buffer.write(stdout)
+                _WriteBytes(sys.stdout, stdout)
             return 2
         if code == 0:
             if opts.diff and stdout:
-                sys.stdout.buffer.write(stdout)
+                _WriteBytes(sys.stdout, stdout)
             return 0
-        if stderr:
-            sys.stderr.buffer.write(stderr)
+        _WriteBytes(sys.stderr, stderr)
         return 1
     except Exception as e:
         sys.stderr.write(f"Failed to run ruff_chromium --batch: {e}\n")
@@ -761,7 +801,7 @@ def _RunMarkdownFormat(
     elif opts.dry_run:
         cmd.append("--check")
 
-    exit_code = subprocess2.call(cmd + paths)
+    exit_code = _RunFormatterSubprocess(cmd + paths)
     if exit_code == 2:
         return_value = 2
 
@@ -827,7 +867,7 @@ def _RunLitTemplateFormatter(
 
     return_value = 0
     for paths_batch in _SplitArgsByCmdLineLimit(paths):
-        exit_code = subprocess2.call(cmd + paths_batch, cwd=top_dir)
+        exit_code = _RunFormatterSubprocess(cmd + paths_batch, cwd=top_dir)
         if exit_code != 0:
             if opts.dry_run:
                 return_value = 2
@@ -843,7 +883,7 @@ def _RunGnFormat(opts, paths, top_dir, diffs):
         cmd.append("--dry-run")
     return_value = 0
     for path in paths:
-        gn_ret = subprocess2.call(
+        gn_ret = _RunFormatterSubprocess(
             cmd + [path], shell=sys.platform.startswith("win"), cwd=top_dir
         )
         if opts.diff and gn_ret == 2:
@@ -886,7 +926,7 @@ def _RunMojomFormat(opts, paths, top_dir, diffs):
         cmd.append("--dry-run")
     cmd.extend(paths)
 
-    ret = subprocess2.call(cmd)
+    ret = _RunFormatterSubprocess(cmd)
     if opts.dry_run and ret != 0:
         return 2
 
@@ -944,7 +984,7 @@ def _RunLUCICfgFormat(opts, paths, top_dir, diffs):
         cmd.append("--dry-run")
     cmd.extend(paths)
 
-    ret = subprocess2.call(cmd)
+    ret = _RunFormatterSubprocess(cmd)
     if opts.dry_run and ret != 0:
         return 2
 
@@ -956,7 +996,67 @@ FormatterFunction = Callable[
 ]
 
 
-def _SplitDiffsByFile(diff_string: str) -> Dict[str, str]:  # noqa: F821
+class _ThreadLocalStream:
+    """Thread-local stream proxy that routes text and binary writes to a per-thread buffer.
+
+    When multiple formatters run concurrently (e.g. clang-format, ruff, gn format),
+    each worker thread may write diffs, status messages, or warnings directly to
+    sys.stdout or sys.stderr (via print(), sys.stdout.write(), or sys.stdout.buffer.write()).
+    This proxy intercepts writes in each worker thread and redirects them into an
+    isolated thread-local memory buffer (io.BytesIO).
+
+    Any write from an unmanaged thread (or the main thread when no buffer is active)
+    transparently falls back to the underlying default stream.
+    """
+
+    def __init__(self, fallback_stream):
+        self._fallback = fallback_stream
+        self._local = threading.local()
+
+    def set_buffer(self, buf: Optional[io.BytesIO]):
+        self._local.buf = buf
+
+    def get_buffer(self) -> Optional[io.BytesIO]:
+        return getattr(self._local, "buf", None)
+
+    def write(self, s):
+        buf = self.get_buffer()
+        if buf is not None:
+            if isinstance(s, str):
+                buf.write(s.encode("utf-8", "replace"))
+                return len(s)
+            return buf.write(s)
+        if isinstance(s, bytes):
+            if hasattr(self._fallback, "buffer"):
+                return self._fallback.buffer.write(s)
+            self._fallback.write(s.decode("utf-8", "replace"))
+            return len(s)
+        return self._fallback.write(s)
+
+    def writelines(self, lines):
+        for line in lines:
+            self.write(line)
+
+    def flush(self):
+        buf = self.get_buffer()
+        if buf is None:
+            self._fallback.flush()
+
+    @property
+    def buffer(self):
+        return self
+
+    def __getattr__(self, name):
+        # Delegate unknown stream attributes (e.g. isatty(), encoding, fileno())
+        # to the fallback stream so formatters and libraries inspect stream
+        # capabilities transparently.
+        return getattr(self._fallback, name)
+
+
+_ThreadSafeStreamWrapper = _ThreadLocalStream
+
+
+def _SplitDiffsByFile(diff_string: str) -> Dict[str, str]:
     """Split a given diff string into per-file patches.
 
     This function expects that the diff_string was generated with a prefix.
@@ -994,7 +1094,7 @@ def _FindFilesToFormat(
     opts: optparse.Values,
     files: Optional[List[str]],
     upstream_commit: Optional[str],
-) -> Tuple[List[str], Optional[Dict[str, str]]]:  # noqa: F821
+) -> Tuple[List[str], Optional[Dict[str, str]]]:
     """Returns a list of files to format and the diffs.
 
     If opts.full, returns None for the diffs.
@@ -1233,7 +1333,7 @@ def CMDformat(parser: optparse.OptionParser, args: List[str]):
     if opts.lucicfg:
         formatters.append(([".star"], _RunLUCICfgFormat, []))
 
-    return_value = 0
+    tasks: list[tuple[FormatterFunction, List[str]]] = []
     for item in formatters:
         file_types, format_func, exclude_types = item
 
@@ -1243,9 +1343,82 @@ def CMDformat(parser: optparse.OptionParser, args: List[str]):
             if p.lower().endswith(tuple(file_types))
             and not p.lower().endswith(tuple(exclude_types))
         ]
-        if not paths:
-            continue
-        ret = format_func(opts, paths, top_dir, diffs)
-        return_value = return_value or ret
+        if paths:
+            tasks.append((format_func, paths))
 
-    return return_value
+    if not tasks:
+        return 0
+
+    # If only a single language formatter is needed, run it directly on the main
+    # thread to avoid thread pool and buffer allocation overhead.
+    if len(tasks) == 1:
+        format_func, paths = tasks[0]
+        return format_func(opts, paths, top_dir, diffs)
+
+    # For multi-language changes, execute formatters concurrently across CPU
+    # cores. To prevent concurrent threads from interleaving stdout/stderr
+    # (e.g. diffs during git cl format --diff, or unformatted warnings during
+    # git cl upload --dry-run), install thread-local proxies and buffer each
+    # formatter's output independently.
+    stdout_proxy = _ThreadLocalStream(sys.stdout)
+    stderr_proxy = _ThreadLocalStream(sys.stderr)
+
+    def _RunWorker(
+        format_func: FormatterFunction, paths: List[str]
+    ) -> Tuple[Optional[BaseException], int, bytes, bytes]:
+        out_buf = io.BytesIO()
+        err_buf = io.BytesIO()
+        stdout_proxy.set_buffer(out_buf)
+        stderr_proxy.set_buffer(err_buf)
+        try:
+            ret = format_func(opts, paths, top_dir, diffs)
+            return None, ret, out_buf.getvalue(), err_buf.getvalue()
+        except BaseException as exc:
+            return exc, 1, out_buf.getvalue(), err_buf.getvalue()
+        finally:
+            stdout_proxy.set_buffer(None)
+            stderr_proxy.set_buffer(None)
+
+    orig_stdout, orig_stderr = sys.stdout, sys.stderr
+    sys.stdout, sys.stderr = stdout_proxy, stderr_proxy
+    try:
+        with concurrent.futures.ThreadPoolExecutor(
+            max_workers=min(len(tasks), 8)
+        ) as executor:
+            # Submit all language formatters concurrently.
+            futures = [
+                executor.submit(_RunWorker, func, paths)
+                for func, paths in tasks
+            ]
+            first_exception = None
+            return_value = 0
+            # Iterate through futures in original task order so that outputs
+            # (diffs, notices, errors) are emitted deterministically and sequentially.
+            for future in futures:
+                exc, ret, out_bytes, err_bytes = future.result()
+                if out_bytes:
+                    if hasattr(orig_stdout, "buffer"):
+                        orig_stdout.buffer.write(out_bytes)
+                    else:
+                        orig_stdout.write(out_bytes.decode("utf-8", "replace"))
+                    orig_stdout.flush()
+                if err_bytes:
+                    if hasattr(orig_stderr, "buffer"):
+                        orig_stderr.buffer.write(err_bytes)
+                    else:
+                        orig_stderr.write(err_bytes.decode("utf-8", "replace"))
+                    orig_stderr.flush()
+
+                if exc is not None and first_exception is None:
+                    first_exception = exc
+                elif ret != 0:
+                    # Deterministically preserve error codes (prioritizing code 2
+                    # from unformatted dry-run checks over other non-zero/negative codes).
+                    if return_value == 0 or ret == 2:
+                        return_value = ret
+
+            if first_exception is not None:
+                raise first_exception
+            return return_value
+    finally:
+        sys.stdout, sys.stderr = orig_stdout, orig_stderr
