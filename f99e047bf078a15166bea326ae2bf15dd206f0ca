@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "84c5809f_e06cab77",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000266
+      },
+      "writtenOn": "2026-08-23T18:59:29Z",
+      "side": 1,
+      "message": "Hi Brian, it looks like Alex is out for a bit. He was reviewing a series of git cl optimizations I had lined up. Let me know if you\u0027re able to review these while he is out.\n\nThanks,\nJames",
+      "revId": "f99e047bf078a15166bea326ae2bf15dd206f0ca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
