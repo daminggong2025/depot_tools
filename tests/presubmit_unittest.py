@@ -5139,8 +5139,102 @@ class ThreadPoolTest(unittest.TestCase):
         self.assertIn("error 2", message_strs)
         self.assertIn("warning 1", message_strs)
 
+    def testEagerExecutionBeforeRunAsync(self):
+        started_event = threading.Event()
+        release_event = threading.Event()
+
+        def SlowPopen(cmd, **kwargs):
+            started_event.set()
+            release_event.wait(timeout=5.0)
+            return mock.Mock(returncode=0)
+
+        subprocess.Popen.side_effect = SlowPopen
+
+        mock_test = presubmit.CommandData(
+            name="eager_test",
+            cmd=["eager_cmd"],
+            kwargs={},
+            message=presubmit.OutputApi.PresubmitError,
+        )
+
+        with presubmit.ThreadPool(1) as t:
+            t.AddTests([mock_test], parallel=True)
+            # Verify the worker started the command eagerly BEFORE RunAsync is called.
+            self.assertTrue(started_event.wait(timeout=2.0))
+            release_event.set()
+            messages = t.RunAsync()
+            self.assertEqual([], messages)
+
+    def testBarrierNonparallelOrdering(self):
+        execution_order = []
+
+        def FakePopen(cmd, **kwargs):
+            if cmd[0] == "parallel_task":
+                import time as py_time
+
+                py_time.sleep(0.05)
+                execution_order.append("parallel")
+            elif cmd[0] == "sequential_task":
+                execution_order.append("sequential")
+            return mock.Mock(returncode=0)
+
+        subprocess.Popen.side_effect = FakePopen
+
+        test_parallel = presubmit.CommandData(
+            name="parallel",
+            cmd=["parallel_task"],
+            kwargs={},
+            message=presubmit.OutputApi.PresubmitError,
+        )
+        test_seq = presubmit.CommandData(
+            name="sequential",
+            cmd=["sequential_task"],
+            kwargs={},
+            message=presubmit.OutputApi.PresubmitError,
+        )
+
+        with presubmit.ThreadPool(2) as t:
+            t.AddTests([test_parallel], parallel=True)
+            t.AddTests([test_seq], parallel=False)
+            t.RunAsync()
+
+        # Non-parallel test should execute only after the barrier drains parallel tasks
+        self.assertEqual(["parallel", "sequential"], execution_order)
+
+    def testContextManagerDeferredTempFileCleanup(self):
+        with mock.patch("os.remove") as mock_remove:
+            with presubmit.ThreadPool(1) as t:
+                t.RegisterTemporaryFiles(["fake_file_1.txt", "fake_file_2.txt"])
+                mock_remove.assert_not_called()
+
+            self.assertEqual(
+                mock_remove.mock_calls,
+                [mock.call("fake_file_2.txt"), mock.call("fake_file_1.txt")],
+            )
+
+    def testAbsoluteCwdNormalization(self):
+        captured_kwargs = []
+
+        def FakePopen(cmd, **kwargs):
+            captured_kwargs.append(kwargs)
+            return mock.Mock(returncode=0)
+
+        subprocess.Popen.side_effect = FakePopen
+
+        mock_test = presubmit.CommandData(
+            name="cwd_test",
+            cmd=["test_cmd"],
+            kwargs={"cwd": "."},
+            message=presubmit.OutputApi.PresubmitError,
+        )
+
+        with presubmit.ThreadPool(1) as t:
+            t.AddTests([mock_test], parallel=True)
+            t.RunAsync()
+
+        self.assertEqual(1, len(captured_kwargs))
+        self.assertTrue(os.path.isabs(captured_kwargs[0]["cwd"]))
+
 
 if __name__ == "__main__":
-    import unittest
-
     unittest.main()
