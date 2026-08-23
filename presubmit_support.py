@@ -21,6 +21,7 @@ import json  # Exposed through the API.
 import logging
 import mimetypes
 import multiprocessing
+import queue
 import os  # Somewhat exposed through the API.
 import random
 import re  # Exposed through the API.
@@ -191,11 +192,80 @@ class ThreadPool(object):
             # TODO(crbug.com/1190269) - we can't use more than 56 child
             # processes on Windows or Python3 may hang.
             self._pool_size = min(self._pool_size, 56)
+
+        self._task_queue = queue.Queue()
         self._messages = []
-        self._messages_lock = threading.Lock()
-        self._tests = []
-        self._tests_lock = threading.Lock()
         self._nonparallel_tests = []
+        self._messages_lock = threading.Lock()
+        self._workers = []
+        self._cancel_event = threading.Event()
+        self._active_tasks_lock = threading.Lock()
+        self._active_tasks_count = 0
+        self._tasks_drained_condition = threading.Condition(
+            self._active_tasks_lock
+        )
+        self._active_processes = set()
+        self._active_processes_lock = threading.Lock()
+        self._deferred_cleanup_files = []
+        self._started = False
+        self._closed = False
+
+    def __enter__(self):
+        self.Start()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if exc_type is not None:
+            self.Cancel()
+        self.Close()
+        self.Join()
+        self.CleanupTemporaryFiles()
+
+    def Start(self):
+        if self._started:
+            return
+        self._started = True
+        for i in range(self._pool_size):
+            t = threading.Thread(
+                target=self._WorkerLoop,
+                name=f"PresubmitWorker-{i}",
+                daemon=True,
+            )
+            t.start()
+            self._workers.append(t)
+
+    def _WorkerLoop(self):
+        while not self._cancel_event.is_set():
+            try:
+                test = self._task_queue.get(timeout=0.2)
+            except queue.Empty:
+                continue
+
+            if test is None:
+                break
+
+            try:
+                if not self._cancel_event.is_set():
+                    result = self.CallCommand(test, show_callstack=False)
+                    if result:
+                        with self._messages_lock:
+                            if isinstance(result, (list, tuple)):
+                                self._messages.extend(result)
+                            else:
+                                self._messages.append(result)
+            except Exception:
+                with self._messages_lock:
+                    self._messages.append(
+                        _PresubmitError(
+                            f"Worker uncaught exception in {test.name}:\n"
+                            f"{traceback.format_exc()}"
+                        )
+                    )
+            finally:
+                with self._active_tasks_lock:
+                    self._active_tasks_count -= 1
+                    if self._active_tasks_count == 0:
+                        self._tasks_drained_condition.notify_all()
 
     def _GetCommand(self, test):
         vpython = "vpython3"
@@ -225,16 +295,32 @@ class ThreadPool(object):
         return cmd
 
     def _RunWithTimeout(self, cmd, stdin, kwargs):
+        if self._cancel_event.is_set():
+            return -1, "Canceled before execution"
+
         p = subprocess.Popen(cmd, **kwargs)
-        with Timer(self.timeout, p.terminate) as timer:
-            stdout, _ = sigint_handler.wait(p, stdin)
-            stdout = stdout.decode("utf-8", "ignore")
-            if timer.completed:
-                stdout = "Process timed out after %ss\n%s" % (
-                    self.timeout,
-                    stdout,
-                )
-            return p.returncode, stdout
+        with self._active_processes_lock:
+            if self._cancel_event.is_set():
+                try:
+                    p.terminate()
+                except OSError:
+                    pass
+            else:
+                self._active_processes.add(p)
+
+        try:
+            with Timer(self.timeout, p.terminate) as timer:
+                stdout, _ = sigint_handler.wait(p, stdin)
+                stdout = stdout.decode("utf-8", "ignore")
+                if timer.completed:
+                    stdout = "Process timed out after %ss\n%s" % (
+                        self.timeout,
+                        stdout,
+                    )
+                return p.returncode, stdout
+        finally:
+            with self._active_processes_lock:
+                self._active_processes.discard(p)
 
     def CallCommand(self, test, show_callstack=None):
         """Runs an external program.
@@ -283,50 +369,98 @@ class ThreadPool(object):
             )
 
     def AddTests(self, tests, parallel=True):
+        if not tests:
+            return
+
         if parallel:
-            self._tests.extend(tests)
+            self.Start()
+            with self._active_tasks_lock:
+                self._active_tasks_count += len(tests)
+            for test in tests:
+                if getattr(test, "kwargs", None) is None:
+                    test.kwargs = {}
+                if not test.kwargs.get("cwd"):
+                    test.kwargs["cwd"] = os.getcwd()
+                test.kwargs["cwd"] = os.path.abspath(test.kwargs["cwd"])
+                self._task_queue.put(test)
         else:
             self._nonparallel_tests.extend(tests)
 
+    def _DrainInFlightParallelTasks(self):
+        """Blocks until all active parallel background tasks have completed."""
+        with self._active_tasks_lock:
+            while (
+                self._active_tasks_count > 0 and not self._cancel_event.is_set()
+            ):
+                self._tasks_drained_condition.wait(timeout=0.2)
+
+    def RegisterTemporaryFiles(self, files):
+        """Defers deletion of temporary files until ThreadPool shutdown."""
+        self._deferred_cleanup_files.extend(files)
+
+    def CleanupTemporaryFiles(self):
+        while self._deferred_cleanup_files:
+            f = self._deferred_cleanup_files.pop()
+            try:
+                os.remove(f)
+            except OSError:
+                pass
+
+    def Cancel(self):
+        """Signals cancellation to all workers and terminates child processes."""
+        self._cancel_event.set()
+        with self._active_processes_lock:
+            while self._active_processes:
+                proc = self._active_processes.pop()
+                try:
+                    proc.terminate()
+                except OSError:
+                    pass
+        while True:
+            try:
+                self._task_queue.get_nowait()
+            except queue.Empty:
+                break
+
+    def Close(self):
+        """Signals worker threads to exit once active tasks finish."""
+        if self._closed:
+            return
+        self._closed = True
+        for _ in self._workers:
+            self._task_queue.put(None)
+
+    def Join(self, timeout=2.0):
+        """Waits for worker threads to terminate cleanly within a total deadline."""
+        deadline = time_time() + timeout if timeout else None
+        for worker in self._workers:
+            if not worker.is_alive():
+                continue
+            if deadline is not None:
+                remaining = max(0.0, deadline - time_time())
+                worker.join(timeout=remaining)
+            else:
+                worker.join()
+
     def RunAsync(self):
-        self._messages = []
+        # Drain all active parallel background tasks before running nonparallel tests.
+        self._DrainInFlightParallelTasks()
 
-        def _WorkerFn():
-            while True:
-                test = None
-                with self._tests_lock:
-                    if not self._tests:
-                        break
-                    test = self._tests.pop()
-                result = self.CallCommand(test, show_callstack=False)
-                if result:
-                    with self._messages_lock:
-                        if isinstance(result, (list, tuple)):
-                            self._messages.extend(result)
-                        else:
-                            self._messages.append(result)
-
-        def _StartDaemon():
-            t = threading.Thread(target=_WorkerFn)
-            t.daemon = True
-            t.start()
-            return t
-
+        # Nonparallel tests run sequentially in LIFO order matching historical presubmit semantics.
         while self._nonparallel_tests:
             test = self._nonparallel_tests.pop()
             result = self.CallCommand(test)
             if result:
-                if isinstance(result, (list, tuple)):
-                    self._messages.extend(result)
-                else:
-                    self._messages.append(result)
+                with self._messages_lock:
+                    if isinstance(result, (list, tuple)):
+                        self._messages.extend(result)
+                    else:
+                        self._messages.append(result)
 
-        if self._tests:
-            threads = [_StartDaemon() for _ in range(self._pool_size)]
-            for worker in threads:
-                worker.join()
-
-        return self._messages
+        with self._messages_lock:
+            results = list(self._messages)
+            self._messages = []
+            return results
 
 
 def normpath(path):
@@ -2137,8 +2271,18 @@ class PresubmitExecuter(object):
                         output_api.more_cc = []
 
         finally:
-            for f in input_api._named_temporary_files:
-                os.remove(f)
+            if self.thread_pool and hasattr(
+                self.thread_pool, "RegisterTemporaryFiles"
+            ):
+                self.thread_pool.RegisterTemporaryFiles(
+                    input_api._named_temporary_files
+                )
+            else:
+                for f in input_api._named_temporary_files:
+                    try:
+                        os.remove(f)
+                    except OSError:
+                        pass
 
         self.more_cc = sorted(set(self.more_cc))
 
@@ -2290,35 +2434,39 @@ def DoPresubmitChecks(
         if not presubmit_files and verbose:
             sys.stdout.write("Warning, no PRESUBMIT.py found.\n")
         results = []
-        thread_pool = ThreadPool()
-        executer = PresubmitExecuter(
-            change,
-            committing,
-            verbose,
-            gerrit_obj,
-            dry_run,
-            thread_pool,
-            parallel,
-            no_diffs,
-        )
-        if default_presubmit:
-            if verbose:
-                sys.stdout.write("Running default presubmit script.\n")
-            fake_path = os.path.join(change.RepositoryRoot(), "PRESUBMIT.py")
-            results += executer.ExecPresubmitScript(
-                default_presubmit, fake_path
+        with ThreadPool() as thread_pool:
+            executer = PresubmitExecuter(
+                change,
+                committing,
+                verbose,
+                gerrit_obj,
+                dry_run,
+                thread_pool,
+                parallel,
+                no_diffs,
             )
-        for filename in presubmit_files:
-            filename = os.path.abspath(filename)
-            # Accept CRLF presubmit script.
-            presubmit_script = gclient_utils.FileRead(filename).replace(
-                "\r\n", "\n"
-            )
-            if verbose:
-                sys.stdout.write("Running %s\n" % filename)
-            results += executer.ExecPresubmitScript(presubmit_script, filename)
+            if default_presubmit:
+                if verbose:
+                    sys.stdout.write("Running default presubmit script.\n")
+                fake_path = os.path.join(
+                    change.RepositoryRoot(), "PRESUBMIT.py"
+                )
+                results += executer.ExecPresubmitScript(
+                    default_presubmit, fake_path
+                )
+            for filename in presubmit_files:
+                filename = os.path.abspath(filename)
+                # Accept CRLF presubmit script.
+                presubmit_script = gclient_utils.FileRead(filename).replace(
+                    "\r\n", "\n"
+                )
+                if verbose:
+                    sys.stdout.write("Running %s\n" % filename)
+                results += executer.ExecPresubmitScript(
+                    presubmit_script, filename
+                )
 
-        results += thread_pool.RunAsync()
+            results += thread_pool.RunAsync()
 
         messages = {}
         should_prompt = False
