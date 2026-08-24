@@ -371,41 +371,193 @@ class TestLuciScripts(unittest.TestCase):
         )
 
     @mock.patch("test_history.run_prpc")
-    def test_test_history(self, mock_prpc):
+    def test_pagination_and_aggregation(self, mock_prpc):
+        # Page 1
+        page1 = {
+            "verdicts": [
+                {
+                    "testId": SAMPLE_TEST_ID,
+                    "partitionTime": "2026-08-14T10:00:00Z",
+                    "status": "UNEXPECTED",
+                    "variantHash": "var1",
+                }
+            ],
+            "nextPageToken": "token123",
+        }
+        # Page 2
+        page2 = {
+            "verdicts": [
+                {
+                    "testId": SAMPLE_TEST_ID,
+                    "partitionTime": "2026-08-13T10:00:00Z",
+                    "status": "EXPECTED",
+                    "variantHash": "var1",
+                }
+            ]
+        }
+        mock_prpc.side_effect = [page1, page2]
+
+        verdicts = test_history.fetch_test_history_verdicts(
+            "chromium", SAMPLE_TEST_ID, limit=2, verbose=False
+        )
+        self.assertEqual(len(verdicts), 2)
+
+        daily = test_history.aggregate_by_day(verdicts)
+        self.assertEqual(daily["2026-08-14"]["FAIL"], 1)
+        self.assertEqual(daily["2026-08-14"]["FAIL_RATE"], 100.0)
+        self.assertEqual(daily["2026-08-13"]["PASS"], 1)
+        self.assertEqual(daily["2026-08-13"]["FAIL_RATE"], 0.0)
+
+        table = test_history.format_summary_table(daily, SAMPLE_TEST_ID)
+        self.assertIn("2026-08-14", table)
+        self.assertIn(
+            "Status: ACTIVE REGRESSION",
+            table,
+        )
+
+    def test_summary_table_heuristics(self):
+        # 1. Multi-day active failure streak
+        streak_daily = {
+            "2026-08-15": {
+                "PASS": 0,
+                "FAIL": 5,
+                "FLAKE": 0,
+                "TOTAL": 5,
+                "VARIANTS": 1,
+                "FAIL_RATE": 100.0,
+            },
+            "2026-08-14": {
+                "PASS": 2,
+                "FAIL": 3,
+                "FLAKE": 0,
+                "TOTAL": 5,
+                "VARIANTS": 1,
+                "FAIL_RATE": 60.0,
+            },
+            "2026-08-13": {
+                "PASS": 5,
+                "FAIL": 0,
+                "FLAKE": 0,
+                "TOTAL": 5,
+                "VARIANTS": 1,
+                "FAIL_RATE": 0.0,
+            },
+        }
+        table_streak = test_history.format_summary_table(
+            streak_daily, SAMPLE_TEST_ID
+        )
+        self.assertIn(
+            "Status: ACTIVE REGRESSION (Elevated failure rate of 100.0% starting on 2026-08-14",
+            table_streak,
+        )
+
+        # 2. Recovered regression / past failure period (latest date is passing)
+        recovered_daily = {
+            "2026-08-16": {
+                "PASS": 5,
+                "FAIL": 0,
+                "FLAKE": 0,
+                "TOTAL": 5,
+                "VARIANTS": 1,
+                "FAIL_RATE": 0.0,
+            },
+            "2026-08-15": {
+                "PASS": 1,
+                "FAIL": 4,
+                "FLAKE": 0,
+                "TOTAL": 5,
+                "VARIANTS": 1,
+                "FAIL_RATE": 80.0,
+            },
+        }
+        table_recovered = test_history.format_summary_table(
+            recovered_daily, SAMPLE_TEST_ID
+        )
+        self.assertIn(
+            "Status: PASSING (Latest runs on 2026-08-16 are clean). [Past failure occurred on 2026-08-15].",
+            table_recovered,
+        )
+
+        # 3. Flaky / Retried runs on latest date (yellow runs)
+        flaky_daily = {
+            "2026-08-16": {
+                "PASS": 4,
+                "FAIL": 0,
+                "FLAKE": 1,
+                "TOTAL": 5,
+                "VARIANTS": 1,
+                "FAIL_RATE": 0.0,
+            },
+        }
+        table_flaky = test_history.format_summary_table(
+            flaky_daily, SAMPLE_TEST_ID
+        )
+        self.assertIn("Status: FLAKY / RETRIED", table_flaky)
+
+        # 4. 100% clean history
+        clean_daily = {
+            "2026-08-16": {
+                "PASS": 5,
+                "FAIL": 0,
+                "FLAKE": 0,
+                "TOTAL": 5,
+                "VARIANTS": 1,
+                "FAIL_RATE": 0.0,
+            },
+            "2026-08-15": {
+                "PASS": 5,
+                "FAIL": 0,
+                "FLAKE": 0,
+                "TOTAL": 5,
+                "VARIANTS": 1,
+                "FAIL_RATE": 0.0,
+            },
+        }
+        table_clean = test_history.format_summary_table(
+            clean_daily, SAMPLE_TEST_ID, bucket="try"
+        )
+        self.assertIn(
+            "Status: PASSING (100% passing across all fetched dates",
+            table_clean,
+        )
+        self.assertIn("Note: Results are from the 'try' bucket", table_clean)
+
+    @mock.patch("test_history.run_prpc")
+    def test_fetch_test_history_max_pages(self, mock_prpc):
+        # Infinite pages mock yielding 1 matching verdict per page
         mock_prpc.return_value = {
             "verdicts": [
                 {
                     "testId": SAMPLE_TEST_ID,
                     "status": "EXPECTED",
+                    "variantHash": "wanted_hash",
                 }
-            ]
+            ],
+            "nextPageToken": "infinite_token",
         }
-        verdicts = test_history.test_history(
+        # With max_pages=2 and limit=100, safety cap stops loop at 2 pages (2 verdicts)
+        verdicts = test_history.fetch_test_history_verdicts(
             "chromium",
             SAMPLE_TEST_ID,
-            limit=5,
-            builder=SAMPLE_BUILDER,
-            test_suite="base_unittests",
+            limit=100,
+            variant_hash="wanted_hash",
+            max_pages=2,
+            verbose=False,
         )
-        self.assertEqual(len(verdicts), 1)
-        self.assertEqual(verdicts[0]["status"], "EXPECTED")
+        self.assertEqual(len(verdicts), 2)
+        self.assertEqual(mock_prpc.call_count, 2)
+
+    @mock.patch("test_history.run_prpc")
+    def test_query_tests(self, mock_prpc):
+        mock_prpc.return_value = {"testIds": [SAMPLE_TEST_ID]}
+        ids = test_history.query_tests("chromium", "JSONReaderTest")
+        self.assertEqual(ids, [SAMPLE_TEST_ID])
         mock_prpc.assert_called_once_with(
             "analysis.api.luci.app",
-            "luci.analysis.v1.TestHistory.Query",
+            "luci.analysis.v1.TestHistory.QueryTests",
             {
                 "project": "chromium",
-                "testId": SAMPLE_TEST_ID,
-                "predicate": {
-                    "variantPredicate": {
-                        "contains": {
-                            "def": {
-                                "builder": SAMPLE_BUILDER,
-                                "test_suite": "base_unittests",
-                            }
-                        }
-                    }
-                },
-                "pageSize": 5,
+                "testIdSubstring": "JSONReaderTest",
             },
         )
 
