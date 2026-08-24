@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b7d0ed78_9b2a6e83",
+        "filename": "recipes/recipe_modules/gsutil/examples/full.expected/basic.json",
+        "patchSetId": 2
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2026-08-24T08:52:56Z",
+      "side": 1,
+      "message": "why it has --recursive?",
+      "revId": "9078aa41e296ed11e4fe8a70f95afb1994a67312",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
