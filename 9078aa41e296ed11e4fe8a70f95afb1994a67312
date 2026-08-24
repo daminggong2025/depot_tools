@@ -16,6 +16,24 @@
       "message": "why it has --recursive?",
       "revId": "9078aa41e296ed11e4fe8a70f95afb1994a67312",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c9a735b1_3555ce44",
+        "filename": "recipes/recipe_modules/gsutil/examples/full.expected/basic.json",
+        "patchSetId": 2
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2026-08-24T09:01:24Z",
+      "side": 1,
+      "message": "`self._upload_urls` is an instance dictionary that accumulates upload URLs across steps in the recipe module, and each `upload()` call sets the entire dictionary to the `gsutil_urls` build property.\n\nIn `full.py`, the `\"upload --recursive\"` step is executed right before this newly added step, so its key is included in `gsutil_urls`.",
+      "parentUuid": "b7d0ed78_9b2a6e83",
+      "revId": "9078aa41e296ed11e4fe8a70f95afb1994a67312",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
