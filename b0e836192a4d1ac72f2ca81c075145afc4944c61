@@ -111,6 +111,23 @@
       "message": "Gavin, PTAL",
       "revId": "b0e836192a4d1ac72f2ca81c075145afc4944c61",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "88db6909_9eb11af8",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1369402
+      },
+      "writtenOn": "2026-08-24T12:30:49Z",
+      "side": 1,
+      "message": "Looks like the function was removed in the meantime :) Thanks!",
+      "revId": "b0e836192a4d1ac72f2ca81c075145afc4944c61",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
