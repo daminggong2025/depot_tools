@@ -7,8 +7,11 @@
 import io
 import json
 import logging
+import optparse
 import os
 import shutil
+import threading
+import time
 import sys
 import tempfile
 import unittest
@@ -131,11 +134,16 @@ class CMDFormatTestCase(unittest.TestCase):
 
     def setUp(self):
         super(CMDFormatTestCase, self).setUp()
+        self._top_dir = tempfile.mkdtemp()
         mock.patch("cl_format.RunCommand", return_value="").start()
+        mock.patch("cl_format.RunGit", return_value="dummy_commit").start()
         mock.patch("clang_format.FindClangFormatToolInChromiumTree").start()
         mock.patch("clang_format.FindClangFormatScriptInChromiumTree").start()
-        mock.patch("cl_format.settings").start()
-        self._top_dir = tempfile.mkdtemp()
+        mock_settings = mock.patch("cl_format.settings").start()
+        mock_settings.GetRelativeRoot.return_value = ""
+        mock_settings.GetRoot.return_value = self._top_dir
+        mock_settings.GetFormatJs.return_value = False
+        mock_settings.GetFormatFullByDefault.return_value = False
         self.addCleanup(mock.patch.stopall)
 
     def tearDown(self):
@@ -996,6 +1004,143 @@ diff --git a/ui/webui/resources/tools/bar.html.ts b/ui/webui/resources/tools/bar
         finally:
             os.remove(input_diff.name)
             os.chdir(previous_cwd)
+
+    def testThreadLocalStreamIsolation(self):
+        stream = cl_format._ThreadLocalStream(io.StringIO())
+        results = {}
+
+        def worker1():
+            buf = io.BytesIO()
+            stream.set_buffer(buf)
+            stream.write("worker1 text\n")
+            stream.write(b"worker1 bytes\n")
+            results["w1"] = buf.getvalue()
+            stream.set_buffer(None)
+
+        def worker2():
+            buf = io.BytesIO()
+            stream.set_buffer(buf)
+            stream.write("worker2 text\n")
+            stream.write(b"worker2 bytes\n")
+            results["w2"] = buf.getvalue()
+            stream.set_buffer(None)
+
+        t1 = threading.Thread(target=worker1)
+        t2 = threading.Thread(target=worker2)
+        t1.start()
+        t2.start()
+        t1.join()
+        t2.join()
+
+        self.assertEqual(b"worker1 text\nworker1 bytes\n", results["w1"])
+        self.assertEqual(b"worker2 text\nworker2 bytes\n", results["w2"])
+
+    def testConcurrentMultiLanguageFormat(self):
+        mock_opts = mock.Mock(
+            full=True,
+            dry_run=False,
+            diff=False,
+            clang_format=True,
+            js=False,
+            python=True,
+            gn=False,
+            metrics_xml=False,
+            md=False,
+            lit_template_formatter=False,
+            use_rust_fmt=False,
+            use_swift_format=False,
+            no_java=True,
+            ktfmt=False,
+            lucicfg=False,
+            mojom=False,
+            presubmit=False,
+            upstream="origin/main",
+            input_diff_file=None,
+        )
+
+        def fake_clang(opts, paths, top_dir, diffs):
+            time.sleep(0.02)
+            sys.stdout.write("CLANG_DIFF_OUTPUT\n")
+            return 0
+
+        def fake_python(opts, paths, top_dir, diffs):
+            time.sleep(0.01)
+            sys.stdout.write("PYTHON_DIFF_OUTPUT\n")
+            return 0
+
+        files = [
+            os.path.join(self._top_dir, "foo.cc"),
+            os.path.join(self._top_dir, "bar.py"),
+        ]
+        for f in files:
+            self._make_temp_file(os.path.relpath(f, self._top_dir), ["int x;"])
+
+        parser = optparse.OptionParser()
+        parser.parse_args = mock.Mock(return_value=(mock_opts, files))
+
+        with mock.patch(
+            "cl_format._FindFilesToFormat", return_value=(files, None)
+        ):
+            with mock.patch(
+                "cl_format._RunClangFormatDiff", side_effect=fake_clang
+            ):
+                with mock.patch(
+                    "cl_format._RunPythonFormat", side_effect=fake_python
+                ):
+                    with mock.patch("sys.stdout.write"):
+                        ret = cl_format.CMDformat(parser, files)
+                        self.assertEqual(0, ret)
+
+    def testConcurrentMultiLanguageFormatNonZeroReturn(self):
+        mock_opts = mock.Mock(
+            full=True,
+            dry_run=True,
+            diff=False,
+            clang_format=True,
+            js=False,
+            python=True,
+            gn=False,
+            metrics_xml=False,
+            md=False,
+            lit_template_formatter=False,
+            use_rust_fmt=False,
+            use_swift_format=False,
+            no_java=True,
+            ktfmt=False,
+            lucicfg=False,
+            mojom=False,
+            presubmit=False,
+            upstream="origin/main",
+            input_diff_file=None,
+        )
+
+        def fake_clang(opts, paths, top_dir, diffs):
+            return 0
+
+        def fake_python(opts, paths, top_dir, diffs):
+            return 2  # unformatted files found
+
+        files = [
+            os.path.join(self._top_dir, "foo.cc"),
+            os.path.join(self._top_dir, "bar.py"),
+        ]
+        for f in files:
+            self._make_temp_file(os.path.relpath(f, self._top_dir), ["int x;"])
+
+        parser = optparse.OptionParser()
+        parser.parse_args = mock.Mock(return_value=(mock_opts, files))
+
+        with mock.patch(
+            "cl_format._FindFilesToFormat", return_value=(files, None)
+        ):
+            with mock.patch(
+                "cl_format._RunClangFormatDiff", side_effect=fake_clang
+            ):
+                with mock.patch(
+                    "cl_format._RunPythonFormat", side_effect=fake_python
+                ):
+                    ret = cl_format.CMDformat(parser, files)
+                    self.assertEqual(2, ret)
 
 
 class TestRuffBatchIntegration(unittest.TestCase):
