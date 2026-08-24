@@ -1,4 +1,4 @@
-#!/usr/bin/env vpython3
+#!/usr/bin/env python3
 # Copyright 2026 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -6,13 +6,13 @@
 
 import os
 import sys
+import threading
 import unittest
 from unittest import mock
 
-# Add parent directory to sys.path
-_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-if _ROOT not in sys.path:
-    sys.path.insert(0, _ROOT)
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if ROOT_DIR not in sys.path:
+    sys.path.insert(0, ROOT_DIR)
 
 import presubmit_support as presubmit  # noqa: E402
 import presubmit_thread_pool  # noqa: E402
@@ -135,13 +135,236 @@ class ThreadPoolTest(unittest.TestCase):
             kwargs={},
             message=presubmit.OutputApi.PresubmitError,
         )
-        t = presubmit_thread_pool.ThreadPool(pool_size=2)
-        t.AddTests([mock_test])
-        t.RunAsync()
+        with presubmit_thread_pool.ThreadPool(pool_size=2) as t:
+            t.AddTests([mock_test], parallel=True)
 
         self.assertTrue(mock_thread.called)
         for call in mock_thread.call_args_list:
             self.assertTrue(call.kwargs.get("daemon"))
+
+    def testEagerExecutionBeforeRunAsync(self):
+        started_event = threading.Event()
+        release_event = threading.Event()
+
+        def SlowPopen(cmd, **kwargs):
+            started_event.set()
+            release_event.wait(timeout=5.0)
+            return mock.Mock(returncode=0)
+
+        mock_test = presubmit_thread_pool.CommandData(
+            name="eager_test",
+            cmd=["eager_cmd"],
+            kwargs={},
+            message=presubmit.OutputApi.PresubmitError,
+        )
+
+        with mock.patch.object(subprocess2, "Popen", side_effect=SlowPopen):
+            with presubmit_thread_pool.ThreadPool(1) as t:
+                t.AddTests([mock_test], parallel=True)
+                # Verify the worker started the command eagerly BEFORE RunAsync is called.
+                self.assertTrue(started_event.wait(timeout=2.0))
+                release_event.set()
+                messages = t.RunAsync()
+                self.assertEqual([], messages)
+
+    def testBarrierNonparallelOrdering(self):
+        execution_order = []
+
+        def FakePopen(cmd, **kwargs):
+            if cmd[0] == "parallel_task":
+                import time as py_time
+
+                py_time.sleep(0.05)
+                execution_order.append("parallel")
+            elif cmd[0] == "sequential_task":
+                execution_order.append("sequential")
+            return mock.Mock(returncode=0)
+
+        test_parallel = presubmit_thread_pool.CommandData(
+            name="parallel",
+            cmd=["parallel_task"],
+            kwargs={},
+            message=presubmit.OutputApi.PresubmitError,
+        )
+        test_seq = presubmit_thread_pool.CommandData(
+            name="sequential",
+            cmd=["sequential_task"],
+            kwargs={},
+            message=presubmit.OutputApi.PresubmitError,
+        )
+
+        with mock.patch.object(subprocess2, "Popen", side_effect=FakePopen):
+            with presubmit_thread_pool.ThreadPool(2) as t:
+                t.AddTests([test_parallel], parallel=True)
+                t.AddTests([test_seq], parallel=False)
+                t.RunAsync()
+
+        # Non-parallel test should execute only after the barrier drains parallel tasks
+        self.assertEqual(["parallel", "sequential"], execution_order)
+
+    def testContextManagerDeferredTempFileCleanup(self):
+        with mock.patch("os.remove") as mock_remove:
+            with presubmit_thread_pool.ThreadPool(1) as t:
+                t.RegisterTemporaryFiles(["fake_file_1.txt", "fake_file_2.txt"])
+                mock_remove.assert_not_called()
+
+            self.assertEqual(
+                mock_remove.mock_calls,
+                [mock.call("fake_file_2.txt"), mock.call("fake_file_1.txt")],
+            )
+
+    def testAbsoluteCwdNormalization(self):
+        captured_kwargs = []
+
+        def FakePopen(cmd, **kwargs):
+            captured_kwargs.append(kwargs)
+            return mock.Mock(returncode=0)
+
+        mock_test = presubmit_thread_pool.CommandData(
+            name="cwd_test",
+            cmd=["test_cmd"],
+            kwargs={"cwd": "."},
+            message=presubmit.OutputApi.PresubmitError,
+        )
+
+        with mock.patch.object(subprocess2, "Popen", side_effect=FakePopen):
+            with presubmit_thread_pool.ThreadPool(1) as t:
+                t.AddTests([mock_test], parallel=True)
+                t.RunAsync()
+
+        self.assertEqual(1, len(captured_kwargs))
+        self.assertTrue(os.path.isabs(captured_kwargs[0]["cwd"]))
+
+    def testCancelTerminatesActiveSubprocesses(self):
+        started_event = threading.Event()
+        mock_proc = mock.Mock()
+
+        def FakeWait(p, stdin):
+            started_event.set()
+            while not mock_proc.terminate.called:
+                import time as py_time
+
+                py_time.sleep(0.01)
+            return b"stdout", b""
+
+        mock_test = presubmit_thread_pool.CommandData(
+            name="hanging_test",
+            cmd=["hanging_cmd"],
+            kwargs={},
+            message=presubmit.OutputApi.PresubmitError,
+        )
+
+        with mock.patch.object(
+            presubmit_thread_pool.sigint_handler, "wait", side_effect=FakeWait
+        ):
+            with mock.patch.object(
+                subprocess2, "Popen", return_value=mock_proc
+            ):
+                t = presubmit_thread_pool.ThreadPool(1)
+                t.AddTests([mock_test], parallel=True)
+                self.assertTrue(started_event.wait(timeout=2.0))
+                t.Cancel()
+                mock_proc.terminate.assert_called_once()
+                t.Close()
+                t.Join(timeout=0.5)
+
+    def testStandaloneThreadPoolReusableAcrossMultipleRuns(self):
+        """Tests that standalone ThreadPool can process multiple AddTests + RunAsync batches."""
+        mock_test1 = presubmit_thread_pool.CommandData(
+            name="test1",
+            cmd=["test1"],
+            kwargs={},
+            message=presubmit.OutputApi.PresubmitError,
+        )
+        mock_test2 = presubmit_thread_pool.CommandData(
+            name="test2",
+            cmd=["test2"],
+            kwargs={},
+            message=presubmit.OutputApi.PresubmitError,
+        )
+
+        with mock.patch.object(
+            subprocess2, "Popen", return_value=mock.Mock(returncode=0)
+        ):
+            t = presubmit_thread_pool.ThreadPool(2)
+            t.AddTests([mock_test1], parallel=True)
+            messages1 = t.RunAsync()
+            self.assertEqual([], messages1)
+
+            t.AddTests([mock_test2], parallel=True)
+            messages2 = t.RunAsync()
+            self.assertEqual([], messages2)
+
+    def testAddTestsAcceptsGenerator(self):
+        """Tests that AddTests correctly consumes single-pass iterables / generators."""
+        mock_tests = (
+            presubmit_thread_pool.CommandData(
+                name=f"gen_{i}",
+                cmd=[f"cmd_{i}"],
+                kwargs={},
+                message=presubmit.OutputApi.PresubmitError,
+            )
+            for i in range(3)
+        )
+
+        with mock.patch.object(
+            subprocess2, "Popen", return_value=mock.Mock(returncode=0)
+        ):
+            with presubmit_thread_pool.ThreadPool(2) as t:
+                t.AddTests(mock_tests, parallel=True)
+                messages = t.RunAsync()
+                self.assertEqual([], messages)
+
+    def testConcurrentAddTestsThreadSafe(self):
+        """Tests that concurrent calls to AddTests start workers safely without duplicates."""
+        t = presubmit_thread_pool.ThreadPool(pool_size=4)
+
+        def AddBatch(idx):
+            test = presubmit_thread_pool.CommandData(
+                name=f"thread_{idx}",
+                cmd=[f"cmd_{idx}"],
+                kwargs={},
+                message=presubmit.OutputApi.PresubmitError,
+            )
+            t.AddTests([test], parallel=True)
+
+        threads = [
+            threading.Thread(target=AddBatch, args=(i,)) for i in range(10)
+        ]
+        with mock.patch.object(
+            subprocess2, "Popen", return_value=mock.Mock(returncode=0)
+        ):
+            for thread in threads:
+                thread.start()
+            for thread in threads:
+                thread.join()
+
+            self.assertEqual(4, len(t._workers))
+            messages = t.RunAsync()
+            self.assertEqual([], messages)
+
+    def testNonparallelCwdNormalization(self):
+        """Tests that cwd normalization occurs at AddTests time for nonparallel tests too."""
+        captured_kwargs = []
+
+        def FakePopen(cmd, **kwargs):
+            captured_kwargs.append(kwargs)
+            return mock.Mock(returncode=0)
+
+        mock_test = presubmit_thread_pool.CommandData(
+            name="nonparallel_cwd_test",
+            cmd=["test_cmd"],
+            kwargs={"cwd": "."},
+            message=presubmit.OutputApi.PresubmitError,
+        )
+
+        with mock.patch.object(subprocess2, "Popen", side_effect=FakePopen):
+            t = presubmit_thread_pool.ThreadPool(1)
+            t.AddTests([mock_test], parallel=False)
+            t.RunAsync()
+
+        self.assertEqual(1, len(captured_kwargs))
+        self.assertTrue(os.path.isabs(captured_kwargs[0]["cwd"]))
 
 
 if __name__ == "__main__":
