@@ -36,7 +36,6 @@ import git_common as git  # noqa: E402, F401
 import json  # noqa: E402
 import owners_client  # noqa: E402
 import presubmit_support as presubmit  # noqa: E402
-import presubmit_thread_pool  # noqa: E402
 import rdb_wrapper  # noqa: E402
 import scm  # noqa: E402
 import subprocess2 as subprocess  # noqa: E402
@@ -189,15 +188,12 @@ index fe3de7b..54ae6e1 100755
         mock.patch(
             "presubmit_support.rdb_wrapper.client", return_value=self.rdb_client
         ).start()
-        mock.patch("presubmit_thread_pool.sigint_handler").start()
-        mock.patch(
-            "presubmit_support.sigint_handler",
-            presubmit_thread_pool.sigint_handler,
+        mock_sigint = mock.patch("presubmit_thread_pool.sigint_handler").start()
+        mock.patch("presubmit_support.sigint_handler", mock_sigint).start()
+        mock_time = mock.patch(
+            "presubmit_thread_pool.time_time", return_value=0
         ).start()
-        mock.patch("presubmit_thread_pool.time_time", return_value=0).start()
-        mock.patch(
-            "presubmit_support.time_time", presubmit_thread_pool.time_time
-        ).start()
+        mock.patch("presubmit_support.time_time", mock_time).start()
         mock.patch("presubmit_support.warn").start()
         mock.patch("random.randint").start()
         mock.patch("scm.GIT.GenerateDiff").start()
@@ -5043,6 +5039,4 @@ the current line as well!
 
 
 if __name__ == "__main__":
-    import unittest
-
     unittest.main()

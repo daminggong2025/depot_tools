@@ -58,7 +58,6 @@ from presubmit_thread_pool import (
     time_time,  # noqa: F401
 )
 
-# Local imports.
 import gclient_paths  # Exposed through the API
 import gclient_utils
 import git_footers
@@ -1691,8 +1690,18 @@ class PresubmitExecuter(object):
                         output_api.more_cc = []
 
         finally:
-            for f in input_api._named_temporary_files:
-                os.remove(f)
+            if self.thread_pool and hasattr(
+                self.thread_pool, "RegisterTemporaryFiles"
+            ):
+                self.thread_pool.RegisterTemporaryFiles(
+                    input_api._named_temporary_files
+                )
+            else:
+                for f in input_api._named_temporary_files:
+                    try:
+                        os.remove(f)
+                    except OSError:
+                        pass
 
         self.more_cc = sorted(set(self.more_cc))
 
@@ -1844,35 +1853,39 @@ def DoPresubmitChecks(
         if not presubmit_files and verbose:
             sys.stdout.write("Warning, no PRESUBMIT.py found.\n")
         results = []
-        thread_pool = ThreadPool()
-        executer = PresubmitExecuter(
-            change,
-            committing,
-            verbose,
-            gerrit_obj,
-            dry_run,
-            thread_pool,
-            parallel,
-            no_diffs,
-        )
-        if default_presubmit:
-            if verbose:
-                sys.stdout.write("Running default presubmit script.\n")
-            fake_path = os.path.join(change.RepositoryRoot(), "PRESUBMIT.py")
-            results += executer.ExecPresubmitScript(
-                default_presubmit, fake_path
+        with ThreadPool() as thread_pool:
+            executer = PresubmitExecuter(
+                change,
+                committing,
+                verbose,
+                gerrit_obj,
+                dry_run,
+                thread_pool,
+                parallel,
+                no_diffs,
             )
-        for filename in presubmit_files:
-            filename = os.path.abspath(filename)
-            # Accept CRLF presubmit script.
-            presubmit_script = gclient_utils.FileRead(filename).replace(
-                "\r\n", "\n"
-            )
-            if verbose:
-                sys.stdout.write("Running %s\n" % filename)
-            results += executer.ExecPresubmitScript(presubmit_script, filename)
+            if default_presubmit:
+                if verbose:
+                    sys.stdout.write("Running default presubmit script.\n")
+                fake_path = os.path.join(
+                    change.RepositoryRoot(), "PRESUBMIT.py"
+                )
+                results += executer.ExecPresubmitScript(
+                    default_presubmit, fake_path
+                )
+            for filename in presubmit_files:
+                filename = os.path.abspath(filename)
+                # Accept CRLF presubmit script.
+                presubmit_script = gclient_utils.FileRead(filename).replace(
+                    "\r\n", "\n"
+                )
+                if verbose:
+                    sys.stdout.write("Running %s\n" % filename)
+                results += executer.ExecPresubmitScript(
+                    presubmit_script, filename
+                )
 
-        results += thread_pool.RunAsync()
+            results += thread_pool.RunAsync()
 
         messages = {}
         should_prompt = False
