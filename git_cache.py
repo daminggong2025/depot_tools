@@ -19,6 +19,7 @@ import urllib.parse
 
 from download_from_google_storage import Gsutil
 import gclient_utils
+import git_common
 import lockfile
 import metrics
 import scm
@@ -394,9 +395,14 @@ class Mirror(object):
                 prefix="_cache_tmp", dir=self.GetCachePath()
             )
             # Create a bare repo skeleton so necessary directories (like refs/) exist.
+            # Explicitly pin --ref-format=files so that host git defaults (e.g. reftable)
+            # do not create placeholder files in refs/heads that conflict with GCS files snapshots.
             # --object-format is not needed because the repo contents are overwritten
             # by the GCS download.
-            self.RunGit(["init", "-b", "main", "--bare"], cwd=tempdir)
+            init_cmd = ["init", "-b", "main", "--bare"]
+            if git_common.meets_git_version((2, 45, 0)):
+                init_cmd.append("--ref-format=files")
+            self.RunGit(init_cmd, cwd=tempdir)
             self.print(
                 "Downloading files in %s/* into %s." % (latest_dir, tempdir)
             )
@@ -612,6 +618,8 @@ class Mirror(object):
                 # 3. Bootstrap snapshot format mismatched remote.
                 # Start with a bare git dir.
                 gitargs = ["init", "--bare"]
+                if git_common.meets_git_version((2, 45, 0)):
+                    gitargs.append("--ref-format=files")
                 if not self.exists():
                     if remote_format is None:
                         remote_format = scm.GIT.GetRemoteObjectFormat(self.url)
