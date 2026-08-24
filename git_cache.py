@@ -19,6 +19,7 @@ import urllib.parse
 
 from download_from_google_storage import Gsutil
 import gclient_utils
+import git_common
 import lockfile
 import metrics
 import scm
@@ -29,6 +30,15 @@ GC_AUTOPACKLIMIT = 50
 
 GIT_CACHE_CORRUPT_MESSAGE = "WARNING: The Git cache is corrupt."
 INIT_SENTIENT_FILE = ".mirror_init"
+
+# git 2.45 is the first version where `reftable` is a valid ref format.
+MIN_REFTABLE_GIT_VERSION = (2, 45, 0)
+
+
+def _ref_format_args(ref_format="files"):
+    if not git_common.meets_git_version(MIN_REFTABLE_GIT_VERSION):
+        return []
+    return [f"--ref-format={ref_format}"]
 
 
 def _bootstrap_concurrency():
@@ -396,7 +406,8 @@ class Mirror(object):
             # Create a bare repo skeleton so necessary directories (like refs/) exist.
             # --object-format is not needed because the repo contents are overwritten
             # by the GCS download.
-            self.RunGit(["init", "-b", "main", "--bare"], cwd=tempdir)
+            init_cmd = ["init", "-b", "main", "--bare"] + _ref_format_args()
+            self.RunGit(init_cmd, cwd=tempdir)
             self.print(
                 "Downloading files in %s/* into %s." % (latest_dir, tempdir)
             )
@@ -458,6 +469,19 @@ class Mirror(object):
         try:
             out = self.RunGit(
                 ["rev-parse", "--show-object-format"], print_stdout=False
+            )
+            return out.decode("utf-8", "ignore").strip()
+        except subprocess.CalledProcessError:
+            return None
+
+    def _get_ref_format(self) -> Optional[str]:
+        """Returns the ref format ('files' or 'reftable') of the cache repo.
+
+        Returns None if the format can't be determined.
+        """
+        try:
+            out = self.RunGit(
+                ["rev-parse", "--show-ref-format"], print_stdout=False
             )
             return out.decode("utf-8", "ignore").strip()
         except subprocess.CalledProcessError:
@@ -612,6 +636,13 @@ class Mirror(object):
                 # 3. Bootstrap snapshot format mismatched remote.
                 # Start with a bare git dir.
                 gitargs = ["init", "--bare"]
+                # Re-initializing an existing mirror must keep its current
+                # backend: git rejects an init that would change it. Only
+                # brand new mirrors get pinned to files.
+                existing_format = (
+                    self._get_ref_format() if self.exists() else None
+                )
+                gitargs += _ref_format_args(existing_format or "files")
                 if not self.exists():
                     if remote_format is None:
                         remote_format = scm.GIT.GetRemoteObjectFormat(self.url)
