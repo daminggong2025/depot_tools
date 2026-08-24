@@ -60,6 +60,12 @@ def RunSteps(api):
     args=["--recursive"],
     name="upload --recursive",
   )
+  api.gsutil.upload(
+    local_file,
+    bucket,
+    "some/random/path/",
+    name="upload to dir",
+  )
 
   api.gsutil(
     ["cp", "gs://%s/some/random/path/**" % bucket, "gs://%s/staging" % bucket]
