@@ -11,12 +11,12 @@ description: >
 # LUCI Triage Cheat Sheet
 
 This skill provides modular scripts for deep-diving into **Test-level**
-failures across LUCI shards and tasks.
+failures and test history across LUCI shards and tasks.
 
 > [!TIP]
 > **CLI Help & Flags**: Run any script with `-h` or `--help` (e.g.
 > `vpython3 scripts/list_failures.py -h` or
-> `vpython3 scripts/check_test.py -h`) to view all supported arguments,
+> `vpython3 scripts/test_history.py -h`) to view all supported arguments,
 > defaults, and flags without reading the script source files.
 
 ## 1. Resolve Build ID & Inspect Builds
@@ -127,22 +127,44 @@ vpython3 scripts/check_test.py \
   and automatically wraps your regex with `.*` for partial matching. It fetches
   all results (expected and unexpected) for matching tests.
 
-## 6. Get Test History
+## 6. Query Test History & Regression Timeline
 
-Query LUCI Analysis for the historical verdicts of a specific test variant:
+Query LUCI Analysis for historical verdicts, daily aggregate pass/fail/flake
+breakdown, and regression start dates:
 
 ```bash
+# Formatted aggregate daily table (default):
 vpython3 scripts/test_history.py \
-  --project <PROJECT> \
-  --test-id "<TEST_ID>" \
-  [--limit <LIMIT>] \
+  --test-id '<TEST_ID>' \
+  [--project <chromium|chrome>] \
   [--builder <BUILDER>] \
   [--bucket <BUCKET>] \
   [--device-os <DEVICE_OS>] \
   [--device-type <DEVICE_TYPE>] \
   [--os <OS>] \
-  [--test-suite <TEST_SUITE>]
+  [--test-suite <TEST_SUITE>] \
+  [--limit 500] \
+  [--json] \
+  [--raw]
+
+# Machine-readable JSON output:
+vpython3 scripts/test_history.py --test-id '<TEST_ID>' --json
 ```
+
+> [!IMPORTANT]
+> **Single Quotes Required**: ResultDB Test IDs often contain exclamation marks
+> (e.g. `!junit` or `!gtest`). Always enclose `--test-id` in **single quotes**
+> (`'...'`) to prevent Bash from attempting history expansion
+> (`bash: !...: event not found`).
+
+- **Pagination & Aggregation**: Automatically paginates through historical runs
+  (up to `--limit`, default: 500) and computes daily `Pass`, `Fail`, `Flake`,
+  and `Fail Rate %`.
+- **Regression Detection**: Differentiates between active failure streaks on the
+  latest runs versus recovered past failure periods.
+- **Fuzzy Search Fallback**: If an exact test ID is not found, the tool
+  automatically queries LUCI substring index and prints candidate matching test
+  IDs.
 
 ## Troubleshooting
 
