@@ -103,6 +103,25 @@
       "RECIPE_REPO[depot_tools]/gsutil.py",
       "----",
       "cp",
+      "[TMP_BASE]/boom",
+      "gs://example/some/random/path/"
+    ],
+    "infra_step": true,
+    "name": "gsutil upload to dir",
+    "~followup_annotations": [
+      "@@@STEP_LINK@gsutil.upload@https://storage.cloud.google.com/example/some/random/path/boom@@@",
+      "@@@SET_BUILD_PROPERTY@gsutil_urls@{\"gsutil upload\": \"gs://example/some/random/path/to/boom\", \"gsutil upload (2)\": \"gs://example/some/random/path/to/boom\", \"gsutil upload --recursive\": \"gs://example/some/other/random/path\", \"gsutil upload -r\": \"gs://example/some/random/path\", \"gsutil upload to dir\": \"gs://example/some/random/path/\"}@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "python3",
+      "-u",
+      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
+      "--",
+      "RECIPE_REPO[depot_tools]/gsutil.py",
+      "----",
+      "cp",
       "gs://example/some/random/path/**",
       "gs://example/staging"
     ],
