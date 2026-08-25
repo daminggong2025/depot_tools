@@ -99,11 +99,16 @@ test_format_input_diff_windows = "\r\n".join(
 class CMDFormatTestCase(unittest.TestCase):
     def setUp(self):
         super(CMDFormatTestCase, self).setUp()
+        self._top_dir = tempfile.mkdtemp()
         mock.patch("cl_format.RunCommand", return_value="").start()
+        mock.patch("cl_format.RunGit", return_value="dummy_commit").start()
         mock.patch("clang_format.FindClangFormatToolInChromiumTree").start()
         mock.patch("clang_format.FindClangFormatScriptInChromiumTree").start()
-        mock.patch("cl_format.settings").start()
-        self._top_dir = tempfile.mkdtemp()
+        mock_settings = mock.patch("cl_format.settings").start()
+        mock_settings.GetRelativeRoot.return_value = ""
+        mock_settings.GetRoot.return_value = self._top_dir
+        mock_settings.GetFormatJs.return_value = False
+        mock_settings.GetFormatFullByDefault.return_value = False
         self.addCleanup(mock.patch.stopall)
 
     def tearDown(self):
