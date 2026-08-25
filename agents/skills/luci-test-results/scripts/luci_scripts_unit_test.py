@@ -4,6 +4,7 @@
 # found in the LICENSE file.
 """Unit tests for modular luci-test-results scripts."""
 
+from datetime import datetime, timezone
 import io
 import os
 import sys
@@ -11,12 +12,12 @@ import unittest
 from unittest import mock
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-import check_test
-import fetch_log
-import find_cl_builds
-import list_failures
-import luci_client
-import test_history
+import check_test  # noqa: E402
+import fetch_log  # noqa: E402
+import find_cl_builds  # noqa: E402
+import list_failures  # noqa: E402
+import luci_client  # noqa: E402
+import test_history  # noqa: E402
 
 SAMPLE_BUILD_ID = "8000000000000000001"
 SAMPLE_BUILD_ID_SUCCESS = "8000000000000000002"
@@ -371,43 +372,574 @@ class TestLuciScripts(unittest.TestCase):
         )
 
     @mock.patch("test_history.run_prpc")
-    def test_test_history(self, mock_prpc):
+    def test_pagination_and_aggregation(self, mock_prpc):
+        # Page 1
+        page1 = {
+            "verdicts": [
+                {
+                    "testId": SAMPLE_TEST_ID,
+                    "partitionTime": "2026-08-14T10:00:00Z",
+                    "status": "UNEXPECTED",
+                    "variantHash": "var1",
+                }
+            ],
+            "nextPageToken": "token123",
+        }
+        # Page 2
+        page2 = {
+            "verdicts": [
+                {
+                    "testId": SAMPLE_TEST_ID,
+                    "partitionTime": "2026-08-13T10:00:00Z",
+                    "status": "EXPECTED",
+                    "variantHash": "var1",
+                }
+            ]
+        }
+        mock_prpc.side_effect = [page1, page2]
+
+        verdicts = test_history.fetch_test_history_verdicts(
+            "chromium", SAMPLE_TEST_ID, limit=2, verbose=False
+        )
+        self.assertEqual(len(verdicts), 2)
+
+        mock_now = datetime(2026, 8, 14, 16, 0, 0, tzinfo=timezone.utc)
+        builder_daily = test_history.aggregate_by_builder_and_day(
+            verdicts, default_builder="android-13-x64-rel", now=mock_now
+        )
+        self.assertIn("android-13-x64-rel", builder_daily)
+        daily = builder_daily["android-13-x64-rel"]["daily"]
+        self.assertEqual(daily["2026-08-14"]["FAIL"], 1)
+        self.assertEqual(daily["2026-08-14"]["BUILD_FAIL_RATE"], 100.0)
+        self.assertEqual(daily["2026-08-14"]["RUN_FAIL_RATE"], 100.0)
+        self.assertEqual(daily["2026-08-13"]["PASS"], 1)
+        self.assertEqual(daily["2026-08-13"]["BUILD_FAIL_RATE"], 0.0)
+        self.assertEqual(daily["2026-08-13"]["RUN_FAIL_RATE"], 0.0)
+
+        table = test_history.format_summary_table(builder_daily, SAMPLE_TEST_ID)
+        self.assertIn("Builder: android-13-x64-rel", table)
+        self.assertIn("2026-08-14", table)
+        self.assertIn("Build Fail %", table)
+        self.assertIn("History (newest -> oldest)", table)
+        self.assertIn("Pass on Retry", table)
+        self.assertIn("Status: CONSISTENTLY FAILING", table)
+
+    def test_summary_table_heuristics(self):
+        # 1. Multi-day active failure streak with sliding 24h window
+        streak_data = {
+            "android-14-x64-rel": {
+                "daily": {
+                    "2026-08-15": {
+                        "PASS": 0,
+                        "FAIL": 5,
+                        "PASS_ON_RETRY": 0,
+                        "TOTAL_BUILDS": 5,
+                        "BUILD_FAIL_RATE": 100.0,
+                        "RUN_FAIL_RATE": 100.0,
+                    },
+                    "2026-08-14": {
+                        "PASS": 2,
+                        "FAIL": 3,
+                        "PASS_ON_RETRY": 0,
+                        "TOTAL_BUILDS": 5,
+                        "BUILD_FAIL_RATE": 60.0,
+                        "RUN_FAIL_RATE": 60.0,
+                    },
+                    "2026-08-13": {
+                        "PASS": 5,
+                        "FAIL": 0,
+                        "PASS_ON_RETRY": 0,
+                        "TOTAL_BUILDS": 5,
+                        "BUILD_FAIL_RATE": 0.0,
+                        "RUN_FAIL_RATE": 0.0,
+                    },
+                },
+                "last_24h": {
+                    "PASS": 0,
+                    "FAIL": 5,
+                    "PASS_ON_RETRY": 0,
+                    "TOTAL_BUILDS": 5,
+                    "BUILD_FAIL_RATE": 100.0,
+                    "RUN_FAIL_RATE": 100.0,
+                },
+            }
+        }
+        table_streak = test_history.format_summary_table(
+            streak_data, SAMPLE_TEST_ID
+        )
+        self.assertIn("Builder: android-14-x64-rel", table_streak)
+        self.assertIn("Status: CONSISTENTLY FAILING", table_streak)
+
+        # 1b. Consistently failing test (overall failure rate >= 80%)
+        consistent_fail_data = {
+            "android-14-x64-rel": {
+                "daily": {
+                    "2026-08-15": {
+                        "PASS": 0,
+                        "FAIL": 5,
+                        "PASS_ON_RETRY": 0,
+                        "TOTAL_BUILDS": 5,
+                        "BUILD_FAIL_RATE": 100.0,
+                        "RUN_FAIL_RATE": 100.0,
+                    },
+                    "2026-08-14": {
+                        "PASS": 0,
+                        "FAIL": 5,
+                        "PASS_ON_RETRY": 0,
+                        "TOTAL_BUILDS": 5,
+                        "BUILD_FAIL_RATE": 100.0,
+                        "RUN_FAIL_RATE": 100.0,
+                    },
+                },
+                "last_24h": {
+                    "PASS": 0,
+                    "FAIL": 5,
+                    "PASS_ON_RETRY": 0,
+                    "TOTAL_BUILDS": 5,
+                    "BUILD_FAIL_RATE": 100.0,
+                    "RUN_FAIL_RATE": 100.0,
+                },
+            }
+        }
+        table_consistent = test_history.format_summary_table(
+            consistent_fail_data, SAMPLE_TEST_ID
+        )
+        self.assertIn("Status: CONSISTENTLY FAILING", table_consistent)
+
+        # 2. Recovered regression / past failure period (latest date is passing)
+        recovered_data = {
+            "android-13-x64-rel": {
+                "daily": {
+                    "2026-08-16": {
+                        "PASS": 5,
+                        "FAIL": 0,
+                        "PASS_ON_RETRY": 0,
+                        "TOTAL_BUILDS": 5,
+                        "BUILD_FAIL_RATE": 0.0,
+                        "RUN_FAIL_RATE": 0.0,
+                    },
+                    "2026-08-15": {
+                        "PASS": 1,
+                        "FAIL": 4,
+                        "PASS_ON_RETRY": 0,
+                        "TOTAL_BUILDS": 5,
+                        "BUILD_FAIL_RATE": 80.0,
+                        "RUN_FAIL_RATE": 80.0,
+                    },
+                },
+                "last_24h": {
+                    "PASS": 5,
+                    "FAIL": 0,
+                    "PASS_ON_RETRY": 0,
+                    "TOTAL_BUILDS": 5,
+                    "BUILD_FAIL_RATE": 0.0,
+                    "RUN_FAIL_RATE": 0.0,
+                },
+            }
+        }
+        table_recovered = test_history.format_summary_table(
+            recovered_data, SAMPLE_TEST_ID
+        )
+        self.assertIn("Builder: android-13-x64-rel", table_recovered)
+        self.assertIn("Status: PASSING", table_recovered)
+
+        # 3. Highly flaky runs in last 24h (heavy retries > 20%: 2 pass, 0 fail, 1 pass on retry -> 25% run fail)
+        retry_data = {
+            "android-13-x64-rel": {
+                "daily": {
+                    "2026-08-16": {
+                        "PASS": 2,
+                        "FAIL": 0,
+                        "PASS_ON_RETRY": 1,
+                        "TOTAL_BUILDS": 3,
+                        "BUILD_FAIL_RATE": 0.0,
+                        "RUN_FAIL_RATE": 25.0,
+                    },
+                },
+                "last_24h": {
+                    "PASS": 2,
+                    "FAIL": 0,
+                    "PASS_ON_RETRY": 1,
+                    "TOTAL_BUILDS": 3,
+                    "BUILD_FAIL_RATE": 0.0,
+                    "RUN_FAIL_RATE": 25.0,
+                },
+            }
+        }
+        table_retry = test_history.format_summary_table(
+            retry_data, SAMPLE_TEST_ID
+        )
+        self.assertIn("Status: PASSING WITH RETRIES", table_retry)
+
+        # 3b. Mostly passing runs in last 24h (rare retry: 24 pass, 0 fail, 1 pass on retry -> 1/26 = 3.85% run fail < 8%)
+        mostly_passing_data = {
+            "android-13-x64-rel": {
+                "daily": {
+                    "2026-08-16": {
+                        "PASS": 24,
+                        "FAIL": 0,
+                        "PASS_ON_RETRY": 1,
+                        "TOTAL_BUILDS": 25,
+                        "BUILD_FAIL_RATE": 0.0,
+                        "RUN_FAIL_RATE": 3.85,
+                    },
+                },
+                "last_24h": {
+                    "PASS": 24,
+                    "FAIL": 0,
+                    "PASS_ON_RETRY": 1,
+                    "TOTAL_BUILDS": 25,
+                    "BUILD_FAIL_RATE": 0.0,
+                    "RUN_FAIL_RATE": 3.85,
+                },
+            }
+        }
+        table_mostly = test_history.format_summary_table(
+            mostly_passing_data, SAMPLE_TEST_ID
+        )
+        self.assertIn("Status: MOSTLY PASSING", table_mostly)
+
+        # 3c. Flaky runs in last 24h (moderate retry: 8 pass, 0 fail, 1 pass on retry -> 1/10 = 10.0% run fail)
+        flaky_retry_data = {
+            "android-13-x64-rel": {
+                "daily": {
+                    "2026-08-16": {
+                        "PASS": 8,
+                        "FAIL": 0,
+                        "PASS_ON_RETRY": 1,
+                        "TOTAL_BUILDS": 9,
+                        "BUILD_FAIL_RATE": 0.0,
+                        "RUN_FAIL_RATE": 10.0,
+                    },
+                },
+                "last_24h": {
+                    "PASS": 8,
+                    "FAIL": 0,
+                    "PASS_ON_RETRY": 1,
+                    "TOTAL_BUILDS": 9,
+                    "BUILD_FAIL_RATE": 0.0,
+                    "RUN_FAIL_RATE": 10.0,
+                },
+            }
+        }
+        table_flaky = test_history.format_summary_table(
+            flaky_retry_data, SAMPLE_TEST_ID
+        )
+        self.assertIn("Status: PASSING WITH RETRIES", table_flaky)
+
+        # 4. Multi-builder summary (1 failing, 1 passing)
+        multi_builder = {
+            "android-14-x64-rel": {
+                "daily": {
+                    "2026-08-16": {
+                        "PASS": 0,
+                        "FAIL": 5,
+                        "PASS_ON_RETRY": 0,
+                        "TOTAL_BUILDS": 5,
+                        "BUILD_FAIL_RATE": 100.0,
+                        "RUN_FAIL_RATE": 100.0,
+                    },
+                },
+                "last_24h": {
+                    "PASS": 0,
+                    "FAIL": 5,
+                    "PASS_ON_RETRY": 0,
+                    "TOTAL_BUILDS": 5,
+                    "BUILD_FAIL_RATE": 100.0,
+                    "RUN_FAIL_RATE": 100.0,
+                },
+            },
+            "linux-rel": {
+                "daily": {
+                    "2026-08-16": {
+                        "PASS": 5,
+                        "FAIL": 0,
+                        "PASS_ON_RETRY": 0,
+                        "TOTAL_BUILDS": 5,
+                        "BUILD_FAIL_RATE": 0.0,
+                        "RUN_FAIL_RATE": 0.0,
+                    },
+                },
+                "last_24h": {
+                    "PASS": 5,
+                    "FAIL": 0,
+                    "PASS_ON_RETRY": 0,
+                    "TOTAL_BUILDS": 5,
+                    "BUILD_FAIL_RATE": 0.0,
+                    "RUN_FAIL_RATE": 0.0,
+                },
+            },
+        }
+        table_multi = test_history.format_summary_table(
+            multi_builder, SAMPLE_TEST_ID
+        )
+        self.assertIn(
+            "Builders Summary: 1 failing/flaky/active, 1 100% passing (2 total builders)",
+            table_multi,
+        )
+        self.assertIn(
+            "100% FAILING Builders (1 builders - 5 out of 5 builds failed):",
+            table_multi,
+        )
+        self.assertIn("- android-14-x64-rel (5/5 failed)", table_multi)
+        self.assertIn(
+            "100% PASSING Builders (1 builders - 0 out of 5 builds with failures/retries):",
+            table_multi,
+        )
+        self.assertIn("- linux-rel (5 clean builds)", table_multi)
+
+        # When show_all=True is passed, full daily tables are rendered for all builders
+        table_all = test_history.format_summary_table(
+            multi_builder, SAMPLE_TEST_ID, show_all=True
+        )
+        self.assertIn("Builder: android-14-x64-rel", table_all)
+        self.assertIn("Builder: linux-rel", table_all)
+
+        # 5. 100% clean history with try bucket note
+        clean_daily = {
+            "linux-rel": {
+                "2026-08-16": {
+                    "PASS": 5,
+                    "FAIL": 0,
+                    "PASS_ON_RETRY": 0,
+                    "TOTAL_BUILDS": 5,
+                    "BUILD_FAIL_RATE": 0.0,
+                    "RUN_FAIL_RATE": 0.0,
+                },
+                "2026-08-15": {
+                    "PASS": 5,
+                    "FAIL": 0,
+                    "PASS_ON_RETRY": 0,
+                    "TOTAL_BUILDS": 5,
+                    "BUILD_FAIL_RATE": 0.0,
+                    "RUN_FAIL_RATE": 0.0,
+                },
+            }
+        }
+        table_clean = test_history.format_summary_table(
+            clean_daily, SAMPLE_TEST_ID, bucket="try"
+        )
+        self.assertIn("Status: PASSING", table_clean)
+        self.assertIn("Note: Results are from the 'try' bucket", table_clean)
+
+    @mock.patch("test_history.run_prpc")
+    def test_fetch_test_history_max_pages(self, mock_prpc):
+        # Infinite pages mock yielding 1 matching verdict per page
         mock_prpc.return_value = {
             "verdicts": [
                 {
                     "testId": SAMPLE_TEST_ID,
                     "status": "EXPECTED",
+                    "variantHash": "wanted_hash",
+                }
+            ],
+            "nextPageToken": "infinite_token",
+        }
+        # With max_pages=2 and limit=100, safety cap stops loop at 2 pages (2 verdicts)
+        verdicts = test_history.fetch_test_history_verdicts(
+            "chromium",
+            SAMPLE_TEST_ID,
+            limit=100,
+            variant_hash="wanted_hash",
+            max_pages=2,
+            verbose=False,
+        )
+        self.assertEqual(len(verdicts), 2)
+        self.assertEqual(mock_prpc.call_count, 2)
+
+    @mock.patch("test_history.run_prpc")
+    def test_query_tests(self, mock_prpc):
+        mock_prpc.return_value = {"testIds": [SAMPLE_TEST_ID]}
+        ids = test_history.query_tests("chromium", "JSONReaderTest")
+        self.assertEqual(ids, [SAMPLE_TEST_ID])
+        mock_prpc.assert_called_once_with(
+            "analysis.api.luci.app",
+            "luci.analysis.v1.TestHistory.QueryTests",
+            {
+                "project": "chromium",
+                "testIdSubstring": "JSONReaderTest",
+            },
+        )
+
+    @mock.patch("test_history.run_prpc")
+    def test_query_variant_builders(self, mock_prpc):
+        mock_prpc.return_value = {
+            "variants": [
+                {
+                    "variantHash": "hash123",
+                    "variant": {"def": {"builder": "android-13-x64-rel"}},
                 }
             ]
         }
-        verdicts = test_history.test_history(
-            "chromium",
-            SAMPLE_TEST_ID,
-            limit=5,
-            builder=SAMPLE_BUILDER,
-            test_suite="base_unittests",
+        mapping = test_history.query_variant_builders(
+            "chromium", SAMPLE_TEST_ID
         )
-        self.assertEqual(len(verdicts), 1)
-        self.assertEqual(verdicts[0]["status"], "EXPECTED")
+        self.assertEqual(mapping, {"hash123": "chromium/ci/android-13-x64-rel"})
         mock_prpc.assert_called_once_with(
             "analysis.api.luci.app",
-            "luci.analysis.v1.TestHistory.Query",
+            "luci.analysis.v1.TestHistory.QueryVariants",
             {
                 "project": "chromium",
                 "testId": SAMPLE_TEST_ID,
-                "predicate": {
-                    "variantPredicate": {
-                        "contains": {
-                            "def": {
-                                "builder": SAMPLE_BUILDER,
-                                "test_suite": "base_unittests",
-                            }
-                        }
-                    }
-                },
-                "pageSize": 5,
             },
         )
+
+    @mock.patch("test_history.fetch_test_history_verdicts")
+    @mock.patch("test_history.query_variant_builders")
+    def test_fetch_multi_builder_verdicts_survey_and_zoom(
+        self, mock_query_variants, mock_fetch_verdicts
+    ):
+        mock_query_variants.return_value = {
+            "hash_clean": "chromium/ci/builder-clean",
+            "hash_failing": "chromium/ci/builder-failing",
+        }
+
+        # Stage 1 Survey returns 10 PASS verdicts for clean builder,
+        # and 10 verdicts (with 1 failure) for failing builder.
+        survey_clean = [
+            {
+                "partitionTime": "2026-08-25T12:00:00Z",
+                "status": "EXPECTED",
+                "variantHash": "hash_clean",
+            }
+            for _ in range(10)
+        ]
+        survey_failing = [
+            {
+                "partitionTime": "2026-08-25T12:00:00Z",
+                "status": "EXPECTED",
+                "variantHash": "hash_failing",
+            }
+            for _ in range(9)
+        ] + [
+            {
+                "partitionTime": "2026-08-25T13:00:00Z",
+                "status": "UNEXPECTED",
+                "variantHash": "hash_failing",
+            }
+        ]
+        # Stage 2 Zoom returns 50 verdicts for failing builder
+        zoomed_failing = [
+            {
+                "partitionTime": "2026-08-25T12:00:00Z",
+                "status": "EXPECTED",
+                "variantHash": "hash_failing",
+            }
+            for _ in range(45)
+        ] + [
+            {
+                "partitionTime": "2026-08-25T13:00:00Z",
+                "status": "UNEXPECTED",
+                "variantHash": "hash_failing",
+            }
+            for _ in range(5)
+        ]
+
+        def fetch_side_effect(*args, **kwargs):
+            builder = kwargs.get("builder")
+            limit = kwargs.get("limit")
+            if builder == "builder-clean" and limit == 10:
+                return survey_clean
+            elif builder == "builder-failing" and limit == 10:
+                return survey_failing
+            elif builder == "builder-failing" and limit == 50:
+                return zoomed_failing
+            return []
+
+        mock_fetch_verdicts.side_effect = fetch_side_effect
+
+        all_verdicts, mapping = test_history.fetch_multi_builder_verdicts(
+            "chromium",
+            SAMPLE_TEST_ID,
+            zoom_limit=50,
+            survey_limit=10,
+            verbose=False,
+        )
+
+        self.assertEqual(len(mapping), 2)
+        # 10 verdicts from clean builder + 50 verdicts from zoomed failing builder = 60 total
+        self.assertEqual(len(all_verdicts), 60)
+        self.assertEqual(mock_fetch_verdicts.call_count, 3)
+
+    @mock.patch("test_history.fetch_test_history_verdicts")
+    @mock.patch("test_history.query_variant_builders")
+    def test_fetch_multi_builder_verdicts_fallback_no_variants(
+        self, mock_query_variants, mock_fetch_verdicts
+    ):
+        mock_query_variants.return_value = {}
+        mock_fetch_verdicts.return_value = [
+            {
+                "partitionTime": "2026-08-25T12:00:00Z",
+                "status": "EXPECTED",
+                "variantHash": "single_hash",
+            }
+        ]
+
+        verdicts, mapping = test_history.fetch_multi_builder_verdicts(
+            "chromium",
+            SAMPLE_TEST_ID,
+            zoom_limit=50,
+            survey_limit=10,
+            verbose=False,
+        )
+        self.assertEqual(len(verdicts), 1)
+        self.assertEqual(mapping, {})
+        mock_fetch_verdicts.assert_called_once()
+
+    def test_aggregate_by_builder_and_day_history_glyph_suppression(self):
+        """Verifies HISTORY glyph string is suppressed for uniform days (all P or all F) and populated for mixed days."""
+        mock_now = datetime(2026, 8, 25, 16, 0, 0, tzinfo=timezone.utc)
+        verdicts = [
+            # Day 1: 5 Clean Passes -> Uniform day (HISTORY should be empty "")
+            *[
+                {
+                    "partitionTime": f"2026-08-23T{10 + i:02d}:00:00Z",
+                    "status": "EXPECTED",
+                    "variantHash": "var1",
+                }
+                for i in range(5)
+            ],
+            # Day 2: 3 Failures -> Uniform day (HISTORY should be empty "")
+            *[
+                {
+                    "partitionTime": f"2026-08-24T{10 + i:02d}:00:00Z",
+                    "status": "UNEXPECTED",
+                    "variantHash": "var1",
+                }
+                for i in range(3)
+            ],
+            # Day 3: Mixed (3 Pass, 1 Fail, 1 Retry) -> Mixed day (HISTORY should be newest -> oldest)
+            {
+                "partitionTime": "2026-08-25T10:00:00Z",
+                "status": "EXPECTED",
+                "variantHash": "var1",
+            },
+            {
+                "partitionTime": "2026-08-25T11:00:00Z",
+                "status": "EXPECTED",
+                "variantHash": "var1",
+            },
+            {
+                "partitionTime": "2026-08-25T12:00:00Z",
+                "status": "FLAKY",
+                "variantHash": "var1",
+            },
+            {
+                "partitionTime": "2026-08-25T13:00:00Z",
+                "status": "UNEXPECTED",
+                "variantHash": "var1",
+            },
+        ]
+
+        res = test_history.aggregate_by_builder_and_day(
+            verdicts, default_builder="test-builder", now=mock_now
+        )
+        daily = res["test-builder"]["daily"]
+
+        self.assertEqual(daily["2026-08-23"]["HISTORY"], "")
+        self.assertEqual(daily["2026-08-24"]["HISTORY"], "")
+        # Newest at 13:00 (F), then 12:00 (R), then 11:00 (P), 10:00 (P) -> "FRPP"
+        self.assertEqual(daily["2026-08-25"]["HISTORY"], "FRPP")
 
 
 if __name__ == "__main__":
