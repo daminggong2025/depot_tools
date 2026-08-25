@@ -2173,7 +2173,7 @@ class InputApiUnittest(PresubmitTestsBase):
         )
         # Queue a parallel test first.
         input_api.RunTests([queued_parallel_test], parallel=True)
-        self.assertEqual(1, len(input_api.thread_pool._tests))
+        self.assertEqual(1, input_api.thread_pool._active_tasks_count)
 
         sync_test1 = presubmit.CommandData(
             name="sync_test1",
@@ -2201,11 +2201,8 @@ class InputApiUnittest(PresubmitTestsBase):
             msgs = input_api.RunTests([sync_test1, sync_test2], parallel=False)
             self.assertEqual(3, len(msgs))
             self.assertEqual(2, mock_call.call_count)
-            # The queued parallel test should remain untouched in the pool.
-            self.assertEqual(1, len(input_api.thread_pool._tests))
-            self.assertEqual(
-                queued_parallel_test, input_api.thread_pool._tests[0]
-            )
+            # The nonparallel tests list should be empty and active parallel task unchanged.
+            self.assertEqual(1, input_api.thread_pool._active_tasks_count)
             self.assertEqual(0, len(input_api.thread_pool._nonparallel_tests))
 
 
@@ -5108,6 +5105,4 @@ the current line as well!
 
 
 if __name__ == "__main__":
-    import unittest
-
     unittest.main()
