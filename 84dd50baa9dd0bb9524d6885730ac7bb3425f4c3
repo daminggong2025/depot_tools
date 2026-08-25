@@ -16,6 +16,115 @@
       "message": "Could you have a look?",
       "revId": "84dd50baa9dd0bb9524d6885730ac7bb3425f4c3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7c99b237_ae7e233a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-08-25T18:43:32Z",
+      "side": 1,
+      "message": "while we\u0027re adding new files, could you add type hints for args+returns to all the methods in trace_utils.py and tests/trace_utils_test.py?",
+      "revId": "84dd50baa9dd0bb9524d6885730ac7bb3425f4c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1b47e7c8_53c26f4d",
+        "filename": "trace_utils.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-08-25T18:43:32Z",
+      "side": 1,
+      "message": "Please fix this WARNING reported by code-review-workflow: [code-review-workflow] Hardcoding `/tmp/` for the default trace file will cause ...\n\n[code-review-workflow] Hardcoding `/tmp/` for the default trace file will cause errors on Windows, which does not have a `/tmp/` directory. Depot_tools needs to be cross-platform.\n\n**Suggestion**\n\nUse `tempfile.gettempdir()` to obtain a platform-appropriate temporary directory.\n```python\nimport tempfile\n\n_DEFAULT_TRACE_FILE \u003d os.path.join(tempfile.gettempdir(), \"gclient_trace.json\")\n```",
+      "range": {
+        "startLine": 20,
+        "startChar": 0,
+        "endLine": 21,
+        "endChar": 0
+      },
+      "revId": "84dd50baa9dd0bb9524d6885730ac7bb3425f4c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "817c4c26_7552af59",
+        "filename": "trace_utils.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-08-25T18:43:32Z",
+      "side": 1,
+      "message": "Please fix this WARNING reported by code-review-workflow: [code-review-workflow] Inheriting from `object` is a Python 2-ism and is unneces...\n\n[code-review-workflow] Inheriting from `object` is a Python 2-ism and is unnecessary in modern Python 3 codebases.\n\n**Suggestion**\n\nRemove `(object)` from the class definition.\n```python\nclass TraceCollector:\n```",
+      "range": {
+        "startLine": 23,
+        "startChar": 0,
+        "endLine": 24,
+        "endChar": 0
+      },
+      "revId": "84dd50baa9dd0bb9524d6885730ac7bb3425f4c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "63a7f906_3ae63b95",
+        "filename": "trace_utils.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-08-25T18:43:32Z",
+      "side": 1,
+      "message": "Please fix this WARNING reported by code-review-workflow: [code-review-workflow] Checking against multiple case variations of \"true\" is un...\n\n[code-review-workflow] Checking against multiple case variations of \"true\" is unnecessarily verbose.\n\n**Suggestion**\n\nConvert the string to lowercase before comparing.\n```python\n            if env_val.lower() in (\"1\", \"true\"):\n```",
+      "range": {
+        "startLine": 37,
+        "startChar": 0,
+        "endLine": 38,
+        "endChar": 0
+      },
+      "revId": "84dd50baa9dd0bb9524d6885730ac7bb3425f4c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9720c95e_4365a9dc",
+        "filename": "trace_utils.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-08-25T18:43:32Z",
+      "side": 1,
+      "message": "these events are reset on `start` but it gets called twice (first from `collector \u003d Collector()`, and another in gclient `trace_utils.collector.start`). we shouldn\u0027t wipe them if  if `self._enabled` is already True",
+      "range": {
+        "startLine": 55,
+        "startChar": 12,
+        "endLine": 56,
+        "endChar": 30
+      },
+      "revId": "84dd50baa9dd0bb9524d6885730ac7bb3425f4c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
