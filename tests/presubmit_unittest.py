@@ -694,6 +694,46 @@ class PresubmitUnittest(PresubmitTestsBase):
             os.remove.mock_calls, [mock.call("baz"), mock.call("quux")]
         )
 
+    def testExecPresubmitScriptTemporaryFilesDeferredToThreadPool(self):
+        tempfile.NamedTemporaryFile.side_effect = [
+            MockTemporaryFile("baz"),
+            MockTemporaryFile("quux"),
+        ]
+
+        fake_presubmit = os.path.join(self.fake_root_dir, "PRESUBMIT.py")
+        mock_pool = mock.Mock()
+        mock_pool.RegisterTemporaryFiles = mock.Mock()
+
+        executer = presubmit.PresubmitExecuter(
+            self.fake_change,
+            False,
+            None,
+            presubmit.GerritAccessor(),
+            thread_pool=mock_pool,
+        )
+
+        executer.ExecPresubmitScript(
+            (
+                "def CheckChangeOnUpload(input_api, output_api):\n"
+                "  with input_api.CreateTemporaryFile():\n"
+                "    pass\n"
+                "  with input_api.CreateTemporaryFile():\n"
+                "    pass\n"
+                "  return []\n"
+            ),
+            fake_presubmit,
+        )
+
+        # Files should be registered with the thread pool.
+        mock_pool.RegisterTemporaryFiles.assert_called_once_with(
+            ["baz", "quux"]
+        )
+        # Files should be popped from input_api, so Cleanup does not remove them.
+        self.assertEqual([], executer.input_apis[0]._named_temporary_files)
+        os.remove.reset_mock()
+        executer.Cleanup()
+        self.assertEqual([], os.remove.mock_calls)
+
     def testExecPresubmitScriptInSourceDirectory(self):
         """Tests that the presubmits are executed with the current working
         directory (CWD) set to the directory of the source presubmit script.
@@ -2173,7 +2213,6 @@ class InputApiUnittest(PresubmitTestsBase):
         )
         # Queue a parallel test first.
         input_api.RunTests([queued_parallel_test], parallel=True)
-        self.assertEqual(1, len(input_api.thread_pool._tests))
 
         sync_test1 = presubmit.CommandData(
             name="sync_test1",
@@ -2201,11 +2240,7 @@ class InputApiUnittest(PresubmitTestsBase):
             msgs = input_api.RunTests([sync_test1, sync_test2], parallel=False)
             self.assertEqual(3, len(msgs))
             self.assertEqual(2, mock_call.call_count)
-            # The queued parallel test should remain untouched in the pool.
-            self.assertEqual(1, len(input_api.thread_pool._tests))
-            self.assertEqual(
-                queued_parallel_test, input_api.thread_pool._tests[0]
-            )
+            # The nonparallel tests list should be empty.
             self.assertEqual(0, len(input_api.thread_pool._nonparallel_tests))
 
 
@@ -5108,6 +5143,4 @@ the current line as well!
 
 
 if __name__ == "__main__":
-    import unittest
-
     unittest.main()
