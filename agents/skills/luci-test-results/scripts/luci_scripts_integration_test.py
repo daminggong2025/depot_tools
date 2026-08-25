@@ -14,12 +14,12 @@ import sys
 import unittest
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-import check_test
-import fetch_log
-import find_cl_builds
-import list_failures
-import luci_client
-import test_history
+import check_test  # noqa: E402
+import fetch_log  # noqa: E402
+import find_cl_builds  # noqa: E402
+import list_failures  # noqa: E402
+import luci_client  # noqa: E402
+import test_history  # noqa: E402
 
 SAMPLE_BUILDER = "android-13-x64-rel"
 SAMPLE_CL = "8260911"
@@ -104,6 +104,35 @@ class TestLuciScriptsIntegration(unittest.TestCase):
             cls.failure_build_id = None
             cls.failure_build_num = None
 
+        # Dynamically discover a recent try build with a Gerrit change
+        cls.sample_cl = None
+        cls.sample_patchset = None
+        res_try = luci_client.run_prpc(
+            "cr-buildbucket.appspot.com",
+            "buildbucket.v2.Builds.SearchBuilds",
+            {
+                "predicate": {
+                    "builder": {
+                        "project": "chromium",
+                        "bucket": "try",
+                    },
+                },
+                "pageSize": 10,
+                "mask": {"fields": "id,input.gerritChanges"},
+            },
+        )
+        if res_try and res_try.get("builds"):
+            for b in res_try["builds"]:
+                changes = b.get("input", {}).get("gerritChanges", [])
+                if changes:
+                    cls.sample_cl = str(changes[0].get("change"))
+                    cls.sample_patchset = str(changes[0].get("patchset"))
+                    print(
+                        f"[DISCOVERY] Recent try CL: {cls.sample_cl} "
+                        f"(patchset: {cls.sample_patchset})"
+                    )
+                    break
+
         print(
             f"[DISCOVERY] Target Test Queries: '{SAMPLE_JAVA_TEST_QUERY}' (Java),"
             f" '{SAMPLE_CPP_TEST_QUERY}' (C++ GTest)"
@@ -136,19 +165,24 @@ class TestLuciScriptsIntegration(unittest.TestCase):
         )
 
     def test_find_cl_builds(self):
+        if not self.sample_cl:
+            self.skipTest("Could not discover active try CL")
+
         # Test default behavior: queries Gerrit REST API for latest patchset
-        builds_latest = find_cl_builds.find_cl_builds(SAMPLE_CL)
+        builds_latest = find_cl_builds.find_cl_builds(self.sample_cl)
         self.assertIsInstance(builds_latest, list)
         self.assertTrue(
             all("builder" in b and "id" in b for b in builds_latest)
         )
         print(
             f"[PASS] find_cl_builds (latest patchset via Gerrit): Found "
-            f"{len(builds_latest)} non-success build(s) for CL {SAMPLE_CL}"
+            f"{len(builds_latest)} non-success build(s) for CL {self.sample_cl}"
         )
 
         # Test show_all=True: returns all builds including SUCCESS/STARTED
-        builds_all = find_cl_builds.find_cl_builds(SAMPLE_CL, show_all=True)
+        builds_all = find_cl_builds.find_cl_builds(
+            self.sample_cl, show_all=True
+        )
         self.assertGreater(len(builds_all), 0)
         self.assertGreaterEqual(len(builds_all), len(builds_latest))
         print(
@@ -172,22 +206,94 @@ class TestLuciScriptsIntegration(unittest.TestCase):
                 print(f"       - {tr.get('id')} ({tr.get('status')})")
 
     def test_test_history(self):
-        for test_id, suite, label in [
-            (SAMPLE_JAVA_TEST_ID, "chrome_public_test_apk", "Java JUnit"),
-            (SAMPLE_CPP_TEST_ID, "base_unittests", "C++ GTest"),
+        for test_id, suite, label, query in [
+            (
+                SAMPLE_JAVA_TEST_ID,
+                "chrome_public_test_apk",
+                "Java JUnit",
+                SAMPLE_JAVA_TEST_QUERY,
+            ),
+            (
+                SAMPLE_CPP_TEST_ID,
+                "base_unittests",
+                "C++ GTest",
+                SAMPLE_CPP_TEST_QUERY,
+            ),
         ]:
-            verdicts = test_history.test_history(
+            verdicts = test_history.fetch_test_history_verdicts(
                 "chromium",
                 test_id,
-                limit=5,
+                limit=25,
                 builder=SAMPLE_BUILDER,
                 test_suite=suite,
+                verbose=False,
             )
             self.assertGreaterEqual(len(verdicts), 1)
-            self.assertEqual(verdicts[0].get("testId"), test_id)
+            builder_daily = test_history.aggregate_by_builder_and_day(
+                verdicts, default_builder=SAMPLE_BUILDER
+            )
+            self.assertGreaterEqual(len(builder_daily), 1)
+            table = test_history.format_summary_table(builder_daily, test_id)
+            self.assertIn("Test History by Builder", table)
+            self.assertIn(f"Builder: {SAMPLE_BUILDER}", table)
             print(
-                f"[PASS] test_history ({label}): Queried {len(verdicts)} verdict(s)"
-                f" for {test_id.split('!')[-1]} on {SAMPLE_BUILDER}"
+                f"[PASS] test_history ({label}): Queried {len(verdicts)} verdict(s) for "
+                f"{query} on {SAMPLE_BUILDER}\n"
+                f"{table}"
+            )
+
+    def test_multi_builder_test_history(self):
+        """Tests multi-builder 2-stage survey and zoom against live LUCI Analysis."""
+        verdicts, variant_builders = test_history.fetch_multi_builder_verdicts(
+            "chromium",
+            SAMPLE_JAVA_TEST_ID,
+            zoom_limit=20,
+            survey_limit=5,
+            bucket="ci",
+            verbose=False,
+        )
+        self.assertGreater(len(verdicts), 0)
+        self.assertGreater(len(variant_builders), 1)
+
+        # Verify variant builder IDs are formatted as <project>/<bucket>/<builder>
+        for full_id in variant_builders.values():
+            self.assertTrue(full_id.startswith("chromium/"))
+            self.assertEqual(len(full_id.split("/")), 3)
+
+        builder_daily = test_history.aggregate_by_builder_and_day(
+            verdicts, variant_builders=variant_builders
+        )
+        self.assertGreater(len(builder_daily), 1)
+
+        table = test_history.format_summary_table(
+            builder_daily, SAMPLE_JAVA_TEST_ID, bucket="ci"
+        )
+        self.assertIn("Test History by Builder (bucket=ci)", table)
+        self.assertIn("Builders Summary:", table)
+        summary_preview = table[:400]
+        print(
+            f"[PASS] test_multi_builder_test_history: Discovered {len(variant_builders)} builders across {len(verdicts)} verdicts.\n{summary_preview}...\n"
+        )
+
+    def test_query_tests_fuzzy_search(self):
+        for query, expected_id, label in [
+            (
+                SAMPLE_JAVA_TEST_QUERY,
+                SAMPLE_JAVA_TEST_ID,
+                "Java JUnit",
+            ),
+            (
+                SAMPLE_CPP_TEST_QUERY,
+                SAMPLE_CPP_TEST_ID,
+                "C++ GTest",
+            ),
+        ]:
+            candidates = test_history.query_tests("chromium", query)
+            self.assertGreater(len(candidates), 0)
+            self.assertIn(expected_id, candidates)
+            print(
+                f"[PASS] query_tests ({label}): Resolved '{query}' -> "
+                f"{len(candidates)} candidate(s) including canonical ID"
             )
 
     def test_list_failures_and_fetch_log(self):
