@@ -892,15 +892,18 @@ class GitMutableStructuredTest(
         self.assertEqual(diverged_branches, ["branch_K", "branch_L"])
 
     def testIsGitTreeDirty(self):
+        # 1. Clean repo is not dirty.
         retval = []
         self.repo.capture_stdio(
             lambda: retval.append(
                 self.repo.run(self.gc.is_dirty_git_tree, "foo")
             )
         )
-
         self.assertEqual(False, retval[0])
-        self.repo.open("test.file", "w").write("test data")
+
+        # 2. Staged file marks tree as dirty.
+        with self.repo.open("test.file", "w") as f:
+            f.write("test data")
         self.repo.git("add", "test.file")
 
         retval = []
@@ -909,6 +912,64 @@ class GitMutableStructuredTest(
                 self.repo.run(self.gc.is_dirty_git_tree, "foo")
             )
         )
+        self.assertEqual(True, retval[0])
+
+        # 3. Commit staged file; tree is clean again.
+        self.repo.git("commit", "-m", "commit test.file")
+        retval = []
+        self.repo.capture_stdio(
+            lambda: retval.append(
+                self.repo.run(self.gc.is_dirty_git_tree, "foo")
+            )
+        )
+        self.assertEqual(False, retval[0])
+
+        # 4. Unstaged modification marks tree as dirty.
+        with self.repo.open("test.file", "w") as f:
+            f.write("modified test data")
+        retval = []
+        self.repo.capture_stdio(
+            lambda: retval.append(
+                self.repo.run(self.gc.is_dirty_git_tree, "foo")
+            )
+        )
+        self.assertEqual(True, retval[0])
+
+        # 5. Untracked file does NOT mark tree as dirty (per -uno).
+        self.repo.git("checkout", "HEAD", "--", "test.file")
+        with self.repo.open("untracked.file", "w") as f:
+            f.write("untracked")
+        retval = []
+        self.repo.capture_stdio(
+            lambda: retval.append(
+                self.repo.run(self.gc.is_dirty_git_tree, "foo")
+            )
+        )
+        self.assertEqual(False, retval[0])
+
+    def testAsyncIsGitTreeDirty(self):
+        # 1. Clean repo returns False asynchronously.
+        retval = []
+
+        def _run_clean():
+            checker = self.repo.run(self.gc.async_is_dirty_git_tree, "foo")
+            retval.append(checker())
+
+        self.repo.capture_stdio(_run_clean)
+        self.assertEqual(False, retval[0])
+
+        # 2. Staged modification returns True asynchronously.
+        with self.repo.open("async_test.file", "w") as f:
+            f.write("test data")
+        self.repo.git("add", "async_test.file")
+
+        retval = []
+
+        def _run_dirty():
+            checker = self.repo.run(self.gc.async_is_dirty_git_tree, "foo")
+            retval.append(checker())
+
+        self.repo.capture_stdio(_run_dirty)
         self.assertEqual(True, retval[0])
 
     def testSquashBranch(self):

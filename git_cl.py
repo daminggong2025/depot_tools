@@ -6279,6 +6279,12 @@ def CMDupload(parser, args):
 
     cl = Changelist(branchref=options.target_branch)
 
+    # Launch working tree dirty check asynchronously in a background thread
+    # so that the ~350ms git status scan on large repositories (like chromium/src)
+    # runs concurrently with EnsureAuthenticated, AsyncEnsureAccountExists,
+    # option parsing, and AsyncWarmChangeDetail.
+    wait_dirty_check = git_common.async_is_dirty_git_tree("upload")
+
     # Ensure we're authenticated correctly. Otherwise `git cl upload` will:
     #   * run `git status` (slow for large repos)
     #   * run presubmit tests (likely slow)
@@ -6309,9 +6315,6 @@ def CMDupload(parser, args):
     # they have fsmonitor enabled.
     if os.path.isfile(".gitmodules"):
         git_common.warn_submodule()
-
-    if git_common.is_dirty_git_tree("upload"):
-        return 1
 
     options.reviewers = cleanup_list(options.reviewers)
     options.cc = cleanup_list(options.cc)
@@ -6378,6 +6381,12 @@ def CMDupload(parser, args):
     # already completed or cached) before proceeding to interactive description
     # prompt, presubmit checks, or git push.
     wait_for_account()
+
+    # Verify working tree is clean before proceeding with either squashed or
+    # non-squashed uploads. Placed immediately before options.squash check to
+    # guard both squash and non-squash execution paths.
+    if wait_dirty_check():
+        return 1
 
     if options.squash:
         if options.cherry_pick_stacked:
