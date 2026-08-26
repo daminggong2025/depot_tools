@@ -2237,6 +2237,9 @@ class Changelist(object):
                 notify=bool(options.send_mail),
             )
 
+        if getattr(options, "nightly", False):
+            self.CreateNightlyFlow()
+
     def CMDUpload(self, options, git_diff_args, orig_args):
         """Uploads a change to codereview."""
         custom_cl_base = None
@@ -2348,6 +2351,50 @@ class Changelist(object):
                 % ("cancel CQ" if new_state == _CQState.NONE else "trigger CQ")
             )
             # Still raise exception so that stack trace is printed.
+            raise
+
+    def CreateNightlyFlow(
+        self,
+        tz: str = "America/Los_Angeles",
+        target_time: str = "today at 22:00",
+    ) -> int:
+        """Creates a Gerrit Flow to trigger submit during offpeak hours once submittable."""
+        issue = self.GetIssue()
+        if not issue:
+            raise RuntimeError("Must upload the issue first.")
+
+        host = self.GetGerritHost()
+        cl_url = f"https://{host}/c/{issue}"
+        condition = (
+            f"{cl_url} is is:submittable, "
+            f"wait until {target_time} in {tz}"
+        )
+        body = {
+            "stage_expressions": [{
+                "condition": condition,
+                "action": {
+                    "name": "submit",
+                    "parameters": [],
+                },
+            }]
+        }
+        try:
+            gerrit_util.CallGerritApi(
+                host,
+                f"changes/{issue}/flows",
+                reqtype="POST",
+                body=body,
+                accept_statuses=(200, 201),
+            )
+            print(
+                f"Created nightly submit flow for CL {issue} "
+                f"(scheduled for {target_time} in {tz})."
+            )
+            return 0
+        except Exception as e:
+            print(
+                f"WARNING: Failed to create nightly submit flow for CL {issue}: {e}"
+            )
             raise
 
     def GetGerritHost(self) -> Optional[str]:
@@ -3703,6 +3750,9 @@ class Changelist(object):
                 cc,
                 notify=bool(options.send_mail),
             )
+
+        if self.GetIssue() and getattr(options, "nightly", False):
+            self.CreateNightlyFlow()
 
         return 0
 
@@ -6172,6 +6222,12 @@ def CMDupload(parser, args):
         "enabled",
     )
     parser.add_option(
+        "--nightly",
+        action="store_true",
+        dest="nightly",
+        help="Schedule CL submission for offpeak hours (10 PM - 4 AM MTV) once approved.",
+    )
+    parser.add_option(
         "--enable-owners-override",
         action="store_true",
         help="Adds the Owners-Override label to your change.",
@@ -7524,6 +7580,12 @@ def CMDset_commit(parser, args):
         "-c", "--clear", action="store_true", help="stop CQ run, if any"
     )
     parser.add_option(
+        "--nightly",
+        action="store_true",
+        dest="nightly",
+        help="Queue CL for submission during offpeak hours (10 PM - 4 AM MTV).",
+    )
+    parser.add_option(
         "-i",
         "--issue",
         type=int,
@@ -7533,14 +7595,16 @@ def CMDset_commit(parser, args):
     options, args = parser.parse_args(args)
     if args:
         parser.error("Unrecognized args: %s" % " ".join(args))
-    if [options.dry_run, options.clear].count(True) > 1:
-        parser.error("Only one of --dry-run, and --clear are allowed.")
+    if [options.dry_run, options.clear, options.nightly].count(True) > 1:
+        parser.error("Only one of --dry-run, --clear, and --nightly are allowed.")
 
     cl = Changelist(issue=options.issue)
     if not cl.GetIssue():
         parser.error("Must upload the issue first.")
 
-    if options.clear:
+    if options.nightly:
+        return cl.CreateNightlyFlow()
+    elif options.clear:
         state = _CQState.NONE
     elif options.dry_run:
         state = _CQState.DRY_RUN
