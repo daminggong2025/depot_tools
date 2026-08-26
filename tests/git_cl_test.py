@@ -956,6 +956,9 @@ class TestGitCl(unittest.TestCase):
         ).start()
         mock.patch("git_common.is_dirty_git_tree", lambda x: False).start()
         mock.patch(
+            "git_common.async_is_dirty_git_tree", lambda x: lambda: False
+        ).start()
+        mock.patch(
             "git_cl_core.FindCodereviewSettingsFile", return_value=""
         ).start()
         mock.patch(
@@ -7161,6 +7164,9 @@ class CMDTestCaseBase(unittest.TestCase):
             "git_cl._buildbucket_search", return_value=self._DEFAULT_RESPONSE
         ).start()
         mock.patch("git_common.is_dirty_git_tree", return_value=False).start()
+        mock.patch(
+            "git_common.async_is_dirty_git_tree", return_value=lambda: False
+        ).start()
         self.addCleanup(mock.patch.stopall)
 
 
@@ -7843,6 +7849,14 @@ class CMDUploadTestCase(CMDTestCaseBase):
             "git_cl.Settings.GetSquashGerritUploads", return_value=True
         ).start()
         self.addCleanup(mock.patch.stopall)
+
+    def test_upload_abort_on_dirty_tree(self):
+        mock.patch("git_cl.Changelist.EnsureAuthenticated").start()
+        mock.patch(
+            "git_common.async_is_dirty_git_tree",
+            return_value=lambda: True,
+        ).start()
+        self.assertEqual(1, git_cl.main(["upload", "-f", "--bypass-hooks"]))
 
 
 class MakeRequestsHelperTestCase(unittest.TestCase):
