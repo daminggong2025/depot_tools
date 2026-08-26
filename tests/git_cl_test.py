@@ -8957,8 +8957,48 @@ class TestRunGitPushWithTraces(unittest.TestCase):
         )
 
 
+class CMDNightlyFlowTestCase(CMDTestCaseBase):
+    @unittest.skipIf(
+        gclient_utils.IsEnvCog(), "not supported in non-git environment"
+    )
+    @mock.patch("gerrit_util.CallGerritApi")
+    def testCreateNightlyFlow(self, mockCallGerritApi):
+        mockCallGerritApi.return_value = {"uuid": "test-uuid"}
+        cl = git_cl.Changelist(issue=123456)
+        self.assertEqual(0, cl.CreateNightlyFlow())
+        mockCallGerritApi.assert_called_once_with(
+            "chromium-review.googlesource.com",
+            "changes/123456/flows",
+            reqtype="POST",
+            body={
+                "stage_expressions": [{
+                    "condition": (
+                        "https://chromium-review.googlesource.com/c/123456 is "
+                        "is:submittable, wait until today at 19:00 in "
+                        "America/Los_Angeles"
+                    ),
+                    "action": {
+                        "name": "submit",
+                        "parameters": [],
+                    },
+                }]
+            },
+            accept_statuses=(200, 201),
+        )
+
+    @unittest.skipIf(
+        gclient_utils.IsEnvCog(), "not supported in non-git environment"
+    )
+    @mock.patch("git_cl.Changelist.CreateNightlyFlow")
+    def testSetCommitNightly(self, mockCreateNightlyFlow):
+        mockCreateNightlyFlow.return_value = 0
+        self.assertEqual(0, git_cl.main(["set-commit", "--nightly"]))
+        mockCreateNightlyFlow.assert_called_once()
+
+
 if __name__ == "__main__":
     logging.basicConfig(
         level=logging.DEBUG if "-v" in sys.argv else logging.ERROR
     )
     unittest.main()
+
