@@ -8957,6 +8957,118 @@ class TestRunGitPushWithTraces(unittest.TestCase):
         )
 
 
+class CMDNightlyFlowTestCase(CMDTestCaseBase):
+    @unittest.skipIf(
+        gclient_utils.IsEnvCog(), "not supported in non-git environment"
+    )
+    @mock.patch("gerrit_util.CallGerritApi")
+    def testCreateNightlyFlow_DefaultJitter(self, mockCallGerritApi):
+        mockCallGerritApi.return_value = {"uuid": "test-uuid"}
+        cl = git_cl.Changelist(issue=123456)
+        # 123456 % 240 = 96 mins -> 19:00 + 1h36m = 20:36
+        self.assertEqual(0, cl.CreateNightlyFlow())
+        mockCallGerritApi.assert_called_once_with(
+            "chromium-review.googlesource.com",
+            "changes/123456/flows",
+            reqtype="POST",
+            body={
+                "stage_expressions": [
+                    {
+                        "condition": (
+                            "https://chromium-review.googlesource.com/c/123456 is "
+                            "is:submittable, wait until today at 20:36 in "
+                            "America/Los_Angeles"
+                        ),
+                        "action": {
+                            "name": "submit",
+                            "parameters": [],
+                        },
+                    }
+                ]
+            },
+            accept_statuses=(200, 201),
+        )
+
+    @unittest.skipIf(
+        gclient_utils.IsEnvCog(), "not supported in non-git environment"
+    )
+    @mock.patch("gerrit_util.CallGerritApi")
+    def testCreateNightlyFlow_CustomTime(self, mockCallGerritApi):
+        mockCallGerritApi.return_value = {"uuid": "test-uuid"}
+        cl = git_cl.Changelist(issue=123456)
+        self.assertEqual(0, cl.CreateNightlyFlow(custom_time="20:30"))
+        mockCallGerritApi.assert_called_once_with(
+            "chromium-review.googlesource.com",
+            "changes/123456/flows",
+            reqtype="POST",
+            body={
+                "stage_expressions": [
+                    {
+                        "condition": (
+                            "https://chromium-review.googlesource.com/c/123456 is "
+                            "is:submittable, wait until today at 20:30 in "
+                            "America/Los_Angeles"
+                        ),
+                        "action": {
+                            "name": "submit",
+                            "parameters": [],
+                        },
+                    }
+                ]
+            },
+            accept_statuses=(200, 201),
+        )
+
+    @unittest.skipIf(
+        gclient_utils.IsEnvCog(), "not supported in non-git environment"
+    )
+    def testCreateNightlyFlow_InvalidCustomTime(self):
+        cl = git_cl.Changelist(issue=123456)
+        with self.assertRaisesRegex(
+            ValueError,
+            r'Invalid time ""\. Expected 24-hour format "HH:MM" in MTV time \(e\.g\. "19:45"\)\.',
+        ):
+            cl.CreateNightlyFlow(custom_time="")
+        with self.assertRaisesRegex(
+            ValueError,
+            r'Invalid time ""\. Expected 24-hour format "HH:MM" in MTV time \(e\.g\. "19:45"\)\.',
+        ):
+            cl.CreateNightlyFlow(custom_time="   ")
+        with self.assertRaisesRegex(
+            ValueError,
+            r'Invalid time "8pm"\. Expected 24-hour format "HH:MM" in MTV time \(e\.g\. "19:45"\)\.',
+        ):
+            cl.CreateNightlyFlow(custom_time="8pm")
+        with self.assertRaisesRegex(
+            ValueError,
+            r'Invalid time "25:00"\. Expected 24-hour format "HH:MM" in MTV time \(e\.g\. "19:45"\)\.',
+        ):
+            cl.CreateNightlyFlow(custom_time="25:00")
+        with self.assertRaisesRegex(
+            ValueError,
+            r'Invalid time "today at 20:30"\. Expected 24-hour format "HH:MM" in MTV time \(e\.g\. "19:45"\)\.',
+        ):
+            cl.CreateNightlyFlow(custom_time="today at 20:30")
+
+    @unittest.skipIf(
+        gclient_utils.IsEnvCog(), "not supported in non-git environment"
+    )
+    @mock.patch("git_cl.Changelist.CreateNightlyFlow")
+    def testSetCommitNightly(self, mockCreateNightlyFlow):
+        mockCreateNightlyFlow.return_value = 0
+        self.assertEqual(0, git_cl.main(["set-commit", "--nightly"]))
+        mockCreateNightlyFlow.assert_called_once_with(custom_time=None)
+
+    @unittest.skipIf(
+        gclient_utils.IsEnvCog(), "not supported in non-git environment"
+    )
+    @mock.patch("git_cl.Changelist.CreateNightlyFlow")
+    def testSetCommitNightly_CustomTime(self, mockCreateNightlyFlow):
+        mockCreateNightlyFlow.return_value = 0
+        self.assertEqual(0, git_cl.main(["set-commit", "--submit-at", "21:00"]))
+        mockCreateNightlyFlow.assert_called_once_with(custom_time="21:00")
+
+
 if __name__ == "__main__":
     logging.basicConfig(
         level=logging.DEBUG if "-v" in sys.argv else logging.ERROR
