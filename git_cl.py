@@ -2237,6 +2237,13 @@ class Changelist(object):
                 notify=bool(options.send_mail),
             )
 
+        if getattr(options, "nightly", False) or (
+            getattr(options, "submit_at", None) is not None
+        ):
+            self.CreateScheduledSubmitFlow(
+                custom_time=getattr(options, "submit_at", None)
+            )
+
     def CMDUpload(self, options, git_diff_args, orig_args):
         """Uploads a change to codereview."""
         custom_cl_base = None
@@ -2348,6 +2355,74 @@ class Changelist(object):
                 % ("cancel CQ" if new_state == _CQState.NONE else "trigger CQ")
             )
             # Still raise exception so that stack trace is printed.
+            raise
+
+    def _ComputeScheduleTime(self, custom_time: Optional[str] = None) -> str:
+        """Computes target time string for submission flow.
+
+        If custom_time is provided, validates that it is in 24-hour "HH:MM" format
+        in PT / MTV time (e.g. "19:45"). Otherwise, computes a deterministic time
+        between 19:00 - 23:00 PT / MTV time based on the issue number.
+        """
+        if custom_time is not None:
+            custom_time = custom_time.strip()
+            # Validate 24-hour HH:MM format (00:00 to 23:59)
+            if not re.match(r"^([01]?[0-9]|2[0-3]):[0-5][0-9]$", custom_time):
+                raise ValueError(
+                    f'Invalid time "{custom_time}". Expected 24-hour format "HH:MM" in PT / MTV time (e.g. "19:45").'
+                )
+            return f"today at {custom_time}"
+
+        # Deterministic jitter across 240-minute window (19:00 to 23:00)
+        issue = self.GetIssue()
+        issue_num = int(issue) if issue else 0
+        offset_minutes = issue_num % 240
+        target_hour = 19 + (offset_minutes // 60)
+        target_min = offset_minutes % 60
+        return f"today at {target_hour:02d}:{target_min:02d}"
+
+    def CreateScheduledSubmitFlow(
+        self,
+        tz: str = "America/Los_Angeles",
+        custom_time: Optional[str] = None,
+    ) -> int:
+        """Creates a Gerrit Flow to trigger submit at scheduled time once submittable."""
+        issue = self.GetIssue()
+        if not issue:
+            raise RuntimeError("Must upload the issue first.")
+
+        target_time = self._ComputeScheduleTime(custom_time)
+        host = self.GetGerritHost()
+        cl_url = f"https://{host}/c/{issue}"
+        condition = (
+            f"{cl_url} is is:submittable, wait until {target_time} in {tz}"
+        )
+        body = {
+            "stage_expressions": [
+                {
+                    "condition": condition,
+                    "action": {
+                        "name": "submit",
+                        "parameters": [],
+                    },
+                }
+            ]
+        }
+        try:
+            gerrit_util.CallGerritApi(
+                host,
+                f"changes/{issue}/flows",
+                reqtype="POST",
+                body=body,
+                accept_statuses=(200, 201),
+            )
+            print(
+                f"Created submit flow for CL {issue} "
+                f"(scheduled for {target_time} in {tz})."
+            )
+            return 0
+        except Exception as e:
+            print(f"WARNING: Failed to create submit flow for CL {issue}: {e}")
             raise
 
     def GetGerritHost(self) -> Optional[str]:
@@ -3702,6 +3777,14 @@ class Changelist(object):
                 reviewers,
                 cc,
                 notify=bool(options.send_mail),
+            )
+
+        if self.GetIssue() and (
+            getattr(options, "nightly", False)
+            or (getattr(options, "submit_at", None) is not None)
+        ):
+            self.CreateScheduledSubmitFlow(
+                custom_time=getattr(options, "submit_at", None)
             )
 
         return 0
@@ -6172,6 +6255,19 @@ def CMDupload(parser, args):
         "enabled",
     )
     parser.add_option(
+        "--nightly",
+        action="store_true",
+        dest="nightly",
+        help="Schedule CL submission for offpeak hours (between 19:00 - 23:00 PT / MTV time) once approved.",
+    )
+    parser.add_option(
+        "--submit-at",
+        type=str,
+        dest="submit_at",
+        metavar="TIME",
+        help='Specific 24-hour time for submission in PT / MTV time (e.g. "19:45").',
+    )
+    parser.add_option(
         "--enable-owners-override",
         action="store_true",
         help="Adds the Owners-Override label to your change.",
@@ -7524,6 +7620,19 @@ def CMDset_commit(parser, args):
         "-c", "--clear", action="store_true", help="stop CQ run, if any"
     )
     parser.add_option(
+        "--nightly",
+        action="store_true",
+        dest="nightly",
+        help="Queue CL for submission during offpeak hours (between 19:00 - 23:00 PT / MTV time).",
+    )
+    parser.add_option(
+        "--submit-at",
+        type=str,
+        dest="submit_at",
+        metavar="TIME",
+        help='Specific 24-hour time for submission in PT / MTV time (e.g. "19:45").',
+    )
+    parser.add_option(
         "-i",
         "--issue",
         type=int,
@@ -7533,14 +7642,19 @@ def CMDset_commit(parser, args):
     options, args = parser.parse_args(args)
     if args:
         parser.error("Unrecognized args: %s" % " ".join(args))
-    if [options.dry_run, options.clear].count(True) > 1:
-        parser.error("Only one of --dry-run, and --clear are allowed.")
+    has_nightly = options.nightly or (options.submit_at is not None)
+    if [options.dry_run, options.clear, has_nightly].count(True) > 1:
+        parser.error(
+            "Only one of --dry-run, --clear, and --nightly/--submit-at are allowed."
+        )
 
     cl = Changelist(issue=options.issue)
     if not cl.GetIssue():
         parser.error("Must upload the issue first.")
 
-    if options.clear:
+    if has_nightly:
+        return cl.CreateScheduledSubmitFlow(custom_time=options.submit_at)
+    elif options.clear:
         state = _CQState.NONE
     elif options.dry_run:
         state = _CQState.DRY_RUN
