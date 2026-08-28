@@ -35,6 +35,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "61d86f0e_6ebee843",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1541419
+      },
+      "writtenOn": "2026-08-28T08:35:21Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7c99b237_ae7e233a",
+      "revId": "84dd50baa9dd0bb9524d6885730ac7bb3425f4c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "1b47e7c8_53c26f4d",
@@ -48,6 +66,30 @@
       "writtenOn": "2026-08-25T18:43:32Z",
       "side": 1,
       "message": "Please fix this WARNING reported by code-review-workflow: [code-review-workflow] Hardcoding `/tmp/` for the default trace file will cause ...\n\n[code-review-workflow] Hardcoding `/tmp/` for the default trace file will cause errors on Windows, which does not have a `/tmp/` directory. Depot_tools needs to be cross-platform.\n\n**Suggestion**\n\nUse `tempfile.gettempdir()` to obtain a platform-appropriate temporary directory.\n```python\nimport tempfile\n\n_DEFAULT_TRACE_FILE \u003d os.path.join(tempfile.gettempdir(), \"gclient_trace.json\")\n```",
+      "range": {
+        "startLine": 20,
+        "startChar": 0,
+        "endLine": 21,
+        "endChar": 0
+      },
+      "revId": "84dd50baa9dd0bb9524d6885730ac7bb3425f4c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a4852bf0_aa64f69a",
+        "filename": "trace_utils.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1541419
+      },
+      "writtenOn": "2026-08-28T08:35:21Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1b47e7c8_53c26f4d",
       "range": {
         "startLine": 20,
         "startChar": 0,
@@ -81,6 +123,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "a5071cb7_b0da3a1b",
+        "filename": "trace_utils.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1541419
+      },
+      "writtenOn": "2026-08-28T08:35:21Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "817c4c26_7552af59",
+      "range": {
+        "startLine": 23,
+        "startChar": 0,
+        "endLine": 24,
+        "endChar": 0
+      },
+      "revId": "84dd50baa9dd0bb9524d6885730ac7bb3425f4c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "63a7f906_3ae63b95",
@@ -104,6 +170,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "4788b01d_d709ea96",
+        "filename": "trace_utils.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1541419
+      },
+      "writtenOn": "2026-08-28T08:35:21Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "63a7f906_3ae63b95",
+      "range": {
+        "startLine": 37,
+        "startChar": 0,
+        "endLine": 38,
+        "endChar": 0
+      },
+      "revId": "84dd50baa9dd0bb9524d6885730ac7bb3425f4c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "9720c95e_4365a9dc",
@@ -117,6 +207,30 @@
       "writtenOn": "2026-08-25T18:43:32Z",
       "side": 1,
       "message": "these events are reset on `start` but it gets called twice (first from `collector \u003d Collector()`, and another in gclient `trace_utils.collector.start`). we shouldn\u0027t wipe them if  if `self._enabled` is already True",
+      "range": {
+        "startLine": 55,
+        "startChar": 12,
+        "endLine": 56,
+        "endChar": 30
+      },
+      "revId": "84dd50baa9dd0bb9524d6885730ac7bb3425f4c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c067a2dd_5376673a",
+        "filename": "trace_utils.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1541419
+      },
+      "writtenOn": "2026-08-28T08:35:21Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9720c95e_4365a9dc",
       "range": {
         "startLine": 55,
         "startChar": 12,
