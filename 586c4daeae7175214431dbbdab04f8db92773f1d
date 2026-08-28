@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f4199248_d7c6cc8a",
+        "filename": "trace_utils.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 206,
+      "author": {
+        "id": 1541419
+      },
+      "writtenOn": "2026-08-28T09:33:31Z",
+      "side": 1,
+      "message": "This locking mechanism only works on POSIX systems. On Windows, `fcntl` will be `None`, and the code will proceed without a lock. This creates a race condition where multiple concurrent subprocesses or threads finishing at the same time might overwrite each other\u0027s trace data or corrupt the JSON file. \n\nConsider using a more portable locking library or, more ideally, switching to the \u0027JSON Lines\u0027 format (one JSON object per line) which allows for simple atomic appends without needing to read/rewrite the entire file.\n\n---\n\nIf it\u0027s difficult or too complex, document instead that it\u0027s only for linux.",
+      "range": {
+        "startLine": 206,
+        "startChar": 0,
+        "endLine": 206,
+        "endChar": 0
+      },
+      "revId": "586c4daeae7175214431dbbdab04f8db92773f1d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "631a3600_a080aa90",
+        "filename": "trace_utils.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 223,
+      "author": {
+        "id": 1541419
+      },
+      "writtenOn": "2026-08-28T09:33:31Z",
+      "side": 1,
+      "message": "Calling `truncate()` before `json.dump()` is risky. If the process is killed or fails during the write, the entire existing trace data is lost. It is safer to write to a temporary file and then rename it over the original, or to use an append-only format.",
+      "range": {
+        "startLine": 223,
+        "startChar": 0,
+        "endLine": 223,
+        "endChar": 0
+      },
+      "revId": "586c4daeae7175214431dbbdab04f8db92773f1d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
