@@ -3,6 +3,98 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "ef5b958d_06116bae",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 20
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 4383476
+      },
+      "writtenOn": "2026-08-28T19:32:57Z",
+      "side": 1,
+      "message": "Run the formatter on the commit message, looks like there\u0027s some line overflow.",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 18,
+        "endChar": 31
+      },
+      "revId": "2582181358aafe15b868b0faf9723694224ce30b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c0d9e6f4_640fc8ba",
+        "filename": "git_cl.py",
+        "patchSetId": 20
+      },
+      "lineNbr": 2319,
+      "author": {
+        "id": 4383476
+      },
+      "writtenOn": "2026-08-28T19:32:57Z",
+      "side": 1,
+      "message": "Should these be mutually exclusive options? If it has `submit_at` set, then `nightly` wouldn\u0027t make sense, right? Maybe raise an error if both are set at the same time and have the flag\u0027s description message say that they\u0027re mutually exclusive?\n\nThe other option is to have `submit_at` override `nightly`.",
+      "range": {
+        "startLine": 2319,
+        "startChar": 8,
+        "endLine": 2319,
+        "endChar": 40
+      },
+      "revId": "2582181358aafe15b868b0faf9723694224ce30b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0d684a32_8c1cfd7d",
+        "filename": "git_cl.py",
+        "patchSetId": 20
+      },
+      "lineNbr": 2449,
+      "author": {
+        "id": 4383476
+      },
+      "writtenOn": "2026-08-28T19:32:57Z",
+      "side": 1,
+      "message": "There\u0027s some line overflow. Use `git cl format` or manually update?",
+      "range": {
+        "startLine": 2449,
+        "startChar": 20,
+        "endLine": 2449,
+        "endChar": 117
+      },
+      "revId": "2582181358aafe15b868b0faf9723694224ce30b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e0f8e50a_8146f018",
+        "filename": "git_cl.py",
+        "patchSetId": 20
+      },
+      "lineNbr": 2455,
+      "author": {
+        "id": 4383476
+      },
+      "writtenOn": "2026-08-28T19:32:57Z",
+      "side": 1,
+      "message": "Maybe something for a future CL, but allow users to specify the time-zone as well? Agents wouldn\u0027t have an issue computing their own time zone relative to MTV, but this would make this easier for humans not in the MTV time zone to use, and `CreateScheduledSubmitFlow` already supports this.",
+      "range": {
+        "startLine": 2455,
+        "startChar": 77,
+        "endLine": 2455,
+        "endChar": 82
+      },
+      "revId": "2582181358aafe15b868b0faf9723694224ce30b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "737829b0_8b953013",
         "filename": "git_cl.py",
         "patchSetId": 20
