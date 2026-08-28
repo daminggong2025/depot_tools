@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "737829b0_8b953013",
+        "filename": "git_cl.py",
+        "patchSetId": 20
+      },
+      "lineNbr": 2509,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-08-28T19:32:42Z",
+      "side": 1,
+      "message": "can we extract some of this into a dedicated method in gerrit_util.py?",
+      "range": {
+        "startLine": 2478,
+        "startChar": 0,
+        "endLine": 2509,
+        "endChar": 17
+      },
+      "revId": "2582181358aafe15b868b0faf9723694224ce30b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
