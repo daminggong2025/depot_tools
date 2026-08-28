@@ -19,8 +19,31 @@ import threading
 import time
 from typing import Any, Callable, Dict, List, Optional
 
-_ENV_TRACE_VAR = "GCLIENT_TRACE"
-_DEFAULT_TRACE_FILE = os.path.join(tempfile.gettempdir(), "gclient_trace.json")
+try:
+    import fcntl
+except ImportError:
+    fcntl = None
+
+_ENV_TRACE_CONFIGS = [
+    (
+        "PRESUBMIT_TRACE",
+        os.path.join(tempfile.gettempdir(), "presubmit_trace.json"),
+        "presubmit",
+    ),
+    (
+        "GCLIENT_TRACE",
+        os.path.join(tempfile.gettempdir(), "gclient_trace.json"),
+        "gclient",
+    ),
+    (
+        "DEPOT_TOOLS_TRACE",
+        os.path.join(tempfile.gettempdir(), "depot_tools_trace.json"),
+        "depot_tools",
+    ),
+]
+_DEFAULT_TRACE_FILE = os.path.join(
+    tempfile.gettempdir(), "depot_tools_trace.json"
+)
 
 
 class TraceCollector:
@@ -34,13 +57,22 @@ class TraceCollector:
         self._filepath: Optional[str] = None
         self._pid = os.getpid()
 
-        # Check environment variable on startup.
-        env_val = os.environ.get(_ENV_TRACE_VAR)
-        if env_val:
-            if env_val.lower() in ("1", "true"):
-                self.start(_DEFAULT_TRACE_FILE)
-            else:
-                self.start(env_val)
+        # Check environment variables on startup.
+        for env_var, default_file, default_process in _ENV_TRACE_CONFIGS:
+            env_val = os.environ.get(env_var)
+            if env_val:
+                script_name = (
+                    os.path.splitext(os.path.basename(sys.argv[0]))[0]
+                    if sys.argv and sys.argv[0]
+                    else default_process
+                )
+                target_file = (
+                    default_file
+                    if env_val.lower() in ("1", "true")
+                    else env_val
+                )
+                self.start(target_file, process_name=script_name)
+                break
 
     @property
     def enabled(self) -> bool:
@@ -50,7 +82,11 @@ class TraceCollector:
     def filepath(self) -> Optional[str]:
         return self._filepath
 
-    def start(self, filepath: Optional[str] = None) -> None:
+    def start(
+        self,
+        filepath: Optional[str] = None,
+        process_name: Optional[str] = None,
+    ) -> None:
         """Starts trace collection to the given file path."""
         with self._lock:
             if self._enabled:
@@ -67,7 +103,10 @@ class TraceCollector:
             self._events = []
             self._threads = {}
             # Record main process/thread metadata.
-            self._set_process_name_locked("gclient")
+            if not process_name:
+                prog = os.path.basename(sys.argv[0]) if sys.argv else ""
+                process_name = os.path.splitext(prog)[0] or "depot_tools"
+            self._set_process_name_locked(process_name)
             self._set_thread_name_locked(threading.get_ident(), "MainThread")
 
     def set_thread_name(self, name: str, tid: Optional[int] = None) -> None:
@@ -155,17 +194,44 @@ class TraceCollector:
             events_to_write = list(self._events)
             filepath = self._filepath
 
-        if not filepath:
+        if not filepath or not events_to_write:
             return
 
         try:
-            with open(filepath, "w", encoding="utf-8") as f:
-                json.dump({"traceEvents": events_to_write}, f, indent=2)
+            parent_dir = os.path.dirname(filepath)
+            if parent_dir and not os.path.exists(parent_dir):
+                os.makedirs(parent_dir, exist_ok=True)
+
+            with open(filepath, "a+", encoding="utf-8") as f:
+                if fcntl:
+                    fcntl.flock(f.fileno(), fcntl.LOCK_EX)
+                try:
+                    f.seek(0)
+                    content = f.read()
+                    existing_events = []
+                    if content.strip():
+                        try:
+                            existing = json.loads(content)
+                            if isinstance(existing, dict) and isinstance(
+                                existing.get("traceEvents"), list
+                            ):
+                                existing_events = existing["traceEvents"]
+                        except Exception:
+                            pass
+                    all_events = existing_events + events_to_write
+                    f.seek(0)
+                    f.truncate()
+                    json.dump({"traceEvents": all_events}, f, indent=2)
+                    f.flush()
+                finally:
+                    if fcntl:
+                        fcntl.flock(f.fileno(), fcntl.LOCK_UN)
+
             print(
                 f"Trace written to {os.path.abspath(filepath)} (open in https://ui.perfetto.dev)",
                 file=sys.stderr,
             )
-        except IOError as e:
+        except Exception as e:
             print(
                 f"Failed to write trace file {filepath}: {e}", file=sys.stderr
             )
