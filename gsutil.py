@@ -1,4 +1,11 @@
 #!/usr/bin/env python3
+# /// script
+# requires-python = '>=3.11,<3.12'
+# dependencies = [
+#   'crcmod==1.7+chromium.4'
+# ]
+# ///
+
 # Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
