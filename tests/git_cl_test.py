@@ -9395,6 +9395,208 @@ class TestRunGitPushWithTraces(unittest.TestCase):
         )
 
 
+class CMDScheduledSubmitFlowTestCase(CMDTestCaseBase):
+    @unittest.skipIf(
+        gclient_utils.IsEnvCog(), "not supported in non-git environment"
+    )
+    @mock.patch("gerrit_util.CreateFlow")
+    def testCreateScheduledSubmitFlow_DefaultJitter(self, mockCreateFlow):
+        mockCreateFlow.return_value = {"uuid": "test-uuid"}
+        cl = git_cl.Changelist(issue=123456)
+        # 123456 % 240 = 96 mins -> 19:00 + 1h36m = 20:36
+        self.assertEqual(0, cl.CreateScheduledSubmitFlow())
+        mockCreateFlow.assert_called_once_with(
+            "chromium-review.googlesource.com",
+            123456,
+            [
+                {
+                    "condition": (
+                        "https://chromium-review.googlesource.com/c/123456 is "
+                        "is:submittable, wait until today at 20:36 in "
+                        "America/Los_Angeles"
+                    ),
+                    "action": {
+                        "name": "vote",
+                        "parameters": ["Commit-Queue+2"],
+                    },
+                }
+            ],
+        )
+
+    @unittest.skipIf(
+        gclient_utils.IsEnvCog(), "not supported in non-git environment"
+    )
+    @mock.patch("gerrit_util.CreateFlow")
+    def testCreateScheduledSubmitFlow_CustomTime(self, mockCreateFlow):
+        mockCreateFlow.return_value = {"uuid": "test-uuid"}
+        cl = git_cl.Changelist(issue=123456)
+        self.assertEqual(0, cl.CreateScheduledSubmitFlow(custom_time="20:30"))
+        mockCreateFlow.assert_called_once_with(
+            "chromium-review.googlesource.com",
+            123456,
+            [
+                {
+                    "condition": (
+                        "https://chromium-review.googlesource.com/c/123456 is "
+                        "is:submittable, wait until today at 20:30 in "
+                        "America/Los_Angeles"
+                    ),
+                    "action": {
+                        "name": "vote",
+                        "parameters": ["Commit-Queue+2"],
+                    },
+                }
+            ],
+        )
+
+    @unittest.skipIf(
+        gclient_utils.IsEnvCog(), "not supported in non-git environment"
+    )
+    def testCreateScheduledSubmitFlow_InvalidCustomTime(self):
+        cl = git_cl.Changelist(issue=123456)
+        for t in ["", "   ", "8pm", "25:00", "today at 20:30"]:
+            with self.assertRaisesRegex(
+                ValueError,
+                r'Invalid time ".*"\. Expected 24-hour format "HH:MM" in PT / '
+                r'MTV time \(e\.g\. "19:45"\)\.',
+            ):
+                cl.CreateScheduledSubmitFlow(custom_time=t)
+
+    @unittest.skipIf(
+        gclient_utils.IsEnvCog(), "not supported in non-git environment"
+    )
+    @mock.patch("git_cl.Changelist.CreateScheduledSubmitFlow")
+    def testSetCommitNightly(self, mockCreateScheduledSubmitFlow):
+        mockCreateScheduledSubmitFlow.return_value = 0
+        self.assertEqual(0, git_cl.main(["set-commit", "--nightly"]))
+        mockCreateScheduledSubmitFlow.assert_called_once_with(custom_time=None)
+
+    @unittest.skipIf(
+        gclient_utils.IsEnvCog(), "not supported in non-git environment"
+    )
+    @mock.patch("git_cl.Changelist.CreateScheduledSubmitFlow")
+    def testSetCommitSubmitAt(self, mockCreateScheduledSubmitFlow):
+        mockCreateScheduledSubmitFlow.return_value = 0
+        self.assertEqual(0, git_cl.main(["set-commit", "--submit-at", "21:00"]))
+        mockCreateScheduledSubmitFlow.assert_called_once_with(
+            custom_time="21:00"
+        )
+
+    @mock.patch("git_cl.Changelist.GetIssue")
+    def testComputeScheduleTime_Boundaries(self, mockGetIssue):
+        cl = git_cl.Changelist()
+
+        # Issue 0 -> 19:00
+        mockGetIssue.return_value = 0
+        self.assertEqual("today at 19:00", cl._ComputeScheduleTime())
+
+        # Issue 239 -> 22:59
+        mockGetIssue.return_value = 239
+        self.assertEqual("today at 22:59", cl._ComputeScheduleTime())
+
+        # Issue 240 -> 19:00
+        mockGetIssue.return_value = 240
+        self.assertEqual("today at 19:00", cl._ComputeScheduleTime())
+
+        # Custom time boundary values
+        self.assertEqual("today at 00:00", cl._ComputeScheduleTime("00:00"))
+        self.assertEqual("today at 23:59", cl._ComputeScheduleTime("23:59"))
+
+    @unittest.skipIf(
+        gclient_utils.IsEnvCog(), "not supported in non-git environment"
+    )
+    def testSetCommit_MutuallyExclusiveOptions(self):
+        with self.assertRaises(SystemExit):
+            git_cl.main(["set-commit", "--dry-run", "--nightly"])
+        with self.assertRaises(SystemExit):
+            git_cl.main(["set-commit", "--clear", "--submit-at", "21:00"])
+        with self.assertRaises(SystemExit):
+            git_cl.main(["set-commit", "--nightly", "--submit-at", "21:00"])
+
+    @mock.patch("git_cl.Changelist.CreateScheduledSubmitFlow")
+    def testPostUploadUpdates_MockOptionsDoesNotTriggerFlow(
+        self, mockCreateFlow
+    ):
+        cl = git_cl.Changelist()
+        options = mock.MagicMock()
+        new_upload = mock.MagicMock()
+        new_upload.reviewers = []
+        new_upload.ccs = []
+        with (
+            mock.patch.object(cl, "SetPatchset"),
+            mock.patch.object(cl, "_GitSetBranchConfigValue"),
+            mock.patch(
+                "git_cl.Settings.GetRunPostUploadHook", return_value=False
+            ),
+        ):
+            cl.PostUploadUpdates(
+                options, new_upload, "123456", update_reviewers=False
+            )
+            mockCreateFlow.assert_not_called()
+
+    @mock.patch("git_cl.Changelist.CreateScheduledSubmitFlow")
+    def testPostUploadUpdates_NightlyTriggersFlow(self, mockCreateFlow):
+        cl = git_cl.Changelist()
+        options = mock.MagicMock()
+        options.nightly = True
+        options.submit_at = None
+        new_upload = mock.MagicMock()
+        new_upload.reviewers = []
+        new_upload.ccs = []
+        with (
+            mock.patch.object(cl, "SetPatchset"),
+            mock.patch.object(cl, "_GitSetBranchConfigValue"),
+            mock.patch(
+                "git_cl.Settings.GetRunPostUploadHook", return_value=False
+            ),
+        ):
+            cl.PostUploadUpdates(
+                options, new_upload, "123456", update_reviewers=False
+            )
+            mockCreateFlow.assert_called_once_with(custom_time=None)
+
+    @mock.patch("git_cl.Changelist.CreateScheduledSubmitFlow")
+    def testPostUploadUpdates_SubmitAtTriggersFlow(self, mockCreateFlow):
+        cl = git_cl.Changelist()
+        options = mock.MagicMock()
+        options.nightly = False
+        options.submit_at = "19:45"
+        new_upload = mock.MagicMock()
+        new_upload.reviewers = []
+        new_upload.ccs = []
+        with (
+            mock.patch.object(cl, "SetPatchset"),
+            mock.patch.object(cl, "_GitSetBranchConfigValue"),
+            mock.patch(
+                "git_cl.Settings.GetRunPostUploadHook", return_value=False
+            ),
+        ):
+            cl.PostUploadUpdates(
+                options, new_upload, "123456", update_reviewers=False
+            )
+            mockCreateFlow.assert_called_once_with(custom_time="19:45")
+
+    def testPostUploadUpdates_BothNightlyAndSubmitAtRaises(self):
+        cl = git_cl.Changelist()
+        options = mock.MagicMock()
+        options.nightly = True
+        options.submit_at = "19:45"
+        new_upload = mock.MagicMock()
+        new_upload.reviewers = []
+        new_upload.ccs = []
+        with (
+            mock.patch.object(cl, "SetPatchset"),
+            mock.patch.object(cl, "_GitSetBranchConfigValue"),
+            mock.patch(
+                "git_cl.Settings.GetRunPostUploadHook", return_value=False
+            ),
+        ):
+            with self.assertRaises(ValueError):
+                cl.PostUploadUpdates(
+                    options, new_upload, "123456", update_reviewers=False
+                )
+
+
 if __name__ == "__main__":
     logging.basicConfig(
         level=logging.DEBUG if "-v" in sys.argv else logging.ERROR
