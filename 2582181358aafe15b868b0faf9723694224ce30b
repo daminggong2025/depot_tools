@@ -26,6 +26,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "e63419d3_5e286d3a",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 20
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 4733581
+      },
+      "writtenOn": "2026-08-31T18:13:33Z",
+      "side": 1,
+      "message": "I just tried to run the formatter on the commit message, but I get the message: \"No format changes needed\". It looked a little strange, I modified it to avoid some \u0027new lines\u0027 that were in the description.",
+      "parentUuid": "ef5b958d_06116bae",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 18,
+        "endChar": 31
+      },
+      "revId": "2582181358aafe15b868b0faf9723694224ce30b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "c0d9e6f4_640fc8ba",
         "filename": "git_cl.py",
         "patchSetId": 20
