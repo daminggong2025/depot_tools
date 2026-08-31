@@ -34,6 +34,24 @@
       "parentUuid": "810bd073_16086f73",
       "revId": "10ecc97a648755dcb12c3e9d82ff4031f850b279",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f16e782a_11d7a12c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 24
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002120
+      },
+      "writtenOn": "2026-08-31T17:58:36Z",
+      "side": 1,
+      "message": "Thanks!\n\nThis reproduced with `git cl upload` for a change on top of `origin/main` at `3040d0b90c7cdd649ea332cedb27d46dd25b8cdf`.\n\n```\nFound change with 1 commit...\nRunning presubmit upload checks on branch tflite_roll_2608310938 ...\n  checking for commit objects in tree took a long time: 0.8s\n** Presubmit Warnings: 4 **\n[CheckContents/trailing_whitespace] /COMMIT_MSG:18: WARN: Please remove the trailing whitespace.\n\n[CheckContents/trailing_whitespace] /COMMIT_MSG:28: WARN: Please remove the trailing whitespace.\n\n[CheckContents/trailing_whitespace] /COMMIT_MSG:30: WARN: Please remove the trailing whitespace.\n\n[CheckContents/trailing_whitespace] /COMMIT_MSG:37: WARN: Please remove the trailing whitespace.\n\n** 0 Presubmit Messages, 4 Presubmit Warnings, 0 Presubmit ERRORS **\n\nPresubmit checks took 13.9s to calculate.\n```",
+      "parentUuid": "7c391ecf_40793000",
+      "revId": "10ecc97a648755dcb12c3e9d82ff4031f850b279",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
