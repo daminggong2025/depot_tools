@@ -70,6 +70,24 @@
       "parentUuid": "8cd36b51_e8405e23",
       "revId": "08c69adf568036ad43af828fa900f3469dac6313",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "bfa82041_f153ed31",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-08-31T09:08:17Z",
+      "side": 1,
+      "message": "Actually adding pip as a dependency might incentivise users to follow unsupported workflows. Instead, please file a bug with your affected workflow and we will see how we can amend that.",
+      "parentUuid": "8e183590_c3fe737b",
+      "revId": "08c69adf568036ad43af828fa900f3469dac6313",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
