@@ -52,6 +52,24 @@
       "parentUuid": "737bd87b_23e84873",
       "revId": "08c69adf568036ad43af828fa900f3469dac6313",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8e183590_c3fe737b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-08-31T08:49:54Z",
+      "side": 1,
+      "message": "My advice would be to explicitly add pip as a dependency for your config in vpython file as UV creates slimmer venv w/o pip in it.",
+      "parentUuid": "8cd36b51_e8405e23",
+      "revId": "08c69adf568036ad43af828fa900f3469dac6313",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
