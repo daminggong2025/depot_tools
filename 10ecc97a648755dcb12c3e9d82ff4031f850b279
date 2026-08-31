@@ -16,6 +16,24 @@
       "message": "This fix appears to be incorrect, and is generating false positives. Can you fix or revert?\n\n---\n\n Passing `--commit \u003cupstream\u003e` causes `alint` to analyze the upstream commit\u0027s commit message (`origin/main`) rather than the local branch\u0027s commit message.\n\n ### Root Cause\n In `alint` (`google3/wireless/android/busytown/ayeaye/alint/`):\n 1. When `--commit \u003crev\u003e` is provided, `NewGitVcs` initializes `LocalCommitDiffManager{CurrentCommit: resolvedCommit}` where `resolvedCommit` is `upstream`\n  (`origin/main`).\n 2. When generating `/COMMIT_MSG` for analysis, `LocalCommitDiffManager.CommitMsgFile()` runs:\n    `git log -n 1 ... d.CurrentCommit`\n 3. As a result, `/COMMIT_MSG` is synthesized from the **upstream HEAD commit** (`origin/main`) instead of the local branch / HEAD commit being uploaded.\n\n ### Symptoms\n Any analyzer that inspects `/COMMIT_MSG` (such as `CheckContents/trailing_whitespace`) evaluates `origin/main`\u0027s commit description.\n\n For example, when `origin/main` contains an automated revert/reland quoting previous commits with trailing spaces (e.g. `\u003e Reason for revert: ` or empty\n  quote lines `\u003e \u003e `), every developer running `git cl upload` receives presubmit warnings against lines in `origin/main`\u0027s description:\n\n   WARNING: [CheckContents/trailing_whitespace] /COMMIT_MSG:18: WARN: Please remove the trailing whitespace.\n   WARNING: [CheckContents/trailing_whitespace] /COMMIT_MSG:28: WARN: Please remove the trailing whitespace.\n\n ### Potential Fixes\n - `alint` would need a dedicated flag (e.g. `--base \u003cupstream\u003e` or `--diff-base \u003cupstream\u003e`) if it is intended to scope diffs relative to a base branch\n  while still evaluating the local commit message.\n - Alternatively, until `alint` supports distinguishing the comparison base from the target commit, `CheckAyeAye` should avoid passing `upstream` via `--\n  commit`.",
       "revId": "10ecc97a648755dcb12c3e9d82ff4031f850b279",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7c391ecf_40793000",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 24
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000266
+      },
+      "writtenOn": "2026-08-31T17:54:01Z",
+      "side": 1,
+      "message": "Thanks for the heads up. Do you have a link to a failure case log?\n\nRevert is here: https://chromium-review.git.corp.google.com/c/chromium/tools/depot_tools/+/8326107",
+      "parentUuid": "810bd073_16086f73",
+      "revId": "10ecc97a648755dcb12c3e9d82ff4031f850b279",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
