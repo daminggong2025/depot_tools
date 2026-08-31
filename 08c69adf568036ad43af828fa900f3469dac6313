@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c39de0d2_882ce6c0",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3637389
+      },
+      "writtenOn": "2026-08-31T08:35:49Z",
+      "side": 1,
+      "message": "We found that the pip module is missing in Python 3. Please proceed with caution when upgrading vpython3/python3.\n\nC:\\Users\\Admin\\AppData\\Local\\vpython-root.0\\store\\uv_venv-ms9pm46gcoi2j4hu0dp5c5cfhc\\contents\\Scripts\\python3.exe: No module named pip",
+      "revId": "08c69adf568036ad43af828fa900f3469dac6313",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
