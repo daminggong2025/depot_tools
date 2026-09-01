@@ -118,6 +118,30 @@
       },
       "revId": "e9f2ff314dbc59e18f9678941f444c6efcda797f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "90432602_664dfb56",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2026-09-01T02:59:30Z",
+      "side": 1,
+      "message": "Hmm, it\u0027s good point that a build with `fail-on-bad-deps` may fail regardless of the local modifications since it\u0027s not checked at CQ/CI. This may confuse agents.\n\n\u003e However, organizing and improving the documentation comes at little cost, so it seems worth a try.\n\nI agree.",
+      "parentUuid": "52871e41_41620406",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 9,
+        "endChar": 48
+      },
+      "revId": "e9f2ff314dbc59e18f9678941f444c6efcda797f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
