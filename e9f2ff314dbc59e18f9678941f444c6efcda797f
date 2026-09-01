@@ -70,6 +70,30 @@
       },
       "revId": "e9f2ff314dbc59e18f9678941f444c6efcda797f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "44c4c7d2_2caf2d20",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 3571829
+      },
+      "writtenOn": "2026-09-01T02:33:31Z",
+      "side": 1,
+      "message": "\u003e Does it make more sense to add an instruction about fail-on-bad-deps somewhere so that agents can verify their CLs with the feature when they think it\u0027s necessary?\n\nLooking at the current documentation (e.g. `gn-deps-debugging/SKILL.md`), the trigger is \"when a dependency-related error is detected\". Since missing dependencies silently pass on local builds without detection, this creates a chicken-and-egg problem where the agent never triggers the skill.\n\nIf we instead trigger the check whenever an agent modifies `#include` directives or GN files, there are two approaches:\n\nA: Enable fail-on-bad-deps when modifying deps related codes.\n- Instruct to use `fail-on-bad-deps` when modifying `#include` or `BUILD.gn`.\n- Deterministic detection by the build tool, but it incurs build overhead.\n\nB: Embed root-cause GN principles directly into agent skills or documentations more clearly:\n- Enforce the fundamental invariants during code authoring when modifying `#include` or `BUILD.gn`.:\n(1) Every source file must belong to at least one target.\n(2) Header-to-header dependencies (.h includes .h) must be public_deps; implementation dependencies (.cc includes .h) must be deps.\n(3) Circular dependencies must be resolved architecturally (e.g. via dependency injection or interface splitting).  \n- Zero build overhead, but relies on model capability and adherence.",
+      "parentUuid": "5ef2d69c_992b49f5",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 9,
+        "endChar": 48
+      },
+      "revId": "e9f2ff314dbc59e18f9678941f444c6efcda797f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
