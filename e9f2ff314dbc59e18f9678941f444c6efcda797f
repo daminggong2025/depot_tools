@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "58a2041d_0c17a5a9",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2026-09-01T00:58:01Z",
+      "side": 1,
+      "message": "Does it also apply to human generated CLs? The reason why we started to notice the issue is that @rysk@google.com enabled deps checking only on our CI builders experimentaly. \nWe wanted to enable `fail-on-bad-deps` on CQ and all places. However, the overhead is substantial (e.g. +6mins to Linux CQ builds). \n\nIf we enable fail-on-bad-deps on agent builds, we probably should enable it on developer builds, too. Otherwise, developers can\u0027t reproduce it. \n\nDoes it make more sense to add an instruction about fail-on-bad-deps somewhere so that agents can verify their CLs with the feature when they think it\u0027s necessary?",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 9,
+        "endChar": 48
+      },
+      "revId": "e9f2ff314dbc59e18f9678941f444c6efcda797f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
