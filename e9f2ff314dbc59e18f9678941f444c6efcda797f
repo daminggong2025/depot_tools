@@ -94,6 +94,30 @@
       },
       "revId": "e9f2ff314dbc59e18f9678941f444c6efcda797f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "52871e41_41620406",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 3571829
+      },
+      "writtenOn": "2026-09-01T02:51:26Z",
+      "side": 1,
+      "message": "\u003e do you have a recommendation on how we enable fail-on-bad-deps on agent and/or developer builds?\n\nTo be honest, given the overhead involved, I’m not yet certain which approach is best.\nHowever, organizing and improving the documentation comes at little cost, so it seems worth a try.\n\nOn further reflection, I’m concerned that running conditional `fail-on-bad-deps` checks—such as those triggered by `gn` changes, header modifications, or `AGENT_GENERATED_CL`—could confuse developers if the process fails due to `fail-on-bad-deps` errors originating from other CLs.",
+      "parentUuid": "44c4c7d2_2caf2d20",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 9,
+        "endChar": 48
+      },
+      "revId": "e9f2ff314dbc59e18f9678941f444c6efcda797f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
