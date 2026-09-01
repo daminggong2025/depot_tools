@@ -22,6 +22,30 @@
       },
       "revId": "e9f2ff314dbc59e18f9678941f444c6efcda797f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cb604bd4_7bff2fde",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2026-09-01T01:03:00Z",
+      "side": 1,
+      "message": "I think agent will fix by bad-deps error, so developers may not need to reproduce?",
+      "parentUuid": "58a2041d_0c17a5a9",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 9,
+        "endChar": 48
+      },
+      "revId": "e9f2ff314dbc59e18f9678941f444c6efcda797f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
