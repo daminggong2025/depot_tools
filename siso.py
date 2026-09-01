@@ -686,6 +686,16 @@ def main(
                             "--batch=false",
                             "--heartbeat_period=30s",
                         ] + subcmd_args
+                        # set fail-on-bad-deps so that agent will not create
+                        # CL with missing deps.
+                        experiments = [
+                            e
+                            for e in env.get("SISO_EXPERIMENTS", "").split(",")
+                            if e
+                        ]
+                        if "fail-on-bad-deps" not in experiments:
+                            experiments.insert(0, "fail-on-bad-deps")
+                        env["SISO_EXPERIMENTS"] = ",".join(experiments)
 
                     # Add ninja specific flags.
                     should_collect_logs = all(

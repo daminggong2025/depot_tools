@@ -1821,6 +1821,7 @@ def test_ai_agent_env_prepends_flags(
     )
 
     args = runner.call_args.args[0]
+    called_env = runner.call_args.kwargs["env"]
     subcmd = args[1]
     subcmd_args = args[2:]
     stdout = mock_stdout.getvalue()
@@ -1829,6 +1830,9 @@ def test_ai_agent_env_prepends_flags(
         assert "--batch=false" in subcmd_args
         assert "--namespace=developer:ai-agent" in subcmd_args
         assert f"Detected AI agent env ({env_var})" in stdout
+        assert "fail-on-bad-deps" in called_env.get(
+            "SISO_EXPERIMENTS", ""
+        ).split(",")
         if exit_code == 0:
             assert "finished successfully" in stdout
         else:
@@ -1839,6 +1843,9 @@ def test_ai_agent_env_prepends_flags(
         assert "--namespace=developer:ai-agent" not in subcmd_args
         assert "Detected AI agent env" not in stdout
         assert "finished" not in stdout
+        assert "fail-on-bad-deps" not in called_env.get(
+            "SISO_EXPERIMENTS", ""
+        ).split(",")
 
 
 def test_apply_telemetry_flags_physical_gwindows(mocker: Any) -> None:
@@ -1911,6 +1918,77 @@ def test_ai_agent_env_multiple_vars(
 
     stdout = mock_stdout.getvalue()
     assert "Detected AI agent env (GEMINI_CLI, AI_AGENT)" in stdout
+    called_env = runner.call_args.kwargs["env"]
+    assert "fail-on-bad-deps" in called_env.get("SISO_EXPERIMENTS", "").split(
+        ","
+    )
+
+
+@pytest.mark.parametrize(
+    "initial_experiments, expected_experiments",
+    [
+        (None, "fail-on-bad-deps"),
+        ("", "fail-on-bad-deps"),
+        ("racing", "fail-on-bad-deps,racing"),
+        ("fail-on-bad-deps", "fail-on-bad-deps"),
+        ("racing,fail-on-bad-deps", "racing,fail-on-bad-deps"),
+        ("exp1,exp2", "fail-on-bad-deps,exp1,exp2"),
+    ],
+)
+def test_ai_agent_siso_experiments(
+    initial_experiments: Optional[str],
+    expected_experiments: str,
+    siso_project_setup: None,
+    tmp_path: Path,
+    mocker: Any,
+) -> None:
+    _get_sisoenv_path(tmp_path).write_text("")
+    siso_bin_path = _get_siso_bin_path(tmp_path)
+    mocker.patch("sys.stdout", new_callable=io.StringIO)
+    runner = mocker.Mock(return_value=0)
+    cfg = create_telemetry_cfg(tmp_path, mocker, enabled=True)
+    env = {
+        "SISO_PATH": str(siso_bin_path),
+        "GEMINI_CLI": "1",
+    }
+    if initial_experiments is not None:
+        env["SISO_EXPERIMENTS"] = initial_experiments
+
+    siso.main(
+        ["siso.py", "ninja", "-C", "out/Default"],
+        telemetry_cfg=cfg,
+        env=env,
+        runner=runner,
+    )
+
+    called_env = runner.call_args.kwargs["env"]
+    assert called_env.get("SISO_EXPERIMENTS") == expected_experiments
+
+
+def test_non_ai_agent_siso_experiments_unchanged(
+    siso_project_setup: None,
+    tmp_path: Path,
+    mocker: Any,
+) -> None:
+    _get_sisoenv_path(tmp_path).write_text("")
+    siso_bin_path = _get_siso_bin_path(tmp_path)
+    mocker.patch("sys.stdout", new_callable=io.StringIO)
+    runner = mocker.Mock(return_value=0)
+    cfg = create_telemetry_cfg(tmp_path, mocker, enabled=True)
+    env = {
+        "SISO_PATH": str(siso_bin_path),
+        "SISO_EXPERIMENTS": "racing",
+    }
+
+    siso.main(
+        ["siso.py", "ninja", "-C", "out/Default"],
+        telemetry_cfg=cfg,
+        env=env,
+        runner=runner,
+    )
+
+    called_env = runner.call_args.kwargs["env"]
+    assert called_env.get("SISO_EXPERIMENTS") == "racing"
 
 
 # Stanza to have pytest be executed.
