@@ -142,6 +142,30 @@
       },
       "revId": "e9f2ff314dbc59e18f9678941f444c6efcda797f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b4ed2a71_a012e428",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2026-09-01T03:05:07Z",
+      "side": 1,
+      "message": "\u003e I think agent will fix by bad-deps error, so developers may not need to reproduce?\n\nI think it\u0027s confusing that agents/developer builds may fail differently. As mentioned in the previous comment, your agent may find bad deps produced by other CLs. This feature needs to be used with that in mind.",
+      "parentUuid": "90432602_664dfb56",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 9,
+        "endChar": 48
+      },
+      "revId": "e9f2ff314dbc59e18f9678941f444c6efcda797f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
