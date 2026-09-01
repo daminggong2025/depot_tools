@@ -30,7 +30,7 @@ import subprocess2
 import sys
 
 from git_common import current_branch, upstream, tags, get_branches_info
-from git_common import get_git_version, MIN_UPSTREAM_TRACK_GIT_VERSION, hash_one
+from git_common import hash_one
 from git_common import get_config, run
 
 import gclient_utils
@@ -381,14 +381,6 @@ def main(argv):
         )
         return 1
     setup_color.init()
-    if get_git_version() < MIN_UPSTREAM_TRACK_GIT_VERSION:
-        print(
-            "This tool will not show all tracking information for git version "
-            "earlier than "
-            + ".".join(str(x) for x in MIN_UPSTREAM_TRACK_GIT_VERSION)
-            + ". Please consider upgrading.",
-            file=sys.stderr,
-        )
 
     if "-h" in argv:
         print_desc()
