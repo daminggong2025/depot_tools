@@ -583,6 +583,7 @@ class GitMutableFunctionsTest(
                 1 if supports_track else None,
                 None,
                 False,
+                "foooooo",
             ),
             "child": (
                 self.repo.run(self.gc.hash_one, "child", short=True),
@@ -590,6 +591,7 @@ class GitMutableFunctionsTest(
                 None,
                 None,
                 False,
+                "foooooo",
             ),
             "main": (
                 self.repo.run(self.gc.hash_one, "main", short=True),
@@ -597,6 +599,7 @@ class GitMutableFunctionsTest(
                 None,
                 None,
                 False,
+                "foooooo",
             ),
             "frozen_branch": (
                 self.repo.run(self.gc.hash_one, "frozen_branch", short=True),
@@ -604,6 +607,7 @@ class GitMutableFunctionsTest(
                 1 if supports_track else None,
                 None,
                 True,
+                "FREEZE.indexed",
             ),
             "": None,
             "parent_gone": (
@@ -612,6 +616,7 @@ class GitMutableFunctionsTest(
                 None,
                 None,
                 False,
+                "real commit on parent_gone",
             ),
             "to_delete": None,
         }
@@ -664,6 +669,7 @@ class GitMutableFunctionsTest(
                 2,
                 None,
                 False,
+                "commit1.2",
             ),
             "foobarB": (
                 self.repo.run(self.gc.hash_one, "foobarB", short=True),
@@ -671,6 +677,7 @@ class GitMutableFunctionsTest(
                 1,
                 1,
                 False,
+                "commit2",
             ),
             "main": (
                 self.repo.run(self.gc.hash_one, "main", short=True),
@@ -678,6 +685,7 @@ class GitMutableFunctionsTest(
                 None,
                 None,
                 False,
+                "foooooo",
             ),
             "": None,
         }

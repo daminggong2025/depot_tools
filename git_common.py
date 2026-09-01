@@ -1722,15 +1722,13 @@ def get_branches_info(include_tracking_status, include_frozen_status=False):
     ):  # pragma: no cover
         format_string += "%(upstream:track)"
 
-    format_string += "%00"
-    if include_frozen_status:
-        format_string += "%(subject)"
+    format_string += "%00%(subject)"
 
     info_map = {}
     data = run("for-each-ref", format_string, "refs/heads")
     assert isinstance(data, str)
     BranchesInfo = collections.namedtuple(
-        "BranchesInfo", "hash upstream commits behind is_frozen"
+        "BranchesInfo", "hash upstream commits behind is_frozen subject"
     )
     for line in data.splitlines():
         if not line:
@@ -1759,6 +1757,7 @@ def get_branches_info(include_tracking_status, include_frozen_status=False):
             commits=commits,
             behind=behind,
             is_frozen=is_frozen,
+            subject=subject,
         )
 
     # Set None for upstreams which are not branches (e.g empty upstream, remotes

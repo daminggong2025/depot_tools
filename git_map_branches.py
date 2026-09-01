@@ -253,7 +253,11 @@ class BranchMapper(object):
         for child in sorted(self.__parent_map.pop(branch, ())):
             self.__append_branch(child, child_output, depth=depth + 1)
 
-        is_dormant_branch = self.__is_dormant_branch(branch)
+        is_dormant_branch = (
+            self.__is_dormant_branch(branch)
+            if (self.hide_dormant or self.verbosity >= 4)
+            else False
+        )
         if self.hide_dormant and is_dormant_branch and not child_output.lines:
             return
 
@@ -347,7 +351,10 @@ class BranchMapper(object):
         # The subject of the most recent commit on the branch.
         if self.show_subject:
             if not self.__is_invalid_parent(branch):
-                line.append(run("log", "-n1", "--format=%s", branch, "--"))
+                if branch_info and branch_info.subject:
+                    line.append(branch_info.subject)
+                else:
+                    line.append(run("log", "-n1", "--format=%s", branch, "--"))
             else:
                 line.append("")
 
