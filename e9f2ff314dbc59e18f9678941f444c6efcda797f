@@ -46,6 +46,30 @@
       },
       "revId": "e9f2ff314dbc59e18f9678941f444c6efcda797f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5ef2d69c_992b49f5",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2026-09-01T01:05:45Z",
+      "side": 1,
+      "message": "It seems there are multiple documents about deps management:\n\n- https://crsrc.org/c/docs/build/gn_missing_dependencies.md\n- https://crsrc.org/c/agents/skills/gn-deps-debugging/SKILL.md\n- https://crsrc.org/c/agents/skills/gn-deps-debugging/references/dependency-patterns.md\n\nShould we add about fail-on-bad-deps there?\n\n@rysk@google.com do you have a recommendation on how we enable fail-on-bad-deps on agent and/or developer builds?",
+      "parentUuid": "58a2041d_0c17a5a9",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 9,
+        "endChar": 48
+      },
+      "revId": "e9f2ff314dbc59e18f9678941f444c6efcda797f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
