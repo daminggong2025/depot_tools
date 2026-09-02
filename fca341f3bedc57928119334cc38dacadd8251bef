@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "48868a74_bd599fe1",
+        "filename": "gerrit_util.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 171,
+      "author": {
+        "id": 3355336
+      },
+      "writtenOn": "2026-09-02T01:03:59Z",
+      "side": 1,
+      "message": "This is for restricting the \"blast radius\" as narrow as possible (otherwise, only the below change is needed.  There\u0027s no concrete harm, but still want to avoid unnecessarily printing secret headers.",
+      "revId": "fca341f3bedc57928119334cc38dacadd8251bef",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
