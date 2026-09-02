@@ -532,6 +532,13 @@ branch refs/heads/empty_branch_in_worktree
         # without crashing on the unresolvable parent.
         self.repo.run(self.reup.fetch_remotes, branch_tree)
 
+    def testFetchRemotesWithNoBranches(self):
+        # When branch_tree is empty (e.g. no local branches), fetch_remotes
+        # should still cleanly fetch default remotes (origin) without saying
+        # "Nothing to fetch."
+        output, _ = self.repo.capture_stdio(self.reup.fetch_remotes, {})
+        self.assertNotIn("Nothing to fetch", output)
+
 
 if __name__ == "__main__":
     sys.exit(
