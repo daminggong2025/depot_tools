@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "99cc20e8_eaaaf119",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1170419
+      },
+      "writtenOn": "2026-09-02T01:00:07Z",
+      "side": 1,
+      "message": "This duplicates http://shortn/_EAdhoo4LpD ?\n\nAlso, anecdotally I\u0027ve gotten the sense that we don\u0027t have to hand-hold agents this much. That\u0027s why that trooper skill isn\u0027t overly prescriptive, and instead just says `You can use the swarming CLI to interact with Swarming`. It\u0027ll know how to use the `swarming` CLI",
+      "revId": "4289197f8c4f348ef2b2cf613a95d20cdcc5a35d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
