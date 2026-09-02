@@ -16,6 +16,24 @@
       "message": "This duplicates http://shortn/_EAdhoo4LpD ?\n\nAlso, anecdotally I\u0027ve gotten the sense that we don\u0027t have to hand-hold agents this much. That\u0027s why that trooper skill isn\u0027t overly prescriptive, and instead just says `You can use the swarming CLI to interact with Swarming`. It\u0027ll know how to use the `swarming` CLI",
       "revId": "4289197f8c4f348ef2b2cf613a95d20cdcc5a35d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "18419e2e_75289feb",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1338159
+      },
+      "writtenOn": "2026-09-02T19:13:35Z",
+      "side": 1,
+      "message": "\u003e This duplicates http://shortn/_EAdhoo4LpD ?\n\nSince swarming is a public tool, I am thinking to replace that with this CL.\nAlso that one focuses more on child tasks associated with a BuildBucket build which sounds more like a tip to me, while this CL describes more on how to use swarming in general.\n\nUpdated a new patchset to remove all the API list, and let agent to explore by calling `prpc show ...`. Also added tips like how to parse `BotInfo.state`, and relationship between buildbucket \u0026 swarming tasks (to cover the above link).",
+      "parentUuid": "99cc20e8_eaaaf119",
+      "revId": "4289197f8c4f348ef2b2cf613a95d20cdcc5a35d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
