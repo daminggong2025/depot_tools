@@ -1273,6 +1273,201 @@ def _NormalizeChangeDetailOptions(
     return normalized
 
 
+def _is_ai_agent(options=None, args=None):
+    """Detects whether execution is within an AI agent environment.
+
+    Checks the `ANTIGRAVITY_AGENT` or `AI_AGENT` environment variables,
+    CLI options (`--ai-agent`, `--antigravity-agent`), command-line arguments,
+    or git configuration.
+    """
+    if options and (
+        getattr(options, "ai_agent", False)
+        or getattr(options, "antigravity_agent", False)
+    ):
+        return True
+
+    for var in ("ANTIGRAVITY_AGENT", "AI_AGENT"):
+        val = os.environ.get(var)
+        if val is not None and val.strip().lower() not in (
+            "0",
+            "false",
+            "no",
+            "off",
+            "",
+        ):
+            return True
+
+    check_args = list(sys.argv)
+    if args:
+        check_args.extend(args)
+    for arg in check_args:
+        clean = arg.lstrip("-").replace("-", "_").upper()
+        if clean in ("ANTIGRAVITY_AGENT", "AI_AGENT") or clean.startswith(
+            ("ANTIGRAVITY_AGENT=", "AI_AGENT=")
+        ):
+            return True
+        if arg in (
+            "--ai-agent",
+            "--antigravity-agent",
+            "--ai_agent",
+            "--antigravity_agent",
+        ):
+            return True
+
+    try:
+        for key in (
+            "antigravity.agent",
+            "ai.agent",
+            "antigravity-agent",
+            "ai-agent",
+        ):
+            if scm.GIT.GetConfigBool(None, key):
+                return True
+    except Exception:
+        pass
+
+    return False
+
+
+def _is_repeating_progress_message(stripped):
+    """Checks if `stripped` represents an intermediate repeating progress line.
+
+    Identifies intermediate progress updates such as delta resolution percentages,
+    object counting updates, countdown checkers, and animated spinner frames.
+    """
+    if re.search(
+        r"\b(error|failed|fatal|exception|rejected)\b",
+        stripped,
+        re.IGNORECASE,
+    ):
+        return False
+    if "http://" in stripped or "https://" in stripped:
+        return False
+    if (
+        "->" in stripped
+        or stripped.startswith("* [new ")
+        or stripped.startswith("To ")
+    ):
+        return False
+
+    # Gerrit processing changes progress frames without done, e.g. `Processing changes: (\)`,
+    # `Processing changes: updated: 1 (/)`, `Processing changes: refs: 1, updated: 1 (/)`,
+    # or empty parentheses `Processing changes: ()`.
+    if re.search(r"Processing changes:", stripped) and "done" not in stripped:
+        return True
+
+    # Generic spinner animation frames at end of line like `(\)`, `(|)`, `(/)`, `(-)`,
+    # or empty parentheses frame on remote lines `remote: ()`.
+    if re.search(r"\(\s*[\\|/-]\s*\)\s*$", stripped) or re.search(
+        r"^remote:\s*\([\\|/\s-]*\)\s*$", stripped
+    ):
+        return True
+
+    # Delta resolution progress less than 100% and not marked done
+    m = re.search(r"Resolving deltas:\s*(\d+)%", stripped)
+    if m and int(m.group(1)) < 100 and "done" not in stripped:
+        return True
+
+    # Object counting or enumerating progress without done
+    if (
+        re.search(r"\b(Counting|Enumerating)\s+objects:\s*\d+", stripped)
+        and "done" not in stripped
+    ):
+        return True
+
+    # Object compression, writing, receiving, transferring, unpacking without done
+    m = re.search(
+        r"\b(Compressing|Writing|Receiving|Finding|Transferring|Unpacking)\s+objects:\s*(\d+)%",
+        stripped,
+    )
+    if m and "done" not in stripped:
+        return True
+
+    # Checking connectivity progress without done
+    if (
+        re.search(r"Checking connectivity:\s*\d+", stripped)
+        and "done" not in stripped
+    ):
+        return True
+
+    # Private key checker countdown progress
+    if re.search(r"Waiting for private key checker:.*left", stripped):
+        return True
+
+    return False
+
+
+def _create_ai_agent_push_filter(out_stream=None):
+    """Creates a line filter callback for `gclient_utils.CheckCallAndFilter`.
+
+    Suppresses repeating progress messages to avoid context pollution for AI agents
+    while continuing to report final step completions, errors, warnings, and URLs.
+    """
+    if out_stream is None:
+        out_stream = sys.stdout
+    last_printed = [None]
+
+    def process_single_line(single_line):
+        single_line = re.sub(
+            r"^(?:remote:\s*)+remote:\s*", "remote: ", single_line
+        )
+        stripped = single_line.strip()
+        if not stripped:
+            return
+
+        if re.search(
+            r"\b(error|failed|fatal|exception)\b",
+            stripped,
+            re.IGNORECASE,
+        ):
+            out_stream.write(single_line.rstrip() + "\n")
+            out_stream.flush()
+            last_printed[0] = stripped
+            return
+
+        if "http://" in stripped or "https://" in stripped:
+            out_stream.write(single_line.rstrip() + "\n")
+            out_stream.flush()
+            last_printed[0] = stripped
+            return
+
+        if _is_repeating_progress_message(stripped):
+            return
+
+        if stripped == last_printed[0]:
+            return
+
+        if stripped in ("remote:", "remote"):
+            return
+
+        out_stream.write(single_line.rstrip() + "\n")
+        out_stream.flush()
+        last_printed[0] = stripped
+
+    split_pattern = re.compile(
+        r"(?<=[^:\s])\s*(?=remote:\s*)"
+        r"|(?<=[^:\s])\s*(?=(?:Enumerating|Counting|Compressing|Writing|Receiving|Finding|Transferring|Resolving deltas|Checking connectivity|Unpacking|Processing changes|Waiting for private key checker)\b)"
+    )
+
+    def filter_fn(line):
+        parts = line.replace("\r\n", "\n").replace("\r", "\n").split("\n")
+        for part in parts:
+            part = re.sub(
+                r"^(?:remote:[^\S\r\n]*)+remote:[^\S\r\n]*", "remote: ", part
+            )
+            if "http://" in part or "https://" in part:
+                process_single_line(part)
+                continue
+            # Handle multiple progress updates that may be concatenated on a
+            # single line separated by single spaces, zero spaces, or multiple
+            # spaces in captured terminal output.
+            segments = split_pattern.split(part)
+            for segment in segments:
+                process_single_line(segment)
+
+    return filter_fn
+
+
 class Changelist(object):
     """Changelist works with one changelist in local branch.
 
@@ -2317,6 +2512,10 @@ class Changelist(object):
 
     def CMDUpload(self, options, git_diff_args, orig_args):
         """Uploads a change to codereview."""
+        if getattr(options, "ai_agent", False) or getattr(
+            options, "antigravity_agent", False
+        ):
+            os.environ["AI_AGENT"] = "1"
         custom_cl_base = None
         if git_diff_args:
             custom_cl_base = base_branch = git_diff_args[0]
@@ -3387,7 +3586,12 @@ class Changelist(object):
         gclient_utils.rmtree(git_info_dir)
 
     def _RunGitPushWithTraces(
-        self, refspec, refspec_opts, git_push_metadata, git_push_options=None
+        self,
+        refspec,
+        refspec_opts,
+        git_push_metadata,
+        git_push_options=None,
+        options=None,
     ):
         """Run git push and collect the traces resulting from the execution."""
         # Create a temporary directory to store traces in. Traces will be
@@ -3437,13 +3641,30 @@ class Changelist(object):
                 for opt in all_push_options:
                     push_cmd.extend(["-o", opt])
 
+            if _is_ai_agent(options):
+                log_msg = (
+                    "AI agent detected (ANTIGRAVITY_AGENT or AI_AGENT set); "
+                    "suppressing repeating progress messages to avoid context pollution."
+                )
+                print(log_msg)
+                sys.stdout.flush()
+                logging.info(log_msg)
+                filter_fn = _create_ai_agent_push_filter()
+                print_stdout = False
+            else:
+
+                def filter_fn(_):
+                    sys.stdout.flush()
+
+                print_stdout = True
+
             push_stdout = gclient_utils.CheckCallAndFilter(
                 push_cmd,
                 env=env,
-                print_stdout=True,
+                print_stdout=print_stdout,
                 # Flush after every line: useful for seeing progress when
                 # running as recipe.
-                filter_fn=lambda _: sys.stdout.flush(),
+                filter_fn=filter_fn,
             )
             push_stdout = push_stdout.decode("utf-8", "replace")
             has_error = False
@@ -6343,10 +6564,27 @@ def CMDupload(parser, args):
         "uploaded commit. Allows users to skip the potential "
         "interactive confirmation step.",
     )
+    parser.add_option(
+        "--ai-agent",
+        action="store_true",
+        dest="ai_agent",
+        help="Suppress repeated progress messages to avoid context "
+        "pollution for AI agents.",
+    )
+    parser.add_option(
+        "--antigravity-agent",
+        action="store_true",
+        dest="antigravity_agent",
+        help="Suppress repeated progress messages to avoid context "
+        "pollution for AI agents.",
+    )
     # TODO(b/265929888): Add --wip option of --cl-status option.
 
     orig_args = args
     (options, args) = parser.parse_args(args)
+
+    if options.ai_agent or options.antigravity_agent:
+        os.environ["AI_AGENT"] = "1"
 
     if options.git_completion_helper:
         print(
@@ -6520,6 +6758,10 @@ def UploadAllSquashed(
     options: optparse.Values, orig_args: Sequence[str]
 ) -> int:
     """Uploads the current and upstream branches (if necessary)."""
+    if getattr(options, "ai_agent", False) or getattr(
+        options, "antigravity_agent", False
+    ):
+        os.environ["AI_AGENT"] = "1"
     cls, cherry_pick_current = _UploadAllPrecheck(options, orig_args)
 
     # Create commits.
