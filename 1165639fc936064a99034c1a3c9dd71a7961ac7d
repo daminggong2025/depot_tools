@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "88c4eaa4_7d602850",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1549907
+      },
+      "writtenOn": "2026-09-02T19:09:13Z",
+      "side": 1,
+      "message": "Hi Alex! I noticed that upload seems to be noisy when executed by an AI agent so I created this to make it quieter during AI agent runs.",
+      "revId": "1165639fc936064a99034c1a3c9dd71a7961ac7d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
