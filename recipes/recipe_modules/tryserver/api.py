@@ -427,7 +427,7 @@ class TryserverApi(recipe_api.RecipeApi):
         "diff",
         "--cached",
         "--raw",
-        name="[Experimental] git diff --raw to analyze patch",
+        name="git diff --raw to analyze patch",
         stdout=self.m.raw_io.output(add_output_log=True),
         step_test_data=lambda: self.m.raw_io.test_api.stream_output(""),
         **kwargs,
@@ -442,9 +442,7 @@ class TryserverApi(recipe_api.RecipeApi):
     # 2. Process submodules if there are any
     if submodules_to_process:
       with self.m.context(cwd=cwd):
-        with self.m.step.nest(
-          "[Experimental] git diff submodules"
-        ) as presentation:
+        with self.m.step.nest("git diff submodules") as presentation:
           for old_sha, new_sha, rel_path in submodules_to_process:
             if new_sha.startswith("0" * 7):
               # If a submodule is deleted (new_commit starts with 0s), we skip
