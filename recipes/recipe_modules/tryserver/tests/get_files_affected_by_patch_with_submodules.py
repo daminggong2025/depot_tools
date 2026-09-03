@@ -44,12 +44,20 @@ def RunSteps(api):
     api.assertions.assertCountEqual(
       result.nested_submodules, api.properties["expected_nested_submodules"]
     )
+  if "expected_unresolvable_submodules" in api.properties:
+    api.assertions.assertCountEqual(
+      result.unresolvable_submodules,
+      api.properties["expected_unresolvable_submodules"],
+    )
 
 
 def GenTests(api):
 
   def has_nested_submodules_log(check, steps, step_name):
     check("nested_submodules" in steps[step_name].logs)
+
+  def has_unresolvable_submodules_log(check, steps, step_name):
+    check("unresolvable_submodules" in steps[step_name].logs)
 
   def has_unchecked_out_submodules_log(check, steps, step_name):
     check("unchecked_out_submodules" in steps[step_name].logs)
@@ -230,7 +238,11 @@ def GenTests(api):
     api.step_data("[Experimental] git diff submodules.sub", retcode=1),
     api.properties(
       patch_root="",
-      expected_files=[],
+      expected_files=["sub"],
+      expected_unresolvable_submodules=["sub"],
+    ),
+    api.post_check(
+      has_unresolvable_submodules_log, "[Experimental] git diff submodules"
     ),
     api.post_check(post_process.StatusSuccess),
     api.post_process(post_process.DropExpectation),
@@ -456,7 +468,7 @@ def GenTests(api):
       patch_root="",
       expected_files=[],
     ),
-    api.post_check(post_process.StatusSuccess),
+    api.expect_exception("ValueError"),
     api.post_process(post_process.DropExpectation),
   )
 
@@ -473,6 +485,6 @@ def GenTests(api):
       patch_root="",
       expected_files=[],
     ),
-    api.post_check(post_process.StatusSuccess),
+    api.expect_exception("ValueError"),
     api.post_process(post_process.DropExpectation),
   )
