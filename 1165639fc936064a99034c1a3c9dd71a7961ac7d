@@ -16,6 +16,29 @@
       "message": "Hi Alex! I noticed that upload seems to be noisy when executed by an AI agent so I created this to make it quieter during AI agent runs.",
       "revId": "1165639fc936064a99034c1a3c9dd71a7961ac7d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ab545e19_9871fb1c",
+        "filename": "git_cl.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 1331,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-09-03T00:00:44Z",
+      "side": 1,
+      "message": "It\u0027s actually Finding sources, not objects I think: https://screenshot-v2.corp.google.com/6f829sfgo9r70\n\nI guess we should protect against that as well?",
+      "range": {
+        "startLine": 1331,
+        "startChar": 43,
+        "endLine": 1331,
+        "endChar": 50
+      },
+      "revId": "1165639fc936064a99034c1a3c9dd71a7961ac7d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
