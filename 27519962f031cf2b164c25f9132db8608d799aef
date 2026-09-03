@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5ef3a963_63582c3b",
+        "filename": "trace_utils.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-09-03T21:50:11Z",
+      "side": 1,
+      "message": "`GCLIENT_TRACE\u003d0` enables tracing. we should check for \"0\", \"false\", \"no\", etc",
+      "range": {
+        "startLine": 38,
+        "startChar": 8,
+        "endLine": 43,
+        "endChar": 35
+      },
+      "revId": "27519962f031cf2b164c25f9132db8608d799aef",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
