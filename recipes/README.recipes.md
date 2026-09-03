@@ -985,7 +985,7 @@ Returns gerrit change patchset, e.g. 6 for a patch ref of
 
 Populated iff gerrit_change is populated Returns None if not populated..
 
-&mdash; **def [get\_change\_description](/recipes/recipe_modules/tryserver/api.py#655)(self):**
+&mdash; **def [get\_change\_description](/recipes/recipe_modules/tryserver/api.py#653)(self):**
 
 Gets the CL description.
 
@@ -1014,11 +1014,11 @@ Args:
   * report_files_via_property: name of the output property to report the
     list of the files. If None (default), do not report.
 
-&mdash; **def [get\_footer](/recipes/recipe_modules/tryserver/api.py#647)(self, tag, patch_text=None):**
+&mdash; **def [get\_footer](/recipes/recipe_modules/tryserver/api.py#645)(self, tag, patch_text=None):**
 
 Gets a specific tag from a CL description
 
-&mdash; **def [get\_footers](/recipes/recipe_modules/tryserver/api.py#599)(self, patch_text=None):**
+&mdash; **def [get\_footers](/recipes/recipe_modules/tryserver/api.py#597)(self, patch_text=None):**
 
 Retrieves footers from the patch description.
 
@@ -1037,22 +1037,22 @@ Returns true iff the properties exist to match a Gerrit issue.
 
 Returns true iff we have a change to check out.
 
-&mdash; **def [normalize\_footer\_name](/recipes/recipe_modules/tryserver/api.py#652)(self, footer):**
+&mdash; **def [normalize\_footer\_name](/recipes/recipe_modules/tryserver/api.py#650)(self, footer):**
 
 &mdash; **def [require\_is\_tryserver](/recipes/recipe_modules/tryserver/api.py#262)(self):**
 
-&mdash; **def [set\_change](/recipes/recipe_modules/tryserver/api.py#660)(self, change):**
+&mdash; **def [set\_change](/recipes/recipe_modules/tryserver/api.py#658)(self, change):**
 
 Set the gerrit change for this module.
 
 Args:
   * change: a self.m.buildbucket.common_pb2.GerritChange.
 
-&mdash; **def [set\_compile\_failure\_tryjob\_result](/recipes/recipe_modules/tryserver/api.py#562)(self):**
+&mdash; **def [set\_compile\_failure\_tryjob\_result](/recipes/recipe_modules/tryserver/api.py#560)(self):**
 
 Mark the tryjob result as a compile failure.
 
-&mdash; **def [set\_invalid\_test\_results\_tryjob\_result](/recipes/recipe_modules/tryserver/api.py#574)(self):**
+&mdash; **def [set\_invalid\_test\_results\_tryjob\_result](/recipes/recipe_modules/tryserver/api.py#572)(self):**
 
 Mark the tryjob result as having invalid test results.
 
@@ -1060,32 +1060,32 @@ This means we run some tests, but the results were not valid
 (e.g. no list of specific test cases that failed, or too many
 tests failing, etc).
 
-&mdash; **def [set\_patch\_failure\_tryjob\_result](/recipes/recipe_modules/tryserver/api.py#558)(self):**
+&mdash; **def [set\_patch\_failure\_tryjob\_result](/recipes/recipe_modules/tryserver/api.py#556)(self):**
 
 Mark the tryjob result as failure to apply the patch.
 
-&mdash; **def [set\_subproject\_tag](/recipes/recipe_modules/tryserver/api.py#536)(self, subproject_tag):**
+&mdash; **def [set\_subproject\_tag](/recipes/recipe_modules/tryserver/api.py#534)(self, subproject_tag):**
 
 Adds a subproject tag to the build.
 
 This can be used to distinguish between builds that execute different steps
 depending on what was patched, e.g. blink vs. pure chromium patches.
 
-&mdash; **def [set\_test\_expired\_tryjob\_result](/recipes/recipe_modules/tryserver/api.py#591)(self):**
+&mdash; **def [set\_test\_expired\_tryjob\_result](/recipes/recipe_modules/tryserver/api.py#589)(self):**
 
 Mark the tryjob result as a test expiration.
 
 This means a test task expired and was never scheduled, most likely due to
 lack of capacity.
 
-&mdash; **def [set\_test\_failure\_tryjob\_result](/recipes/recipe_modules/tryserver/api.py#566)(self):**
+&mdash; **def [set\_test\_failure\_tryjob\_result](/recipes/recipe_modules/tryserver/api.py#564)(self):**
 
 Mark the tryjob result as a test failure.
 
 This means we started running actual tests (not prerequisite steps
 like checkout or compile), and some of these tests have failed.
 
-&mdash; **def [set\_test\_timeout\_tryjob\_result](/recipes/recipe_modules/tryserver/api.py#583)(self):**
+&mdash; **def [set\_test\_timeout\_tryjob\_result](/recipes/recipe_modules/tryserver/api.py#581)(self):**
 
 Mark the tryjob result as a test timeout.
 
