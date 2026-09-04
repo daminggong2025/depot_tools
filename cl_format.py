@@ -18,6 +18,7 @@ import os
 import re
 import shutil
 import sys
+import tempfile
 from typing import Any, Callable, Mapping, Optional
 
 from git_cl_core import (
@@ -241,6 +242,9 @@ def _RunClangFormatDiff(opts, paths, top_dir, diffs):
     # Full formatting
     if not diffs:
         cmd = [clang_format_tool]
+        stdin_filename = getattr(opts, "stdin_filename", None)
+        if isinstance(stdin_filename, str) and stdin_filename:
+            cmd.append(f"--assume-filename={stdin_filename}")
         if not opts.dry_run and not opts.diff:
             cmd.append("-i")
         if opts.dry_run:
@@ -436,8 +440,16 @@ def _RunKtfmt(opts, paths, top_dir, diffs):
     if opts.dry_run:
         cmd += ["--set-exit-if-changed", "--dry-run"]
 
+    kwargs = {}
+    if (
+        isinstance(getattr(opts, "stdin_filename", None), str)
+        and not opts.dry_run
+    ):
+        kwargs["stdout"] = subprocess2.DEVNULL
     for paths_batch in _SplitArgsByCmdLineLimit(paths):
-        ktfmt_exitcode = subprocess2.call(cmd + paths_batch, shell=False)
+        ktfmt_exitcode = subprocess2.call(
+            cmd + paths_batch, shell=False, **kwargs
+        )
         if opts.dry_run and ktfmt_exitcode != 0:
             return 2
 
@@ -561,6 +573,9 @@ def _RunPythonFormat(
 
     for path in paths:
         file_entry: dict[str, Any] = {"path": path}
+        stdin_filename = getattr(opts, "stdin_filename", None)
+        if isinstance(stdin_filename, str) and stdin_filename:
+            file_entry["config_path"] = stdin_filename
         if not opts.full:
             ranges = line_diffs.get(path)
             if not ranges:
@@ -681,19 +696,28 @@ def _RunMarkdownFormat(
     # Used for caching.
     markdown_configs: dict[str, Optional[str]] = {}
 
-    # Only format files that have a .style.mdformat file in an ancestor
-    # directory.
+    target_path = (
+        opts.stdin_filename
+        if isinstance(getattr(opts, "stdin_filename", None), str)
+        else None
+    )
     paths = [
         p
         for p in paths
-        if _FindMarkdownConfigFile(p, markdown_configs, top_dir) is not None
+        if _FindMarkdownConfigFile(
+            target_path or p,
+            markdown_configs,
+            top_dir,
+        )
+        is not None
     ]
-
     if not paths:
         return 0
 
     return_value = 0
     cmd = ["vpython3", markdown_tool]
+    if target_path:
+        cmd.append(f"--assume-filename={target_path}")
     if opts.diff:
         cmd.append("--diff")
     elif opts.dry_run:
@@ -779,10 +803,18 @@ def _RunGnFormat(opts, paths, top_dir, diffs):
     cmd = [sys.executable, os.path.join(DEPOT_TOOLS, "gn.py"), "format"]
     if opts.dry_run or opts.diff:
         cmd.append("--dry-run")
+    kwargs = {}
+    if isinstance(getattr(opts, "stdin_filename", None), str) and not (
+        opts.diff or opts.dry_run
+    ):
+        kwargs["stdout"] = subprocess2.DEVNULL
     return_value = 0
     for path in paths:
         gn_ret = subprocess2.call(
-            cmd + [path], shell=sys.platform.startswith("win"), cwd=top_dir
+            cmd + [path],
+            shell=sys.platform.startswith("win"),
+            cwd=top_dir,
+            **kwargs,
         )
         if opts.diff and gn_ret == 2:
             # TODO this should compute and print the actual diff.
@@ -882,7 +914,13 @@ def _RunLUCICfgFormat(opts, paths, top_dir, diffs):
         cmd.append("--dry-run")
     cmd.extend(paths)
 
-    ret = subprocess2.call(cmd)
+    kwargs = {}
+    if (
+        isinstance(getattr(opts, "stdin_filename", None), str)
+        and not opts.dry_run
+    ):
+        kwargs["stdout"] = subprocess2.DEVNULL
+    ret = subprocess2.call(cmd, **kwargs)
     if opts.dry_run and ret != 0:
         return 2
 
@@ -1064,6 +1102,9 @@ def _FindFilesToFormat(
         diffs = _SplitDiffsByFile(diff_text)
         return list(diffs.keys()), diffs
 
+    if getattr(opts, "stdin_filename", None):
+        return [f for f in files if os.path.exists(f)], None
+
     if opts.full:
         files = RunGitDiffCmd(
             ["--name-only", "--diff-filter=d"], upstream_commit, files
@@ -1092,6 +1133,11 @@ def CMDformat(parser: optparse.OptionParser, args: list[str]):
 
     clang_exts = [".cc", ".cpp", ".h", ".m", ".mm", ".proto"]
     GN_EXTS = [".gn", ".gni", ".typemap"]
+    parser.add_option(
+        "--stdin-filename",
+        dest="stdin_filename",
+        help="Format the single file content provided on stdin with the given path.",
+    )
     parser.add_option(
         "--full",
         action="store_true",
@@ -1211,6 +1257,21 @@ def CMDformat(parser: optparse.OptionParser, args: list[str]):
     upstream_commit: Optional[str] = None
     upstream_branch: Optional[str] = opts.upstream
     top_dir: Optional[str] = None
+    temp_file: Optional[str] = None
+
+    if opts.stdin_filename:
+        opts.full = True
+        stdin_bytes = sys.stdin.buffer.read()
+        if not stdin_bytes:
+            return 0
+        with tempfile.NamedTemporaryFile(
+            prefix="git_cl_fmt_",
+            suffix="_" + os.path.basename(opts.stdin_filename),
+            delete=False,
+        ) as f:
+            f.write(stdin_bytes)
+            temp_file = f.name
+        files = [temp_file]
 
     if opts.input_diff_file:
         if opts.full:
@@ -1253,7 +1314,7 @@ def CMDformat(parser: optparse.OptionParser, args: list[str]):
             upstream_commit = RunGit(
                 ["merge-base", "HEAD", upstream_branch]
             ).strip()
-        if not upstream_commit:
+        if not upstream_commit and not opts.stdin_filename:
             DieWithError(
                 "Could not find base commit for this branch. "
                 "Are you in detached state?"
@@ -1303,6 +1364,19 @@ def CMDformat(parser: optparse.OptionParser, args: list[str]):
         ]
         if paths:
             active_tasks.append((format_func, paths))
+
+    if temp_file:
+        ret = 0
+        if active_tasks:
+            formatter, paths = active_tasks[0]
+            ret = formatter(opts, paths, top_dir, diffs)
+        try:
+            with open(temp_file, "rb") as f:
+                sys.stdout.buffer.write(f.read())
+        finally:
+            if os.path.exists(temp_file):
+                os.remove(temp_file)
+        return ret
 
     if not active_tasks:
         return 0

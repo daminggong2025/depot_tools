@@ -852,7 +852,9 @@ def CheckLongLines(input_api, output_api, maxlen, source_file_filter=None):
                             line_num for line_num, _ in f.ChangedContents()
                         )
                     if line_num in changed_lines:
-                        errors.append(error_formatter(file_path, line_num, line))
+                        errors.append(
+                            error_formatter(file_path, line_num, line)
+                        )
 
         return errors
 

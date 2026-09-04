@@ -55,6 +55,7 @@ windows-amd64    sha256  e88f9268c536bb88a7b45a73308a70cbc93438b771f2ad2b54e385e
 windows-arm64    sha256  45d2ae5ae31b9ac25277f25fde7eb26edf22458b89a55cffa5d9dccf6f117c44
 """
 
+
 class CipdBootstrapTest(unittest.TestCase):
     """Tests that CIPD client can bootstrap from scratch and self-update from some
     old version to a most recent one.
@@ -129,6 +130,7 @@ class CipdBootstrapTest(unittest.TestCase):
             self.fail(
                 "Update from %s to the tip fails:\n%s" % (OLD_VERSION, out)
             )
+
 
 if __name__ == "__main__":
     unittest.main()

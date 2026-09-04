@@ -530,7 +530,7 @@ class CheckLongLinesTest(unittest.TestCase):
                 "short line",
                 "# This is an existing long line that was already there and not changed so it should not warn",
                 "another short line",
-            ]
+            ],
         )
         # Manually set changed contents to exclude the long line (line 2)
         file_existing_long._changed_contents = [
@@ -544,7 +544,7 @@ class CheckLongLinesTest(unittest.TestCase):
             [
                 "short line",
                 "# This is a new long line that should warn because it is new and exceeds the limit",
-            ]
+            ],
         )
 
         # Case 3: Modified long line. Warning expected.
@@ -553,10 +553,13 @@ class CheckLongLinesTest(unittest.TestCase):
             [
                 "short line",
                 "# This is a modified long line that should warn because it was modified and is long",
-            ]
+            ],
         )
         file_modified_long._changed_contents = [
-            (2, "# This is a modified long line that should warn because it was modified and is long"),
+            (
+                2,
+                "# This is a modified long line that should warn because it was modified and is long",
+            ),
         ]
 
         # Case 4: Indented long line. Warning expected.
@@ -565,10 +568,13 @@ class CheckLongLinesTest(unittest.TestCase):
             [
                 "short line",
                 "    # This is an existing long line that was indented and should warn because it is now very long indeed",
-            ]
+            ],
         )
         file_indented_long._changed_contents = [
-            (2, "    # This is an existing long line that was indented and should warn because it is now very long indeed"),
+            (
+                2,
+                "    # This is an existing long line that was indented and should warn because it is now very long indeed",
+            ),
         ]
 
         input_api.files = [

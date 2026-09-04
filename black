@@ -22,4 +22,3 @@
 """Wrapper for stable version of black that we control."""
 
 import black.__main__  # noqa: F401
-
