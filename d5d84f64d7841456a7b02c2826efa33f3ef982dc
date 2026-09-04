@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3611f7a4_36cc62fe",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1391646
+      },
+      "writtenOn": "2026-09-04T05:46:49Z",
+      "side": 1,
+      "message": "i’m not sure why the CQ runs failed, could you please help? #gardening investigated it and found that it’s likely caused by this patch, but beyond that, i really don’t understand.",
+      "revId": "d5d84f64d7841456a7b02c2826efa33f3ef982dc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
