@@ -33,6 +33,23 @@
       "message": "Not sure whether to wait on Gavin to land? Please if owners happy to land I am happy to, so will leave decision to you. Or chat directly to Gavin tomorrow. Thank you.",
       "revId": "d7e1f3991c972c7d676558dc5b5b3ae9b56bfd70",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b725a8de_c52df625",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115949
+      },
+      "writtenOn": "2026-09-04T05:20:31Z",
+      "side": 1,
+      "message": "From FixIt pov it would be great if we can land this now - we would like to reference this from our new instructions. Thank you so much for this work!",
+      "revId": "d7e1f3991c972c7d676558dc5b5b3ae9b56bfd70",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
