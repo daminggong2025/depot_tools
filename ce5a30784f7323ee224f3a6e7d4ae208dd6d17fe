@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "081eba40_2f4afa95",
+        "filename": "git_cache.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 237,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-09-04T07:13:49Z",
+      "side": 0,
+      "message": "This needs to remain, and it seems to be causing tests not to pass",
+      "range": {
+        "startLine": 233,
+        "startChar": 12,
+        "endLine": 237,
+        "endChar": 17
+      },
+      "revId": "ce5a30784f7323ee224f3a6e7d4ae208dd6d17fe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
