@@ -22,6 +22,30 @@
       },
       "revId": "ce5a30784f7323ee224f3a6e7d4ae208dd6d17fe",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "611ec5e7_ac64d027",
+        "filename": "git_cache.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 237,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-09-04T07:15:34Z",
+      "side": 0,
+      "message": "Overall please leave GetCachePath() as is and fine another way to get what you need, maybe outside of this function.",
+      "parentUuid": "081eba40_2f4afa95",
+      "range": {
+        "startLine": 233,
+        "startChar": 12,
+        "endLine": 237,
+        "endChar": 17
+      },
+      "revId": "ce5a30784f7323ee224f3a6e7d4ae208dd6d17fe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
