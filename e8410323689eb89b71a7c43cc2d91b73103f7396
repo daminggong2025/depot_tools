@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b938bf13_6a5f7b1a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1541419
+      },
+      "writtenOn": "2026-09-04T01:08:40Z",
+      "side": 1,
+      "message": "Could you have a look? (See diff from the ps1.)",
+      "revId": "e8410323689eb89b71a7c43cc2d91b73103f7396",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
