@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "edc0e9cf_a99dfb71",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 4820673
+      },
+      "writtenOn": "2026-09-04T14:44:47Z",
+      "side": 1,
+      "message": "Hi Gavin, can you have a look at this CL? No need to go into detail, just if you see any issues with the feature or the approach.",
+      "revId": "dc6d5f066a1a959eea921deed5cdf82a847b69d2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
