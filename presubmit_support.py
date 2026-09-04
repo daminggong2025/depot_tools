@@ -13,6 +13,7 @@ __version__ = "2.0.0"
 import argparse
 import ast  # Exposed through the API.
 import contextlib
+import copy
 import cpplint
 import fnmatch  # Exposed through the API.
 import glob
@@ -454,6 +455,10 @@ class InputApi(object):
 
     def SetTimeout(self, timeout):
         self.thread_pool.timeout = timeout
+
+    def IterateCommits(self):
+        """Yields (commit_sha, commit_subject, commit_input_api) for each commit in change."""
+        return IterateCommits(self)
 
     def PresubmitLocalPath(self):
         """Returns the local path of the presubmit script currently being run.
@@ -1036,6 +1041,8 @@ class Change(object):
     # Matches key/value (or 'tag') lines in changelist descriptions.
     TAG_LINE_RE = git_footers.TAG_LINE_RE
     scm = ""
+    commit_sha = None
+    _is_commit_scoped = False
 
     def __init__(
         self, name, description, local_root, files, issue, patchset, author
@@ -1385,6 +1392,84 @@ class ProvidedDiffChange(Change):
         return scm.DIFF.GetAllFiles(root)
 
 
+def IterateCommits(input_api):
+    """Yields (commit_sha, commit_subject, commit_input_api) for each commit in change."""
+    root = input_api.change.RepositoryRoot()
+    upstream = input_api.change.UpstreamBranch()
+
+    if not upstream or getattr(input_api.change, "scm", None) != "git":
+        return
+
+    end_commit = getattr(input_api.change, "_end_commit", "HEAD") or "HEAD"
+    try:
+        commits = scm.GIT.Capture(
+            ["rev-list", "--reverse", f"{upstream}..{end_commit}"],
+            cwd=root,
+        ).splitlines()
+    except (subprocess.CalledProcessError, gclient_utils.Error):
+        commits = []
+
+    for sha in commits:
+        sha = sha.strip()
+        if not sha:
+            continue
+        try:
+            description = scm.GIT.Capture(
+                ["log", "-1", "--format=%B", sha], cwd=root
+            )
+        except (subprocess.CalledProcessError, gclient_utils.Error):
+            description = ""
+        subject = (
+            description.strip().splitlines()[0] if description.strip() else ""
+        )
+        commit_input_api = _CreateCommitScopedInputApi(
+            input_api, sha, description
+        )
+        yield (sha, subject, commit_input_api)
+
+
+def _CreateCommitScopedInputApi(input_api, commit_sha, description):
+    """Creates a commit-scoped InputApi via GitChange and shallow copy."""
+    root = input_api.change.RepositoryRoot()
+    parent_sha = f"{commit_sha}^"
+
+    try:
+        files = scm.GIT.CaptureStatus(
+            root,
+            upstream_branch=parent_sha,
+            end_commit=commit_sha,
+            ignore_submodules=False,
+        )
+    except (subprocess.CalledProcessError, gclient_utils.Error):
+        files = []
+
+    try:
+        author = scm.GIT.Capture(
+            ["log", "-1", "--format=%ae", commit_sha], cwd=root
+        ).strip()
+    except (subprocess.CalledProcessError, gclient_utils.Error):
+        author = ""
+    author = author or input_api.change.author_email
+
+    commit_change = GitChange(
+        commit_sha,
+        description,
+        root,
+        files,
+        input_api.change.issue,
+        input_api.change.patchset,
+        author,
+        upstream=parent_sha,
+        end_commit=commit_sha,
+    )
+    commit_change.commit_sha = commit_sha
+    commit_change._is_commit_scoped = True
+
+    commit_input_api = copy.copy(input_api)
+    commit_input_api.change = commit_change
+    return commit_input_api
+
+
 def ListRelevantPresubmitFiles(files, root):
     """Finds all presubmit files that apply to a given set of source files.
 
@@ -1625,7 +1710,7 @@ class PresubmitExecuter(object):
         )
         self.input_apis.append(input_api)
         output_api = OutputApi(self.committing)
-        context = {}
+        context = {"per_commit": presubmit_canned_checks.per_commit}
 
         try:
             exec(

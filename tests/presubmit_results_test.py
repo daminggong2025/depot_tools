@@ -23,6 +23,10 @@ class PresubmitResultsTest(unittest.TestCase):
             "test message", ["item1", "item2"]
         )
         self.assertEqual("test message", res._message)
+        self.assertEqual("test message", res.message)
+        res.message = "updated message"
+        self.assertEqual("updated message", res._message)
+        self.assertEqual("updated message", res.message)
         self.assertEqual(["item1", "item2"], res._items)
         self.assertFalse(res.fatal)
         self.assertFalse(res.should_prompt)

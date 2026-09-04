@@ -1978,5 +1978,163 @@ class CheckPatchFormattedTest(unittest.TestCase):
             )
 
 
+class PerCommitCheckTest(unittest.TestCase):
+    def test_per_commit_multi_commit(self):
+        input_api = MockInputApi()
+        input_api.change.scm = "git"
+        input_api.change._upstream = "origin/main"
+        output_api = MockOutputApi()
+
+        commits = ["11111111", "22222222", "33333333"]
+        descriptions = {
+            "11111111": "Commit 1\n\nBug: 111",
+            "22222222": "Commit 2\n\nNo bug footer here",
+            "33333333": "Commit 3\n\nFixed: 333",
+        }
+        files_by_commit = {
+            "11111111": [("M", "file_a.cc")],
+            "22222222": [("A", "file_b.h")],
+            "33333333": [("M", "file_c.py")],
+        }
+
+        def mock_capture(cmd, cwd=None, **kwargs):
+            if cmd[0] == "rev-list":
+                return "\n".join(commits)
+            if cmd[0] == "log" and "--format=%B" in cmd:
+                sha = cmd[-1]
+                return descriptions[sha]
+            return ""
+
+        def mock_capture_status(
+            cwd, upstream_branch=None, end_commit=None, **kwargs
+        ):
+            return files_by_commit.get(end_commit, [])
+
+        with (
+            mock.patch("scm.GIT.Capture", side_effect=mock_capture),
+            mock.patch(
+                "scm.GIT.CaptureStatus", side_effect=mock_capture_status
+            ),
+        ):
+            observed_commits = []
+            observed_files = []
+            observed_footers = []
+
+            @presubmit_canned_checks.per_commit
+            def CheckFootersAndFiles(commit_input_api, commit_output_api):
+                sha = commit_input_api.change.commit_sha
+                observed_commits.append(sha)
+                observed_files.append(commit_input_api.change.LocalPaths())
+                footers = commit_input_api.change.GitFootersFromDescription()
+                observed_footers.append(footers)
+                if not footers.get("Bug") and not footers.get("Fixed"):
+                    return [
+                        commit_output_api.PresubmitError("Missing bug footer")
+                    ]
+                return []
+
+            results = CheckFootersAndFiles(input_api, output_api)
+
+            # Check that all 3 commits were evaluated individually
+            self.assertEqual(observed_commits, commits)
+            self.assertEqual(
+                observed_files, [["file_a.cc"], ["file_b.h"], ["file_c.py"]]
+            )
+            self.assertEqual(len(observed_footers), 3)
+            self.assertEqual(observed_footers[0]["Bug"], ["111"])
+            self.assertEqual(observed_footers[1], {})
+            self.assertEqual(observed_footers[2]["Fixed"], ["333"])
+
+            # Check that error is reported only for Commit 2 with proper prefix
+            self.assertEqual(len(results), 1)
+            self.assertIn('[Commit 22222222: "Commit 2"]', results[0].message)
+            self.assertIn("Missing bug footer", results[0].message)
+
+    def test_per_commit_reuse_existing_canned_check(self):
+        input_api = MockInputApi()
+        input_api.change.scm = "git"
+        input_api.change._upstream = "origin/main"
+        output_api = MockOutputApi()
+
+        commits = ["aaaa1111", "bbbb2222"]
+        descriptions = {
+            "aaaa1111": "Commit A\n\nBug: 12345",
+            "bbbb2222": "Commit B\n\nNo footer",
+        }
+
+        def mock_capture(cmd, cwd=None, **kwargs):
+            if cmd[0] == "rev-list":
+                return "\n".join(commits)
+            if cmd[0] == "log" and "--format=%B" in cmd:
+                return descriptions[cmd[-1]]
+            return ""
+
+        with (
+            mock.patch("scm.GIT.Capture", side_effect=mock_capture),
+            mock.patch("scm.GIT.CaptureStatus", return_value=[]),
+        ):
+            decorated_check = presubmit_canned_checks.per_commit(
+                presubmit_canned_checks.CheckChangeHasBugField
+            )
+            results = decorated_check(input_api, output_api)
+
+            # Check that CheckChangeHasBugField produced a notification for commit B
+            self.assertTrue(
+                any("Commit bbbb2222" in r.message for r in results)
+            )
+            self.assertFalse(
+                any("Commit aaaa1111" in r.message for r in results)
+            )
+
+    def test_per_commit_no_upstream_runs_directly(self):
+        input_api = MockInputApi()
+        input_api.change.scm = "git"
+        input_api.change._upstream = None
+        output_api = MockOutputApi()
+
+        @presubmit_canned_checks.per_commit
+        def CheckSomething(commit_input_api, commit_output_api):
+            return [commit_output_api.PresubmitError("Some error")]
+
+        results = CheckSomething(input_api, output_api)
+        self.assertEqual(len(results), 1)
+        # Should NOT have any commit prefix tag because upstream was None
+        self.assertEqual(results[0].message, "Some error")
+
+    def test_per_commit_zero_commits_ahead_runs_directly(self):
+        input_api = MockInputApi()
+        input_api.change.scm = "git"
+        input_api.change._upstream = "origin/main"
+        output_api = MockOutputApi()
+
+        with mock.patch("scm.GIT.Capture", return_value=""):
+
+            @presubmit_canned_checks.per_commit
+            def CheckSomething(commit_input_api, commit_output_api):
+                return [
+                    commit_output_api.PresubmitPromptWarning(
+                        "Working tree warning"
+                    )
+                ]
+
+            results = CheckSomething(input_api, output_api)
+            self.assertEqual(len(results), 1)
+            # Should NOT have any [Commit ...] tag because 0 commits were ahead of upstream
+            self.assertEqual(results[0].message, "Working tree warning")
+
+    def test_per_commit_non_git_runs_directly(self):
+        input_api = MockInputApi()
+        input_api.change.scm = ""
+        output_api = MockOutputApi()
+
+        @presubmit_canned_checks.per_commit
+        def CheckSomething(commit_input_api, commit_output_api):
+            return [commit_output_api.PresubmitError("Non-git error")]
+
+        results = CheckSomething(input_api, output_api)
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0].message, "Non-git error")
+
+
 if __name__ == "__main__":
     unittest.main()
