@@ -8,12 +8,11 @@
 
 from __future__ import annotations
 
+import ast
 import base64
 import collections
-import concurrent.futures
 import datetime
-import functools
-import hashlib
+import fnmatch
 import itertools
 import json
 import logging
@@ -26,7 +25,6 @@ import stat
 import sys
 import tempfile
 import textwrap
-import threading
 import time
 import dataclasses
 import typing
@@ -42,79 +40,40 @@ from typing import AnyStr
 from typing import Callable
 from typing import List
 from typing import Mapping
+from typing import NoReturn
 from typing import Optional
 from typing import Sequence
-from typing import TextIO
 from typing import Tuple
 from typing import TypedDict
 
 import auth
+import clang_format
 import gclient_paths
 import gclient_utils
 import gerrit_util
 import git_auth
-
-# Configuration, settings, and low-level git primitives re-exported
-# for backwards compatibility.
-# Formatting subsystem re-exported for backwards compatibility.
-from cl_format import (
-    CMDformat,  # noqa: F401
-    FormatterFunction,  # noqa: F401
-    YAPF_CONFIG_FILENAME,  # noqa: F401
-    _ComputeFormatDiffLineRanges,  # noqa: F401
-    _FilterYapfIgnoredFiles,  # noqa: F401
-    _FindFilesToFormat,  # noqa: F401
-    _FindLitTemplateFormatterConfigFile,  # noqa: F401
-    _FindMarkdownConfigFile,  # noqa: F401
-    _FindYapfConfigFile,  # noqa: F401
-    _GetRuffChromiumPath,  # noqa: F401
-    _GetYapfIgnorePatterns,  # noqa: F401
-    _IsRuffBatchSupported,  # noqa: F401
-    _RunClangFormatDiff,  # noqa: F401
-    _RunGnFormat,  # noqa: F401
-    _RunGoogleJavaFormat,  # noqa: F401
-    _RunKtfmt,  # noqa: F401
-    _RunLUCICfgFormat,  # noqa: F401
-    _RunLitTemplateFormatter,  # noqa: F401
-    _RunMarkdownFormat,  # noqa: F401
-    _RunMetricsXMLFormat,  # noqa: F401
-    _RunMojomFormat,  # noqa: F401
-    _RunPythonFormat,  # noqa: F401
-    _RunRustFmt,  # noqa: F401
-    _RunSwiftFormat,  # noqa: F401
-    _RunYapf,  # noqa: F401
-    _SplitDiffsByFile,  # noqa: F401
-)
-
-from git_cl_core import (
-    DEFAULT_LINT_IGNORE_REGEX,  # noqa: F401
-    DEFAULT_LINT_REGEX,  # noqa: F401
-    DESCRIPTION_BACKUP_FILE,  # noqa: F401
-    DieWithError,  # noqa: F401
-    FindCodereviewSettingsFile,  # noqa: F401
-    GetNoGitPagerEnv,  # noqa: F401
-    LoadCodereviewSettingsFromFile,  # noqa: F401
-    RunCommand,  # noqa: F401
-    RunGit,  # noqa: F401
-    RunGitDiffCmd,  # noqa: F401
-    RunGitSilent,  # noqa: F401
-    RunGitWithCode,  # noqa: F401
-    SaveDescriptionBackup,  # noqa: F401
-    Settings,  # noqa: F401
-    _SplitArgsByCmdLineLimit,  # noqa: F401
-    settings,  # noqa: F401
-)
 import git_common
 import git_footers
+import git_new_branch
+import git_squash_branch
+import google_java_format
+import ktfmt
 import metrics
 import metrics_utils
+import metrics_xml_format
 import newauth
 import owners_client
+import owners_finder
+import presubmit_canned_checks
+import presubmit_support
+import rustfmt
 import scm
 import setup_color
+import split_cl
 import subcommand
 import subprocess2
 import utils
+import swift_format
 import watchlists
 import from_third_party
 
@@ -165,6 +124,7 @@ TRACES_README_FORMAT = (
 ) + TRACES_MESSAGE
 
 POSTUPSTREAM_HOOK = ".git/hooks/post-cl-land"
+DESCRIPTION_BACKUP_FILE = ".git_cl_description_backup"
 REFS_THAT_ALIAS_TO_OTHER_REFS = {
     "refs/remotes/origin/lkgr": "refs/remotes/origin/main",
     "refs/remotes/origin/lkcr": "refs/remotes/origin/main",
@@ -174,6 +134,13 @@ DEFAULT_OLD_BRANCH = "refs/remotes/origin/master"
 DEFAULT_NEW_BRANCH = "refs/remotes/origin/main"
 
 DEFAULT_BUILDBUCKET_HOST = "cr-buildbucket.appspot.com"
+
+# Valid extensions for files we want to lint.
+DEFAULT_LINT_REGEX = r"(.*\.cpp|.*\.cc|.*\.h|.*\.py)"
+DEFAULT_LINT_IGNORE_REGEX = r"$^"
+
+# File name for yapf style config files.
+YAPF_CONFIG_FILENAME = ".style.yapf"
 
 # The issue, patchset and codereview server are stored on git config for each
 # branch under branch.<branch-name>.<config-key>.
@@ -217,14 +184,85 @@ _NO_BRANCH_ERROR = (
     "upload all commits since base!"
 )
 
-_ERROR_OR_REJECTION_RE = re.compile(
-    r"\b(error|failed|fatal|exception|rejected|declined|denied)\b",
-    re.IGNORECASE,
-)
-
 
 class GitPushError(Exception):
     pass
+
+
+def DieWithError(message, change_desc=None) -> NoReturn:
+    if change_desc:
+        SaveDescriptionBackup(change_desc)
+        print(
+            "\n ** Content of CL description **\n"
+            + "=" * 72
+            + "\n"
+            + change_desc.description
+            + "\n"
+            + "=" * 72
+            + "\n"
+        )
+
+    print(message, file=sys.stderr)
+    sys.exit(1)
+
+
+def SaveDescriptionBackup(change_desc):
+    backup_path = os.path.join(DEPOT_TOOLS, DESCRIPTION_BACKUP_FILE)
+    print("\nsaving CL description to %s\n" % backup_path)
+    with open(backup_path, "wb") as backup_file:
+        backup_file.write(change_desc.description.encode("utf-8"))
+
+
+def GetNoGitPagerEnv():
+    env = os.environ.copy()
+    # 'cat' is a magical git string that disables pagers on all platforms.
+    env["GIT_PAGER"] = "cat"
+    return env
+
+
+def RunCommand(args, error_ok=False, error_message=None, shell=False, **kwargs):
+    try:
+        stdout = subprocess2.check_output(args, shell=shell, **kwargs)
+        return stdout.decode("utf-8", "replace")
+    except subprocess2.CalledProcessError as e:
+        logging.debug("Failed running %s", args)
+        if not error_ok:
+            message = error_message or e.stdout.decode("utf-8", "replace") or ""
+            DieWithError('Command "%s" failed.\n%s' % (" ".join(args), message))
+        out = e.stdout.decode("utf-8", "replace")
+        if e.stderr:
+            out += e.stderr.decode("utf-8", "replace")
+        return out
+
+
+def RunGit(args, **kwargs) -> str:
+    """Returns stdout."""
+    return RunCommand(["git"] + args, **kwargs)
+
+
+def RunGitWithCode(args, suppress_stderr=False, cwd=None):
+    """Returns return code and stdout."""
+    if suppress_stderr:
+        stderr = subprocess2.DEVNULL
+    else:
+        stderr = sys.stderr
+    try:
+        (out, _), code = subprocess2.communicate(
+            ["git"] + args,
+            env=GetNoGitPagerEnv(),
+            stdout=subprocess2.PIPE,
+            stderr=stderr,
+            cwd=cwd,
+        )
+        return code, out.decode("utf-8", "replace")
+    except subprocess2.CalledProcessError as e:
+        logging.debug("Failed running %s", ["git"] + args)
+        return e.returncode, e.stdout.decode("utf-8", "replace")
+
+
+def RunGitSilent(args, cwd=None):
+    """Returns stdout, suppresses stderr and ignores the return code."""
+    return RunGitWithCode(args, suppress_stderr=True, cwd=cwd)[1]
 
 
 def time_sleep(seconds):
@@ -681,6 +719,183 @@ def _print_tryjobs(options, builds):
     print("Total: %d tryjobs" % total)
 
 
+def _ComputeFormatDiffLineRanges(files, diffs, expand=0):
+    """Gets the changed line ranges for each file.
+
+    Parses a git diff on provided files and returns a dict that maps a file name
+    to an ordered list of range tuples in the form (start_line, count).
+    Ranges are in the same format as a git diff.
+
+    Args:
+        files: List of files to parse the diff of and return the ranges for.
+        diffs: a dict of diffs, where key is the file without the prefix,
+          and the value is the diff generated for the corresponding file.
+          Note that the hunks in the diffs contain prefxies, such as a/.., b/..
+        expand: Expand diff ranges by this many lines before & after.
+
+    Returns:
+        A dict of path->[(start_line, end_line), ...]
+    """
+    # If files is empty then diff_output will be a full diff.
+    if len(files) == 0:
+        return {}
+
+    # Matches the added/modified line range in a diff hunk header.
+    # 1 capture group: 'diff_start,diff_count' or 'diff_start'
+    # Matches:
+    #   @@ -12,2 +14,3 @@ -> '14,3'
+    #   @@ -12,2 +17 @@   -> '17'
+    pattern = r"^@@ -\d+(?:,\d+)? \+([0-9,]+) @@"
+
+    line_diffs = collections.defaultdict(list)
+    for file in files:
+        diff = diffs.get(file, "")
+        if not diff:
+            continue
+
+        prev_end = 0
+        for match in re.findall(pattern, diff, flags=re.MULTILINE):
+            if not match:
+                continue
+
+            # Matches +14,3
+            if "," in match:
+                diff_start, diff_count = match.split(",")
+            else:
+                # Matches +12
+                diff_start, diff_count = match, 1
+
+            # if the original lines were removed without replacements,
+            # the diff count is 0. Then, no formatting is necessary.
+            if diff_count == 0:
+                continue
+
+            # diff_count contains the diff_start line, and the line numbers
+            # given to formatter args are inclusive. For example, in
+            # google-java-format "--lines 5:10" includes 5th-10th lines.
+            diff_start = int(diff_start)
+            diff_count = int(diff_count)
+            diff_end = diff_start + diff_count - 1 + expand
+            diff_start = max(prev_end + 1, diff_start - expand)
+            if diff_start <= diff_end:
+                prev_end = diff_end
+                line_diffs[file].append((diff_start, diff_end))
+
+    return line_diffs
+
+
+def _FindYapfConfigFile(fpath, yapf_config_cache, top_dir=None):
+    """Checks if a yapf file is in any parent directory of fpath until top_dir.
+
+    Recursively checks parent directories to find yapf file and if no yapf file
+    is found returns None. Uses yapf_config_cache as a cache for previously found
+    configs.
+    """
+    fpath = os.path.abspath(fpath)
+    # Return result if we've already computed it.
+    if fpath in yapf_config_cache:
+        return yapf_config_cache[fpath]
+
+    parent_dir = os.path.dirname(fpath)
+    if os.path.isfile(fpath):
+        ret = _FindYapfConfigFile(parent_dir, yapf_config_cache, top_dir)
+    else:
+        # Otherwise fpath is a directory
+        yapf_file = os.path.join(fpath, YAPF_CONFIG_FILENAME)
+        if os.path.isfile(yapf_file):
+            ret = yapf_file
+        elif fpath in (top_dir, parent_dir):
+            # If we're at the top level directory, or if we're at root
+            # there is no provided style.
+            ret = None
+        else:
+            # Otherwise recurse on the current directory.
+            ret = _FindYapfConfigFile(parent_dir, yapf_config_cache, top_dir)
+    yapf_config_cache[fpath] = ret
+    return ret
+
+
+def _FindMarkdownConfigFile(
+    fpath: str,
+    markdown_config_cache: dict[str, str | None],
+    top_dir: str | None = None,
+) -> str | None:
+    """Checks if a .style.mdformat file is in any parent directory of fpath
+    until top_dir.
+
+    Recursively checks parent directories to find the config file and if none
+    is found returns None. Uses markdown_config_cache as a cache.
+    """
+    if fpath not in markdown_config_cache:
+        markdown_config_cache[fpath] = utils.find_config_file(
+            fpath, ".style.mdformat", top_dir
+        )
+    return markdown_config_cache[fpath]
+
+
+def _FindLitTemplateFormatterConfigFile(
+    fpath: str, config_cache: dict[str, str | None], top_dir: str | None = None
+) -> str | None:
+    """Checks if a .style.lit_template_formatter file is in any parent directory
+    of fpath until top_dir.
+
+    Recursively checks parent directories to find the config file and if none
+    is found returns None. Uses config_cache as a cache.
+    """
+    if fpath not in config_cache:
+        config_cache[fpath] = utils.find_config_file(
+            fpath, ".style.lit_template_formatter", top_dir
+        )
+    return config_cache[fpath]
+
+
+def _GetYapfIgnorePatterns(top_dir):
+    """Returns all patterns in the .yapfignore file.
+
+    yapf is supposed to handle the ignoring of files listed in .yapfignore itself,
+    but this functionality appears to break when explicitly passing files to
+    yapf for formatting. According to
+    https://github.com/google/yapf/blob/HEAD/README.rst#excluding-files-from-formatting-yapfignore,
+    the .yapfignore file should be in the directory that yapf is invoked from,
+    which we assume to be the top level directory in this case.
+
+    Args:
+        top_dir: The top level directory for the repository being formatted.
+
+    Returns:
+        A set of all fnmatch patterns to be ignored.
+    """
+    yapfignore_file = os.path.join(top_dir, ".yapfignore")
+    ignore_patterns = set()
+    if not os.path.exists(yapfignore_file):
+        return ignore_patterns
+
+    for line in gclient_utils.FileRead(yapfignore_file).split("\n"):
+        stripped_line = line.strip()
+        # Comments and blank lines should be ignored.
+        if stripped_line.startswith("#") or stripped_line == "":
+            continue
+        ignore_patterns.add(stripped_line)
+    return ignore_patterns
+
+
+def _FilterYapfIgnoredFiles(filepaths, patterns):
+    """Filters out any filepaths that match any of the given patterns.
+
+    Args:
+        filepaths: An iterable of strings containing filepaths to filter.
+        patterns: An iterable of strings containing fnmatch patterns to filter on.
+
+    Returns:
+        A list of strings containing all the elements of |filepaths| that did not
+        match any of the patterns in |patterns|.
+    """
+    # Not inlined so that tests can use the same implementation.
+    return [
+        f for f in filepaths if not any(fnmatch.fnmatch(f, p) for p in patterns)
+    ]
+
+
 def _GetCommitCountSummary(
     begin_commit: str, end_commit: str = "HEAD"
 ) -> Optional[str]:
@@ -698,9 +913,16 @@ def _GetCommitCountSummary(
     return f"{count} commit{'s'[: count != 1]}"
 
 
-@functools.lru_cache(maxsize=8)
-def _get_superproject_push_option(canonical_cwd: str) -> Optional[str]:
-    gclient_root = gclient_paths.FindGclientRoot(canonical_cwd)
+def _prepare_superproject_push_option() -> str | None:
+    """Returns the push option specifying the root repo of a gclient checkout.
+
+    The push option will be formatted:
+        'custom-keyed-value=rootRepo:{host}/{project}@{ref}'
+
+    For chromium/src the entire push option would be:
+        'custom-keyed-value=rootRepo:chromium/chromium/src@d3adb33f'.
+    """
+    gclient_root = gclient_paths.FindGclientRoot(os.getcwd())
     if not gclient_root:
         return None
 
@@ -709,45 +931,11 @@ def _get_superproject_push_option(canonical_cwd: str) -> Optional[str]:
         return None
 
     parsed_url = urllib.parse.urlparse(superproject_url)
-    host = (parsed_url.hostname or "").removesuffix(".googlesource.com")
+    host = parsed_url.netloc.removesuffix(".googlesource.com")
     project = parsed_url.path.strip("/").removesuffix(".git")
-    if not host or not project:
-        return None
-
-    soln_root = gclient_paths.GetPrimarySolutionPath(canonical_cwd)
-    if not soln_root or not os.path.isdir(soln_root):
-        return None
-
-    code, rev = RunGitWithCode(
-        ["rev-parse", "--verify", "refs/heads/main"],
-        suppress_stderr=True,
-        cwd=soln_root,
-    )
-    rev = (rev or "").strip()
-    if code != 0 or not rev:
-        return None
-
+    soln_root = gclient_paths.GetPrimarySolutionPath()
+    rev = RunGitSilent(["rev-parse", "refs/heads/main"], cwd=soln_root).strip()
     return f"custom-keyed-value=rootRepo:{host}/{project}@{rev}"
-
-
-def _prepare_superproject_push_option(
-    cwd: Optional[str] = None,
-) -> Optional[str]:
-    """Returns the push option specifying the root repo of a gclient checkout.
-
-    The push option will be formatted:
-        'custom-keyed-value=rootRepo:{host}/{project}@{rev}'
-
-    For chromium/src the entire push option would be:
-        'custom-keyed-value=rootRepo:chromium/chromium/src@d3adb33f'.
-    """
-    try:
-        if not cwd:
-            cwd = os.getcwd()
-        return _get_superproject_push_option(os.path.realpath(cwd))
-    except (OSError, subprocess2.CalledProcessError, ValueError) as e:
-        logging.debug("Failed to prepare superproject push option: %s", e)
-        return None
 
 
 @dataclasses.dataclass
@@ -866,6 +1054,170 @@ class BuildbucketResponseException(Exception):
         super(BuildbucketResponseException, self).__init__(
             message or "Unknown Buildbucket error"
         )
+
+
+class Settings(object):
+    def __init__(self):
+        self.cc = None
+        self.root = None
+        self.git_dir = None
+        self.tree_status_url = None
+        self.viewvc_url = None
+        self.updated = False
+        self.is_gerrit = None
+        self.squash_gerrit_uploads = None
+        self.gerrit_skip_ensure_authenticated = None
+        self.git_editor = None
+        self.format_full_by_default = None
+        self.is_status_commit_order_by_date = None
+        self.format_js = None
+
+    def _LazyUpdateIfNeeded(self):
+        """Updates the settings from a codereview.settings file, if available."""
+        if self.updated:
+            return
+
+        # The only value that actually changes the behavior is
+        # autoupdate = "false". Everything else means "true".
+        autoupdate = scm.GIT.GetConfig(
+            self.GetRoot(), "rietveld.autoupdate", ""
+        ).lower()
+
+        cr_settings_file = FindCodereviewSettingsFile()
+        if autoupdate != "false" and cr_settings_file:
+            LoadCodereviewSettingsFromFile(cr_settings_file)
+            cr_settings_file.close()
+
+        self.updated = True
+
+    @staticmethod
+    def GetRelativeRoot():
+        return scm.GIT.GetCheckoutRoot(".")
+
+    def GetRoot(self):
+        if self.root is None:
+            self.root = os.path.realpath(
+                os.path.abspath(self.GetRelativeRoot())
+            )
+        return self.root
+
+    def GetGitDir(self):
+        if self.git_dir is None:
+            self.git_dir = scm.GIT.GetCommonGitDir(".")
+        return self.git_dir
+
+    def GetTreeStatusUrl(self, error_ok=False):
+        if not self.tree_status_url:
+            self.tree_status_url = self._GetConfig("rietveld.tree-status-url")
+            if self.tree_status_url is None and not error_ok:
+                DieWithError(
+                    "You must configure your tree status URL by running "
+                    '"git cl config".'
+                )
+        return self.tree_status_url
+
+    def GetViewVCUrl(self) -> str:
+        if not self.viewvc_url:
+            self.viewvc_url = self._GetConfig("rietveld.viewvc-url")
+        return self.viewvc_url
+
+    def GetBugPrefix(self):
+        return self._GetConfig("rietveld.bug-prefix")
+
+    def GetRunPostUploadHook(self):
+        run_post_upload_hook = self._GetConfig("rietveld.run-post-upload-hook")
+        return run_post_upload_hook == "True"
+
+    def GetDefaultCCList(self):
+        return self._GetConfig("rietveld.cc")
+
+    def GetSquashGerritUploads(self):
+        """Returns True if uploads to Gerrit should be squashed by default."""
+        if self.squash_gerrit_uploads is None:
+            self.squash_gerrit_uploads = self.GetSquashGerritUploadsOverride()
+        if self.squash_gerrit_uploads is None:
+            # Default is squash now (http://crbug.com/611892#c23).
+            self.squash_gerrit_uploads = (
+                self._GetConfig("gerrit.squash-uploads").lower() != "false"
+            )
+        return self.squash_gerrit_uploads
+
+    def GetSquashGerritUploadsOverride(self):
+        """Return True or False if codereview.settings should be overridden.
+
+        Returns None if no override has been defined.
+        """
+        # See also http://crbug.com/611892#c23
+        result = self._GetConfig("gerrit.override-squash-uploads").lower()
+        if result == "true":
+            return True
+        if result == "false":
+            return False
+        return None
+
+    def GetIsGerrit(self):
+        """Return True if gerrit.host is set."""
+        if self.is_gerrit is None:
+            val = self._GetConfig("gerrit.host")
+            self.is_gerrit = bool(val) and val.lower() != "false"
+        return self.is_gerrit
+
+    def GetGerritSkipEnsureAuthenticated(self):
+        """Return True if EnsureAuthenticated should not be done for Gerrit
+        uploads."""
+        if self.gerrit_skip_ensure_authenticated is None:
+            self.gerrit_skip_ensure_authenticated = (
+                self._GetConfig("gerrit.skip-ensure-authenticated").lower()
+                == "true"
+            )
+        return self.gerrit_skip_ensure_authenticated
+
+    def GetGitEditor(self):
+        """Returns the editor specified in the git config, or None if none is."""
+        if self.git_editor is None:
+            # Git requires single quotes for paths with spaces. We need to
+            # replace them with double quotes for Windows to treat such paths as
+            # a single path.
+            self.git_editor = self._GetConfig("core.editor").replace("'", '"')
+        return self.git_editor or None
+
+    def GetLintRegex(self):
+        return self._GetConfig("rietveld.cpplint-regex", DEFAULT_LINT_REGEX)
+
+    def GetLintIgnoreRegex(self):
+        return self._GetConfig(
+            "rietveld.cpplint-ignore-regex", DEFAULT_LINT_IGNORE_REGEX
+        )
+
+    def GetFormatFullByDefault(self):
+        if self.format_full_by_default is None:
+            self.format_full_by_default = self._GetConfigBool(
+                "rietveld.format-full-by-default"
+            )
+        return self.format_full_by_default
+
+    def IsStatusCommitOrderByDate(self):
+        if self.is_status_commit_order_by_date is None:
+            self.is_status_commit_order_by_date = self._GetConfigBool(
+                "cl.date-order"
+            )
+        return self.is_status_commit_order_by_date
+
+    def GetFormatJs(self):
+        if self.format_js is None:
+            self.format_js = self._GetConfig("cl.format-js").lower() == "true"
+        return self.format_js
+
+    def _GetConfig(self, key, default=""):
+        self._LazyUpdateIfNeeded()
+        return scm.GIT.GetConfig(self.GetRoot(), key, default)
+
+    def _GetConfigBool(self, key) -> bool:
+        self._LazyUpdateIfNeeded()
+        return scm.GIT.GetConfigBool(self.GetRoot(), key)
+
+
+settings = Settings()
 
 
 class _CQState(object):
@@ -1206,9 +1558,9 @@ class ChangeDescription(object):
             separator = []  # No need for separator if there are no gerrit_footers.
 
         prev_line = top_lines[-1] if top_lines else ""
-        if not git_footers.TAG_LINE_RE.match(
+        if not presubmit_support.Change.TAG_LINE_RE.match(
             prev_line
-        ) or not git_footers.TAG_LINE_RE.match(line):
+        ) or not presubmit_support.Change.TAG_LINE_RE.match(line):
             top_lines.append("")
         top_lines.append(line)
         self._description_lines = top_lines + separator + gerrit_footers
@@ -1266,170 +1618,6 @@ class ChangeDescription(object):
         return re.sub(cls.BAD_HASH_TAG_CHUNK, "-", tag).strip("-").lower()
 
 
-def _NormalizeChangeDetailOptions(
-    options: Optional[Sequence[str]],
-) -> list[str]:
-    """Normalizes and expands Gerrit change detail options."""
-    normalized = [o.upper() for o in (options or [])]
-    # Optimization to avoid multiple RPCs:
-    if (
-        "CURRENT_REVISION" in normalized or "ALL_REVISIONS" in normalized
-    ) and "CURRENT_COMMIT" not in normalized:
-        normalized.append("CURRENT_COMMIT")
-    return normalized
-
-
-def _is_ai_agent() -> bool:
-    """Detects whether execution is within an AI agent environment."""
-    return gclient_utils.IsEnvAi()
-
-
-def _is_repeating_progress_message(stripped: str) -> bool:
-    """Checks if `stripped` represents an intermediate repeating progress line.
-
-    Identifies intermediate progress updates such as delta resolution percentages,
-    object counting updates, countdown checkers, and animated spinner frames.
-    """
-    if _ERROR_OR_REJECTION_RE.search(stripped):
-        return False
-    if "http://" in stripped or "https://" in stripped:
-        return False
-    if (
-        "->" in stripped
-        or stripped.startswith("* [new ")
-        or stripped.startswith("To ")
-    ):
-        return False
-
-    # Gerrit processing changes progress frames without done, e.g. `Processing changes: (\)`,
-    # `Processing changes: updated: 1 (/)`, `Processing changes: refs: 1, updated: 1 (/)`,
-    # or empty parentheses `Processing changes: ()`.
-    if re.search(r"Processing changes:", stripped) and "done" not in stripped:
-        return True
-
-    # Generic spinner animation frames at end of line like `(\)`, `(|)`, `(/)`, `(-)`,
-    # or empty parentheses frame on remote lines `remote: ()`.
-    if re.search(r"\(\s*[\\|/-]\s*\)\s*$", stripped) or re.search(
-        r"^remote:\s*\([\\|/\s-]*\)\s*$", stripped
-    ):
-        return True
-
-    # Delta resolution progress less than 100% and not marked done
-    m = re.search(r"Resolving deltas:\s*(\d+)%", stripped)
-    if m and int(m.group(1)) < 100 and "done" not in stripped:
-        return True
-
-    # Object counting or enumerating progress without done
-    if (
-        re.search(r"\b(Counting|Enumerating)\s+objects:\s*\d+", stripped)
-        and "done" not in stripped
-    ):
-        return True
-
-    # Finding sources progress less than 100% and not marked done
-    m = re.search(r"Finding sources:\s*(?:(\d+)%|\d+)", stripped)
-    if m and "done" not in stripped:
-        if m.group(1) is None or int(m.group(1)) < 100:
-            return True
-
-    # Object compression, writing, receiving, transferring, unpacking without done
-    m = re.search(
-        r"\b(Compressing|Writing|Receiving|Transferring|Unpacking)\s+objects:\s*(\d+)%",
-        stripped,
-    )
-    if m and "done" not in stripped:
-        return True
-
-    # Checking connectivity progress without done
-    if (
-        re.search(r"Checking connectivity:\s*\d+", stripped)
-        and "done" not in stripped
-    ):
-        return True
-
-    # Private key checker countdown progress
-    if re.search(r"Waiting for private key checker:.*left", stripped):
-        return True
-
-    return False
-
-
-def _create_ai_agent_push_filter(
-    out_stream: Optional[TextIO] = None,
-) -> Callable[[str], None]:
-    """Creates a line filter callback for `gclient_utils.CheckCallAndFilter`.
-
-    Suppresses repeating progress messages to avoid context pollution for AI agents
-    while continuing to report final step completions, errors, warnings, and URLs.
-    """
-    if out_stream is None:
-        out_stream = sys.stdout
-    last_printed = [None]
-
-    def process_single_line(single_line: str) -> None:
-        single_line = re.sub(
-            r"^(?:remote:\s*)+remote:\s*", "remote: ", single_line
-        )
-        stripped = single_line.strip()
-        if not stripped:
-            return
-
-        if _ERROR_OR_REJECTION_RE.search(stripped):
-            out_stream.write(single_line.rstrip() + "\n")
-            out_stream.flush()
-            last_printed[0] = stripped
-            return
-
-        if "http://" in stripped or "https://" in stripped:
-            out_stream.write(single_line.rstrip() + "\n")
-            out_stream.flush()
-            last_printed[0] = stripped
-            return
-
-        if _is_repeating_progress_message(stripped):
-            return
-
-        if stripped == last_printed[0]:
-            return
-
-        if stripped in ("remote:", "remote"):
-            return
-
-        out_stream.write(single_line.rstrip() + "\n")
-        out_stream.flush()
-        last_printed[0] = stripped
-
-    split_pattern = re.compile(
-        r"(?<=[^:\s])\s*(?=remote:(?:\s|$))"
-        r"|(?<=[^:\s])\s*(?=(?:(?:Enumerating|Counting|Compressing|Writing|Receiving|Transferring|Unpacking)\s+objects:|Finding sources:|Resolving deltas:|Checking connectivity:|Processing changes:|Waiting for private key checker:))"
-    )
-
-    def filter_fn(line: str) -> None:
-        parts = line.replace("\r\n", "\n").replace("\r", "\n").split("\n")
-        for part in parts:
-            if (
-                "http://" in part
-                or "https://" in part
-                or "->" in part
-                or part.startswith("To ")
-            ):
-                process_single_line(part)
-                continue
-            # Handle multiple progress updates that may be concatenated on a
-            # single line separated by single spaces, zero spaces, or multiple
-            # spaces in captured terminal output.
-            segments = split_pattern.split(part)
-            for segment in segments:
-                process_single_line(segment)
-
-    return filter_fn
-
-
-def _flush_stdout(_: str) -> None:
-    """Default filter callback that flushes stdout after each line."""
-    sys.stdout.flush()
-
-
 class Changelist(object):
     """Changelist works with one changelist in local branch.
 
@@ -1438,21 +1626,6 @@ class Changelist(object):
         * Caches values from current branch. Therefore, re-use after branch change
         with great care.
     """
-
-    # Process-wide cache of change details to share across Changelist instances
-    # (e.g. between CMDupload and child instances created in UploadAllSquashed).
-    # Maps (gerrit_host, issue_str) -> [(options_frozenset, detail_dict), ...]
-    _DETAIL_CACHE: dict[tuple[str, str], list[tuple[frozenset[str], dict]]] = {}
-    _DETAIL_CACHE_LOCK: threading.Lock = threading.Lock()
-    # In-flight async warming threads: (gerrit_host, issue_str) -> (Thread, err_fn, options_frozenset)
-    _ASYNC_DETAIL_THREADS: dict[
-        tuple[str, str],
-        tuple[
-            threading.Thread,
-            Callable[[], Optional[Exception]],
-            frozenset[str],
-        ],
-    ] = {}
 
     def __init__(
         self, branchref=None, issue=None, codereview_host=None, commit_date=None
@@ -1488,6 +1661,8 @@ class Changelist(object):
             None  # e.g. https://chromium-review.googlesource.com
         )
         self._owners_client = None
+        # Map from change number (issue) to its detail cache.
+        self._detail_cache = {}
 
         if codereview_host is not None:
             assert not codereview_host.startswith("https://"), codereview_host
@@ -1918,7 +2093,7 @@ class Changelist(object):
         committing: bool,
         may_prompt: bool,
         verbose: bool,
-        parallel: Optional[bool],
+        parallel: bool,
         upstream: str,
         description: str,
         all_files: bool,
@@ -1934,10 +2109,8 @@ class Changelist(object):
             args.extend(["--end_commit", end_commit])
         if may_prompt:
             args.append("--may_prompt")
-        if parallel is True:
+        if parallel:
             args.append("--parallel")
-        elif parallel is False:
-            args.append("--no-parallel")
         if all_files:
             args.append("--all_files")
         if files:
@@ -1996,80 +2169,6 @@ class Changelist(object):
                 json_results = gclient_utils.FileRead(json_output)
                 return json.loads(json_results)
 
-    def HasPostUploadHook(self, upstream: Optional[str] = None) -> bool:
-        """Returns True if any relevant presubmit script defines PostUploadHook.
-
-        Avoids spawning a redundant ~250ms presubmit_support subprocess when
-        no post-upload hooks are actually defined by the change's presubmit files.
-        Fails open (returns True) on any error or ambiguity.
-        """
-        try:
-            root = settings.GetRoot()
-            if not root:
-                return True
-            root = os.path.abspath(root)
-
-            # Capture status with ignore_submodules=False to ensure submodules
-            # are not ignored (matching presubmit_support.py).
-            status = scm.GIT.CaptureStatus(
-                root, upstream, ignore_submodules=False
-            )
-            files = [f for _, f in status]
-            if not files:
-                # If there are no modified files (e.g. description-only upload),
-                # fail open to preserve historical behavior.
-                return True
-
-            # Respect inherit-review-settings-ok (matching presubmit_support.py)
-            stop_root = root
-            if os.path.isfile(os.path.join(root, "inherit-review-settings-ok")):
-                stop_root = None
-
-            directories = set()
-            for f in files:
-                p = os.path.normpath(os.path.join(root, f))
-                if os.path.isdir(p):
-                    directories.add(p)
-                directories.add(os.path.dirname(p))
-            candidate_dirs = set()
-            for directory in directories:
-                while directory and directory not in candidate_dirs:
-                    candidate_dirs.add(directory)
-                    if directory == stop_root:
-                        break
-                    parent_dir = os.path.dirname(directory)
-                    if parent_dir == directory:
-                        break
-                    directory = parent_dir
-
-            for d in candidate_dirs:
-                try:
-                    entries = os.listdir(d)
-                except (FileNotFoundError, NotADirectoryError):
-                    continue
-
-                for f in entries:
-                    if (
-                        f.startswith("PRESUBMIT")
-                        and f.endswith(".py")
-                        and not f.startswith("PRESUBMIT_test")
-                    ):
-                        p = os.path.join(d, f)
-                        if not os.path.isfile(p):
-                            continue
-                        try:
-                            content = gclient_utils.FileRead(p)
-                            if re.search(r"\bPostUploadHook\b", content):
-                                return True
-                        except Exception:
-                            # Fail open if a presubmit file cannot be read.
-                            return True
-
-            return False
-        except (Exception, SystemExit):
-            # Optimization must strictly fail open on any exception.
-            return True
-
     def RunPostUploadHook(self, verbose, upstream, description):
         args = self._GetCommonPresubmitArgs(verbose, upstream)
         args.append("--post_upload")
@@ -2105,20 +2204,18 @@ class Changelist(object):
         fixed = options.fixed
         if not self.GetIssue():
             # Extract bug number from branch name, but only if issue is being
-            # created. Matches bug, b, fix, fixes, fixed at start of branch or
-            # delineated by separators (-, _, /, :), followed by optional
-            # separator and digits.
-            # Examples: bug-123 bug_123 b/123 b-123 b123 fix-123
-            # fix-123-some-description user/b/123/feat
+            # created. It must start with bug or fix, followed by _ or - and
+            # number. Optionally, it may contain _ or - after number with
+            # arbitrary text. Examples: bug-123 bug_123 fix-123
+            # fix-123-some-description
             branch = self.GetBranch()
             if branch is not None:
-                match = re.search(
-                    r"(?:^|[-_/:])(?P<type>bug|b|fix(?:e[sd])?)[-_/:]?(?P<bugnum>\d+)(?=[-_/:]|$)",
+                match = re.match(
+                    r"^(?P<type>bug|fix(?:e[sd])?)[_-]?(?P<bugnum>\d+)([-_]|$)",
                     branch,
-                    re.IGNORECASE,
                 )
                 if not bug and not fixed and match:
-                    if match.group("type").lower() in ("b", "bug"):
+                    if match.group("type") == "bug":
                         bug = match.group("bugnum")
                     else:
                         fixed = match.group("bugnum")
@@ -2368,9 +2465,8 @@ class Changelist(object):
             options, [parent, end_commit], files
         )
 
-        if not getattr(options, "bypass_watchlists", False):
-            watchlist = watchlists.Watchlists(settings.GetRoot())
-            self.ExtendCC(watchlist.GetWatchersForPaths(files))
+        watchlist = watchlists.Watchlists(settings.GetRoot())
+        self.ExtendCC(watchlist.GetWatchersForPaths(files))
         if not options.bypass_hooks:
             hook_results = self.RunHook(
                 committing=False,
@@ -2439,7 +2535,6 @@ class Changelist(object):
         options: optparse.Values,
         new_upload: _NewUpload,
         change_number: str,
-        update_reviewers: bool = True,
     ) -> None:
         """Makes necessary post upload changes to the local and remote cl."""
         if not self.GetIssue():
@@ -2454,16 +2549,14 @@ class Changelist(object):
             LAST_UPLOAD_HASH_CONFIG_KEY, new_upload.new_last_uploaded_commit
         )
 
-        if settings.GetRunPostUploadHook() and self.HasPostUploadHook(
-            new_upload.parent
-        ):
+        if settings.GetRunPostUploadHook():
             self.RunPostUploadHook(
                 options.verbose,
                 new_upload.parent,
                 new_upload.change_desc.description,
             )
 
-        if update_reviewers and (new_upload.reviewers or new_upload.ccs):
+        if new_upload.reviewers or new_upload.ccs:
             gerrit_util.AddReviewers(
                 self.GetGerritHost(),
                 self._GerritChangeIdentifier(),
@@ -2494,9 +2587,9 @@ class Changelist(object):
         print(f"Processing {_GetCommitCountSummary(*git_diff_args)}...")
 
         # Apply watchlists on upload.
+        watchlist = watchlists.Watchlists(settings.GetRoot())
         files = self.GetAffectedFiles(base_branch)
-        if not getattr(options, "bypass_watchlists", False):
-            watchlist = watchlists.Watchlists(settings.GetRoot())
+        if not options.bypass_watchlists:
             self.ExtendCC(watchlist.GetWatchersForPaths(files))
 
         change_desc = self._GetDescriptionForUpload(
@@ -2528,9 +2621,7 @@ class Changelist(object):
                     scm.GIT.ResolveCommit(settings.GetRoot(), "HEAD"),
                 )
             # Run post upload hooks, if specified.
-            if settings.GetRunPostUploadHook() and self.HasPostUploadHook(
-                base_branch
-            ):
+            if settings.GetRunPostUploadHook():
                 self.RunPostUploadHook(
                     options.verbose, base_branch, change_desc.description
                 )
@@ -3064,131 +3155,32 @@ class Changelist(object):
             self.GetGerritHost(), self._GerritChangeIdentifier()
         )
 
-    def AsyncWarmChangeDetail(
-        self, options: Optional[Sequence[str]] = None
-    ) -> Callable[[], None]:
-        """Asynchronously pre-warms change details in a background thread.
-
-        Args:
-            options: Gerrit query options to fetch.
-
-        Returns:
-            A callable join function that blocks until completion and raises any errors.
-        """
-        issue = self.GetIssue()
-        if not issue:
-            return lambda: None
-
-        host = self.GetGerritHost()
-        if options is None:
-            options = (
-                "DETAILED_ACCOUNTS",
-                "CURRENT_REVISION",
-                "CURRENT_COMMIT",
-                "LABELS",
-            )
-        options_list = _NormalizeChangeDetailOptions(options)
-        cache_key = (host, str(issue))
-        options_set = frozenset(options_list)
-
-        with self._DETAIL_CACHE_LOCK:
-            for cached_options_set, _ in self._DETAIL_CACHE.get(cache_key, []):
-                if options_set.issubset(cached_options_set):
-                    return lambda: None
-
-            if cache_key in self._ASYNC_DETAIL_THREADS:
-                (
-                    thread,
-                    get_err,
-                    active_options,
-                ) = self._ASYNC_DETAIL_THREADS[cache_key]
-                if thread.is_alive() and options_set.issubset(active_options):
-
-                    def _join():
-                        thread.join()
-                        err = get_err()
-                        if err:
-                            raise err
-
-                    return _join
-
-            fetch_err = None
-
-            def _fetch():
-                nonlocal fetch_err
-                try:
-                    self._GetChangeDetail(options_list)
-                except Exception as e:
-                    fetch_err = e
-                finally:
-                    with self._DETAIL_CACHE_LOCK:
-                        thread_info = self._ASYNC_DETAIL_THREADS.get(cache_key)
-                        if thread_info and thread_info[0] is thread:
-                            del self._ASYNC_DETAIL_THREADS[cache_key]
-
-            thread = threading.Thread(target=_fetch, daemon=True)
-            thread.start()
-            self._ASYNC_DETAIL_THREADS[cache_key] = (
-                thread,
-                lambda: fetch_err,
-                options_set,
-            )
-
-        def _join():
-            thread.join()
-            if fetch_err:
-                raise fetch_err
-
-        return _join
-
-    def _GetChangeDetail(
-        self, options: Optional[Sequence[str]] = None
-    ) -> dict[str, Any]:
+    def _GetChangeDetail(self, options=None):
         """Returns details of associated Gerrit change and caching results."""
-        options_list = _NormalizeChangeDetailOptions(options)
+        options = options or []
         assert self.GetIssue(), "issue is required to query Gerrit"
-        host = self.GetGerritHost()
 
-        cache_key = (host, str(self.GetIssue()))
-        options_set = frozenset(options_list)
+        # Optimization to avoid multiple RPCs:
+        if "CURRENT_REVISION" in options or "ALL_REVISIONS" in options:
+            options.append("CURRENT_COMMIT")
 
-        thread_to_wait = None
-        get_err = None
-        with self._DETAIL_CACHE_LOCK:
-            for cached_options_set, data in self._DETAIL_CACHE.get(
-                cache_key, []
-            ):
-                # Assumption: data fetched before with extra options is suitable
-                # for return for a smaller set of options.
-                # For example, if we cached data for
-                #     options=[CURRENT_REVISION, DETAILED_FOOTERS]
-                #   and request is for options=[CURRENT_REVISION],
-                # THEN we can return prior cached data.
-                if options_set.issubset(cached_options_set):
-                    return data
+        # Normalize issue and options for consistent keys in cache.
+        cache_key = str(self.GetIssue())
+        options_set = frozenset(o.upper() for o in options)
 
-            thread_info = self._ASYNC_DETAIL_THREADS.get(cache_key)
-            if thread_info and threading.current_thread() != thread_info[0]:
-                thread_to_wait, get_err, active_options = thread_info
-                # Only wait if in-flight thread will fulfill this request.
-                if not options_set.issubset(active_options):
-                    thread_to_wait = None
-
-        if thread_to_wait:
-            thread_to_wait.join()
-            err = get_err()
-            if err:
-                raise err
-            with self._DETAIL_CACHE_LOCK:
-                for cached_options_set, data in self._DETAIL_CACHE.get(
-                    cache_key, []
-                ):
-                    if options_set.issubset(cached_options_set):
-                        return data
+        for cached_options_set, data in self._detail_cache.get(cache_key, []):
+            # Assumption: data fetched before with extra options is suitable
+            # for return for a smaller set of options.
+            # For example, if we cached data for
+            #     options=[CURRENT_REVISION, DETAILED_FOOTERS]
+            #   and request is for options=[CURRENT_REVISION],
+            # THEN we can return prior cached data.
+            if options_set.issubset(cached_options_set):
+                return data
 
         try:
             data = gerrit_util.GetChangeDetail(
-                host,
+                self.GetGerritHost(),
                 self._GerritChangeIdentifier(),
                 options_set,
             )
@@ -3199,10 +3191,7 @@ class Changelist(object):
                 )
             raise
 
-        with self._DETAIL_CACHE_LOCK:
-            self._DETAIL_CACHE.setdefault(cache_key, []).append(
-                (options_set, data)
-            )
+        self._detail_cache.setdefault(cache_key, []).append((options_set, data))
         return data
 
     def _GetChangeCommit(self, revision: str = "current") -> dict:
@@ -3578,7 +3567,6 @@ class Changelist(object):
 
         push_returncode = 0
         before_push = time_time()
-        has_error = True
         try:
             # Combine user-provided push options with the potential
             # superproject push option.
@@ -3594,30 +3582,15 @@ class Changelist(object):
                 for opt in all_push_options:
                     push_cmd.extend(["-o", opt])
 
-            if _is_ai_agent():
-                log_msg = (
-                    "AI agent detected; "
-                    "suppressing repeating progress messages to avoid context pollution."
-                )
-                print(log_msg)
-                sys.stdout.flush()
-                logging.info(log_msg)
-                filter_fn = _create_ai_agent_push_filter()
-                print_stdout = False
-            else:
-                filter_fn = _flush_stdout
-                print_stdout = True
-
             push_stdout = gclient_utils.CheckCallAndFilter(
                 push_cmd,
                 env=env,
-                print_stdout=print_stdout,
+                print_stdout=True,
                 # Flush after every line: useful for seeing progress when
                 # running as recipe.
-                filter_fn=filter_fn,
+                filter_fn=lambda _: sys.stdout.flush(),
             )
             push_stdout = push_stdout.decode("utf-8", "replace")
-            has_error = False
         except subprocess2.CalledProcessError as e:
             push_returncode = e.returncode
             if "blocked keyword" in str(e.stdout) or "banned word" in str(
@@ -3692,12 +3665,9 @@ class Changelist(object):
 
             git_push_metadata["execution_time"] = execution_time
             git_push_metadata["exit_code"] = push_returncode
-            if has_error or os.environ.get("GIT_CL_TRACE") == "1":
-                self._WriteGitPushTraces(
-                    trace_name, traces_dir, git_push_metadata
-                )
-                self._CleanUpOldTraces()
+            self._WriteGitPushTraces(trace_name, traces_dir, git_push_metadata)
 
+            self._CleanUpOldTraces()
             gclient_utils.rmtree(traces_dir)
 
         return push_stdout
@@ -4297,6 +4267,81 @@ def _get_bug_line_values(default_project_prefix, bugs):
         # Don't bother finding common prefixes, CLs with >2 bugs are very very
         # rare.
         yield other
+
+
+def FindCodereviewSettingsFile(filename="codereview.settings"):
+    """Finds the given file starting in the cwd and going up.
+
+    Only looks up to the top of the repository unless an
+    'inherit-review-settings-ok' file exists in the root of the repository.
+    """
+    inherit_ok_file = "inherit-review-settings-ok"
+    cwd = os.getcwd()
+    root = settings.GetRoot()
+    if os.path.isfile(os.path.join(root, inherit_ok_file)):
+        root = None
+    while True:
+        if os.path.isfile(os.path.join(cwd, filename)):
+            return open(os.path.join(cwd, filename))
+        if cwd == root:
+            break
+        parent_dir = os.path.dirname(cwd)
+        if parent_dir == cwd:
+            # We hit the system root directory.
+            break
+        cwd = parent_dir
+    return None
+
+
+def LoadCodereviewSettingsFromFile(fileobj):
+    """Parses a codereview.settings file and updates hooks."""
+    keyvals = gclient_utils.ParseCodereviewSettingsContent(fileobj.read())
+    root = settings.GetRoot()
+
+    def SetProperty(name, setting):
+        fullname = "rietveld." + name
+        if setting in keyvals:
+            scm.GIT.SetConfig(root, fullname, keyvals[setting])
+        else:
+            scm.GIT.SetConfig(root, fullname, None, modify_all=True)
+
+    if not keyvals.get("GERRIT_HOST", False):
+        SetProperty("server", "CODE_REVIEW_SERVER")
+    # Only server setting is required. Other settings can be absent.
+    # In that case, we ignore errors raised during option deletion attempt.
+    SetProperty("cc", "CC_LIST")
+    SetProperty("tree-status-url", "STATUS")
+    SetProperty("viewvc-url", "VIEW_VC")
+    SetProperty("bug-prefix", "BUG_PREFIX")
+    SetProperty("cpplint-regex", "LINT_REGEX")
+    SetProperty("cpplint-ignore-regex", "LINT_IGNORE_REGEX")
+    SetProperty("run-post-upload-hook", "RUN_POST_UPLOAD_HOOK")
+    SetProperty("format-full-by-default", "FORMAT_FULL_BY_DEFAULT")
+
+    if "FORMAT_JS" in keyvals:
+        scm.GIT.SetConfig(root, "cl.format-js", keyvals["FORMAT_JS"])
+
+    if "GERRIT_HOST" in keyvals:
+        scm.GIT.SetConfig(root, "gerrit.host", keyvals["GERRIT_HOST"])
+
+    if "GERRIT_SQUASH_UPLOADS" in keyvals:
+        scm.GIT.SetConfig(
+            root, "gerrit.squash-uploads", keyvals["GERRIT_SQUASH_UPLOADS"]
+        )
+
+    if "GERRIT_SKIP_ENSURE_AUTHENTICATED" in keyvals:
+        scm.GIT.SetConfig(
+            "gerrit.skip-ensure-authenticated",
+            keyvals["GERRIT_SKIP_ENSURE_AUTHENTICATED"],
+        )
+
+    if "PUSH_URL_CONFIG" in keyvals and "ORIGIN_URL_CONFIG" in keyvals:
+        # should be of the form
+        # PUSH_URL_CONFIG: url.ssh://gitrw.chromium.org.pushinsteadof
+        # ORIGIN_URL_CONFIG: http://src.chromium.org/git
+        scm.GIT.SetConfig(
+            keyvals["PUSH_URL_CONFIG"], keyvals["ORIGIN_URL_CONFIG"]
+        )
 
 
 def urlretrieve(source, destination):
@@ -5122,8 +5167,6 @@ def CMDsquash_closed(parser, args):
         if answer not in ("y", ""):
             print("Aborted.")
             return 1
-
-    import git_squash_branch
 
     # scm.GIT.GetBranch does not work for detached HEAD situations.
     reset_branch = git_common.current_branch()
@@ -5974,10 +6017,161 @@ def FindFilesForLint(options, args):
     return cwd, files
 
 
+class PythonLinterConfig(typing.NamedTuple):
+    engine: str  # "ruff" or "pylint"
+    version: str | None = None
+
+
+_dir_linter_cache: dict[tuple[str, str | None], PythonLinterConfig | None] = {}
+
+
+def _ClearDirLinterCache() -> None:
+    """Clears the directory linter configuration cache."""
+    _dir_linter_cache.clear()
+
+
+def _InspectPresubmitForPythonLinter(
+    presubmit_path: str,
+) -> PythonLinterConfig | None:
+    """Inspects a PRESUBMIT.py file to detect configured Python linter.
+
+    Returns:
+        PythonLinterConfig(engine="ruff", version=None) if Ruff is configured.
+        PythonLinterConfig(engine="pylint", version=version_str) if Pylint is configured.
+        None if neither is configured.
+    """
+    try:
+        with open(presubmit_path, "r", encoding="utf-8", errors="ignore") as f:
+            content = f.read()
+    except OSError:
+        return None
+
+    # Try AST parsing first
+    try:
+        tree = ast.parse(content, filename=presubmit_path)
+        has_ruff = False
+        pylint_version = None
+
+        for node in ast.walk(tree):
+            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                if node.name == "CheckRuff":
+                    has_ruff = True
+                elif node.name == "CheckPylint" and pylint_version is None:
+                    pylint_version = "2.7"
+            elif isinstance(node, ast.Call):
+                func_name = ""
+                if isinstance(node.func, ast.Name):
+                    func_name = node.func.id
+                elif isinstance(node.func, ast.Attribute):
+                    func_name = node.func.attr
+
+                if func_name in ("RunRuff", "GetRuff", "CheckRuff"):
+                    has_ruff = True
+                elif func_name in ("RunPylint", "GetPylint", "CheckPylint"):
+                    version = None
+                    for kw in node.keywords:
+                        if kw.arg == "version":
+                            try:
+                                version = str(ast.literal_eval(kw.value))
+                            except (ValueError, SyntaxError):
+                                pass
+                    if version is not None:
+                        pylint_version = version
+                    elif pylint_version is None:
+                        pylint_version = "2.7"
+
+        if has_ruff:
+            return PythonLinterConfig(engine="ruff", version=None)
+        if pylint_version is not None:
+            return PythonLinterConfig(engine="pylint", version=pylint_version)
+    except Exception:
+        pass
+
+    # Regex fallback in case of syntax issues or dynamic AST structures.
+    # Exclude comment lines to avoid matching commented-out checks.
+    non_comment_lines = "\n".join(
+        line for line in content.splitlines() if not line.strip().startswith("#")
+    )
+    if re.search(r"\b(?:RunRuff|GetRuff|CheckRuff)\b", non_comment_lines):
+        return PythonLinterConfig(engine="ruff", version=None)
+
+    pylint_version_match = re.search(
+        r"\b(?:RunPylint|GetPylint)\s*\([^)]*version\s*=\s*['\"]?([0-9.]+)['\"]?",
+        non_comment_lines,
+    )
+    if pylint_version_match:
+        return PythonLinterConfig(
+            engine="pylint", version=pylint_version_match.group(1)
+        )
+
+    if re.search(r"\b(?:RunPylint|GetPylint|CheckPylint)\b", non_comment_lines):
+        return PythonLinterConfig(engine="pylint", version="2.7")
+
+    return None
+
+
+def _GetPythonLinterForFile(
+    file_path: str, root_dir: str | None = None
+) -> PythonLinterConfig | None:
+    """Finds the nearest ancestor PRESUBMIT.py and returns the linter configuration.
+
+    Returns:
+        PythonLinterConfig(engine="ruff", version=None) or
+        PythonLinterConfig(engine="pylint", version=version_str) or None.
+    """
+    abs_path = os.path.realpath(file_path)
+    search_dir = (
+        os.path.dirname(abs_path)
+        if (os.path.isfile(abs_path) or not os.path.exists(abs_path))
+        else abs_path
+    )
+    abs_root = os.path.realpath(root_dir) if root_dir else None
+
+    traversed_dirs = []
+    linter_info = None
+
+    while True:
+        cache_key = (search_dir, abs_root)
+        if cache_key in _dir_linter_cache:
+            linter_info = _dir_linter_cache[cache_key]
+            break
+
+        traversed_dirs.append(search_dir)
+        presubmit_file = os.path.join(search_dir, "PRESUBMIT.py")
+        if os.path.isfile(presubmit_file):
+            info = _InspectPresubmitForPythonLinter(presubmit_file)
+            if info:
+                linter_info = info
+                break
+
+        if abs_root and search_dir == abs_root:
+            break
+
+        # Stop at repo borders (.git, .gclient) unless inherit-review-settings-ok is present.
+        has_inherit_ok = os.path.isfile(
+            os.path.join(search_dir, "inherit-review-settings-ok")
+        )
+        if not has_inherit_ok:
+            if os.path.exists(
+                os.path.join(search_dir, ".git")
+            ) or os.path.isfile(os.path.join(search_dir, ".gclient")):
+                break
+
+        parent_dir = os.path.realpath(os.path.dirname(search_dir))
+        if parent_dir == search_dir:
+            break
+        search_dir = parent_dir
+
+    for d in traversed_dirs:
+        _dir_linter_cache[(d, abs_root)] = linter_info
+
+    return linter_info
+
+
 @subcommand.usage("[files ...]")
 @metrics.collector.collect_metrics("git cl lint")
 def CMDlint(parser, args):
-    """Runs cpplint on the current changelist or given files.
+    """Runs linters (cpplint for C++, Ruff/Pylint for Python) on the current changelist or given files.
 
     positional arguments:
       files           Files to lint. If omitted, lint all the affected files.
@@ -5989,47 +6183,155 @@ def CMDlint(parser, args):
         metavar="-x,+y",
         help="Comma-separated list of cpplint's category-filters",
     )
+    parser.add_option(
+        "--fix",
+        action="store_true",
+        default=False,
+        help="Auto-fix lint errors (supported for Ruff; ignored for Pylint).",
+    )
     options, args = parser.parse_args(args)
     root_path, files = FindFilesForLint(options, args)
     if files is None:
         return 1
 
-    # Access to a protected member _XX of a client class
-    try:
-        import cpplint
-        import cpplint_chromium
-        import presubmit_canned_checks
+    if not files:
+        return 0
 
-        # Process cpplint arguments, if any.
-        filters = presubmit_canned_checks.GetCppLintFilters(options.filter)
-        command = ["--filter=" + ",".join(filters)]
-        command.extend(files)
-        files_to_lint = cpplint.ParseArguments(command)
-    except ImportError:
-        print(
-            "Your depot_tools is missing cpplint.py and/or cpplint_chromium.py."
-        )
-        return 1
+    _ClearDirLinterCache()
 
-    # Change the current working directory before calling lint so that it
-    # shows the correct base.
-    previous_cwd = os.getcwd()
-    try:
-        os.chdir(root_path)
-        extra_check_functions = [
-            cpplint_chromium.CheckPointerDeclarationWhitespace
-        ]
-        for file in files_to_lint:
-            cpplint.ProcessFile(
-                file,
-                cpplint._cpplint_state.verbose_level,
-                extra_check_functions,
+    cpp_files = []
+    python_files = []
+    if len(files) == 1 and files[0] == "-":
+        cpp_files = ["-"]
+    else:
+        for f in files:
+            ext = os.path.splitext(f)[1].lower()
+            if ext == ".py":
+                python_files.append(f)
+            else:
+                cpp_files.append(f)
+
+    cpp_errors = 0
+    if cpp_files:
+        try:
+            import cpplint
+            import cpplint_chromium
+
+            # Process cpplint arguments, if any.
+            filters = presubmit_canned_checks.GetCppLintFilters(options.filter)
+            command = ["--filter=" + ",".join(filters)]
+            command.extend(cpp_files)
+            files_to_lint = cpplint.ParseArguments(command)
+        except ImportError:
+            print(
+                "Your depot_tools is missing cpplint.py and/or cpplint_chromium.py."
             )
-    finally:
-        os.chdir(previous_cwd)
+            return 1
 
-    print("Total errors found: %d\n" % cpplint._cpplint_state.error_count)
-    if cpplint._cpplint_state.error_count != 0:
+        # Change the current working directory before calling lint so that it
+        # shows the correct base.
+        previous_cwd = os.getcwd()
+        try:
+            os.chdir(root_path)
+            extra_check_functions = [
+                cpplint_chromium.CheckPointerDeclarationWhitespace
+            ]
+            for file in files_to_lint:
+                cpplint.ProcessFile(
+                    file,
+                    cpplint._cpplint_state.verbose_level,
+                    extra_check_functions,
+                )
+        finally:
+            os.chdir(previous_cwd)
+
+        cpp_errors = cpplint._cpplint_state.error_count
+        if not python_files:
+            print(f"Total errors found: {cpp_errors}\n")
+        else:
+            print(f"cpplint: {cpp_errors} errors found.\n")
+
+    py_errors = 0
+    if python_files:
+        ruff_files = []
+        pylint_files = collections.defaultdict(list)
+        skipped_py_files = []
+
+        for f in python_files:
+            f_abs = os.path.join(root_path, f) if not os.path.isabs(f) else f
+            if not os.path.isfile(f_abs):
+                continue
+            linter_config = _GetPythonLinterForFile(f_abs, root_dir=root_path)
+            if not linter_config:
+                skipped_py_files.append(f)
+                continue
+            if linter_config.engine == "ruff":
+                ruff_files.append(f)
+            elif linter_config.engine == "pylint":
+                pylint_files[linter_config.version or "2.7"].append(f)
+
+        if skipped_py_files:
+            for f in skipped_py_files:
+                print(
+                    f"Skipping {f}: no Python linter configured in ancestor PRESUBMIT.py"
+                )
+
+        if ruff_files:
+            tool = os.path.join(DEPOT_TOOLS, "ruff_chromium")
+            if not os.path.exists(tool):
+                print(
+                    f"Error: ruff_chromium wrapper not found at {tool}. Please"
+                    " update depot_tools."
+                )
+                py_errors += 1
+            else:
+                chunk_size = 50 if sys.platform == "win32" else len(ruff_files)
+                for i in range(0, len(ruff_files), chunk_size):
+                    chunk = ruff_files[i : i + chunk_size]
+                    cmd = ["vpython3", tool, "check"]
+                    if options.fix:
+                        cmd.append("--fix")
+                    cmd.extend(chunk)
+                    code = subprocess2.call(
+                        cmd,
+                        cwd=root_path,
+                    )
+                    if code != 0:
+                        py_errors += 1
+
+        if options.fix and pylint_files:
+            print(
+                "Note: --fix is only supported for Ruff and has no effect on"
+                " Pylint."
+            )
+
+        for version, flist in pylint_files.items():
+            tool = os.path.join(DEPOT_TOOLS, f"pylint-{version}")
+            if not os.path.exists(tool):
+                print(f"Error: Pylint wrapper not found at {tool}")
+                py_errors += 1
+                continue
+
+            stdin_data = "\n".join(flist).encode("utf-8")
+            p = subprocess2.Popen(
+                ["vpython3", tool, "--args-on-stdin"],
+                stdin=subprocess2.PIPE,
+                cwd=root_path,
+            )
+            p.communicate(stdin_data)
+            if p.returncode != 0:
+                py_errors += 1
+
+    has_cpp_errors = cpp_errors > 0
+    has_py_errors = py_errors > 0
+
+    if cpp_files and python_files:
+        if has_py_errors:
+            print("Python linters reported errors.")
+    elif python_files and has_py_errors:
+        print("Python lint errors found.")
+
+    if has_cpp_errors or has_py_errors:
         return 1
     return 0
 
@@ -6075,15 +6377,8 @@ def CMDpresubmit(parser, args):
         "--parallel",
         action="store_true",
         help="Run all tests specified by input_api.RunTests in all "
-        "PRESUBMIT files in parallel (default: True).",
+        "PRESUBMIT files in parallel.",
     )
-    parser.add_option(
-        "--no-parallel",
-        action="store_false",
-        dest="parallel",
-        help="Do not run presubmit tests in parallel.",
-    )
-    parser.set_defaults(parallel=True)
     parser.add_option(
         "--resultdb",
         action="store_true",
@@ -6143,7 +6438,7 @@ def CMDpresubmit(parser, args):
     return 0
 
 
-def GenerateGerritChangeId(message: str) -> str:
+def GenerateGerritChangeId(message):
     """Returns the Change ID footer value (Ixxxxxx...xxx).
 
     Works the same way as
@@ -6154,30 +6449,27 @@ def GenerateGerritChangeId(message: str) -> str:
     commit message, author/committer info and timestamps.
     """
     lines = []
-    tree_hash = RunGitSilent(["write-tree"]).strip()
-    lines.append("tree %s" % tree_hash)
-    code, parent = RunGitWithCode(["rev-parse", "HEAD~0"], suppress_stderr=True)
+    tree_hash = RunGitSilent(["write-tree"])
+    lines.append("tree %s" % tree_hash.strip())
+    code, parent = RunGitWithCode(
+        ["rev-parse", "HEAD~0"], suppress_stderr=False
+    )
     if code == 0:
         lines.append("parent %s" % parent.strip())
-    author = RunGitSilent(["var", "GIT_AUTHOR_IDENT"]).strip()
-    lines.append("author %s" % author)
-    committer = RunGitSilent(["var", "GIT_COMMITTER_IDENT"]).strip()
-    lines.append("committer %s" % committer)
+    author = RunGitSilent(["var", "GIT_AUTHOR_IDENT"])
+    lines.append("author %s" % author.strip())
+    committer = RunGitSilent(["var", "GIT_COMMITTER_IDENT"])
+    lines.append("committer %s" % committer.strip())
     lines.append("")
     # Note: Gerrit's commit-hook actually cleans message of some lines and
     # whitespace. This code is not doing this, but it clearly won't decrease
     # entropy.
     lines.append(message)
-
-    # Compute the Git loose commit object hash in-memory instead of
-    # shelling out to `git hash-object -t commit --stdin`.
-    payload = ("\n".join(lines)).encode("utf-8")
-    header = f"commit {len(payload)}\0".encode("ascii")
-    # Automatically match repository hash algorithm (SHA-256 vs SHA-1) based
-    # on tree_hash length.
-    hash_algo = hashlib.sha256 if len(tree_hash) == 64 else hashlib.sha1
-    change_hash = hash_algo(header + payload).hexdigest()
-    return "I%s" % change_hash
+    change_hash = RunCommand(
+        ["git", "hash-object", "-t", "commit", "--stdin"],
+        stdin=("\n".join(lines)).encode(),
+    )
+    return "I%s" % change_hash.strip()
 
 
 def GetTargetRef(remote, remote_branch, target_branch) -> Optional[str]:
@@ -6263,10 +6555,9 @@ def CMDupload(parser, args):
         git config --unset branch.branch_name.skip-deps-uploads
     Can also set the above globally by using the --global flag.
 
-    If the name of the checked out branch contains a bug or fix pattern (e.g.
-    "bug-123", "bug123", "b/123", "b-123", "b123", "fix-123") at the start or
-    delineated by separators, this bug number is automatically populated in the
-    CL description.
+    If the name of the checked out branch starts with "bug-" or "fix-" followed
+    by a bug number, this bug number is automatically populated in the CL
+    description.
 
     If subject contains text in square brackets or has "<text>: " prefix, such
     text(s) is treated as Gerrit hashtags. For example, CLs with subjects:
@@ -6432,15 +6723,8 @@ def CMDupload(parser, args):
         "--parallel",
         action="store_true",
         help="Run all tests specified by input_api.RunTests in all "
-        "PRESUBMIT files in parallel (default: True).",
+        "PRESUBMIT files in parallel.",
     )
-    parser.add_option(
-        "--no-parallel",
-        action="store_false",
-        dest="parallel",
-        help="Do not run presubmit tests in parallel.",
-    )
-    parser.set_defaults(parallel=True)
     parser.add_option(
         "--no-autocc",
         action="store_true",
@@ -6531,12 +6815,6 @@ def CMDupload(parser, args):
 
     cl = Changelist(branchref=options.target_branch)
 
-    # Launch working tree dirty check asynchronously in a background thread
-    # so that the ~350ms git status scan on large repositories (like chromium/src)
-    # runs concurrently with EnsureAuthenticated, AsyncEnsureAccountExists,
-    # option parsing, and AsyncWarmChangeDetail.
-    wait_dirty_check = git_common.async_is_dirty_git_tree("upload")
-
     # Ensure we're authenticated correctly. Otherwise `git cl upload` will:
     #   * run `git status` (slow for large repos)
     #   * run presubmit tests (likely slow)
@@ -6547,14 +6825,11 @@ def CMDupload(parser, args):
     #
     # 1. EnsureAuthenticated ensures we have a credential that satisfies ReAuth
     #    requirement, so our upload is "trusted" for review enforcement.
-    # 2. AsyncEnsureAccountExists ensures the user's Gerrit account exists (cached
-    #    in Git config). On cold cache misses or --force, verification runs in a
-    #    background thread concurrently with local git status checks and options
-    #    parsing below to hide network latency.
+    # 2. GetAccountDetails ensures the user's Gerrit account exists. This is
+    #    required on-top of EnsureAuthenticated check, because Gerrit accounts
+    #    exists independently of the OAuth-ed account.
     cl.EnsureAuthenticated(force=options.force)
-    wait_for_account = gerrit_util.AsyncEnsureAccountExists(
-        cl.GetGerritHost(), force=options.force
-    )
+    gerrit_util.GetAccountDetails(cl.GetGerritHost())
 
     # Check whether git should be updated.
     recommendation = git_common.check_git_version()
@@ -6567,6 +6842,9 @@ def CMDupload(parser, args):
     # they have fsmonitor enabled.
     if os.path.isfile(".gitmodules"):
         git_common.warn_submodule()
+
+    if git_common.is_dirty_git_tree("upload"):
+        return 1
 
     options.reviewers = cleanup_list(options.reviewers)
     options.cc = cleanup_list(options.cc)
@@ -6614,32 +6892,21 @@ def CMDupload(parser, args):
         # Load default for user, repo, squash=true, in this order.
         options.squash = settings.GetSquashGerritUploads()
 
-    # Warm change details cache in the background now to avoid blocking RPCs
-    # later, reducing latency for developers.
-    cl.AsyncWarmChangeDetail(
-        [
-            "DETAILED_ACCOUNTS",
-            "CURRENT_REVISION",
-            "CURRENT_COMMIT",
-            "LABELS",
-        ]
-    )
+    # Warm change details cache now to avoid RPCs later, reducing latency for
+    # developers.
+    if cl.GetIssue():
+        cl._GetChangeDetail(
+            [
+                "DETAILED_ACCOUNTS",
+                "CURRENT_REVISION",
+                "CURRENT_COMMIT",
+                "LABELS",
+            ]
+        )
 
     if options.retry_failed and not cl.GetIssue():
         print("No previous patchsets, so --retry-failed has no effect.")
         options.retry_failed = False
-
-    # Verify working tree is clean before proceeding with either squashed or
-    # non-squashed uploads. Evaluating wait_dirty_check() before wait_for_account()
-    # aborts immediately on dirty trees without blocking on network latency from
-    # remote Gerrit account verification.
-    if wait_dirty_check():
-        return 1
-
-    # Block until background Gerrit account verification finishes (if not
-    # already completed or cached) before proceeding to interactive description
-    # prompt, presubmit checks, or git push.
-    wait_for_account()
 
     if options.squash:
         if options.cherry_pick_stacked:
@@ -6749,15 +7016,10 @@ def UploadAllSquashed(
         root_branch = scm.GIT.GetBranch(settings.GetRoot())
         if orig_parent is None:
             orig_parent = parent
-        current_branch = root_branch
-        needs_restore = False
         try:
             for i, cl in enumerate(ordered_cls):
-                cl_branch = cl.GetBranch()
-                if cl_branch and cl_branch != current_branch:
-                    RunGit(["checkout", "-q", "--detach", cl_branch])
-                    current_branch = cl_branch
-                    needs_restore = True
+                if cl.GetBranch():
+                    RunGit(["checkout", "-q", "--detach", cl.GetBranch()])
                 # If we're in the middle of the stack, set end_commit to
                 # downstream's direct ancestor.
                 if i + 1 < len(ordered_cls):
@@ -6773,7 +7035,7 @@ def UploadAllSquashed(
                 parent = new_upload.commit_to_push
                 orig_parent = child_base_commit
         finally:
-            if root_branch and needs_restore:
+            if root_branch:
                 RunGit(["checkout", "-q", root_branch])
 
     # Create refspec options
@@ -6832,34 +7094,8 @@ def UploadAllSquashed(
             )
         )
 
-    # Update local Git configurations sequentially to prevent .git/config.lock collisions.
     for i, (cl, new_upload) in enumerate(uploads_by_cl):
-        cl.PostUploadUpdates(
-            options, new_upload, change_numbers[i], update_reviewers=False
-        )
-
-    # Run remote Gerrit reviewer updates concurrently across worker threads.
-    def _AddRemoteReviewers(item):
-        cl, new_upload = item
-        if new_upload.reviewers or new_upload.ccs:
-            gerrit_util.AddReviewers(
-                cl.GetGerritHost(),
-                cl._GerritChangeIdentifier(),
-                reviewers=new_upload.reviewers,
-                ccs=new_upload.ccs,
-                notify=bool(options.send_mail),
-            )
-
-    pending_reviewer_updates = [
-        item for item in uploads_by_cl if item[1].reviewers or item[1].ccs
-    ]
-    if len(pending_reviewer_updates) == 1:
-        _AddRemoteReviewers(pending_reviewer_updates[0])
-    elif len(pending_reviewer_updates) > 1:
-        with concurrent.futures.ThreadPoolExecutor(
-            max_workers=min(len(pending_reviewer_updates), 8)
-        ) as executor:
-            list(executor.map(_AddRemoteReviewers, pending_reviewer_updates))
+        cl.PostUploadUpdates(options, new_upload, change_numbers[i])
 
     return 0
 
@@ -7170,8 +7406,6 @@ def CMDsplit(parser, args):
     def WrappedCMDupload(args):
         return CMDupload(OptionParser(), args)
 
-    import split_cl
-
     return split_cl.SplitCl(
         options.description_file,
         options.comment_file,
@@ -7236,15 +7470,8 @@ def CMDland(parser, args):
         "--parallel",
         action="store_true",
         help="Run all tests specified by input_api.RunTests in all "
-        "PRESUBMIT files in parallel (default: True).",
+        "PRESUBMIT files in parallel.",
     )
-    parser.add_option(
-        "--no-parallel",
-        action="store_false",
-        dest="parallel",
-        help="Do not run presubmit tests in parallel.",
-    )
-    parser.set_defaults(parallel=True)
     parser.add_option(
         "--resultdb",
         action="store_true",
@@ -7387,8 +7614,6 @@ def CMDpatch(parser, args):
                 stderr=subprocess2.PIPE,
                 error_ok=True,
             )
-        import git_new_branch
-
         err = git_new_branch.create_new_branch(options.newbranch)
         if err:
             return err
@@ -7979,8 +8204,6 @@ def CMDowners(parser, args):
         print("\n".join(owners))
         return 0
 
-    import owners_finder
-
     return owners_finder.OwnersFinder(
         affected_files,
         author,
@@ -7991,6 +8214,1016 @@ def CMDowners(parser, args):
         disable_color=options.no_color,
         ignore_author=options.ignore_self,
     ).run()
+
+
+def _SplitArgsByCmdLineLimit(args):
+    """Splits a list of arguments into shorter lists that fit within the command
+    line limit."""
+    # The maximum command line length is 32768 characters on Windows and 2097152
+    # characters on other platforms. Use a lower limit to be safe.
+    command_line_limit = 30000 if sys.platform.startswith("win32") else 2000000
+
+    batch_args = []
+    batch_length = 0
+    for arg in args:
+        # Add 1 to account for the space between arguments.
+        arg_length = len(arg) + 1
+        # If the current argument is too long to fit in a single command line,
+        # split it into smaller parts.
+        if batch_length + arg_length > command_line_limit and batch_args:
+            yield batch_args
+            batch_args = []
+            batch_length = 0
+
+        batch_args.append(arg)
+        batch_length += arg_length
+
+    if batch_args:
+        yield batch_args
+
+
+def RunGitDiffCmd(
+    diff_type, upstream_commit, files, allow_prefix=False, **kwargs
+):
+    """Generates and runs diff command."""
+    # Generate diff for the current branch's changes.
+    diff_cmd = [
+        "-c",
+        "core.quotePath=false",
+        "diff",
+        "--no-ext-diff",
+        "--no-renames",
+    ]
+
+    if allow_prefix:
+        # explicitly setting --src-prefix and --dst-prefix is necessary in the
+        # case that diff.noprefix is set in the user's git config.
+        diff_cmd += ["--src-prefix=a/", "--dst-prefix=b/"]
+    else:
+        diff_cmd += ["--no-prefix"]
+
+    diff_cmd += diff_type
+    diff_cmd += [upstream_commit, "--"]
+
+    if not files:
+        return RunGit(diff_cmd, **kwargs)
+
+    for file in files:
+        if file != "-" and not os.path.isdir(file) and not os.path.isfile(file):
+            DieWithError('Argument "%s" is not a file or a directory' % file)
+
+    output = ""
+    for files_batch in _SplitArgsByCmdLineLimit(files):
+        output += RunGit(diff_cmd + files_batch, **kwargs)
+
+    return output
+
+
+def _RunClangFormatDiff(opts, paths, top_dir, diffs):
+    """Runs clang-format-diff and sets a return value if necessary."""
+    # Set to 2 to signal to CheckPatchFormatted() that this patch isn't
+    # formatted. This is used to block during the presubmit.
+    return_value = 0
+
+    # Locate the clang-format binary in the checkout
+    try:
+        clang_format_tool = clang_format.FindClangFormatToolInChromiumTree()
+    except clang_format.NotFoundError as e:
+        DieWithError(e)
+
+    # Full formatting
+    if not diffs:
+        cmd = [clang_format_tool]
+        if not opts.dry_run and not opts.diff:
+            cmd.append("-i")
+        if opts.dry_run:
+            for p in paths:
+                with open(p, "r") as myfile:
+                    code = myfile.read().replace("\r\n", "\n")
+                    stdout = RunCommand(cmd + [p], cwd=top_dir)
+                    stdout = stdout.replace("\r\n", "\n")
+                    if opts.diff:
+                        sys.stdout.write(stdout)
+                    if code != stdout:
+                        return_value = 2
+        else:
+            stdout = RunCommand(cmd + paths, cwd=top_dir)
+            if opts.diff:
+                sys.stdout.write(stdout)
+
+        return return_value
+
+    # Partial formatting
+    try:
+        script = clang_format.FindClangFormatScriptInChromiumTree(
+            "clang-format-diff.py"
+        )
+    except clang_format.NotFoundError as e:
+        DieWithError(e)
+
+    cmd = [sys.executable, script, "-p1"]
+    if not opts.dry_run and not opts.diff:
+        cmd.append("-i")
+
+    env = os.environ.copy()
+    env["PATH"] = (
+        str(os.path.dirname(clang_format_tool)) + os.pathsep + env["PATH"]
+    )
+    # If `clang-format-diff.py` is run without `-i` and the diff is
+    # non-empty, it returns an error code of 1. This will cause `RunCommand`
+    # to die with an error if `error_ok` is not set.
+    input_diff = "\n".join(diffs.get(p, "") for p in paths)
+    stdout = RunCommand(
+        cmd,
+        error_ok=True,
+        stdin=input_diff.encode(),
+        cwd=top_dir,
+        env=env,
+        shell=sys.platform.startswith("win32"),
+    )
+
+    if stdout:
+        # Filter out full-deletion diffs produced by clang-format-diff.py for
+        # files that are ignored by clang-format.
+        filtered_diffs = []
+        for file_diff in re.split(r"^(?=--- )", stdout, flags=re.MULTILINE):
+            if not file_diff.strip():
+                continue
+            if re.search(
+                r"^@@ -1(?:,\d+)? \+0,0 @@", file_diff, flags=re.MULTILINE
+            ):
+                continue
+            filtered_diffs.append(file_diff)
+        stdout = "".join(filtered_diffs)
+
+    if opts.diff:
+        sys.stdout.write(stdout)
+    if opts.dry_run and len(stdout) > 0:
+        return_value = 2
+
+    return return_value
+
+
+def _RunGoogleJavaFormat(opts, paths, top_dir, diffs):
+    """Runs google-java-format and sets a return value if necessary."""
+    tool = google_java_format.FindGoogleJavaFormat()
+    if tool is None:
+        # Fail silently. It could be we are on an old chromium revision, or that
+        # it is a non-chromium project. https://crbug.com/1491627
+        print("google-java-format not found, skipping java formatting.")
+        return 0
+
+    base_cmd = [tool]
+    # The script now adds --aosp, but this shim is needed for the window where
+    # devs are using depot_tools that is newer than their chromium checkout.
+    # This can be remove after Dec 2025.
+    if os.path.exists(
+        os.path.join(os.path.dirname(tool), "chromium-overrides.jar")
+    ):
+        base_cmd += ["--aosp"]
+
+    if not opts.diff:
+        if opts.dry_run:
+            base_cmd += ["--dry-run"]
+        else:
+            base_cmd += ["--replace"]
+
+    changed_lines_only = bool(diffs)
+    if changed_lines_only:
+        # Format two lines around each changed line so that the correct amount
+        # of blank lines will be added between symbols.
+        line_diffs = _ComputeFormatDiffLineRanges(paths, diffs, expand=2)
+
+    def RunFormat(cmd, path, range_args, **kwds):
+        stdout = RunCommand(cmd + range_args + [path], **kwds)
+
+        if changed_lines_only:
+            # google-java-format will not remove unused imports because they
+            # do not fall within the changed lines. Run the command again to
+            # remove them.
+            if opts.diff:
+                stdout = RunCommand(
+                    cmd + ["--fix-imports-only", "-"],
+                    stdin=stdout.encode(),
+                    **kwds,
+                )
+            else:
+                stdout += RunCommand(cmd + ["--fix-imports-only", path], **kwds)
+
+        # If --diff is passed, google-java-format will output formatted content.
+        # Diff it with the existing file in the checkout and output the result.
+        if opts.diff:
+            stdout = RunGitDiffCmd(
+                ["-U3"],
+                "--no-index",
+                [path, "-"],
+                stdin=stdout.encode(),
+                **kwds,
+            )
+        return stdout
+
+    results = []
+    kwds = {"error_ok": True, "cwd": top_dir}
+    with multiprocessing.pool.ThreadPool() as pool:
+        for path in paths:
+            cmd = base_cmd.copy()
+            range_args = []
+            if changed_lines_only:
+                ranges = line_diffs.get(path)
+                if not ranges:
+                    # E.g. There were only deleted lines.
+                    continue
+                range_args = ["--lines={}:{}".format(a, b) for a, b in ranges]
+
+            results.append(
+                pool.apply_async(
+                    RunFormat, args=[cmd, path, range_args], kwds=kwds
+                )
+            )
+
+        return_value = 0
+        for result in results:
+            stdout = result.get()
+            if stdout:
+                if opts.diff:
+                    sys.stdout.write("Requires formatting: " + stdout)
+                if opts.dry_run:
+                    return_value = 2
+
+        return return_value
+
+
+def _RunKtfmt(opts, paths, top_dir, diffs):
+    """Runs ktfmt and sets a return value if necessary."""
+    tool = ktfmt.FindKtfmt()
+    if tool is None:
+        print("ktfmt not found, skipping kotlin formatting.")
+        return 0
+
+    if opts.diff:
+        return_value = 0
+        kwds = {"error_ok": True, "cwd": top_dir}
+        for path in paths:
+            file_path = os.path.join(top_dir, path) if top_dir else path
+            with open(file_path, "rb") as f:
+                content = f.read()
+            stdout = RunCommand([tool, "-"], stdin=content, **kwds)
+            diff_output = RunGitDiffCmd(
+                ["-U3"],
+                "--no-index",
+                [path, "-"],
+                stdin=stdout.encode(),
+                **kwds,
+            )
+            if diff_output:
+                sys.stdout.write("Requires formatting: " + diff_output)
+                if opts.dry_run:
+                    return_value = 2
+        return return_value
+
+    cmd = [tool]
+    if opts.dry_run:
+        cmd += ["--set-exit-if-changed", "--dry-run"]
+
+    for paths_batch in _SplitArgsByCmdLineLimit(paths):
+        ktfmt_exitcode = subprocess2.call(cmd + paths_batch, shell=False)
+        if opts.dry_run and ktfmt_exitcode != 0:
+            return 2
+
+    return 0
+
+
+def _RunRustFmt(opts, paths, top_dir, diffs):
+    """Runs rustfmt.  Just like _RunClangFormatDiff returns 2 to indicate that
+    presubmit checks have failed (and returns 0 otherwise)."""
+    # Locate the rustfmt binary.
+    try:
+        rustfmt_tool = rustfmt.FindRustfmtToolInChromiumTree()
+    except rustfmt.NotFoundError as e:
+        DieWithError(e)
+
+    chromium_src_path = gclient_paths.GetPrimarySolutionPath()
+    rustfmt_toml_path = os.path.join(chromium_src_path, ".rustfmt.toml")
+
+    # TODO(crbug.com/1440869): Support formatting only the changed lines
+    # if `opts.full or settings.GetFormatFullByDefault()` is False.
+    cmd = [rustfmt_tool, f"--config-path={rustfmt_toml_path}"]
+    if opts.dry_run:
+        cmd.append("--check")
+
+    for paths_batch in _SplitArgsByCmdLineLimit(paths):
+        rustfmt_exitcode = subprocess2.call(cmd + paths_batch, shell=False)
+        if opts.dry_run and rustfmt_exitcode != 0:
+            return 2
+
+    return 0
+
+
+def _RunSwiftFormat(opts, paths, top_dir, diffs):
+    """Runs swift-format.  Just like _RunClangFormatDiff returns 2 to indicate
+    that presubmit checks have failed (and returns 0 otherwise)."""
+    if sys.platform != "darwin":
+        DieWithError("swift-format is only supported on macOS.")
+    # Locate the swift-format binary.
+    try:
+        swift_format_tool = swift_format.FindSwiftFormatToolInChromiumTree()
+    except swift_format.NotFoundError as e:
+        DieWithError(e)
+
+    cmd = [swift_format_tool]
+    if opts.dry_run:
+        cmd += ["lint", "-s"]
+    else:
+        cmd += ["format", "-i"]
+    cmd += paths
+    swift_format_exitcode = subprocess2.call(cmd, stderr=subprocess2.STDOUT)
+
+    if opts.dry_run and swift_format_exitcode != 0:
+        return 2
+
+    return 0
+
+
+_ruff_batch_supported_cache: bool | None = None
+
+
+def _GetRuffChromiumPath() -> str:
+    """Returns the absolute path to the ruff_chromium wrapper script."""
+    depot_tools_path = os.path.dirname(os.path.abspath(__file__))
+    return os.path.join(depot_tools_path, "ruff_chromium")
+
+
+def _IsRuffBatchSupported(ruff_chromium_path: str) -> bool:
+    """Checks if the ruff_chromium wrapper supports batch formatting.
+
+    It does this by checking if the wrapper defines 'def run_batch('.
+    """
+    global _ruff_batch_supported_cache
+    if _ruff_batch_supported_cache is not None:
+        return _ruff_batch_supported_cache
+
+    try:
+        with open(ruff_chromium_path, "r", encoding="utf-8") as f:
+            _ruff_batch_supported_cache = "def run_batch(" in f.read()
+    except (OSError, UnicodeDecodeError):
+        _ruff_batch_supported_cache = False
+
+    return _ruff_batch_supported_cache
+
+
+def _RunPythonFormat(
+    opts: optparse.Values,
+    paths: list[str],
+    top_dir: str,
+    diffs: Mapping[str, str] | None,
+) -> int:
+    """Formats python files using ruff_chromium in batch mode if supported.
+
+    If ruff_chromium is not present or batch mode is not supported, it falls
+    back to YAPF formatting.
+    """
+    ruff_chromium = _GetRuffChromiumPath()
+
+    use_ruff_batch = False
+    if os.path.exists(ruff_chromium):
+        use_ruff_batch = _IsRuffBatchSupported(ruff_chromium)
+
+    if not use_ruff_batch:
+        return _RunYapf(opts, paths, top_dir, diffs)
+
+    config = {
+        "root": top_dir,
+        "diff": bool(opts.diff),
+        "dry_run": bool(opts.dry_run),
+        "full": bool(opts.full),
+        "files": [],
+    }
+
+    line_diffs = {}
+    if paths and diffs:
+        line_diffs = _ComputeFormatDiffLineRanges(paths, diffs)
+
+    for path in paths:
+        file_entry: dict[str, Any] = {"path": path}
+        if not opts.full:
+            ranges = line_diffs.get(path)
+            if not ranges:
+                continue
+            file_entry["ranges"] = [[start, end + 1] for start, end in ranges]
+        config["files"].append(file_entry)
+
+    if not config["files"]:
+        return 0
+
+    cmd = ["vpython3", ruff_chromium, "--batch"]
+    stdin_data = json.dumps(config).encode("utf-8")
+
+    try:
+        (stdout, stderr), code = subprocess2.communicate(
+            cmd,
+            stdin=stdin_data,
+            stdout=subprocess2.PIPE,
+            stderr=subprocess2.PIPE,
+            cwd=top_dir,
+            shell=sys.platform == "win32",
+        )
+
+        if code == 1:
+            if stderr:
+                sys.stderr.buffer.write(stderr)
+            return 1
+        if code == 2:
+            if opts.diff and stdout:
+                sys.stdout.buffer.write(stdout)
+            return 2
+        if code == 0:
+            if opts.diff and stdout:
+                sys.stdout.buffer.write(stdout)
+            return 0
+        if stderr:
+            sys.stderr.buffer.write(stderr)
+        return 1
+    except Exception as e:
+        sys.stderr.write(f"Failed to run ruff_chromium --batch: {e}\n")
+        return 1
+
+
+def _RunYapf(opts, paths, top_dir, diffs):
+    depot_tools_path = os.path.dirname(os.path.abspath(__file__))
+    yapf_tool = os.path.join(depot_tools_path, "yapf")
+
+    # Used for caching.
+    yapf_configs = {}
+    for p in paths:
+        # Find the yapf style config for the current file, defaults to depot
+        # tools default.
+        _FindYapfConfigFile(p, yapf_configs, top_dir)
+
+    # Turn on python formatting by default if a yapf config is specified.
+    # This breaks in the case of this repo though since the specified
+    # style file is also the global default.
+    if opts.python is None:
+        paths = [
+            p
+            for p in paths
+            if _FindYapfConfigFile(p, yapf_configs, top_dir) is not None
+        ]
+
+    # Note: yapf still seems to fix indentation of the entire file
+    # even if line ranges are specified.
+    # See https://github.com/google/yapf/issues/499
+    if paths and diffs:
+        line_diffs = _ComputeFormatDiffLineRanges(paths, diffs)
+
+    yapfignore_patterns = _GetYapfIgnorePatterns(top_dir)
+    paths = _FilterYapfIgnoredFiles(paths, yapfignore_patterns)
+
+    return_value = 0
+    for path in paths:
+        yapf_style = _FindYapfConfigFile(path, yapf_configs, top_dir)
+        # Default to pep8 if not .style.yapf is found.
+        if not yapf_style:
+            yapf_style = "pep8"
+
+        cmd = ["vpython3", yapf_tool, "--style", yapf_style, path]
+
+        if not opts.full:
+            ranges = line_diffs.get(path)
+            if not ranges:
+                continue
+            # Only run yapf over changed line ranges.
+            for diff_start, diff_end in ranges:
+                cmd += ["-l", "{}-{}".format(diff_start, diff_end)]
+
+        if opts.diff or opts.dry_run:
+            cmd += ["--diff"]
+            # Will return non-zero exit code if non-empty diff.
+            stdout = RunCommand(
+                cmd,
+                error_ok=True,
+                stderr=subprocess2.PIPE,
+                cwd=top_dir,
+                shell=sys.platform.startswith("win32"),
+            )
+            if opts.diff:
+                sys.stdout.write(stdout)
+            if opts.dry_run and len(stdout) > 0:
+                return_value = 2
+        else:
+            cmd += ["-i"]
+            RunCommand(cmd, cwd=top_dir, shell=sys.platform.startswith("win32"))
+    return return_value
+
+
+def _RunMarkdownFormat(
+    opts: optparse.Values,
+    paths: list[str],
+    top_dir: str,
+    diffs: Mapping[str, str] | None,
+) -> int:
+    depot_tools_path = os.path.dirname(os.path.abspath(__file__))
+    markdown_tool = os.path.join(depot_tools_path, "markdown_format.py")
+
+    # Used for caching.
+    markdown_configs: dict[str, str | None] = {}
+
+    # Only format files that have a .style.mdformat file in an ancestor
+    # directory.
+    paths = [
+        p
+        for p in paths
+        if _FindMarkdownConfigFile(p, markdown_configs, top_dir) is not None
+    ]
+
+    if not paths:
+        return 0
+
+    return_value = 0
+    cmd = ["vpython3", markdown_tool]
+    if opts.diff:
+        cmd.append("--diff")
+    elif opts.dry_run:
+        cmd.append("--check")
+
+    exit_code = subprocess2.call(cmd + paths)
+    if exit_code == 2:
+        return_value = 2
+
+    return return_value
+
+
+def _RunLitTemplateFormatter(
+    opts: optparse.Values,
+    paths: list[str],
+    top_dir: str,
+    diffs: Mapping[str, str] | None,
+) -> int:
+    """Runs lit_template_formatter on .html.ts files."""
+    config_cache: dict[str, str | None] = {}
+    paths = [
+        p
+        for p in paths
+        if _FindLitTemplateFormatterConfigFile(p, config_cache, top_dir)
+        is not None
+    ]
+    if not paths:
+        return 0
+
+    primary_solution_path = gclient_paths.GetPrimarySolutionPath()
+    if not primary_solution_path:
+        print(
+            "Could not find the primary solution path, skipping Lit "
+            "template formatting."
+        )
+        return 0
+
+    formatter_path = os.path.join(
+        primary_solution_path,
+        "ui",
+        "webui",
+        "resources",
+        "tools",
+        "lit_template_formatter",
+        "main.js",
+    )
+    if not os.path.exists(formatter_path):
+        print(
+            f'lit_template_formatter not found at "{formatter_path}", '
+            "skipping Lit template formatting."
+        )
+        return 0
+
+    node_py_path = os.path.join(
+        primary_solution_path, "third_party", "node", "node.py"
+    )
+    if not os.path.exists(node_py_path):
+        print(
+            f'node.py not found at "{node_py_path}", skipping Lit template '
+            "formatting."
+        )
+        return 0
+
+    cmd = ["vpython3", node_py_path, formatter_path]
+    if opts.dry_run:
+        cmd.append("--dry-run")
+    if opts.diff:
+        cmd.append("--diff")
+
+    return_value = 0
+    for paths_batch in _SplitArgsByCmdLineLimit(paths):
+        exit_code = subprocess2.call(cmd + paths_batch, cwd=top_dir)
+        if exit_code != 0:
+            if opts.dry_run:
+                return_value = 2
+            else:
+                return_value = exit_code
+
+    return return_value
+
+
+def _RunGnFormat(opts, paths, top_dir, diffs):
+    cmd = [sys.executable, os.path.join(DEPOT_TOOLS, "gn.py"), "format"]
+    if opts.dry_run or opts.diff:
+        cmd.append("--dry-run")
+    return_value = 0
+    for path in paths:
+        gn_ret = subprocess2.call(
+            cmd + [path], shell=sys.platform.startswith("win"), cwd=top_dir
+        )
+        if opts.diff and gn_ret == 2:
+            # TODO this should compute and print the actual diff.
+            print("This change has GN build file diff for " + path)
+        if opts.dry_run and gn_ret == 2:
+            return_value = 2  # Not formatted.
+        elif gn_ret != 0:
+            # For non-dry run cases (and non-2 return values for dry-run), a
+            # nonzero error code indicates a failure, probably because the
+            # file doesn't parse.
+            DieWithError(
+                "gn format failed on "
+                + path
+                + "\nTry running `gn format` on this file manually."
+            )
+    return return_value
+
+
+def _RunMojomFormat(opts, paths, top_dir, diffs):
+    primary_solution_path = gclient_paths.GetPrimarySolutionPath()
+    if not primary_solution_path:
+        DieWithError(
+            "Could not find the primary solution path (e.g. "
+            "the chromium checkout)"
+        )
+    mojom_format_path = os.path.join(
+        primary_solution_path,
+        "mojo",
+        "public",
+        "tools",
+        "mojom",
+        "mojom_format.py",
+    )
+    if not os.path.exists(mojom_format_path):
+        DieWithError(f'Could not find mojom formater at "{mojom_format_path}"')
+
+    cmd = ["vpython3", mojom_format_path]
+    if opts.dry_run:
+        cmd.append("--dry-run")
+    cmd.extend(paths)
+
+    ret = subprocess2.call(cmd)
+    if opts.dry_run and ret != 0:
+        return 2
+
+    return ret
+
+
+def _RunMetricsXMLFormat(opts, paths, top_dir, diffs):
+    # Skip the metrics formatting from the global presubmit hook. These files
+    # have a separate presubmit hook that issues an error if the files need
+    # formatting, whereas the top-level presubmit script merely issues a
+    # warning. Formatting these files is somewhat slow, so it's important not to
+    # duplicate the work.
+    if opts.presubmit:
+        return 0
+
+    return_value = 0
+    for path in paths:
+        pretty_print_tool = metrics_xml_format.FindMetricsXMLFormatterTool(path)
+        if not pretty_print_tool:
+            continue
+
+        cmd = [shutil.which("vpython3"), pretty_print_tool, "--non-interactive"]
+        # If the XML file is histograms.xml or enums.xml, add the xml path
+        # to the command as histograms/pretty_print.py now needs a relative
+        # path argument after splitting the histograms into multiple
+        # directories. For example, in tools/metrics/ukm, pretty-print could
+        # be run using: $ python pretty_print.py But in
+        # tools/metrics/histogrmas, pretty-print should be run with an
+        # additional relative path argument, like: $ python pretty_print.py
+        # metadata/UMA/histograms.xml $ python pretty_print.py enums.xml
+        metricsDir = metrics_xml_format.GetMetricsDir(top_dir, path)
+        histogramsDir = os.path.join(top_dir, "tools", "metrics", "histograms")
+        if metricsDir == histogramsDir:
+            cmd.append(path)
+        if opts.dry_run or opts.diff:
+            cmd.append("--diff")
+
+        stdout = RunCommand(cmd, cwd=top_dir)
+        if opts.diff:
+            sys.stdout.write(stdout)
+        if opts.dry_run and stdout:
+            return_value = 2  # Not formatted.
+    return return_value
+
+
+def _RunLUCICfgFormat(opts, paths, top_dir, diffs):
+    depot_tools_path = os.path.dirname(os.path.abspath(__file__))
+    lucicfg = os.path.join(depot_tools_path, "lucicfg")
+    if sys.platform == "win32":
+        lucicfg += ".bat"
+
+    cmd = [lucicfg, "fmt"]
+    if opts.dry_run:
+        cmd.append("--dry-run")
+    cmd.extend(paths)
+
+    ret = subprocess2.call(cmd)
+    if opts.dry_run and ret != 0:
+        return 2
+
+    return ret
+
+
+FormatterFunction = Callable[
+    [optparse.Values, list[str], str, Optional[Mapping[str, str]]], int
+]
+
+
+def _SplitDiffsByFile(diff_string: str) -> Dict[str, str]:  # noqa: F821
+    """Split a given diff string into per-file patches.
+
+    This function expects that the diff_string was generated with a prefix.
+    In other words, if it was generated by git-diff, don't add `--no-prefix`.
+    `diff` always generates one with prefixes.
+
+    Deleted files will be skipped.
+
+    Args:
+        diff_string: Unified diff
+    Returns:
+        a dict of file_path -> patch
+    """
+    if not diff_string:
+        return {}
+
+    file_diffs = re.split(r"^(?=diff --git)", diff_string, flags=re.MULTILINE)
+    file_diffs = [d for d in file_diffs if d.strip()]
+    ret = {}
+
+    for file_diff in file_diffs:
+        # Look for the line with `+++ ${prefix}/path/file.cc`
+        # For file deletion, the line would be omitted or with `+++ /dev/null`,
+        # which wouldn't match the regex.
+        match = re.search(
+            r"^\+\+\+ [^\s/]+/(.+)", file_diff, flags=re.MULTILINE
+        )
+        if match:
+            ret[match.group(1)] = file_diff
+
+    return ret
+
+
+def _FindFilesToFormat(
+    opts: optparse.Values, files: list[str] | None, upstream_commit: str | None
+) -> Tuple[List[str], Dict[str, str] | None]:  # noqa: F821
+    """Returns a list of files to format and the diffs.
+
+    If opts.full, returns None for the diffs.
+    Deleted files are always excluded in the return.
+    """
+    if opts.input_diff_file:
+        with open(opts.input_diff_file, encoding="utf-8") as f:
+            diffs = _SplitDiffsByFile(f.read())
+            return diffs.keys(), diffs
+
+    if opts.full:
+        files = RunGitDiffCmd(
+            ["--name-only", "--diff-filter=d"], upstream_commit, files
+        ).splitlines()
+        return files, None
+
+    diffs = _SplitDiffsByFile(
+        RunGitDiffCmd(["-U0"], upstream_commit, files, allow_prefix=True)
+    )
+    return diffs.keys(), diffs
+
+
+@subcommand.usage("[files or directories to diff]")
+@metrics.collector.collect_metrics("git cl format")
+def CMDformat(parser: optparse.OptionParser, args: list[str]):
+    """Runs auto-formatting tools (clang-format etc.) on the diff.
+
+    Specific languages can be opted-in for automatic formatting by placing
+    marker files in the directory hierarchy:
+      - Python: .style.yapf
+      - Markdown: .style.mdformat
+      - Lit HTML templates (.html.ts): .style.lit_template_formatter
+    """
+    clang_exts = [".cc", ".cpp", ".h", ".m", ".mm", ".proto"]
+    GN_EXTS = [".gn", ".gni", ".typemap"]
+    parser.add_option(
+        "--full",
+        action="store_true",
+        help="Reformat the full content of all touched files",
+    )
+    parser.add_option("--upstream", help="Branch to check against")
+    parser.add_option(
+        "--dry-run", action="store_true", help="Don't modify any file on disk."
+    )
+    parser.add_option(
+        "--no-clang-format",
+        dest="clang_format",
+        action="store_false",
+        default=True,
+        help="Disables formatting of various file types using clang-format.",
+    )
+    parser.add_option(
+        "--python",
+        action="store_true",
+        help="Enables python formatting on all python files.",
+    )
+    parser.add_option(
+        "--no-python",
+        action="store_false",
+        dest="python",
+        help="Disables python formatting on all python files. "
+        "If neither --python or --no-python are set, python files that have a "
+        ".style.yapf or ruff config file (ruff.toml or .ruff.toml) in an "
+        "ancestor directory will be formatted. "
+        "It is an error to set both.",
+    )
+    default_js = settings.GetFormatJs()
+    parser.add_option(
+        "--js",
+        action="store_true",
+        dest="js",
+        default=default_js,
+        help="Format javascript/typescript code with clang-format. "
+        "Defaults to False unless FORMAT_JS is set to True in codereview.settings.",
+    )
+    parser.add_option(
+        "--no-js",
+        action="store_false",
+        dest="js",
+        help="Disable formatting of javascript/typescript code with clang-format.",
+    )
+    parser.add_option(
+        "--diff",
+        action="store_true",
+        help="Print diff to stdout rather than modifying files.",
+    )
+    parser.add_option(
+        "--presubmit",
+        action="store_true",
+        help="Used when running the script from a presubmit.",
+    )
+
+    parser.add_option(
+        "--rust-fmt",
+        dest="use_rust_fmt",
+        action="store_true",
+        default=rustfmt.IsRustfmtSupported(),
+        help="Enables formatting of Rust file types using rustfmt.",
+    )
+    parser.add_option(
+        "--no-rust-fmt",
+        dest="use_rust_fmt",
+        action="store_false",
+        help="Disables formatting of Rust file types using rustfmt.",
+    )
+
+    parser.add_option(
+        "--swift-format",
+        dest="use_swift_format",
+        action="store_true",
+        default=swift_format.IsSwiftFormatSupported(),
+        help="Enables formatting of Swift file types using swift-format "
+        "(macOS host only).",
+    )
+    parser.add_option(
+        "--no-swift-format",
+        dest="use_swift_format",
+        action="store_false",
+        help="Disables formatting of Swift file types using swift-format.",
+    )
+    parser.add_option(
+        "--input_diff_file",
+        help="File to read input change diff from. "
+        "If given, the added blocks of the files in the diff "
+        "will be formatted.",
+    )
+    parser.add_option(
+        "--mojom",
+        action="store_true",
+        help="Enables formatting of .mojom files.",
+    )
+    parser.add_option(
+        "--no-java",
+        action="store_true",
+        help="Disable auto-formatting of .java",
+    )
+    parser.add_option(
+        "--no-ktfmt",
+        action="store_true",
+        help="Disable auto-formatting of .kt",
+    )
+    parser.add_option(
+        "--lucicfg",
+        action="store_true",
+        help="Enables formatting of .star files.",
+    )
+
+    opts, files = parser.parse_args(args)
+    upstream_commit: str | None = None
+    upstream_branch: str | None = opts.upstream
+    top_dir: str | None = None
+
+    if opts.input_diff_file:
+        if opts.full:
+            print(
+                "--full and --input_diff_file cannot be used together.",
+                file=sys.stderr,
+            )
+            return 1
+        if files:
+            print(
+                "No file paths to format are allowed "
+                "if --input_diff_file is given.",
+                file=sys.stderr,
+            )
+            return 1
+    elif gclient_utils.IsEnvCog():
+        print(
+            "Use --input_diff_file to run the format command in non-git "
+            "environments. In CiderG, please use the "
+            '"Format Modified Lines in All Files (git cl format)" '
+            "functionality in the command palette instead.",
+            file=sys.stderr,
+        )
+        return 1
+    else:
+        opts.full = opts.full or settings.GetFormatFullByDefault()
+        # git diff generates paths against the root of the repository.  Change
+        # to that directory so clang-format can find files even within subdirs.
+        rel_base_path = settings.GetRelativeRoot()
+        if rel_base_path:
+            os.chdir(rel_base_path)
+
+        # Grab the merge-base commit, i.e. the upstream commit of the current
+        # branch when it was created or the last time it was rebased. This is
+        # to cover the case where the user may have called "git fetch origin",
+        # moving the origin branch to a newer commit, but hasn't rebased yet.
+        if not upstream_branch:
+            cl = Changelist()
+            upstream_branch = cl.GetUpstreamBranch()
+        if upstream_branch:
+            upstream_commit = RunGit(
+                ["merge-base", "HEAD", upstream_branch]
+            ).strip()
+        if not upstream_commit:
+            DieWithError(
+                "Could not find base commit for this branch. "
+                "Are you in detached state?"
+            )
+
+    # Normalize files against the current path, so paths relative to the
+    # current directory are still resolved as expected.
+    top_dir = os.getcwd() if opts.presubmit else settings.GetRoot()
+    files = [os.path.join(os.getcwd(), file) for file in files]
+    diff_files, diffs = _FindFilesToFormat(opts, files, upstream_commit)
+
+    if opts.js:
+        clang_exts.extend([".js", ".ts"])
+
+    formatters: list[tuple[list[str], FormatterFunction, list[str]]] = [
+        (GN_EXTS, _RunGnFormat, []),
+        ([".xml"], _RunMetricsXMLFormat, []),
+        ([".md"], _RunMarkdownFormat, []),
+        ([".html.ts"], _RunLitTemplateFormatter, []),
+    ]
+    if not opts.no_java:
+        formatters.append(([".java"], _RunGoogleJavaFormat, []))
+    if not opts.no_ktfmt:
+        formatters.append(([".kt"], _RunKtfmt, []))
+    if opts.clang_format:
+        formatters.append((clang_exts, _RunClangFormatDiff, [".html.ts"]))
+    if opts.use_rust_fmt:
+        formatters.append(([".rs"], _RunRustFmt, []))
+    if opts.use_swift_format:
+        formatters.append(([".swift"], _RunSwiftFormat, []))
+    if opts.python is not False:
+        formatters.append(([".py"], _RunPythonFormat, []))
+    if opts.mojom:
+        formatters.append(([".mojom", ".test-mojom"], _RunMojomFormat, []))
+    if opts.lucicfg:
+        formatters.append(([".star"], _RunLUCICfgFormat, []))
+
+    return_value = 0
+    for item in formatters:
+        file_types, format_func, exclude_types = item
+
+        paths = [
+            p
+            for p in diff_files
+            if p.lower().endswith(tuple(file_types))
+            and not p.lower().endswith(tuple(exclude_types))
+        ]
+        if not paths:
+            continue
+        ret = format_func(opts, paths, top_dir, diffs)
+        return_value = return_value or ret
+
+    return return_value
 
 
 @subcommand.usage("<codereview url or issue id>")
