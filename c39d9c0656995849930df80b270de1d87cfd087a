@@ -16,6 +16,24 @@
       "message": "make sure the version on the bot is also updated. example: https://crrev.com/i/9663120",
       "revId": "c39d9c0656995849930df80b270de1d87cfd087a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0be0f71a_dc5d8916",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 4717785
+      },
+      "writtenOn": "2026-09-04T19:19:26Z",
+      "side": 1,
+      "message": "Thanks, sent a CL for that as well.",
+      "parentUuid": "a9cd39a9_4a393ac6",
+      "revId": "c39d9c0656995849930df80b270de1d87cfd087a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
