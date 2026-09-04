@@ -8,7 +8,6 @@ Produces JSON trace files compatible with Perfetto UI (https://ui.perfetto.dev)
 and chrome://tracing with zero external dependencies.
 """
 
-from collections.abc import Iterator
 import contextlib
 import functools
 import json
@@ -17,7 +16,7 @@ import sys
 import tempfile
 import threading
 import time
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Callable, Dict, Iterator, List, Optional
 
 _ENV_TRACE_VAR = "GCLIENT_TRACE"
 _DEFAULT_TRACE_FILE = os.path.join(tempfile.gettempdir(), "gclient_trace.json")
