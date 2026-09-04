@@ -827,17 +827,20 @@ def run_batch() -> int:
 
     for f in files_cfg:
         path = f["path"]
+        target_path = f.get("config_path", path)
         if root_dir and not os.path.isabs(path):
             path = os.path.join(root_dir, path)
+        if root_dir and not os.path.isabs(target_path):
+            target_path = os.path.join(root_dir, target_path)
         ranges = [LineRange(r[0], r[1]) for r in f.get("ranges", [])]
 
-        if should_use_ruff(path, root_dir):
+        if should_use_ruff(target_path, root_dir):
             # Ruff files are formatted in their entirety to maximize batching
             # performance. This is safe because onboarded files are already
             # fully formatted, so formatting the whole file won't affect
             # untouched lines.
             ruff_files_no_range.append(path)
-        elif has_yapf_config(path, root_dir):
+        elif has_yapf_config(target_path, root_dir):
             yapf_files.append((path, ranges))
 
     has_changes = False
