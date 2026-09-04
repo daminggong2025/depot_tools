@@ -110,6 +110,11 @@ class MockInputApi(object):
     def is_windows(self):
         return self.platform == "win32"
 
+    def IterateCommits(self):
+        import presubmit_support
+
+        return presubmit_support.IterateCommits(self)
+
     def CreateMockFileInPath(self, f_list):
         self.os_path.exists = lambda x: x in f_list
 
@@ -342,11 +347,28 @@ class MockChange(object):
     current change.
     """
 
-    def __init__(self, changed_files, description="", issue=0):
+    scm = ""
+    commit_sha = None
+    _is_commit_scoped = False
+    patchset = 0
+    author_email = None
+
+    def __init__(
+        self,
+        changed_files,
+        description="",
+        issue=0,
+        patchset=0,
+        author=None,
+        upstream=None,
+    ):
         self._changed_files = changed_files
         self.footers = defaultdict(list)
         self._description = description
         self.issue = issue
+        self.patchset = patchset
+        self.author_email = author
+        self._upstream = upstream
 
     def LocalPaths(self):
         return self._changed_files
@@ -362,11 +384,17 @@ class MockChange(object):
     def DescriptionText(self):
         return self._description
 
+    def FullDescriptionText(self):
+        return self._description
+
     def AffectedSubmodules(self):
         return []
 
     def AllLocalSubmodules(self):
         return set()
 
+    def RepositoryRoot(self):
+        return "/repo"
+
     def UpstreamBranch(self):
-        return None
+        return self._upstream

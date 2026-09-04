@@ -70,6 +70,72 @@ OFF_UNLESS_MANUALLY_ENABLED_LINT_FILTERS = [
 # See https://git-scm.com/docs/git-ls-tree#_output_format
 _GIT_MODE_SUBMODULE = b"160000"
 
+### Per-commit infrastructure
+
+
+def per_commit(func=None):
+    """Decorator that runs a presubmit check on each commit individually.
+
+    For a git change with an upstream branch, runs the check once per commit in
+    `upstream..HEAD`, prefixing any returned results with
+    `[Commit <sha>: "<subject>"]`.
+
+    What is commit-scoped:
+      - Descriptions & metadata: `FullDescriptionText()`, `DescriptionText()`,
+        `GitFootersFromDescription()`, `BugsFromDescription()`, and
+        `commit_sha`.
+      - Affected files & diffs: `input_api.AffectedFiles()`,
+        `AffectedTestableFiles()`, `RightHandSideLines()`, and
+        `AffectedFile.ChangedContents()`.
+
+    Caveats & limitations:
+      - Disk reflects working tree, NOT historical commits:
+        `AffectedFile.NewContents()`, `input_api.ReadFile()`, and external tools
+        read files from disk at `HEAD`. To inspect lines introduced in this
+        commit, use `AffectedFile.ChangedContents()` or
+        `input_api.RightHandSideLines()`.
+      - Fallback: Runs once on the whole change (with `commit_sha=None`) if not
+        Git, no upstream is set, or 0 commits ahead.
+      - Performance: Avoid running heavy checks (compilers, broad linters) that
+        would be repeated N times.
+    """
+
+    def decorator(fn):
+        @functools.wraps(fn)
+        def wrapper(input_api, output_api, *args, **kwargs):
+            upstream_branch = getattr(input_api.change, "UpstreamBranch", None)
+            if (
+                getattr(input_api.change, "_is_commit_scoped", False)
+                or getattr(input_api.change, "scm", None) != "git"
+                or not callable(upstream_branch)
+                or not upstream_branch()
+                or not hasattr(input_api, "IterateCommits")
+            ):
+                return fn(input_api, output_api, *args, **kwargs)
+
+            commits = list(input_api.IterateCommits())
+            if not commits:
+                return fn(input_api, output_api, *args, **kwargs)
+
+            results = []
+            for commit_sha, subject, commit_input_api in commits:
+                commit_results = fn(
+                    commit_input_api, output_api, *args, **kwargs
+                )
+                if commit_results:
+                    tag = f'[Commit {commit_sha[:8]}: "{subject.strip()}"]'
+                    for r in commit_results:
+                        r.message = f"{tag} {r.message}"
+                        results.append(r)
+            return results
+
+        return wrapper
+
+    if func is not None:
+        return decorator(func)
+    return decorator
+
+
 ### Description checks
 
 

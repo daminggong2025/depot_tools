@@ -141,6 +141,14 @@ class _PresubmitResult:
 
     _ensure_str = staticmethod(_ensure_str)
 
+    @property
+    def message(self):
+        return self._message
+
+    @message.setter
+    def message(self, val):
+        self._message = self._ensure_str(val)
+
     def handle(self, out_file=None):
         if not out_file:
             out_file = sys.stdout
