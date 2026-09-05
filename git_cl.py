@@ -6610,6 +6610,41 @@ def UploadAllSquashed(
         multi_change_upload=len(uploads_by_cl) > 1,
         dogfood_path=True,
     )
+
+    # For single CL uploads, fold reviewers and CCs directly into the push refspec
+    # (%r=...,cc=...) to eliminate the subsequent sequential AddReviewers REST round-trip.
+    folded_reviewers = set()
+    folded_ccs = set()
+    if len(uploads_by_cl) == 1 and (new_upload.reviewers or new_upload.ccs):
+        # Deduplicate reviewers and ensure CCs are disjoint from reviewers.
+        raw_reviewers = sorted(set(new_upload.reviewers))
+        raw_ccs = sorted(set(new_upload.ccs) - set(raw_reviewers))
+
+        # Refspec options are comma-delimited key-values; validate that the email
+        # contains no whitespace, commas, equals signs, percent signs, consecutive dots
+        # (forbidden anywhere in Git ref names), or characters forbidden in Git ref names.
+        _safe_email_re = re.compile(
+            r"^(?!.*\.\.)[a-zA-Z0-9_.\+-]+@[a-zA-Z0-9\-]+(\.[a-zA-Z0-9\-]+)+$"
+        )
+        for r in raw_reviewers:
+            if _safe_email_re.match(r):
+                refspec_opts.append("r=%s" % r)
+                folded_reviewers.add(r)
+            else:
+                logging.warning(
+                    "Reviewer %s contains non-standard characters; will use REST fallback",
+                    r,
+                )
+        for c in raw_ccs:
+            if _safe_email_re.match(c):
+                refspec_opts.append("cc=%s" % c)
+                folded_ccs.add(c)
+            else:
+                logging.warning(
+                    "CC %s contains non-standard characters; will use REST fallback",
+                    c,
+                )
+
     refspec_suffix = ""
     if refspec_opts:
         refspec_suffix = "%" + ",".join(refspec_opts)
@@ -6638,6 +6673,22 @@ def UploadAllSquashed(
     push_stdout = cl._RunGitPushWithTraces(
         refspec, refspec_opts, git_push_metadata, options.push_options
     )
+
+    # Strip folded reviewers and CCs only after git push has successfully executed,
+    # ensuring collections remain intact if push fails or raises an exception.
+    if len(uploads_by_cl) == 1 and (new_upload.reviewers or new_upload.ccs):
+        new_upload.reviewers[:] = list(
+            dict.fromkeys(
+                r for r in new_upload.reviewers if r not in folded_reviewers
+            )
+        )
+        new_upload.ccs[:] = list(
+            dict.fromkeys(
+                c
+                for c in new_upload.ccs
+                if c not in folded_ccs and c not in raw_reviewers
+            )
+        )
 
     # Post push updates
     regex = re.compile(r"remote:\s+https?://[\w\-\.\+\/#]*/(\d+)\s?.*")
