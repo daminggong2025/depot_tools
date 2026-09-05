@@ -135,6 +135,11 @@ GIT_HASH_RE = re.compile(
 # Used to redact the cookies from the gitcookies file.
 GITCOOKIES_REDACT_RE = re.compile(r"1/.*")
 
+# Validates standard email format for reviewers and CCs added via push options.
+SAFE_EMAIL_RE = re.compile(
+    r"^(?!.*\.\.)[a-zA-Z0-9_.\+-]+@[a-zA-Z0-9\-]+(\.[a-zA-Z0-9\-]+)+$"
+)
+
 MAX_ATTEMPTS = 3
 
 # The maximum number of traces we will keep. Multiplied by 3 since we store
@@ -6610,6 +6615,42 @@ def UploadAllSquashed(
         multi_change_upload=len(uploads_by_cl) > 1,
         dogfood_path=True,
     )
+
+    # For single CL uploads, fold reviewers and CCs into push options (-o r=...,
+    # -o cc=...) to eliminate the subsequent sequential AddReviewers REST round-trip.
+    # When --send-mail is omitted, use the ':silent' modifier (-o r=...:silent)
+    # supported by Gerrit to silently add reviewers without suppressing patchset
+    # update emails for existing reviewers via notify=NONE.
+    folded_reviewers = set()
+    folded_ccs = set()
+    raw_reviewers_set = set()
+    push_options = list(options.push_options) if options.push_options else []
+    if len(uploads_by_cl) == 1 and (new_upload.reviewers or new_upload.ccs):
+        # Deduplicate reviewers and ensure CCs are disjoint from reviewers.
+        raw_reviewers_set = set(new_upload.reviewers)
+        raw_reviewers = sorted(raw_reviewers_set)
+        raw_ccs = sorted(set(new_upload.ccs) - raw_reviewers_set)
+
+        modifier = ":silent" if not options.send_mail else ""
+        for r in raw_reviewers:
+            if SAFE_EMAIL_RE.match(r):
+                push_options.append("r=%s%s" % (r, modifier))
+                folded_reviewers.add(r)
+            else:
+                logging.warning(
+                    "Reviewer %s contains non-standard characters; will use REST fallback",
+                    r,
+                )
+        for c in raw_ccs:
+            if SAFE_EMAIL_RE.match(c):
+                push_options.append("cc=%s%s" % (c, modifier))
+                folded_ccs.add(c)
+            else:
+                logging.warning(
+                    "CC %s contains non-standard characters; will use REST fallback",
+                    c,
+                )
+
     refspec_suffix = ""
     if refspec_opts:
         refspec_suffix = "%" + ",".join(refspec_opts)
@@ -6636,8 +6677,24 @@ def UploadAllSquashed(
     }
     logging.debug("pushing to %s", refspec)
     push_stdout = cl._RunGitPushWithTraces(
-        refspec, refspec_opts, git_push_metadata, options.push_options
+        refspec, refspec_opts, git_push_metadata, push_options
     )
+
+    # Strip folded reviewers and CCs only after git push has successfully executed,
+    # ensuring collections remain intact if push fails or raises an exception.
+    if len(uploads_by_cl) == 1 and (new_upload.reviewers or new_upload.ccs):
+        new_upload.reviewers[:] = list(
+            dict.fromkeys(
+                r for r in new_upload.reviewers if r not in folded_reviewers
+            )
+        )
+        new_upload.ccs[:] = list(
+            dict.fromkeys(
+                c
+                for c in new_upload.ccs
+                if c not in folded_ccs and c not in raw_reviewers_set
+            )
+        )
 
     # Post push updates
     regex = re.compile(r"remote:\s+https?://[\w\-\.\+\/#]*/(\d+)\s?.*")
