@@ -70,6 +70,30 @@
       },
       "revId": "ce5a30784f7323ee224f3a6e7d4ae208dd6d17fe",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1fe978db_63d8ec79",
+        "filename": "git_cache.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 237,
+      "author": {
+        "id": 1391646
+      },
+      "writtenOn": "2026-09-07T06:14:56Z",
+      "side": 0,
+      "message": "sure, i can do that. at the same time, can you tell me more about the tests that are failing, and are they published anywhere? i would like to understand what they’re asserting and why.",
+      "parentUuid": "9b0229d3_b5f1b634",
+      "range": {
+        "startLine": 233,
+        "startChar": 12,
+        "endLine": 237,
+        "endChar": 17
+      },
+      "revId": "ce5a30784f7323ee224f3a6e7d4ae208dd6d17fe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
