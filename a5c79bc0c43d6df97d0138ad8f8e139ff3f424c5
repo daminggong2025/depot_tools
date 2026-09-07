@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "82a42662_8e847155",
+        "filename": "metadata/tests/data/invalid_restrictive_license_approval/restrictive_license_approval.textproto",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2026-09-07T07:20:45Z",
+      "side": 1,
+      "message": "Failed to parse as Intended :D",
+      "revId": "a5c79bc0c43d6df97d0138ad8f8e139ff3f424c5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
