@@ -94,6 +94,30 @@
       },
       "revId": "ce5a30784f7323ee224f3a6e7d4ae208dd6d17fe",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4b2079b9_81fe85cc",
+        "filename": "git_cache.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 237,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-09-07T07:50:04Z",
+      "side": 0,
+      "message": "It seems to be something more complex than just deterministically failing tests, and more of not properly isolated tests when running in parallel. AI suggests to me that the problem is that they are all fighting for the same git cache now instead of failing, which is an issue on the test side but not something we should tackle in this CL I think.",
+      "parentUuid": "1fe978db_63d8ec79",
+      "range": {
+        "startLine": 233,
+        "startChar": 12,
+        "endLine": 237,
+        "endChar": 17
+      },
+      "revId": "ce5a30784f7323ee224f3a6e7d4ae208dd6d17fe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
