@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4c722f93_8eafa974",
+        "filename": "git_cl.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 1951,
+      "author": {
+        "id": 1549182
+      },
+      "writtenOn": "2026-09-07T15:00:27Z",
+      "side": 1,
+      "message": "`b` is a single letter. I am now running into this issue in V8:\n```\n$ git cl upload\nFound change with 1 commit...\nRunning presubmit upload checks on branch b83_int64_lowering_reducer_pm ...\nNo changes in C/C++ files detected. Skipping check\nNo changes in Torque files detected. Skipping check\nNo changes in JavaScript files detected. Skipping check\nTotal violating files: 0\n** Presubmit ERRORS: 1 **\nBUG entry requires issue tracker prefix, e.g. v8:83\n\n** 0 Presubmit Messages, 0 Presubmit Warnings, 1 Presubmit ERRORS **\n\nPresubmit checks took 1.3s to calculate.\nThere were presubmit errors.\n```\nSo now I need to run `git cl upload --bypass-hooks` as otherwise this automation adds `Bug: 83` and then the V8 presubmit checks complain that this refers to a monorail bug but doesn\u0027t have the V8 / Chromium prefix.\nMy commit description already has a `Fixed: 547370419` in its commit message.\nI\u0027d be happy if I didn\u0027t have to change the name schema of my branches or skip all hooks. `b` isn\u0027t only the letter that `bug` starts with but also the letter that `branch` starts with.",
+      "revId": "2cc878ef8e3a0ae143d13e4aa04957ca3d6f9a58",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
