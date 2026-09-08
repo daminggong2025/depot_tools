@@ -56,8 +56,18 @@ def main():
 
     cmd = [alint_path, "--"] + sys.argv[3:]
     try:
+        env = os.environ.copy()
+        git_params = env.get("GIT_CONFIG_PARAMETERS", "")
+        if "status.showUntrackedFiles" not in git_params:
+            if git_params:
+                env["GIT_CONFIG_PARAMETERS"] = (
+                    f"{git_params} 'status.showUntrackedFiles=no'"
+                )
+            else:
+                env["GIT_CONFIG_PARAMETERS"] = "'status.showUntrackedFiles=no'"
+
         p = subprocess.Popen(
-            cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
+            cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, env=env
         )
         stdout, _ = p.communicate()
         output_str = stdout.decode("utf-8", "ignore")
