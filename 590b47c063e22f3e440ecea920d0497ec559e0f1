@@ -16,6 +16,24 @@
       "message": "Can we use $HOSTTYPE or $MACHTYPE to detect ppc64/s390x?",
       "revId": "590b47c063e22f3e440ecea920d0497ec559e0f1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d0156076_e1c07e3b",
+        "filename": "python-bin/python3",
+        "patchSetId": 4
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1323125
+      },
+      "writtenOn": "2026-09-08T13:26:43Z",
+      "side": 1,
+      "message": "This flag is already used in ensure_bootstrap and update_depot_tools, so reusing it keeps things consistent with one knob. Happy to switch to $HOSTTYPE/$MACHTYPE if you prefer though.",
+      "parentUuid": "51195ed8_b2610377",
+      "revId": "590b47c063e22f3e440ecea920d0497ec559e0f1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
