@@ -70,6 +70,24 @@
       "parentUuid": "78f81475_47e7f074",
       "revId": "590b47c063e22f3e440ecea920d0497ec559e0f1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6916a627_008fae03",
+        "filename": "python-bin/python3",
+        "patchSetId": 4
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-09-08T13:51:28Z",
+      "side": 1,
+      "message": "Well what I mean is what Takuto has said, as V8 detects IBM by the hardware, we should do this here as well.",
+      "parentUuid": "16b41729_30512276",
+      "revId": "590b47c063e22f3e440ecea920d0497ec559e0f1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
