@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7f5710ba_755ba55d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-09-08T02:22:12Z",
+      "side": 1,
+      "message": "Gclient didn\u0027t go so smoothly, so I have reverted it as it\u0027s already using vpython",
+      "revId": "266460a4aaf86880b9ae11fe3c0cdbcf692ca212",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
