@@ -52,6 +52,24 @@
       "parentUuid": "d0156076_e1c07e3b",
       "revId": "590b47c063e22f3e440ecea920d0497ec559e0f1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "16b41729_30512276",
+        "filename": "python-bin/python3",
+        "patchSetId": 4
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1323125
+      },
+      "writtenOn": "2026-09-08T13:49:38Z",
+      "side": 1,
+      "message": "but host_cpu and host_os is not defined here? this is just pure bash.",
+      "parentUuid": "78f81475_47e7f074",
+      "revId": "590b47c063e22f3e440ecea920d0497ec559e0f1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
