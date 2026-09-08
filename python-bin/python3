@@ -2,6 +2,13 @@
 
 DEPOT_TOOLS=$(dirname "$0")/..
 
+# Platforms without a hermetic CPython CIPD package (e.g. ppc64, s390x) can opt
+# out of the hermetic interpreter by setting DEPOT_TOOLS_BOOTSTRAP_PYTHON3=0,
+# which falls back to the system python3 on $PATH.
+if [[ "X$DEPOT_TOOLS_BOOTSTRAP_PYTHON3" == "X0" ]]; then
+  exec python3 "$@"
+fi
+
 if [[ ! -f "$DEPOT_TOOLS/python3_bin_reldir.txt" ]]; then
   cat >&2 <<EOF
 python3_bin_reldir.txt not found. need to initialize depot_tools by
