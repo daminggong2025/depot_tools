@@ -532,6 +532,29 @@ branch refs/heads/empty_branch_in_worktree
         # without crashing on the unresolvable parent.
         self.repo.run(self.reup.fetch_remotes, branch_tree)
 
+    def testRebaseUpdateStartingBranchDiffersFromCurrent(self):
+        # Advance origin/main so branches need to be rebased.
+        self.origin.git("checkout", "main")
+        with self.origin.open("new_upstream_file", "w") as f:
+            f.write("upstream change")
+        self.origin.git("add", "new_upstream_file")
+        self.origin.git_commit("upstream commit")
+        self.repo.git("fetch", "origin")
+
+        # Simulate resuming rebase-update where starting-branch ("branch_L")
+        # differs from the currently checked-out branch ("branch_K").
+        self.repo.git(
+            "config", "depot-tools.rebase-update.starting-branch", "branch_L"
+        )
+        self.repo.git("checkout", "branch_K")
+
+        retcode = self.repo.run(self.reup.main, ["-n"])
+        self.assertEqual(0, retcode)
+        self.assertEqual(
+            "", self.repo.git("status", "--porcelain").stdout.strip()
+        )
+        self.assertEqual("branch_L", self.repo.run(self.gc.current_branch))
+
 
 if __name__ == "__main__":
     sys.exit(
