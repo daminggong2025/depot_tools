@@ -54,6 +54,7 @@ parse_formatting_options = depot_tools_ruff.parse_formatting_options
 FormattingOptions = depot_tools_ruff.FormattingOptions
 ParsedArguments = depot_tools_ruff.ParsedArguments
 run_ruff_with_ranges = depot_tools_ruff.run_ruff_with_ranges
+get_formatter_config = depot_tools_ruff.get_formatter_config
 
 
 class TestHasYapfConfig(unittest.TestCase):
@@ -89,6 +90,56 @@ class TestHasYapfConfig(unittest.TestCase):
 
     def test_no_config(self):
         self.assertFalse(has_yapf_config("foo.py"))
+
+
+class TestGetFormatterConfig(unittest.TestCase):
+    def setUp(self):
+        self.test_dir = tempfile.mkdtemp(prefix="ruff_test_")
+        self.old_cwd = os.getcwd()
+        os.chdir(self.test_dir)
+
+    def tearDown(self):
+        os.chdir(self.old_cwd)
+        shutil.rmtree(self.test_dir)
+
+    def write_file(self, rel_path, content=""):
+        abs_path = os.path.join(self.test_dir, rel_path)
+        os.makedirs(os.path.dirname(abs_path), exist_ok=True)
+        with open(abs_path, "w", encoding="utf-8") as f:
+            f.write(content)
+        return abs_path
+
+    def test_find_ruff_toml(self):
+        cfg = self.write_file("a/b/ruff.toml", "")
+        self.assertEqual(
+            cfg, get_formatter_config("a/b/c/foo.py", use_ruff=True)
+        )
+
+    def test_find_dot_ruff_toml(self):
+        cfg = self.write_file("a/b/.ruff.toml", "")
+        self.assertEqual(
+            cfg, get_formatter_config("a/b/c/foo.py", use_ruff=True)
+        )
+
+    def test_find_pyproject_toml_ruff(self):
+        cfg = self.write_file("a/pyproject.toml", "[tool.ruff]\n")
+        self.assertEqual(
+            cfg, get_formatter_config("a/b/foo.py", use_ruff=True)
+        )
+
+    def test_no_ruff_config(self):
+        self.assertIsNone(get_formatter_config("foo.py", use_ruff=True))
+
+    def test_find_style_yapf(self):
+        cfg = self.write_file("a/b/.style.yapf", "")
+        self.assertEqual(cfg, get_formatter_config("a/b/c/foo.py"))
+
+    def test_find_pyproject_toml_yapf(self):
+        cfg = self.write_file("a/pyproject.toml", "[tool.yapf]\n")
+        self.assertEqual(cfg, get_formatter_config("a/b/foo.py"))
+
+    def test_no_yapf_config_returns_pep8(self):
+        self.assertEqual("pep8", get_formatter_config("foo.py"))
 
 
 class TestShouldUseRuffRouting(unittest.TestCase):
@@ -430,6 +481,73 @@ class TestBatchMode(unittest.TestCase):
             [foo_path],
             lines=[(1, 2)],
             style_config="pep8",
+            in_place=True,
+            print_diff=False,
+            quiet=False,
+        )
+
+    @patch("depot_tools_ruff_chromium.should_use_ruff")
+    @patch("subprocess.run")
+    def test_batch_ruff_with_stdin_filename(self, mock_run, mock_should_use):
+        cfg_path = self.write_file("ruff.toml", "")
+        config = {
+            "root": self.test_dir,
+            "files": [
+                {
+                    "path": "/tmp/bar.py",
+                    "stdin_filename": "foo.py",
+                    "ranges": [],
+                }
+            ],
+        }
+        mock_should_use.return_value = True
+        mock_run.return_value = Mock(returncode=0)
+
+        with patch("sys.stdin", io.StringIO(json.dumps(config))):
+            ret = run_batch()
+
+        self.assertEqual(0, ret)
+        mock_run.assert_called_once_with(
+            [
+                "ruff",
+                "format",
+                "--force-exclude",
+                "--config",
+                cfg_path,
+                "/tmp/bar.py",
+            ],
+            capture_output=True,
+        )
+
+    @patch("depot_tools_ruff_chromium.should_use_ruff")
+    @patch("depot_tools_ruff_chromium.has_yapf_config")
+    @patch("yapf.FormatFiles")
+    def test_batch_yapf_with_stdin_filename(
+        self, mock_format, mock_has_yapf, mock_should_use
+    ):
+        style_path = self.write_file(".style.yapf", "")
+        config = {
+            "root": self.test_dir,
+            "files": [
+                {
+                    "path": "/tmp/bar.py",
+                    "stdin_filename": "foo.py",
+                    "ranges": [[1, 3]],
+                }
+            ],
+        }
+        mock_should_use.return_value = False
+        mock_has_yapf.return_value = True
+        mock_format.return_value = True
+
+        with patch("sys.stdin", io.StringIO(json.dumps(config))):
+            ret = run_batch()
+
+        self.assertEqual(0, ret)
+        mock_format.assert_called_once_with(
+            ["/tmp/bar.py"],
+            lines=[(1, 2)],
+            style_config=style_path,
             in_place=True,
             print_diff=False,
             quiet=False,
