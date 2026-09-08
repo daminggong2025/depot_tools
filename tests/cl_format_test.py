@@ -189,7 +189,9 @@ class CMDFormatTestCase(unittest.TestCase):
         )
 
         files = [to_be_fixed_md, remain_intact_md]
-        mock_opts = mock.Mock(check=False, dry_run=False, diff=False)
+        mock_opts = mock.Mock(
+            check=False, dry_run=False, diff=False, stdin_filename=None
+        )
 
         # Only agents/to_be_fixed.md should be formatted because of the config file.
         # other/remain_intact.md won't be formatted.
@@ -212,7 +214,9 @@ class CMDFormatTestCase(unittest.TestCase):
         )
 
         files = [foo_md]
-        mock_opts = mock.Mock(check=False, dry_run=False, diff=False)
+        mock_opts = mock.Mock(
+            check=False, dry_run=False, diff=False, stdin_filename=None
+        )
 
         ret = cl_format._RunMarkdownFormat(
             mock_opts, files, self._top_dir, None
@@ -231,7 +235,7 @@ class CMDFormatTestCase(unittest.TestCase):
 
         files = [foo_md]
         # --check should return 2 if files are unformatted
-        mock_opts = mock.Mock(dry_run=True, diff=False)
+        mock_opts = mock.Mock(dry_run=True, diff=False, stdin_filename=None)
         self.assertEqual(
             cl_format._RunMarkdownFormat(mock_opts, files, self._top_dir, None),
             2,
@@ -260,7 +264,7 @@ class CMDFormatTestCase(unittest.TestCase):
 
         files = [foo_md]
         # --diff should return 2 if there's a diff, but not modify the file.
-        mock_opts = mock.Mock(dry_run=False, diff=True)
+        mock_opts = mock.Mock(dry_run=False, diff=True, stdin_filename=None)
         ret = cl_format._RunMarkdownFormat(
             mock_opts, files, self._top_dir, None
         )
@@ -325,7 +329,7 @@ class CMDFormatTestCase(unittest.TestCase):
 
         # 1. Normal format: only foo_html_ts should be formatted (bar_html_ts skipped).
         mock_call.return_value = 0
-        mock_opts = mock.Mock(dry_run=False, diff=False)
+        mock_opts = mock.Mock(dry_run=False, diff=False, stdin_filename=None)
         self.assertEqual(
             0,
             cl_format._RunLitTemplateFormatter(
@@ -340,7 +344,7 @@ class CMDFormatTestCase(unittest.TestCase):
         # 2. Dry-run mode: should pass --dry-run and return 2 when unformatted.
         mock_call.reset_mock()
         mock_call.return_value = 2
-        mock_opts = mock.Mock(dry_run=True, diff=False)
+        mock_opts = mock.Mock(dry_run=True, diff=False, stdin_filename=None)
         self.assertEqual(
             2,
             cl_format._RunLitTemplateFormatter(
@@ -361,7 +365,7 @@ class CMDFormatTestCase(unittest.TestCase):
         # 3. Diff mode: should pass --diff.
         mock_call.reset_mock()
         mock_call.return_value = 0
-        mock_opts = mock.Mock(dry_run=False, diff=True)
+        mock_opts = mock.Mock(dry_run=False, diff=True, stdin_filename=None)
         self.assertEqual(
             0,
             cl_format._RunLitTemplateFormatter(
@@ -1114,7 +1118,11 @@ diff --git a/ui/webui/resources/tools/bar.html.ts b/ui/webui/resources/tools/bar
             diff_file = f.name
         try:
             opts = optparse.Values(
-                {"input_diff_file": diff_file, "full": False}
+                {
+                    "input_diff_file": diff_file,
+                    "full": False,
+                    "stdin_filename": None,
+                }
             )
             files, diffs = cl_format._FindFilesToFormat(opts, None, "HEAD")
             self.assertIsInstance(files, list)
@@ -1136,7 +1144,9 @@ diff --git a/ui/webui/resources/tools/bar.html.ts b/ui/webui/resources/tools/bar
         ),
     )
     def testFindFilesToFormatDiffReturnsList(self, mock_diff):
-        opts = optparse.Values({"input_diff_file": None, "full": False})
+        opts = optparse.Values(
+            {"input_diff_file": None, "full": False, "stdin_filename": None}
+        )
         files, diffs = cl_format._FindFilesToFormat(opts, None, "HEAD")
         self.assertIsInstance(files, list)
         self.assertEqual(["bar.py"], files)
@@ -1144,7 +1154,9 @@ diff --git a/ui/webui/resources/tools/bar.html.ts b/ui/webui/resources/tools/bar
 
     @mock.patch("cl_format.RunGitDiffCmd", return_value="baz.gn\n")
     def testFindFilesToFormatFullReturnsList(self, mock_diff):
-        opts = optparse.Values({"input_diff_file": None, "full": True})
+        opts = optparse.Values(
+            {"input_diff_file": None, "full": True, "stdin_filename": None}
+        )
         files, diffs = cl_format._FindFilesToFormat(opts, None, "HEAD")
         self.assertIsInstance(files, list)
         self.assertEqual(["baz.gn"], files)
@@ -1305,7 +1317,13 @@ class TestRuffBatchIntegration(unittest.TestCase):
     @mock.patch("cl_format._IsRuffBatchSupported", return_value=False)
     @mock.patch("cl_format._RunYapf")
     def test_fallback_to_yapf(self, mock_run_yapf, mock_supported):
-        mock_opts = mock.Mock(python=True, full=True, diff=False, dry_run=False)
+        mock_opts = mock.Mock(
+            python=True,
+            full=True,
+            diff=False,
+            dry_run=False,
+            stdin_filename=None,
+        )
         with mock.patch("os.path.exists", return_value=True):
             cl_format._RunPythonFormat(
                 mock_opts, ["foo.py"], self.test_dir, None
@@ -1317,7 +1335,13 @@ class TestRuffBatchIntegration(unittest.TestCase):
     @mock.patch("cl_format._IsRuffBatchSupported", return_value=True)
     @mock.patch("subprocess2.communicate")
     def test_ruff_batch_success(self, mock_communicate, mock_supported):
-        mock_opts = mock.Mock(python=True, full=True, diff=False, dry_run=False)
+        mock_opts = mock.Mock(
+            python=True,
+            full=True,
+            diff=False,
+            dry_run=False,
+            stdin_filename=None,
+        )
         mock_communicate.return_value = ((b"", b""), 0)
 
         with mock.patch("os.path.exists", return_value=True):
