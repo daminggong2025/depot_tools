@@ -34,6 +34,24 @@
       "parentUuid": "51195ed8_b2610377",
       "revId": "590b47c063e22f3e440ecea920d0497ec559e0f1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "78f81475_47e7f074",
+        "filename": "python-bin/python3",
+        "patchSetId": 4
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-09-08T13:41:42Z",
+      "side": 1,
+      "message": "V8 itself did the following:\n\nif (host_cpu \u003d\u003d \"s390x\" || host_cpu \u003d\u003d \"ppc64\" || host_os \u003d\u003d \"zos\") {\n  script_executable \u003d \"python3\"\n} else {\n  script_executable \u003d \"//third_party/cpython3/host/bin/python3\"\n}\n\nSo I suggest we mirror this setup as well.",
+      "parentUuid": "d0156076_e1c07e3b",
+      "revId": "590b47c063e22f3e440ecea920d0497ec559e0f1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
