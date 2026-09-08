@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "e64d471d_743dc00a",
+        "filename": "fetch",
+        "patchSetId": 3
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-09-08T01:03:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6ecbd73b_ed00867b",
+      "revId": "fccc445316e20e048a1e11dde0de30587684cf56",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e7b4bbf4_7be04917",
@@ -31,6 +49,24 @@
       "writtenOn": "2026-09-08T00:28:23Z",
       "side": 1,
       "message": "same here. You can call `python3-bin/python3.bat`.\nhttps://source.chromium.org/chromium/chromium/tools/depot_tools/+/main:python-bin/python3.bat",
+      "revId": "fccc445316e20e048a1e11dde0de30587684cf56",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3d6e8388_7c539f54",
+        "filename": "fetch.bat",
+        "patchSetId": 3
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-09-08T01:03:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e7b4bbf4_7be04917",
       "revId": "fccc445316e20e048a1e11dde0de30587684cf56",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
