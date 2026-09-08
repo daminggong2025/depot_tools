@@ -16,6 +16,24 @@
       "message": "explain what\u0027s fixed?",
       "revId": "c6f20aac833dd99203ff936dbe3e01617fb55e87",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c74ddcfa_a5480b2c",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2026-09-08T06:48:49Z",
+      "side": 1,
+      "message": "wip-ing :(\n\nseems like gerrit notified reviewers when i clicked \"dont\u0027 notify reviewers\"",
+      "parentUuid": "b66141e3_842956c0",
+      "revId": "c6f20aac833dd99203ff936dbe3e01617fb55e87",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
