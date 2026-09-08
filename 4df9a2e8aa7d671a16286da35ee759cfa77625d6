@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d70e9bbb_d4659f2a",
+        "filename": "ruff_chromium",
+        "patchSetId": 15
+      },
+      "lineNbr": 681,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-09-08T23:35:29Z",
+      "side": 1,
+      "message": "This will crash on 3.9 Python.",
+      "range": {
+        "startLine": 681,
+        "startChar": 4,
+        "endLine": 681,
+        "endChar": 35
+      },
+      "revId": "4df9a2e8aa7d671a16286da35ee759cfa77625d6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0ffafa57_d87d004c",
+        "filename": "ruff_chromium",
+        "patchSetId": 15
+      },
+      "lineNbr": 841,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-09-08T23:35:29Z",
+      "side": 1,
+      "message": "Ditto",
+      "range": {
+        "startLine": 841,
+        "startChar": 31,
+        "endLine": 841,
+        "endChar": 41
+      },
+      "revId": "4df9a2e8aa7d671a16286da35ee759cfa77625d6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
