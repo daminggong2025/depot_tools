@@ -41,6 +41,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "bf6e4eaf_b0caac90",
+        "filename": "git_rebase_update.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 1137015
+      },
+      "writtenOn": "2026-09-08T14:04:02Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "511b3f07_99bfab17",
+      "range": {
+        "startLine": 86,
+        "startChar": 0,
+        "endLine": 87,
+        "endChar": 0
+      },
+      "revId": "661c49aeb2d9fdff8e333b7402333df540925be2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "53e9ab7c_fc2dc40f",
@@ -54,6 +78,30 @@
       "writtenOn": "2026-09-03T22:02:07Z",
       "side": 1,
       "message": "Please fix this WARNING reported by code-review-workflow: [code-review-workflow] The regular expression `r\"^remote\\..*\\.fetch\"` is not anc...\n\n[code-review-workflow] The regular expression `r\"^remote\\..*\\.fetch\"` is not anchored at the end and could match unintended keys (like `remote.origin.fetchurl`). Additionally, extracting the remote name with `key.split(\".\")[1]` fails if the remote name itself contains dots (e.g., `remote.my.server.fetch`).\n\n**Suggestion**\n\nAnchor the regex with `$` to guarantee exact matches, and safely strip the known prefix and suffix to extract the remote name.\n\n```python\n        all_fetchspec_configs \u003d git.get_config_regexp(r\"^remote\\..*\\.fetch$\")\n        for key, fetchspec in all_fetchspec_configs:\n            dest_spec \u003d fetchspec.partition(\":\")[2]\n            remote_name \u003d key[len(\"remote.\"):-len(\".fetch\")]\n```",
+      "range": {
+        "startLine": 89,
+        "startChar": 0,
+        "endLine": 93,
+        "endChar": 0
+      },
+      "revId": "661c49aeb2d9fdff8e333b7402333df540925be2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f924ad33_ba8d2786",
+        "filename": "git_rebase_update.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 1137015
+      },
+      "writtenOn": "2026-09-08T14:04:02Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "53e9ab7c_fc2dc40f",
       "range": {
         "startLine": 89,
         "startChar": 0,
