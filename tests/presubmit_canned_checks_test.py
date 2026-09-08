@@ -1208,10 +1208,15 @@ class RunAlintTest(unittest.TestCase):
             exit_code = run_alint.main()
             self.assertEqual(exit_code, 0)
             mock_chdir.assert_called_once_with("/repo")
-            mock_popen.assert_called_once_with(
-                ["/bin/alint", "--", "-t=30s"],
-                stdout=subprocess.PIPE,
-                stderr=subprocess.STDOUT,
+            mock_popen.assert_called_once()
+            called_args, called_kwargs = mock_popen.call_args
+            self.assertEqual(called_args[0], ["/bin/alint", "--", "-t=30s"])
+            self.assertEqual(called_kwargs["stdout"], subprocess.PIPE)
+            self.assertEqual(called_kwargs["stderr"], subprocess.STDOUT)
+            self.assertIn("GIT_CONFIG_PARAMETERS", called_kwargs["env"])
+            self.assertIn(
+                "'status.showUntrackedFiles=no'",
+                called_kwargs["env"]["GIT_CONFIG_PARAMETERS"],
             )
             result = json.loads(mock_stdout.getvalue())
             self.assertEqual(result["errors"], [])
@@ -1239,6 +1244,54 @@ class RunAlintTest(unittest.TestCase):
             self.assertEqual(result["execution_error"]["exit_code"], 1)
             self.assertIn(
                 "Executable not found", result["execution_error"]["output"]
+            )
+
+
+    @mock.patch.dict(os.environ, {"GIT_CONFIG_PARAMETERS": "'foo=bar'"})
+    @mock.patch("sys.argv", ["run_alint.py", "/bin/alint", "/repo", "-t=30s"])
+    @mock.patch("os.chdir")
+    @mock.patch("subprocess.Popen")
+    def test_main_preserves_existing_git_config_parameters(
+        self, mock_popen, mock_chdir
+    ):
+        mock_proc = mock.Mock()
+        mock_proc.communicate.return_value = (b"", b"")
+        mock_proc.returncode = 0
+        mock_popen.return_value = mock_proc
+
+        with mock.patch("sys.stdout", new=io.StringIO()):
+            exit_code = run_alint.main()
+            self.assertEqual(exit_code, 0)
+            mock_popen.assert_called_once()
+            called_env = mock_popen.call_args[1]["env"]
+            self.assertEqual(
+                called_env["GIT_CONFIG_PARAMETERS"],
+                "'foo=bar' 'status.showUntrackedFiles=no'",
+            )
+
+    @mock.patch.dict(
+        os.environ,
+        {"GIT_CONFIG_PARAMETERS": "'status.showUntrackedFiles=normal'"},
+    )
+    @mock.patch("sys.argv", ["run_alint.py", "/bin/alint", "/repo", "-t=30s"])
+    @mock.patch("os.chdir")
+    @mock.patch("subprocess.Popen")
+    def test_main_does_not_duplicate_status_show_untracked_files(
+        self, mock_popen, mock_chdir
+    ):
+        mock_proc = mock.Mock()
+        mock_proc.communicate.return_value = (b"", b"")
+        mock_proc.returncode = 0
+        mock_popen.return_value = mock_proc
+
+        with mock.patch("sys.stdout", new=io.StringIO()):
+            exit_code = run_alint.main()
+            self.assertEqual(exit_code, 0)
+            mock_popen.assert_called_once()
+            called_env = mock_popen.call_args[1]["env"]
+            self.assertEqual(
+                called_env["GIT_CONFIG_PARAMETERS"],
+                "'status.showUntrackedFiles=normal'",
             )
 
 
