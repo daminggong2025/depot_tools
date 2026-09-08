@@ -663,8 +663,56 @@ def get_yapf_style(target_path: str, root_dir: str | None = None) -> str:
     return "pep8"
 
 
+def get_ruff_config_file(
+    target_path: str, root_dir: str | None = None
+) -> str | None:
+    abs_target = os.path.abspath(target_path)
+    search_dir = (
+        os.path.dirname(abs_target)
+        if (os.path.isfile(abs_target) or not os.path.exists(abs_target))
+        else abs_target
+    )
+
+    while True:
+        for name in (".ruff.toml", "ruff.toml"):
+            candidate = os.path.join(search_dir, name)
+            if os.path.isfile(candidate):
+                return candidate
+
+        pyproject = os.path.join(search_dir, "pyproject.toml")
+        if os.path.isfile(pyproject):
+            try:
+                with open(pyproject, "rb") as f:
+                    cfg = tomllib.loads(
+                        f.read().decode("utf-8", errors="ignore")
+                    )
+                tool = cfg.get("tool", {})
+                has_ruff = "ruff" in tool
+                has_yapf = "yapf" in tool
+                has_other = "black" in tool or "pyink" in tool
+                if has_ruff and not (has_yapf or has_other):
+                    return pyproject
+            except Exception:
+                pass
+
+        if root_dir and os.path.realpath(
+            os.path.abspath(search_dir)
+        ) == os.path.realpath(os.path.abspath(root_dir)):
+            break
+
+        parent_dir = os.path.realpath(os.path.dirname(search_dir))
+        if parent_dir == search_dir:
+            break
+        search_dir = parent_dir
+
+    return None
+
+
 def format_ruff_batch_no_range(
-    paths: list[str], diff: bool, dry_run: bool
+    paths: list[str],
+    diff: bool,
+    dry_run: bool,
+    config_file: str | None = None,
 ) -> int:
     if not paths:
         return 0
@@ -677,6 +725,8 @@ def format_ruff_batch_no_range(
     for i in range(0, len(paths), chunk_size):
         chunk = paths[i : i + chunk_size]
         cmd = [get_ruff_bin(), "format", "--force-exclude"]
+        if config_file:
+            cmd.extend(["--config", config_file])
         if diff:
             cmd.append("--diff")
         elif dry_run:
@@ -703,7 +753,7 @@ def format_ruff_batch_no_range(
 
 
 def format_yapf_batch(
-    files: list[tuple[str, list[LineRange]]],
+    files: list[tuple[str, list[LineRange]] | tuple[str, list[LineRange], str]],
     root_dir: str | None,
     diff: bool,
     dry_run: bool,
@@ -714,7 +764,12 @@ def format_yapf_batch(
 
     has_changes = False
     has_error = False
-    for path, ranges in files:
+    for entry in files:
+        if len(entry) == 3:
+            path, ranges, target_path = entry
+        else:
+            path, ranges = entry
+            target_path = path
         if ranges and not full:
             yapf_lines = [
                 (r.start, r.end - 1) for r in ranges if r.start < r.end
@@ -726,7 +781,7 @@ def format_yapf_batch(
         in_place = not (diff or dry_run)
         print_diff = diff
         quiet = dry_run and not diff
-        style_config = get_yapf_style(path, root_dir)
+        style_config = get_yapf_style(target_path, root_dir)
 
         try:
             changed = yapf.FormatFiles(
@@ -822,33 +877,45 @@ def run_batch() -> int:
     dry_run = config.get("dry_run", False)
     full = config.get("full", False)
 
-    ruff_files_no_range = []
+    ruff_files_by_config: dict[str | None, list[str]] = {}
     yapf_files = []
 
     for f in files_cfg:
         path = f["path"]
+        assume_filename = f.get("assume_filename") or f.get("config_path")
+        target_path = assume_filename or path
         if root_dir and not os.path.isabs(path):
             path = os.path.join(root_dir, path)
+        if root_dir and not os.path.isabs(target_path):
+            target_path = os.path.join(root_dir, target_path)
         ranges = [LineRange(r[0], r[1]) for r in f.get("ranges", [])]
 
-        if should_use_ruff(path, root_dir):
+        if should_use_ruff(target_path, root_dir):
             # Ruff files are formatted in their entirety to maximize batching
             # performance. This is safe because onboarded files are already
             # fully formatted, so formatting the whole file won't affect
             # untouched lines.
-            ruff_files_no_range.append(path)
-        elif has_yapf_config(path, root_dir):
-            yapf_files.append((path, ranges))
+            config_file = (
+                get_ruff_config_file(target_path, root_dir)
+                if assume_filename
+                else None
+            )
+            ruff_files_by_config.setdefault(config_file, []).append(path)
+        elif has_yapf_config(target_path, root_dir):
+            yapf_files.append((path, ranges, target_path))
 
     has_changes = False
     has_error = False
 
-    if ruff_files_no_range:
-        code = format_ruff_batch_no_range(ruff_files_no_range, diff, dry_run)
-        if code == 1:
-            has_error = True
-        elif code == 2:
-            has_changes = True
+    if ruff_files_by_config:
+        for config_file, paths in ruff_files_by_config.items():
+            code = format_ruff_batch_no_range(
+                paths, diff, dry_run, config_file=config_file
+            )
+            if code == 1:
+                has_error = True
+            elif code == 2:
+                has_changes = True
 
     if yapf_files:
         code = format_yapf_batch(yapf_files, root_dir, diff, dry_run, full)
@@ -877,16 +944,36 @@ def main() -> int:
 
     # Determine target path for config detection
     target_path = os.getcwd()
-    for i, arg in enumerate(args):
-        if arg.startswith("--stdin-filename="):
+    assume_filename = None
+    cleaned_args = []
+    i = 0
+    while i < len(args):
+        arg = args[i]
+        if arg.startswith("--assume-filename="):
+            assume_filename = arg.split("=", 1)[1]
+            i += 1
+        elif arg == "--assume-filename" and i + 1 < len(args):
+            assume_filename = args[i + 1]
+            i += 2
+        elif arg.startswith("--stdin-filename="):
             target_path = arg.split("=", 1)[1]
-            break
+            cleaned_args.append(arg)
+            i += 1
         elif arg == "--stdin-filename" and i + 1 < len(args):
             target_path = args[i + 1]
-            break
-        elif not arg.startswith("-") and arg not in KNOWN_SUBCOMMANDS:
-            target_path = arg
-            break
+            cleaned_args.append(arg)
+            cleaned_args.append(args[i + 1])
+            i += 2
+        else:
+            cleaned_args.append(arg)
+            if not arg.startswith("-") and arg not in KNOWN_SUBCOMMANDS:
+                if target_path == os.getcwd():
+                    target_path = arg
+            i += 1
+
+    if assume_filename:
+        target_path = assume_filename
+        args = cleaned_args
 
     try:
         parsed_args = parse_ranges(args)
@@ -897,6 +984,12 @@ def main() -> int:
         pass
 
     if should_use_ruff(target_path, root_dir):
+        if assume_filename:
+            config_file = get_ruff_config_file(target_path, root_dir)
+            if config_file and not any(
+                a == "--config" or a.startswith("--config=") for a in args
+            ):
+                args.extend(["--config", config_file])
         return run_ruff_with_ranges(args)
     else:
         # Before attempting YAPF as a backoff, ascertain that a YAPF formatter/config
@@ -911,6 +1004,11 @@ def main() -> int:
         yapf_script = os.path.join(depot_tools_dir, "yapf")
 
         yapf_args = translate_args(args)
+        if assume_filename and not any(
+            a == "--style" or a.startswith("--style=") for a in yapf_args
+        ):
+            style_config = get_yapf_style(target_path, root_dir)
+            yapf_args.extend(["--style", style_config])
 
         # We must invoke the yapf wrapper via vpython3 so it gets its own env
         vpython_bin = "vpython3"
