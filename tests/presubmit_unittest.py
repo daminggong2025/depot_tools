@@ -2401,6 +2401,122 @@ class OutputApiUnittest(PresubmitTestsBase):
         )
         self.assertEqual(["chromium-reviews@chromium.org"], executer.more_cc)
 
+    def testExecPresubmitScriptParallelExecution(self):
+        description_lines = ("Hello there", "this is a change", "BUG=123")
+        files = [["A", "foo\\blat.cc"]]
+        fake_presubmit = os.path.join(self.fake_root_dir, "PRESUBMIT.py")
+        change = presubmit.Change(
+            "mychange",
+            "\n".join(description_lines),
+            self.fake_root_dir,
+            files,
+            0,
+            0,
+            None,
+        )
+        mock_thread_pool = mock.MagicMock(_pool_size=4)
+        executer = presubmit.PresubmitExecuter(
+            change,
+            True,
+            None,
+            presubmit.GerritAccessor(),
+            thread_pool=mock_thread_pool,
+            parallel=True,
+        )
+        # Using a barrier proves that checks run concurrently across threads;
+        # if executed serially, barrier.wait() would time out.
+        script = (
+            "PRESUBMIT_VERSION = '2.0.0'\n"
+            "import threading\n"
+            "barrier = threading.Barrier(3)\n"
+            "\n"
+            "def CheckFirst(input_api, output_api):\n"
+            "  barrier.wait(timeout=5)\n"
+            "  output_api.AppendCC('first@chromium.org')\n"
+            "  return [output_api.PresubmitResult('res1')]\n"
+            "\n"
+            "def CheckSecond(input_api, output_api):\n"
+            "  barrier.wait(timeout=5)\n"
+            "  output_api.AppendCC('second@chromium.org')\n"
+            "  return [output_api.PresubmitResult('res2')]\n"
+            "\n"
+            "def CheckThird(input_api, output_api):\n"
+            "  barrier.wait(timeout=5)\n"
+            "  output_api.AppendCC('third@chromium.org')\n"
+            "  return [output_api.PresubmitResult('res3')]\n"
+        )
+        results = executer.ExecPresubmitScript(script, fake_presubmit)
+        self.assertEqual(
+            ["res1", "res2", "res3"], [r._message for r in results]
+        )
+        self.assertEqual(
+            ["first@chromium.org", "second@chromium.org", "third@chromium.org"],
+            executer.more_cc,
+        )
+
+    def testExecPresubmitScriptParallelExceptionHandling(self):
+        description_lines = ("Hello there", "this is a change", "BUG=123")
+        files = [["A", "foo\\blat.cc"]]
+        fake_presubmit = os.path.join(self.fake_root_dir, "PRESUBMIT.py")
+        change = presubmit.Change(
+            "mychange",
+            "\n".join(description_lines),
+            self.fake_root_dir,
+            files,
+            0,
+            0,
+            None,
+        )
+        executer = presubmit.PresubmitExecuter(
+            change, True, None, presubmit.GerritAccessor(), parallel=True
+        )
+        script = (
+            "PRESUBMIT_VERSION = '2.0.0'\n"
+            "\n"
+            "def CheckValid(input_api, output_api):\n"
+            "  return [output_api.PresubmitResult('ok')]\n"
+            "\n"
+            "def CheckFails(input_api, output_api):\n"
+            "  raise ValueError('simulated failure')\n"
+        )
+        results = executer.ExecPresubmitScript(script, fake_presubmit)
+        self.assertEqual(2, len(results))
+        self.assertEqual("ok", results[0]._message)
+        self.assertTrue(results[1].fatal)
+        self.assertIn("simulated failure", results[1]._message)
+
+    def testExecPresubmitScriptSequentialWhenDisabled(self):
+        description_lines = ("Hello there", "this is a change", "BUG=123")
+        files = [["A", "foo\\blat.cc"]]
+        fake_presubmit = os.path.join(self.fake_root_dir, "PRESUBMIT.py")
+        change = presubmit.Change(
+            "mychange",
+            "\n".join(description_lines),
+            self.fake_root_dir,
+            files,
+            0,
+            0,
+            None,
+        )
+        executer = presubmit.PresubmitExecuter(
+            change, True, None, presubmit.GerritAccessor(), parallel=False
+        )
+        script = (
+            "PRESUBMIT_VERSION = '2.0.0'\n"
+            "import threading\n"
+            "thread_ids = []\n"
+            "\n"
+            "def CheckOne(input_api, output_api):\n"
+            "  thread_ids.append(threading.get_ident())\n"
+            "  return [output_api.PresubmitResult('one')]\n"
+            "\n"
+            "def CheckTwo(input_api, output_api):\n"
+            "  thread_ids.append(threading.get_ident())\n"
+            "  return [output_api.PresubmitResult('two')]\n"
+        )
+        results = executer.ExecPresubmitScript(script, fake_presubmit)
+        self.assertEqual(["one", "two"], [r._message for r in results])
+
     def testOutputApiHandling(self):
         presubmit.OutputApi.PresubmitError("!!!").handle()
         self.assertIsNotNone(sys.stdout.getvalue().count("!!!"))
