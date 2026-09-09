@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "647c8e20_c746ebaf",
+        "filename": "ruff_chromium",
+        "patchSetId": 15
+      },
+      "lineNbr": 681,
+      "author": {
+        "id": 1286337
+      },
+      "writtenOn": "2026-09-09T14:06:18Z",
+      "side": 1,
+      "message": "There are 11 prior uses of `|` in type signatures in this file. I think we just don\u0027t support Python 3.9.",
+      "parentUuid": "d70e9bbb_d4659f2a",
+      "range": {
+        "startLine": 681,
+        "startChar": 4,
+        "endLine": 681,
+        "endChar": 35
+      },
+      "revId": "4df9a2e8aa7d671a16286da35ee759cfa77625d6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "0ffafa57_d87d004c",
@@ -37,6 +61,30 @@
       "writtenOn": "2026-09-08T23:35:29Z",
       "side": 1,
       "message": "Ditto",
+      "range": {
+        "startLine": 841,
+        "startChar": 31,
+        "endLine": 841,
+        "endChar": 41
+      },
+      "revId": "4df9a2e8aa7d671a16286da35ee759cfa77625d6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "15132d06_9f60c091",
+        "filename": "ruff_chromium",
+        "patchSetId": 15
+      },
+      "lineNbr": 841,
+      "author": {
+        "id": 1286337
+      },
+      "writtenOn": "2026-09-09T14:06:18Z",
+      "side": 1,
+      "message": "Acknowledged",
+      "parentUuid": "0ffafa57_d87d004c",
       "range": {
         "startLine": 841,
         "startChar": 31,
