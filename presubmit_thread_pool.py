@@ -15,6 +15,8 @@ import threading
 import time
 import traceback
 
+import trace_utils
+
 from presubmit_results import (
     _PresubmitError,
     _PresubmitResult,
@@ -246,6 +248,9 @@ class ThreadPool:
                 self._workers.append(t)
 
     def _WorkerLoop(self):
+        trace_utils.collector.set_thread_name(
+            f"PresubmitWorker-{threading.get_ident()}"
+        )
         while not self._cancel_event.is_set():
             try:
                 test = self._task_queue.get(timeout=0.2)
@@ -348,6 +353,9 @@ class ThreadPool:
         to vpython invocations.
         """
         cmd = self._GetCommand(test)
+        test_name = test.name or (
+            " ".join(cmd) if isinstance(cmd, list) else str(cmd)
+        )
         start = time_time()
 
         def error_results(msg, exception=""):
@@ -359,35 +367,38 @@ class ThreadPool:
                 show_callstack=show_callstack,
             )
 
-        try:
-            returncode, stdout = self._RunWithTimeout(
-                cmd, test.stdin, test.kwargs
-            )
-        except Exception:
-            return error_results("exec failure", traceback.format_exc())
-
-        if test.output_parser:
+        with trace_utils.trace(
+            test_name, cat="presubmit_test", args={"cmd": cmd}
+        ):
             try:
-                handled, results = InvokeOutputParser(
-                    test.output_parser, returncode, stdout
+                returncode, stdout = self._RunWithTimeout(
+                    cmd, test.stdin, test.kwargs
                 )
-                if handled:
-                    return results
             except Exception:
-                return error_results(
-                    f"Exception while parsing:\n{stdout}",
-                    traceback.format_exc(),
+                return error_results("exec failure", traceback.format_exc())
+
+            if test.output_parser:
+                try:
+                    handled, results = InvokeOutputParser(
+                        test.output_parser, returncode, stdout
+                    )
+                    if handled:
+                        return results
+                except Exception:
+                    return error_results(
+                        f"Exception while parsing:\n{stdout}",
+                        traceback.format_exc(),
+                    )
+
+            if returncode != 0:
+                return error_results(f"exit code {returncode}", stdout)
+
+            if test.info:
+                duration = time_time() - start
+                return test.info(
+                    "%s\n%s (%4.2fs)" % (test.name, " ".join(cmd), duration),
+                    show_callstack=show_callstack,
                 )
-
-        if returncode != 0:
-            return error_results(f"exit code {returncode}", stdout)
-
-        if test.info:
-            duration = time_time() - start
-            return test.info(
-                "%s\n%s (%4.2fs)" % (test.name, " ".join(cmd), duration),
-                show_callstack=show_callstack,
-            )
 
     def AddTests(self, tests, parallel=True):
         if self._closed:

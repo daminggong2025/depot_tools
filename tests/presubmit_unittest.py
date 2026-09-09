@@ -13,6 +13,7 @@ import multiprocessing  # noqa: F401
 import os
 import random
 import re  # noqa: F401
+import shutil
 import sys
 import tempfile
 import threading
@@ -39,6 +40,7 @@ import presubmit_support as presubmit  # noqa: E402
 import rdb_wrapper  # noqa: E402
 import scm  # noqa: E402
 import subprocess2 as subprocess  # noqa: E402
+import trace_utils  # noqa: E402
 
 # Shortcut.
 presubmit_canned_checks = presubmit.presubmit_canned_checks
@@ -909,6 +911,60 @@ class PresubmitUnittest(PresubmitTestsBase):
         self.assertEqual(sys.stdout.getvalue().count("!!"), 0)
         self.assertEqual(sys.stdout.getvalue().count("??"), 0)
         self.assertEqual(sys.stdout.getvalue().count(RUNNING_PY_CHECKS_TEXT), 1)
+
+    def testTracePresubmit(self):
+        """Verifies that DoPresubmitChecks records trace events to the specified file.
+
+        Scenario:
+        - Enable tracing before running `DoPresubmitChecks`.
+        - Execute presubmit checks with mock presubmit scripts.
+        - Verify that both the top-level presubmit driver event and individual
+          check function events are captured in the same trace file.
+        """
+        tmpdir = tempfile.mkdtemp()
+        try:
+            trace_file = os.path.join(tmpdir, "trace.json")
+            trace_utils.collector.start(trace_file, process_name="presubmit")
+
+            haspresubmit_path = os.path.join(
+                self.fake_root_dir, "haspresubmit", "PRESUBMIT.py"
+            )
+            root_path = os.path.join(self.fake_root_dir, "PRESUBMIT.py")
+            os.path.isfile.side_effect = lambda f: (
+                f in [root_path, haspresubmit_path]
+            )
+            os.listdir.return_value = ["PRESUBMIT.py"]
+            gclient_utils.FileRead.return_value = self.presubmit_text
+            change = self.ExampleChange(
+                extra_lines=["STORY=http://tracker/123"]
+            )
+
+            result = presubmit.DoPresubmitChecks(
+                change=change,
+                committing=False,
+                verbose=True,
+                default_presubmit=None,
+                may_prompt=False,
+                gerrit_obj=None,
+                json_output=None,
+            )
+            self.assertEqual(0, result)
+
+            trace_utils.collector.close()
+
+            st = os.stat(trace_file)
+            self.assertGreater(st.st_size, 0)
+            with open(trace_file, "r", encoding="utf-8") as f:
+                data = json.loads(f.read())
+
+            event_names = [e.get("name") for e in data["traceEvents"]]
+            # Verify that both the top-level driver (`DoPresubmitChecks`) and
+            # the executed check function (`CheckChangeOnUpload`) are captured
+            # in the same trace file.
+            self.assertIn("DoPresubmitChecks", event_names)
+            self.assertIn("CheckChangeOnUpload", event_names)
+        finally:
+            shutil.rmtree(tmpdir)
 
     @mock.patch("scm.GIT.GetBranch", return_value="fallback-branch")
     def testDoPresubmitChecksUsesProvidedBranchName(self, mock_get_branch):
