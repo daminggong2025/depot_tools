@@ -26,6 +26,31 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "1212f204_f58da05c",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 7
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 4733581
+      },
+      "writtenOn": "2026-09-09T19:14:28Z",
+      "side": 1,
+      "message": "Good catch. This was left over from an earlier iteration that added a prefix parameter. That parameter was dropped in favor of removing the \u0027[Experimental]\u0027 prefix entirely. Updated the commit description in PS8 to reflect the current diff.",
+      "parentUuid": "858ee060_440964b8",
+      "range": {
+        "startLine": 12,
+        "startChar": 20,
+        "endLine": 12,
+        "endChar": 36
+      },
+      "isAi": true,
+      "revId": "096dab50c09b0b027d9e0810824274086865e0b2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "3e774f4a_a6b44aec",
         "filename": "recipes/recipe_modules/tryserver/api.py",
         "patchSetId": 7
@@ -43,6 +68,31 @@
         "endLine": 472,
         "endChar": 22
       },
+      "revId": "096dab50c09b0b027d9e0810824274086865e0b2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9b718b85_3cb0af79",
+        "filename": "recipes/recipe_modules/tryserver/api.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 472,
+      "author": {
+        "id": 4733581
+      },
+      "writtenOn": "2026-09-09T19:14:28Z",
+      "side": 1,
+      "message": "Done. Added -c core.quotePath\u003dfalse in PS8 to match the other diff commands in this file.",
+      "parentUuid": "3e774f4a_a6b44aec",
+      "range": {
+        "startLine": 472,
+        "startChar": 0,
+        "endLine": 472,
+        "endChar": 22
+      },
+      "isAi": true,
       "revId": "096dab50c09b0b027d9e0810824274086865e0b2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
