@@ -11,7 +11,8 @@ __version__ = "2.0.0"
 # change). We should add it as our presubmit scripts start feeling slow.
 
 import argparse
-import ast  # Exposed through the API.
+import ast
+import concurrent.futures  # Exposed through the API.
 import contextlib
 import cpplint
 import fnmatch  # Exposed through the API.
@@ -424,6 +425,7 @@ class InputApi(object):
         self.canned_checks = presubmit_canned_checks
 
         # Temporary files and directories we must manually remove at the end of a run.
+        self._temp_lock = threading.Lock()
         self._named_temporary_files = []
         self._temporary_directories = []
 
@@ -641,7 +643,8 @@ class InputApi(object):
                 "objects."
             )
         temp_file = self.tempfile.NamedTemporaryFile(delete=False, **kwargs)
-        self._named_temporary_files.append(temp_file.name)
+        with self._temp_lock:
+            self._named_temporary_files.append(temp_file.name)
         return temp_file
 
     def CreateTemporaryDirectory(self, **kwargs):
@@ -649,7 +652,8 @@ class InputApi(object):
         after all presubmit checks (including deferred parallel tests) finish.
         """
         temp_dir = self.tempfile.TemporaryDirectory(**kwargs)
-        self._temporary_directories.append(temp_dir)
+        with self._temp_lock:
+            self._temporary_directories.append(temp_dir)
         return temp_dir.name
 
     def ListSubmodules(self):
@@ -702,6 +706,10 @@ class InputApi(object):
 class _DiffCache(object):
     """Caches diffs retrieved from a particular SCM."""
 
+    def __init__(self):
+        self._diffs_lock = threading.Lock()
+        self._old_contents_lock = threading.Lock()
+
     def GetDiff(self, path, local_root):
         """Get the diff for a particular path."""
         raise NotImplementedError()
@@ -723,39 +731,50 @@ class _GitDiffCache(_DiffCache):
         self._old_contents_by_file = {}
 
     def GetDiff(self, path, local_root):
-        # Compare against None to distinguish between None and an initialized
-        # but empty dictionary.
-        if self._diffs_by_file == None:  # noqa: E711
-            # Don't specify any filenames below, because there are command line
-            # length limits on some platforms and GenerateDiff would fail.
-            unified_diff = scm.GIT.GenerateDiff(
-                local_root,
-                files=[],
-                full_move=True,
-                branch=self._upstream,
-                branch_head=self._end_commit,
-                allow_prefix=True,
-                context=0,
-            )
-            # Compute a single diff for all files and parse the output; with git
-            # this is much faster than computing one diff for each file.
-            self._diffs_by_file = _parse_unified_diff(unified_diff)
+        with self._diffs_lock:
+            # Compare against None to distinguish between None and an initialized
+            # but empty dictionary.
+            if self._diffs_by_file is None:
+                # Don't specify any filenames below, because there are command line
+                # length limits on some platforms and GenerateDiff would fail.
+                unified_diff = scm.GIT.GenerateDiff(
+                    local_root,
+                    files=[],
+                    full_move=True,
+                    branch=self._upstream,
+                    branch_head=self._end_commit,
+                    allow_prefix=True,
+                    context=0,
+                )
+                # Compute a single diff for all files and parse the output; with git
+                # this is much faster than computing one diff for each file.
+                self._diffs_by_file = _parse_unified_diff(unified_diff)
 
-        if path not in self._diffs_by_file:
-            # SCM didn't have any diff on this file. It could be that the file
-            # was not modified at all (e.g. user used --all flag in git cl
-            # presubmit). Intead of failing, return empty string. See:
-            # https://crbug.com/808346.
-            return ""
+            if path not in self._diffs_by_file:
+                # SCM didn't have any diff on this file. It could be that the file
+                # was not modified at all (e.g. user used --all flag in git cl
+                # presubmit). Instead of failing, return empty string. See:
+                # https://crbug.com/808346.
+                return ""
 
-        return self._diffs_by_file[path]
+            return self._diffs_by_file[path]
 
     def GetOldContents(self, path, local_root):
-        if path not in self._old_contents_by_file:
-            self._old_contents_by_file[path] = scm.GIT.GetOldContents(
-                local_root, path, branch=self._upstream
-            )
-        return self._old_contents_by_file[path]
+        with self._old_contents_lock:
+            if path in self._old_contents_by_file:
+                return self._old_contents_by_file[path]
+
+        # The lock is released during the git subprocess call so other threads
+        # fetching different files are not serialized. Note that concurrent
+        # requests for the exact same file may perform duplicate git I/O, which
+        # is an acceptable trade-off.
+        contents = scm.GIT.GetOldContents(
+            local_root, path, branch=self._upstream
+        )
+
+        with self._old_contents_lock:
+            self._old_contents_by_file[path] = contents
+            return contents
 
 
 class _ProvidedDiffCache(_DiffCache):
@@ -770,14 +789,16 @@ class _ProvidedDiffCache(_DiffCache):
 
     def GetDiff(self, path, local_root):
         """Get the diff for a particular path."""
-        if self._diffs_by_file == None:  # noqa: E711
-            self._diffs_by_file = _parse_unified_diff(self._diff)
-        return self._diffs_by_file.get(path, "")
+        with self._diffs_lock:
+            if self._diffs_by_file is None:
+                self._diffs_by_file = _parse_unified_diff(self._diff)
+            return self._diffs_by_file.get(path, "")
 
     def GetOldContents(self, path, local_root):
         """Get the old version for a particular path."""
-        if path in self._old_contents_by_file:
-            return self._old_contents_by_file[path]
+        with self._old_contents_lock:
+            if path in self._old_contents_by_file:
+                return self._old_contents_by_file[path]
 
         full_path = os.path.join(local_root, path)
         diff = self.GetDiff(path, local_root)
@@ -787,7 +808,8 @@ class _ProvidedDiffCache(_DiffCache):
                 res = gclient_utils.FileRead(full_path)
             else:
                 res = ""
-            self._old_contents_by_file[path] = res
+            with self._old_contents_lock:
+                self._old_contents_by_file[path] = res
             return res
 
         with gclient_utils.temporary_file() as diff_file:
@@ -831,7 +853,8 @@ class _ProvidedDiffCache(_DiffCache):
                     res = gclient_utils.FileRead(copy_dst)
                 else:
                     res = ""
-                self._old_contents_by_file[path] = res
+                with self._old_contents_lock:
+                    self._old_contents_by_file[path] = res
                 return res
 
 
@@ -841,6 +864,7 @@ class AffectedFile(object):
     DIFF_CACHE = _DiffCache
 
     def __init__(self, path, action, repository_root, diff_cache):
+        self._lock = threading.Lock()
         self._path = path
         self._action = action
         self._local_root = repository_root
@@ -883,14 +907,15 @@ class AffectedFile(object):
         """Returns True if the file is a text file and not a binary file.
 
         Deleted files are not text file."""
-        if self._is_testable_file is None:
-            if self.Action() == "D":
-                # A deleted file is not testable.
-                self._is_testable_file = False
-            else:
-                t, _ = mimetypes.guess_type(self.AbsoluteLocalPath())
-                self._is_testable_file = bool(t and t.startswith("text/"))
-        return self._is_testable_file
+        with self._lock:
+            if self._is_testable_file is None:
+                if self.Action() == "D":
+                    # A deleted file is not testable.
+                    self._is_testable_file = False
+                else:
+                    t, _ = mimetypes.guess_type(self.AbsoluteLocalPath())
+                    self._is_testable_file = bool(t and t.startswith("text/"))
+            return self._is_testable_file
 
     def IsTextFile(self):
         """An alias to IsTestableFile for backwards compatibility."""
@@ -905,11 +930,12 @@ class AffectedFile(object):
         Contents will be empty if the file is a directory or does not exist.
         Note: The carriage returns (LF or CR) are stripped off.
         """
-        if self._cached_old_contents is None:
-            self._cached_old_contents = self._diff_cache.GetOldContents(
-                self.LocalPath(), self._local_root
-            ).splitlines()
-        return self._cached_old_contents[:]
+        with self._lock:
+            if self._cached_old_contents is None:
+                self._cached_old_contents = self._diff_cache.GetOldContents(
+                    self.LocalPath(), self._local_root
+                ).splitlines()
+            return self._cached_old_contents[:]
 
     def NewContents(self, flush_cache=False):
         """Returns an iterator over the lines in the new version of file.
@@ -922,21 +948,24 @@ class AffectedFile(object):
         Contents will be empty if the file is a directory or does not exist.
         Note: The carriage returns (LF or CR) are stripped off.
         """
-        if self._cached_new_contents is None or flush_cache:
-            self._cached_new_contents = []
-            try:
-                self._cached_new_contents = gclient_utils.FileRead(
-                    self.AbsoluteLocalPath(), "rU"
-                ).splitlines()
-            except IOError:
-                pass  # File not found?  That's fine; maybe it was deleted.
-            except UnicodeDecodeError as e:
-                # log the filename since we're probably trying to read a binary
-                # file, and shouldn't be.
-                print("Error reading %s: %s" % (self.AbsoluteLocalPath(), e))
-                raise
+        with self._lock:
+            if self._cached_new_contents is None or flush_cache:
+                self._cached_new_contents = []
+                try:
+                    self._cached_new_contents = gclient_utils.FileRead(
+                        self.AbsoluteLocalPath(), "rU"
+                    ).splitlines()
+                except IOError:
+                    pass  # File not found?  That's fine; maybe it was deleted.
+                except UnicodeDecodeError as e:
+                    # log the filename since we're probably trying to read a binary
+                    # file, and shouldn't be.
+                    print(
+                        "Error reading %s: %s" % (self.AbsoluteLocalPath(), e)
+                    )
+                    raise
 
-        return self._cached_new_contents[:]
+            return self._cached_new_contents[:]
 
     def ChangedContents(self, keeplinebreaks=False):
         """Returns a list of tuples (line number, line text) of all new lines.
@@ -947,8 +976,10 @@ class AffectedFile(object):
         ^@@ <old line num>,<old size> <new line num>,<new size> @@$
         """
         # Don't return cached results when line breaks are requested.
-        if not keeplinebreaks and self._cached_changed_contents is not None:
-            return self._cached_changed_contents[:]
+        if not keeplinebreaks:
+            with self._lock:
+                if self._cached_changed_contents is not None:
+                    return self._cached_changed_contents[:]
         result = []
         line_num = 0
 
@@ -968,8 +999,9 @@ class AffectedFile(object):
         # Don't cache results with line breaks.
         if keeplinebreaks:
             return result
-        self._cached_changed_contents = result
-        return self._cached_changed_contents[:]
+        with self._lock:
+            self._cached_changed_contents = result
+            return self._cached_changed_contents[:]
 
     def Extension(self):
         """Returns the file extension as a string.
@@ -1003,15 +1035,16 @@ class GitAffectedFile(AffectedFile):
         AffectedFile.__init__(self, *args, **kwargs)
 
     def IsTestableFile(self):
-        if self._is_testable_file is None:
-            if self.Action() == "D":
-                # A deleted file is not testable.
-                self._is_testable_file = False
-            else:
-                self._is_testable_file = os.path.isfile(
-                    self.AbsoluteLocalPath()
-                )
-        return self._is_testable_file
+        with self._lock:
+            if self._is_testable_file is None:
+                if self.Action() == "D":
+                    # A deleted file is not testable.
+                    self._is_testable_file = False
+                else:
+                    self._is_testable_file = os.path.isfile(
+                        self.AbsoluteLocalPath()
+                    )
+            return self._is_testable_file
 
 
 class ProvidedDiffAffectedFile(AffectedFile):
@@ -1051,6 +1084,7 @@ class Change(object):
 
         self._full_description = ""
         self.tags = {}
+        self._lock = threading.Lock()
         self._description_without_tags = ""
         self.SetDescriptionText(description)
 
@@ -1314,9 +1348,10 @@ class Change(object):
 
     def _repo_submodules(self):
         """Returns submodule paths for current change's repo."""
-        if not self._submodules:
-            self._submodules = scm.GIT.ListSubmodules(self.RepositoryRoot())
-        return self._submodules
+        with self._lock:
+            if self._submodules is None:
+                self._submodules = scm.GIT.ListSubmodules(self.RepositoryRoot())
+            return self._submodules
 
 
 class GitChange(Change):
@@ -1582,6 +1617,7 @@ class PresubmitExecuter(object):
         self.parallel = parallel
         self.no_diffs = no_diffs
         self.input_apis = []
+        self._sink_lock = threading.Lock()
 
     def ExecPresubmitScript(self, script_text, presubmit_path):
         """Executes a single presubmit script.
@@ -1670,29 +1706,97 @@ class PresubmitExecuter(object):
                     # iteration" exception if checks add globals to context.
                     # E.g. sometimes the Python runtime will add
                     # __warningregistry__.
-                    for function_name in list(context.keys()):
-                        if not function_name.startswith("Check"):
-                            continue
-                        if (
-                            function_name.endswith("Commit")
-                            and not self.committing
-                        ):
-                            continue
-                        if function_name.endswith("Upload") and self.committing:
-                            continue
-                        logging.debug(
-                            "Running %s in %s", function_name, presubmit_path
-                        )
-                        results.extend(
-                            self._run_check_function(
-                                function_name, context, sink, presubmit_path
+                    check_functions = [
+                        fn
+                        for fn in list(context.keys())
+                        if fn.startswith("Check")
+                        and not (fn.endswith("Commit") and not self.committing)
+                        and not (fn.endswith("Upload") and self.committing)
+                    ]
+
+                    if not self.parallel or len(check_functions) <= 1:
+                        for function_name in check_functions:
+                            logging.debug(
+                                "Running %s in %s",
+                                function_name,
+                                presubmit_path,
                             )
+                            check_output_api = OutputApi(self.committing)
+                            results.extend(
+                                self._run_check_function(
+                                    function_name,
+                                    context,
+                                    sink,
+                                    presubmit_path,
+                                    output_api=check_output_api,
+                                    input_api=input_api,
+                                )
+                            )
+                            logging.debug("Running %s done.", function_name)
+                            self.more_cc.extend(check_output_api.more_cc)
+                    else:
+                        pool_size = (
+                            self.thread_pool._pool_size
+                            if self.thread_pool
+                            and hasattr(self.thread_pool, "_pool_size")
+                            else multiprocessing.cpu_count()
                         )
-                        logging.debug("Running %s done.", function_name)
-                        self.more_cc.extend(output_api.more_cc)
-                        # Clear the CC list between running each presubmit check
-                        # to prevent CCs from being repeatedly appended.
-                        output_api.more_cc = []
+                        if sys.platform == "win32":
+                            pool_size = min(pool_size, 56)
+                        max_workers = max(
+                            1, min(len(check_functions), pool_size)
+                        )
+                        logging.debug(
+                            "Running %d check functions in parallel with %d workers in %s",
+                            len(check_functions),
+                            max_workers,
+                            presubmit_path,
+                        )
+
+                        def _run_single_check(fn):
+                            logging.debug(
+                                "Running %s in %s", fn, presubmit_path
+                            )
+                            check_output_api = OutputApi(self.committing)
+                            check_results = self._run_check_function(
+                                fn,
+                                context,
+                                sink,
+                                presubmit_path,
+                                output_api=check_output_api,
+                                input_api=input_api,
+                            )
+                            logging.debug("Running %s done.", fn)
+                            return check_results, check_output_api.more_cc
+
+                        executor = concurrent.futures.ThreadPoolExecutor(
+                            max_workers=max_workers,
+                            thread_name_prefix="PresubmitCheck",
+                        )
+                        cancelled = False
+                        try:
+                            futures = [
+                                executor.submit(_run_single_check, fn)
+                                for fn in check_functions
+                            ]
+                            for future in futures:
+                                check_results, check_more_cc = future.result()
+                                results.extend(check_results)
+                                self.more_cc.extend(check_more_cc)
+                        except BaseException:
+                            cancelled = True
+                            if self.thread_pool:
+                                self.thread_pool.Cancel()
+                            if sys.version_info >= (3, 9):
+                                executor.shutdown(
+                                    wait=False, cancel_futures=True
+                                )
+                            else:
+                                executor.shutdown(wait=False)
+                            raise
+                        finally:
+                            if not cancelled:
+                                executor.shutdown(wait=True)
 
                 else:  # Old format
                     if self.committing:
@@ -1703,31 +1807,34 @@ class PresubmitExecuter(object):
                         logging.debug(
                             "Running %s in %s", function_name, presubmit_path
                         )
+                        check_output_api = OutputApi(self.committing)
                         results.extend(
                             self._run_check_function(
-                                function_name, context, sink, presubmit_path
+                                function_name,
+                                context,
+                                sink,
+                                presubmit_path,
+                                output_api=check_output_api,
+                                input_api=input_api,
                             )
                         )
                         logging.debug("Running %s done.", function_name)
-                        self.more_cc.extend(output_api.more_cc)
-                        # Clear the CC list between running each presubmit check
-                        # to prevent CCs from being repeatedly appended.
-                        output_api.more_cc = []
+                        self.more_cc.extend(check_output_api.more_cc)
 
         finally:
             if self.thread_pool and hasattr(
                 self.thread_pool, "RegisterTemporaryFiles"
             ):
-                temp_files = []
-                while input_api._named_temporary_files:
-                    temp_files.append(input_api._named_temporary_files.pop())
+                with input_api._temp_lock:
+                    temp_files = input_api._named_temporary_files[::-1]
+                    input_api._named_temporary_files.clear()
                 self.thread_pool.RegisterTemporaryFiles(temp_files)
             if self.thread_pool and hasattr(
                 self.thread_pool, "RegisterTemporaryDirectories"
             ):
-                temp_dirs = []
-                while input_api._temporary_directories:
-                    temp_dirs.append(input_api._temporary_directories.pop())
+                with input_api._temp_lock:
+                    temp_dirs = input_api._temporary_directories[::-1]
+                    input_api._temporary_directories.clear()
                 self.thread_pool.RegisterTemporaryDirectories(temp_dirs)
 
         self.more_cc = sorted(set(self.more_cc))
@@ -1737,20 +1844,38 @@ class PresubmitExecuter(object):
     def Cleanup(self):
         """Cleans up temporary files and directories created by presubmit checks."""
         for input_api in self.input_apis:
-            while input_api._named_temporary_files:
-                f = input_api._named_temporary_files.pop()
+            temp_lock = getattr(input_api, "_temp_lock", None)
+            if temp_lock:
+                temp_lock.acquire()
+            try:
+                temp_files = input_api._named_temporary_files[::-1]
+                input_api._named_temporary_files.clear()
+                temp_dirs = input_api._temporary_directories[::-1]
+                input_api._temporary_directories.clear()
+            finally:
+                if temp_lock:
+                    temp_lock.release()
+
+            for f in temp_files:
                 try:
                     os.remove(f)
                 except OSError:
                     pass
-            while input_api._temporary_directories:
-                d = input_api._temporary_directories.pop()
+            for d in temp_dirs:
                 try:
                     d.cleanup()
                 except OSError:
                     pass
 
-    def _run_check_function(self, function_name, context, sink, presubmit_path):
+    def _run_check_function(
+        self,
+        function_name,
+        context,
+        sink,
+        presubmit_path,
+        output_api=None,
+        input_api=None,
+    ):
         """Evaluates and returns the result of a given presubmit function.
 
         If sink is given, the result of the presubmit function will be reported
@@ -1760,6 +1885,9 @@ class PresubmitExecuter(object):
             function_name: the name of the presubmit function to evaluate
             context: a context dictionary in which the function will be evaluated
             sink: an instance of ResultSink. None, by default.
+            presubmit_path: path to the PRESUBMIT.py file.
+            output_api: optional OutputApi instance to use for this check.
+            input_api: optional InputApi instance to use for this check.
         Returns:
             the result of the presubmit function call.
         """
@@ -1779,8 +1907,16 @@ class PresubmitExecuter(object):
         event_thread.daemon = True
         event_thread.start()
 
+        if output_api is None:
+            output_api = context.get("__args", (None, None))[1]
+            if output_api is None:
+                output_api = OutputApi(self.committing)
+        if input_api is None:
+            input_api = context.get("__args", (None, None))[0]
+
         try:
-            result = eval(function_name + "(*__args)", context)
+            func = context[function_name]
+            result = func(input_api, output_api)
             self._check_result_type(result)
         except Exception:
             _, e_value, _ = sys.exc_info()
@@ -1802,7 +1938,17 @@ class PresubmitExecuter(object):
             )
         if sink:
             status, failure_reason = RDBStatusFrom(result)
-            sink.report(function_name, status, elapsed_time, failure_reason)
+            try:
+                with self._sink_lock:
+                    sink.report(
+                        function_name, status, elapsed_time, failure_reason
+                    )
+            except Exception as e:
+                logging.warning(
+                    "Failed to report to ResultSink for %s: %s",
+                    function_name,
+                    e,
+                )
 
         return result
 
