@@ -49,6 +49,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "35791352_9e03a18a",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 7
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 4733581
+      },
+      "writtenOn": "2026-09-09T22:46:04Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1212f204_f58da05c",
+      "range": {
+        "startLine": 12,
+        "startChar": 20,
+        "endLine": 12,
+        "endChar": 36
+      },
+      "revId": "096dab50c09b0b027d9e0810824274086865e0b2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "3e774f4a_a6b44aec",
@@ -93,6 +117,30 @@
         "endChar": 22
       },
       "isAi": true,
+      "revId": "096dab50c09b0b027d9e0810824274086865e0b2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "af4fc2d7_cdac6ec8",
+        "filename": "recipes/recipe_modules/tryserver/api.py",
+        "patchSetId": 7
+      },
+      "lineNbr": 472,
+      "author": {
+        "id": 4733581
+      },
+      "writtenOn": "2026-09-09T22:46:04Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9b718b85_3cb0af79",
+      "range": {
+        "startLine": 472,
+        "startChar": 0,
+        "endLine": 472,
+        "endChar": 22
+      },
       "revId": "096dab50c09b0b027d9e0810824274086865e0b2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
