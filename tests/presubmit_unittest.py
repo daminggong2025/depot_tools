@@ -4,6 +4,7 @@
 # found in the LICENSE file.
 """Unit tests for presubmit_support.py and presubmit_canned_checks.py."""
 
+import concurrent.futures
 import fnmatch
 import functools
 import io
@@ -2401,6 +2402,180 @@ class OutputApiUnittest(PresubmitTestsBase):
         )
         self.assertEqual(["chromium-reviews@chromium.org"], executer.more_cc)
 
+    def testExecPresubmitScriptParallelExecution(self):
+        description_lines = ("Hello there", "this is a change", "BUG=123")
+        files = [["A", "foo\\blat.cc"]]
+        fake_presubmit = os.path.join(self.fake_root_dir, "PRESUBMIT.py")
+        change = presubmit.Change(
+            "mychange",
+            "\n".join(description_lines),
+            self.fake_root_dir,
+            files,
+            0,
+            0,
+            None,
+        )
+        mock_thread_pool = mock.MagicMock(_pool_size=4)
+        executer = presubmit.PresubmitExecuter(
+            change,
+            True,
+            None,
+            presubmit.GerritAccessor(),
+            thread_pool=mock_thread_pool,
+            parallel=True,
+        )
+        # Using a barrier proves that checks run concurrently across threads;
+        # if executed serially, barrier.wait() would time out.
+        script = (
+            "PRESUBMIT_VERSION = '2.0.0'\n"
+            "import threading\n"
+            "barrier = threading.Barrier(3)\n"
+            "\n"
+            "def CheckFirst(input_api, output_api):\n"
+            "  barrier.wait(timeout=5)\n"
+            "  output_api.AppendCC('first@chromium.org')\n"
+            "  return [output_api.PresubmitResult('res1')]\n"
+            "\n"
+            "def CheckSecond(input_api, output_api):\n"
+            "  barrier.wait(timeout=5)\n"
+            "  output_api.AppendCC('second@chromium.org')\n"
+            "  return [output_api.PresubmitResult('res2')]\n"
+            "\n"
+            "def CheckThird(input_api, output_api):\n"
+            "  barrier.wait(timeout=5)\n"
+            "  output_api.AppendCC('third@chromium.org')\n"
+            "  return [output_api.PresubmitResult('res3')]\n"
+        )
+        results = executer.ExecPresubmitScript(script, fake_presubmit)
+        self.assertEqual(
+            ["res1", "res2", "res3"], [r._message for r in results]
+        )
+        self.assertEqual(
+            ["first@chromium.org", "second@chromium.org", "third@chromium.org"],
+            executer.more_cc,
+        )
+
+    def testExecPresubmitScriptParallelExceptionHandling(self):
+        description_lines = ("Hello there", "this is a change", "BUG=123")
+        files = [["A", "foo\\blat.cc"]]
+        fake_presubmit = os.path.join(self.fake_root_dir, "PRESUBMIT.py")
+        change = presubmit.Change(
+            "mychange",
+            "\n".join(description_lines),
+            self.fake_root_dir,
+            files,
+            0,
+            0,
+            None,
+        )
+        executer = presubmit.PresubmitExecuter(
+            change, True, None, presubmit.GerritAccessor(), parallel=True
+        )
+        script = (
+            "PRESUBMIT_VERSION = '2.0.0'\n"
+            "\n"
+            "def CheckValid(input_api, output_api):\n"
+            "  return [output_api.PresubmitResult('ok')]\n"
+            "\n"
+            "def CheckFails(input_api, output_api):\n"
+            "  raise ValueError('simulated failure')\n"
+        )
+        results = executer.ExecPresubmitScript(script, fake_presubmit)
+        self.assertEqual(2, len(results))
+        self.assertEqual("ok", results[0]._message)
+        self.assertTrue(results[1].fatal)
+        self.assertIn("simulated failure", results[1]._message)
+
+    def testExecPresubmitScriptSequentialWhenDisabled(self):
+        description_lines = ("Hello there", "this is a change", "BUG=123")
+        files = [["A", "foo\\blat.cc"]]
+        fake_presubmit = os.path.join(self.fake_root_dir, "PRESUBMIT.py")
+        change = presubmit.Change(
+            "mychange",
+            "\n".join(description_lines),
+            self.fake_root_dir,
+            files,
+            0,
+            0,
+            None,
+        )
+        executer = presubmit.PresubmitExecuter(
+            change, True, None, presubmit.GerritAccessor(), parallel=False
+        )
+        script = (
+            "PRESUBMIT_VERSION = '2.0.0'\n"
+            "import threading\n"
+            "thread_ids = []\n"
+            "\n"
+            "def CheckOne(input_api, output_api):\n"
+            "  thread_ids.append(threading.get_ident())\n"
+            "  return [output_api.PresubmitResult('one')]\n"
+            "\n"
+            "def CheckTwo(input_api, output_api):\n"
+            "  thread_ids.append(threading.get_ident())\n"
+            "  return [output_api.PresubmitResult('two')]\n"
+        )
+        results = executer.ExecPresubmitScript(script, fake_presubmit)
+        self.assertEqual(["one", "two"], [r._message for r in results])
+
+    def testInputApiCreateTempFilesConcurrent(self):
+        fake_presubmit = os.path.join(self.fake_root_dir, "PRESUBMIT.py")
+        input_api = presubmit.InputApi(
+            self.fake_change, fake_presubmit, False, False, None
+        )
+        created_files = []
+        created_dirs = []
+
+        def worker():
+            f = input_api.CreateTemporaryFile()
+            created_files.append(f.name)
+            d = input_api.CreateTemporaryDirectory()
+            created_dirs.append(d)
+
+        threads = [threading.Thread(target=worker) for _ in range(8)]
+        for t in threads:
+            t.start()
+        for t in threads:
+            t.join()
+
+        self.assertEqual(len(input_api._named_temporary_files), 8)
+        self.assertEqual(len(input_api._temporary_directories), 8)
+        self.assertEqual(set(input_api._named_temporary_files), set(created_files))
+
+        executer = presubmit.PresubmitExecuter(
+            self.fake_change, False, None, presubmit.GerritAccessor()
+        )
+        executer.input_apis.append(input_api)
+        executer.Cleanup()
+        self.assertEqual(len(input_api._named_temporary_files), 0)
+        self.assertEqual(len(input_api._temporary_directories), 0)
+
+    def testPresubmitExecuterCleanupWithLock(self):
+        fake_presubmit = os.path.join(self.fake_root_dir, "PRESUBMIT.py")
+        executer = presubmit.PresubmitExecuter(
+            self.fake_change, False, None, presubmit.GerritAccessor()
+        )
+        input_api = presubmit.InputApi(
+            self.fake_change, fake_presubmit, False, False, None
+        )
+        executer.input_apis.append(input_api)
+        input_api._named_temporary_files.extend(["file1", "file2"])
+        d1 = mock.MagicMock()
+        d2 = mock.MagicMock()
+        input_api._temporary_directories.extend([d1, d2])
+
+        with mock.patch("os.remove") as mock_remove:
+            executer.Cleanup()
+            self.assertEqual([], input_api._named_temporary_files)
+            self.assertEqual([], input_api._temporary_directories)
+            self.assertEqual(
+                [mock.call("file2"), mock.call("file1")], mock_remove.mock_calls
+            )
+            d2.cleanup.assert_called_once()
+            d1.cleanup.assert_called_once()
+            self.assertTrue(input_api._temp_lock.acquire(blocking=False))
+            input_api._temp_lock.release()
+
     def testOutputApiHandling(self):
         presubmit.OutputApi.PresubmitError("!!!").handle()
         self.assertIsNotNone(sys.stdout.getvalue().count("!!!"))
@@ -2552,6 +2727,59 @@ class AffectedFileUnittest(PresubmitTestsBase):
         res2 = diff_cache.GetOldContents("foo.cc", self.fake_root_dir)
         self.assertEqual("file content", res2)
         gclient_utils.FileRead.assert_not_called()
+
+    def testGitDiffCacheGetOldContentsConcurrentIo(self):
+        diff_cache = presubmit._GitDiffCache("upstream", "HEAD")
+        barrier = threading.Barrier(4)
+
+        def fake_get_old(root, path, branch):
+            barrier.wait(timeout=2)
+            return f"content_of_{path}"
+
+        with mock.patch.object(
+            presubmit.scm.GIT, "GetOldContents", side_effect=fake_get_old
+        ):
+            with concurrent.futures.ThreadPoolExecutor(max_workers=4) as ex:
+                futures = [
+                    ex.submit(
+                        diff_cache.GetOldContents,
+                        f"file_{i}.cc",
+                        self.fake_root_dir,
+                    )
+                    for i in range(4)
+                ]
+                results = [f.result() for f in futures]
+            self.assertEqual(
+                [f"content_of_file_{i}.cc" for i in range(4)], results
+            )
+            self.assertEqual(4, len(diff_cache._old_contents_by_file))
+
+    def testProvidedDiffCacheGetOldContentsConcurrent(self):
+        with (
+            mock.patch(
+                "gclient_utils.FileRead",
+                side_effect=lambda p, *args: f"read_{p}",
+            ),
+            mock.patch("os.path.isfile", return_value=True),
+        ):
+            diff_cache = presubmit._ProvidedDiffCache("")
+            barrier = threading.Barrier(4)
+
+            def run_get(i):
+                barrier.wait(timeout=2)
+                return diff_cache.GetOldContents(
+                    f"file_{i}.cc", self.fake_root_dir
+                )
+
+            with concurrent.futures.ThreadPoolExecutor(max_workers=4) as ex:
+                futures = [ex.submit(run_get, i) for i in range(4)]
+                results = [f.result() for f in futures]
+            self.assertEqual(4, len(diff_cache._old_contents_by_file))
+            expected = [
+                f"read_{os.path.join(self.fake_root_dir, f'file_{i}.cc')}"
+                for i in range(4)
+            ]
+            self.assertEqual(expected, results)
 
 
 class ChangeUnittest(PresubmitTestsBase):

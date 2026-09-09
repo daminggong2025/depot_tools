@@ -413,7 +413,8 @@ class ThreadPool:
             for test in tests:
                 self._task_queue.put(test)
         else:
-            self._nonparallel_tests.extend(tests)
+            with self._messages_lock:
+                self._nonparallel_tests.extend(tests)
 
     def DrainInFlightParallelTasks(self):
         """Blocks until all active parallel background tasks have completed."""
@@ -498,8 +499,11 @@ class ThreadPool:
         self.DrainInFlightParallelTasks()
 
         # Nonparallel tests run sequentially in LIFO order matching historical presubmit semantics.
-        while self._nonparallel_tests and not self._cancel_event.is_set():
-            test = self._nonparallel_tests.pop()
+        while not self._cancel_event.is_set():
+            with self._messages_lock:
+                if not self._nonparallel_tests:
+                    break
+                test = self._nonparallel_tests.pop()
             result = self.CallCommand(test)
             if result:
                 with self._messages_lock:
