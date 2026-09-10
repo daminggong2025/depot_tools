@@ -823,26 +823,45 @@ def _RunLitTemplateFormatter(
 
 def _RunGnFormat(opts, paths, top_dir, diffs):
     cmd = [sys.executable, os.path.join(DEPOT_TOOLS, "gn.py"), "format"]
-    if opts.dry_run or opts.diff:
+    dry_run_or_diff = bool(opts.dry_run or opts.diff)
+    if dry_run_or_diff:
         cmd.append("--dry-run")
     return_value = 0
-    for path in paths:
-        gn_ret = subprocess2.call(
-            cmd + [path], shell=sys.platform.startswith("win"), cwd=top_dir
+    for paths_batch in _SplitArgsByCmdLineLimit(paths):
+        proc = subprocess2.Popen(
+            cmd + paths_batch,
+            shell=False,
+            cwd=top_dir,
+            stdout=subprocess2.PIPE,
+            stderr=subprocess2.PIPE,
         )
-        if opts.diff and gn_ret == 2:
-            # TODO this should compute and print the actual diff.
-            print("This change has GN build file diff for " + path)
-        if opts.dry_run and gn_ret == 2:
-            return_value = 2  # Not formatted.
+        stdout_bytes, stderr_bytes = proc.communicate()
+        gn_ret = proc.returncode
+        stdout = stdout_bytes.decode("utf-8", "replace") if stdout_bytes else ""
+        stderr = stderr_bytes.decode("utf-8", "replace") if stderr_bytes else ""
+        if dry_run_or_diff and gn_ret == 2 and not stderr:
+            if opts.diff and stdout:
+                for unformatted_path in stdout.splitlines():
+                    unformatted_path = unformatted_path.strip()
+                    if unformatted_path:
+                        print(
+                            "This change has GN build file diff for "
+                            + unformatted_path
+                        )
+            if opts.dry_run:
+                return_value = 2  # Not formatted.
         elif gn_ret != 0:
-            # For non-dry run cases (and non-2 return values for dry-run), a
-            # nonzero error code indicates a failure, probably because the
-            # file doesn't parse.
+            err_parts = [p.strip() for p in (stderr, stdout) if p and p.strip()]
+            err_msg = "\n".join(err_parts)
+            target_descr = (
+                paths_batch[0]
+                if len(paths_batch) == 1
+                else f"{len(paths_batch)} files ({', '.join(paths_batch)})"
+            )
             DieWithError(
-                "gn format failed on "
-                + path
-                + "\nTry running `gn format` on this file manually."
+                f"gn format failed on {target_descr}"
+                + (f"\n{err_msg}" if err_msg else "")
+                + "\nTry running `gn format` manually."
             )
     return return_value
 
