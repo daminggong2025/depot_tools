@@ -5,6 +5,7 @@
 
 import datetime
 import functools
+import ast as _ast
 import io as _io
 import os as _os
 import re as _re
@@ -852,7 +853,9 @@ def CheckLongLines(input_api, output_api, maxlen, source_file_filter=None):
                             line_num for line_num, _ in f.ChangedContents()
                         )
                     if line_num in changed_lines:
-                        errors.append(error_formatter(file_path, line_num, line))
+                        errors.append(
+                            error_formatter(file_path, line_num, line)
+                        )
 
         return errors
 
@@ -1601,6 +1604,89 @@ def _FetchAllFiles(input_api, files_to_check, files_to_skip):
     return files
 
 
+def _GetCyclicImportFiles(input_api, files, affected_files):
+    """Finds the closure of files that could form an import cycle with affected files."""
+    if not affected_files:
+        return files
+
+    norm = lambda p: p.replace("\\", "/")
+    affected_set = {norm(f) for f in affected_files}
+
+    # Map module names and basenames to files in `files`.
+    file_by_mod = {}
+    file_by_base = {}
+    for f in files:
+        f_norm = norm(f)
+        file_by_mod[f_norm[:-3].replace("/", ".")] = f
+        base = input_api.os_path.splitext(input_api.os_path.basename(f))[0]
+        file_by_base.setdefault(base, []).append(f)
+
+    # Initial queue: any file in `files` that is affected.
+    queue = [f for f in files if norm(f) in affected_set]
+    if not queue:
+        # If none of the affected files matched files directly, fallback to all files.
+        return files
+
+    closure = set()
+    local_path = input_api.PresubmitLocalPath()
+    while queue:
+        curr = queue.pop()
+        if curr in closure:
+            continue
+        closure.add(curr)
+
+        curr_full_path = input_api.os_path.join(local_path, curr)
+        try:
+            if hasattr(input_api, "ReadFile"):
+                content_bytes = input_api.ReadFile(curr_full_path, mode="rb")
+            else:
+                with _io.open(curr_full_path, "rb") as fp:
+                    content_bytes = fp.read()
+            tree = _ast.parse(content_bytes, filename=curr)
+        except Exception:
+            # Fallback to checking all files on parse error or read failure.
+            return files
+
+        curr_dir_parts = norm(curr).split("/")[:-1]
+        for node in _ast.walk(tree):
+            if isinstance(node, _ast.Import):
+                for n in node.names:
+                    for mod in (n.name, n.name.split(".")[0]):
+                        if mod in file_by_mod:
+                            queue.append(file_by_mod[mod])
+                        if mod in file_by_base:
+                            queue.extend(file_by_base[mod])
+            elif isinstance(node, _ast.ImportFrom):
+                if node.level and node.level > 0:
+                    up = node.level - 1
+                    target_parts = (
+                        curr_dir_parts[:-up] if up > 0 else list(curr_dir_parts)
+                    )
+                    if node.module:
+                        target_parts.extend(node.module.split("."))
+                    rel_prefix = "/".join(target_parts)
+                    for n in node.names:
+                        full_rel = (
+                            f"{rel_prefix}/{n.name}" if rel_prefix else n.name
+                        )
+                        if full_rel in file_by_mod:
+                            queue.append(file_by_mod[full_rel])
+                        if n.name in file_by_base:
+                            queue.extend(file_by_base[n.name])
+                else:
+                    if node.module:
+                        for mod in (node.module, node.module.split(".")[0]):
+                            if mod in file_by_mod:
+                                queue.append(file_by_mod[mod])
+                            if mod in file_by_base:
+                                queue.extend(file_by_base[mod])
+                    for n in node.names:
+                        if n.name in file_by_base:
+                            queue.extend(file_by_base[n.name])
+
+    return sorted(closure)
+
+
 def GetPylint(
     input_api,
     output_api,
@@ -1658,9 +1744,27 @@ def GetPylint(
     src_filter = lambda x: input_api.FilterSourceFile(  # noqa: E731
         x, map(rel_path, files_to_check), map(rel_path, files_to_skip)
     )
-    if not input_api.AffectedSourceFiles(src_filter):
+    affected_sources = input_api.AffectedSourceFiles(src_filter)
+    if not affected_sources:
         input_api.logging.info("Skipping pylint: no matching changes.")
         return []
+
+    affected_files = []
+    if isinstance(affected_sources, (list, tuple, set)):
+        presubmit_path = input_api.PresubmitLocalPath()
+        for f in affected_sources:
+            try:
+                abs_p = (
+                    f.AbsoluteLocalPath()
+                    if hasattr(f, "AbsoluteLocalPath")
+                    else f
+                )
+                if isinstance(abs_p, str):
+                    affected_files.append(
+                        input_api.os_path.relpath(abs_p, presubmit_path)
+                    )
+            except Exception:
+                pass
 
     if pylintrc is not None:
         pylintrc = input_api.os_path.join(
@@ -1743,12 +1847,17 @@ def GetPylint(
     if len(files) >= files_per_job and not any(
         "R0401" in a or "cyclic-import" in a for a in extra_args
     ):
-        return [
-            GetPylintCmd(files, ["--disable=cyclic-import"], True),
-            GetPylintCmd(
-                files, ["--disable=all", "--enable=cyclic-import"], False
-            ),
-        ]
+        commands = [GetPylintCmd(files, ["--disable=cyclic-import"], True)]
+        cyclic_files = _GetCyclicImportFiles(input_api, files, affected_files)
+        if len(cyclic_files) >= 2:
+            commands.append(
+                GetPylintCmd(
+                    cyclic_files,
+                    ["--disable=all", "--enable=cyclic-import"],
+                    False,
+                )
+            )
+        return commands
 
     return [
         GetPylintCmd(files, [], True),
