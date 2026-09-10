@@ -1650,6 +1650,97 @@ class TestRuffBatchIntegration(unittest.TestCase):
         )
 
 
+class TestGnFormatBatch(unittest.TestCase):
+    @mock.patch("subprocess2.Popen")
+    def testRunGnFormatBatchInPlace(self, mock_popen):
+        mock_proc = mock.Mock()
+        mock_proc.communicate.return_value = (b"", b"")
+        mock_proc.returncode = 0
+        mock_popen.return_value = mock_proc
+
+        mock_opts = mock.Mock(dry_run=False, diff=False)
+        files = ["BUILD.gn", "foo/BUILD.gn", "bar/BUILD.gn"]
+        top_dir = getattr(self, "test_dir", getattr(self, "_top_dir", "/tmp"))
+        ret = cl_format._RunGnFormat(mock_opts, files, top_dir, None)
+
+        self.assertEqual(0, ret)
+        mock_popen.assert_called_once()
+        cmd_args = mock_popen.call_args[0][0]
+        self.assertIn("format", cmd_args)
+        self.assertNotIn("--dry-run", cmd_args)
+        for f in files:
+            self.assertIn(f, cmd_args)
+
+    @mock.patch("subprocess2.Popen")
+    def testRunGnFormatBatchDryRunFormatted(self, mock_popen):
+        mock_proc = mock.Mock()
+        mock_proc.communicate.return_value = (b"", b"")
+        mock_proc.returncode = 0
+        mock_popen.return_value = mock_proc
+
+        mock_opts = mock.Mock(dry_run=True, diff=False)
+        files = ["BUILD.gn", "foo/BUILD.gn"]
+        top_dir = getattr(self, "test_dir", getattr(self, "_top_dir", "/tmp"))
+        ret = cl_format._RunGnFormat(mock_opts, files, top_dir, None)
+
+        self.assertEqual(0, ret)
+        mock_popen.assert_called_once()
+        cmd_args = mock_popen.call_args[0][0]
+        self.assertIn("--dry-run", cmd_args)
+
+    @mock.patch("subprocess2.Popen")
+    def testRunGnFormatBatchDryRunUnformatted(self, mock_popen):
+        mock_proc = mock.Mock()
+        mock_proc.communicate.return_value = (b"BUILD.gn\n", b"")
+        mock_proc.returncode = 2
+        mock_popen.return_value = mock_proc
+
+        mock_opts = mock.Mock(dry_run=True, diff=False)
+        files = ["BUILD.gn", "foo/BUILD.gn"]
+        top_dir = getattr(self, "test_dir", getattr(self, "_top_dir", "/tmp"))
+        ret = cl_format._RunGnFormat(mock_opts, files, top_dir, None)
+
+        self.assertEqual(2, ret)
+        mock_popen.assert_called_once()
+
+    @mock.patch("subprocess2.Popen")
+    def testRunGnFormatBatchDiff(self, mock_popen):
+        mock_proc = mock.Mock()
+        mock_proc.communicate.return_value = (b"BUILD.gn\nfoo/BUILD.gn\n", b"")
+        mock_proc.returncode = 2
+        mock_popen.return_value = mock_proc
+
+        mock_opts = mock.Mock(dry_run=False, diff=True)
+        files = ["BUILD.gn", "foo/BUILD.gn"]
+        top_dir = getattr(self, "test_dir", getattr(self, "_top_dir", "/tmp"))
+        stdout = io.StringIO()
+        with mock.patch("sys.stdout", stdout):
+            ret = cl_format._RunGnFormat(mock_opts, files, top_dir, None)
+
+        self.assertEqual(0, ret)
+        output = stdout.getvalue()
+        self.assertIn("This change has GN build file diff for BUILD.gn", output)
+        self.assertIn(
+            "This change has GN build file diff for foo/BUILD.gn", output
+        )
+
+    @mock.patch("subprocess2.Popen")
+    @mock.patch("cl_format.DieWithError")
+    def testRunGnFormatBatchFailure(self, mock_die, mock_popen):
+        mock_proc = mock.Mock()
+        mock_proc.communicate.return_value = (b"", b"Parse error at line 1")
+        mock_proc.returncode = 1
+        mock_popen.return_value = mock_proc
+
+        mock_opts = mock.Mock(dry_run=False, diff=False)
+        files = ["BUILD.gn"]
+        top_dir = getattr(self, "test_dir", getattr(self, "_top_dir", "/tmp"))
+        cl_format._RunGnFormat(mock_opts, files, top_dir, None)
+
+        mock_die.assert_called_once()
+        self.assertIn("Parse error at line 1", mock_die.call_args[0][0])
+
+
 if __name__ == "__main__":
     logging.basicConfig(
         level=logging.DEBUG if "-v" in sys.argv else logging.ERROR
