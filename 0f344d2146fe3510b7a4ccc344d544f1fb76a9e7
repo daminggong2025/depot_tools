@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "eb9e59b6_cfae87e7",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 17
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-09-10T01:29:50Z",
+      "side": 1,
+      "message": "This breaks exclusion patterns and is liable to format proto genned files for people, for example. I can\u0027t let this CL through as is.",
+      "revId": "0f344d2146fe3510b7a4ccc344d544f1fb76a9e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "210ba4e7_3e1620c6",
+        "filename": "ruff_chromium",
+        "patchSetId": 17
+      },
+      "lineNbr": 695,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-09-10T01:29:50Z",
+      "side": 1,
+      "message": "If the files are moved to temp, and then you execute this this should result in something like \n\n```\nruff format --force-exclude --config /repo/ruff.toml /tmp/git_cl_fmt_..._foo.py\n```\n\nHowever the excludes oftentimes defined like `exclude \u003d [\"third_party/**\"]` relative to .ruff.toml. Moving to tmp will break exclude paths and format the excluded file.",
+      "range": {
+        "startLine": 693,
+        "startChar": 8,
+        "endLine": 695,
+        "endChar": 49
+      },
+      "revId": "0f344d2146fe3510b7a4ccc344d544f1fb76a9e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
