@@ -16,6 +16,24 @@
       "message": "I don\u0027t think this CL is a good idea, with marginal speedup we get non trivial issue at hand - lots of test break daily due to poor isolation already, and now we seal the deal with this CL entirely. Overall I think this CL will do more bad than good, so I have to reject it.\n\nIn ideal world I would approve it, but with the current codebase state this sounds too risky to me.",
       "revId": "457005f48025a5b3906f805e1178fe05ced7b378",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "03ad56bb_ad5f2c0f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 23
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000266
+      },
+      "writtenOn": "2026-09-10T02:56:14Z",
+      "side": 1,
+      "message": "No problem! I\u0027ll focus on other changes. I think ~1s may (hopefully) end up being a large percentage of a future average `git cl upload` overall time, and if that ends up being the case we could reevaluate the deeper problem around test isolation issues, etc, and see if there is a good cost/benefit solution. In the meantime I\u0027ll abandon this change.",
+      "parentUuid": "038caeb9_b62fd2a0",
+      "revId": "457005f48025a5b3906f805e1178fe05ced7b378",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
