@@ -1060,6 +1060,24 @@ class Dependency(gclient_utils.WorkItem, DependencySettings):
             '"gclient_gn_args_file + gclient_gn_args".'
         )
 
+        if self._gn_args_file:
+            if not gclient_eval.IsSafeGNArgsPath(self._gn_args_file):
+                raise gclient_utils.Error(
+                    "ParseDepsFile(%s): Invalid gclient_gn_args_file %r. "
+                    "Must be a relative path without '..' traversal."
+                    % (self.name, self._gn_args_file)
+                )
+
+        if self._gn_args:
+            for arg in self._gn_args:
+                if not isinstance(
+                    arg, str
+                ) or not gclient_eval.GN_ARG_REGEXP.match(arg):
+                    raise gclient_utils.Error(
+                        "ParseDepsFile(%s): Invalid gclient_gn_args %r: "
+                        "Must be a valid GN identifier." % (self.name, arg)
+                    )
+
         self._vars = local_scope.get("vars", {})
         if self.parent:
             for key, value in self.parent.get_vars().items():
@@ -1590,10 +1608,17 @@ class Dependency(gclient_utils.WorkItem, DependencySettings):
     def HasGNArgsFile(self):
         return self._gn_args_file is not None
 
-    def WriteGNArgsFile(self):
+    def WriteGNArgsFile(self) -> None:
         lines = ["# Generated from %r" % self.deps_file]
         variables = self.get_vars()
         for arg in self._gn_args:
+            if not isinstance(arg, str) or not gclient_eval.GN_ARG_REGEXP.match(
+                arg
+            ):
+                raise gclient_utils.Error(
+                    "Invalid gclient_gn_args %r: Must be a valid GN identifier."
+                    % arg
+                )
             value = variables[arg]
             if isinstance(value, gclient_eval.ConstantString):
                 value = value.value
@@ -1606,9 +1631,54 @@ class Dependency(gclient_utils.WorkItem, DependencySettings):
         if self._use_relative_paths:
             path_prefix = os.path.join(path_prefix, self.name)
 
-        gn_args_path = os.path.join(path_prefix, self._gn_args_file)
+        if not gclient_eval.IsSafeGNArgsPath(self._gn_args_file):
+            raise gclient_utils.Error(
+                "Invalid gclient_gn_args_file %r: Must be a relative path "
+                "without '..' traversal." % self._gn_args_file
+            )
+
+        gn_args_path = os.path.abspath(
+            os.path.join(path_prefix, self._gn_args_file)
+        )
+        real_prefix = os.path.realpath(path_prefix)
+        real_gn_args_path = os.path.realpath(gn_args_path)
+        if real_prefix == real_gn_args_path or os.path.isdir(gn_args_path):
+            raise gclient_utils.Error(
+                "Invalid gclient_gn_args_file %r: Target is a directory, not a file."
+                % self._gn_args_file
+            )
+        if os.path.islink(gn_args_path):
+            raise gclient_utils.Error(
+                "Invalid gclient_gn_args_file %r: Target must not be a symbolic link."
+                % self._gn_args_file
+            )
+        try:
+            if (
+                os.path.commonpath([real_prefix, real_gn_args_path])
+                != real_prefix
+            ):
+                raise gclient_utils.Error(
+                    "Invalid gclient_gn_args_file %r: Path escapes directory %r."
+                    % (self._gn_args_file, path_prefix)
+                )
+            rel_real_path = os.path.relpath(real_gn_args_path, real_prefix)
+            rel_parts = rel_real_path.replace("\\", "/").split("/")
+            if any(not part or part.startswith(".") for part in rel_parts):
+                raise gclient_utils.Error(
+                    "Invalid gclient_gn_args_file %r: Target must not be a hidden or sensitive file."
+                    % self._gn_args_file
+                )
+        except ValueError:
+            raise gclient_utils.Error(
+                "Invalid gclient_gn_args_file %r: Path escapes directory %r."
+                % (self._gn_args_file, path_prefix)
+            )
 
         new_content = "\n".join(lines).encode("utf-8", "replace")
+
+        gn_args_dir = os.path.dirname(gn_args_path)
+        if gn_args_dir:
+            os.makedirs(gn_args_dir, exist_ok=True)
 
         if os.path.exists(gn_args_path):
             with open(gn_args_path, "rb") as f:
