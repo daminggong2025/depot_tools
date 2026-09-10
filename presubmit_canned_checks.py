@@ -5,6 +5,7 @@
 
 import datetime
 import functools
+import ast as _ast
 import io as _io
 import os as _os
 import re as _re
@@ -852,7 +853,9 @@ def CheckLongLines(input_api, output_api, maxlen, source_file_filter=None):
                             line_num for line_num, _ in f.ChangedContents()
                         )
                     if line_num in changed_lines:
-                        errors.append(error_formatter(file_path, line_num, line))
+                        errors.append(
+                            error_formatter(file_path, line_num, line)
+                        )
 
         return errors
 
@@ -1601,6 +1604,134 @@ def _FetchAllFiles(input_api, files_to_check, files_to_skip):
     return files
 
 
+def _GetCyclicImportFiles(
+    input_api, files, affected_files, extra_paths_list=None
+):
+    """Finds the closure of files that could form an import cycle with affected files."""
+    if not affected_files:
+        return files
+    extra_paths_list = extra_paths_list or []
+
+    def norm(p):
+        p = input_api.os_path.normpath(p).replace("\\", "/")
+        if input_api.is_windows:
+            p = p.lower()
+        return p
+
+    affected_set = {norm(f) for f in affected_files}
+
+    # Map module names and basenames to files in `files`.
+    file_by_mod = {}
+    file_by_base = {}
+    for f in files:
+        f_norm = norm(f)
+        if f_norm.endswith(".py"):
+            mod = f_norm[:-3].replace("/", ".")
+            file_by_mod[mod] = f
+            if f_norm.endswith("/__init__.py"):
+                file_by_mod[f_norm[:-12].replace("/", ".")] = f
+            elif f_norm == "__init__.py":
+                file_by_mod[""] = f
+            for ep in extra_paths_list:
+                ep_norm = norm(ep)
+                if f_norm.startswith(ep_norm + "/"):
+                    sub_mod = f_norm[len(ep_norm) + 1 : -3].replace("/", ".")
+                    file_by_mod[sub_mod] = f
+                    if f_norm.endswith("/__init__.py"):
+                        file_by_mod[
+                            f_norm[len(ep_norm) + 1 : -12].replace("/", ".")
+                        ] = f
+        base = input_api.os_path.splitext(f_norm.rsplit("/", 1)[-1])[0]
+        file_by_base.setdefault(base, []).append(f)
+
+    # Initial queue: any file in `files` that is affected.
+    queue = [f for f in files if norm(f) in affected_set]
+    if not queue:
+        # If none of the affected files matched files directly, fallback to all files.
+        return files
+
+    closure = set()
+    local_path = input_api.PresubmitLocalPath()
+    try:
+        while queue:
+            curr = queue.pop()
+            if curr in closure:
+                continue
+            closure.add(curr)
+
+            curr_full_path = input_api.os_path.join(local_path, curr)
+            if hasattr(input_api, "ReadFile"):
+                content_bytes = input_api.ReadFile(curr_full_path, "rb")
+            else:
+                with _io.open(curr_full_path, "rb") as fp:
+                    content_bytes = fp.read()
+            tree = _ast.parse(content_bytes, filename=curr)
+
+            curr_dir_parts = norm(curr).split("/")[:-1]
+            for node in _ast.walk(tree):
+                if isinstance(node, _ast.Import):
+                    for n in node.names:
+                        for mod in (n.name, n.name.split(".")[0]):
+                            if mod in file_by_mod:
+                                queue.append(file_by_mod[mod])
+                            if mod in file_by_base:
+                                queue.extend(file_by_base[mod])
+                elif isinstance(node, _ast.ImportFrom):
+                    if node.level and node.level > 0:
+                        up = node.level - 1
+                        if up > len(curr_dir_parts):
+                            return files
+                        target_parts = (
+                            curr_dir_parts[:-up]
+                            if up > 0
+                            else list(curr_dir_parts)
+                        )
+                        if node.module:
+                            target_parts.extend(node.module.split("."))
+                        rel_mod = ".".join(target_parts)
+                        if rel_mod in file_by_mod:
+                            queue.append(file_by_mod[rel_mod])
+                        for n in node.names:
+                            if n.name == "*":
+                                continue
+                            sub_mod = (
+                                f"{rel_mod}.{n.name}" if rel_mod else n.name
+                            )
+                            if sub_mod in file_by_mod:
+                                queue.append(file_by_mod[sub_mod])
+                            if n.name in file_by_base:
+                                queue.extend(file_by_base[n.name])
+                    else:
+                        if node.module:
+                            if node.module in file_by_mod:
+                                queue.append(file_by_mod[node.module])
+                            for mod in (
+                                node.module,
+                                node.module.split(".")[0],
+                            ):
+                                if mod in file_by_mod:
+                                    queue.append(file_by_mod[mod])
+                                if mod in file_by_base:
+                                    queue.extend(file_by_base[mod])
+                            for n in node.names:
+                                if n.name == "*":
+                                    continue
+                                sub_mod = f"{node.module}.{n.name}"
+                                if sub_mod in file_by_mod:
+                                    queue.append(file_by_mod[sub_mod])
+                                if n.name in file_by_base:
+                                    queue.extend(file_by_base[n.name])
+                        else:
+                            for n in node.names:
+                                if n.name in file_by_base:
+                                    queue.extend(file_by_base[n.name])
+    except Exception:
+        # Fallback to checking all files on parse error or read failure.
+        return files
+
+    return sorted(closure)
+
+
 def GetPylint(
     input_api,
     output_api,
@@ -1658,9 +1789,41 @@ def GetPylint(
     src_filter = lambda x: input_api.FilterSourceFile(  # noqa: E731
         x, map(rel_path, files_to_check), map(rel_path, files_to_skip)
     )
-    if not input_api.AffectedSourceFiles(src_filter):
+    affected_sources = input_api.AffectedSourceFiles(src_filter)
+    try:
+        sources_list = list(affected_sources)
+    except TypeError:
+        sources_list = None
+
+    if sources_list is not None and not sources_list:
         input_api.logging.info("Skipping pylint: no matching changes.")
         return []
+    elif sources_list is None and not affected_sources:
+        input_api.logging.info("Skipping pylint: no matching changes.")
+        return []
+
+    affected_files = []
+    if sources_list:
+        presubmit_path = input_api.PresubmitLocalPath()
+        pre_norm = presubmit_path.replace("\\", "/")
+        for f in sources_list:
+            try:
+                abs_p = (
+                    f.AbsoluteLocalPath()
+                    if hasattr(f, "AbsoluteLocalPath")
+                    else f
+                )
+                if isinstance(abs_p, str):
+                    p_norm = abs_p.replace("\\", "/")
+                    if p_norm.startswith(pre_norm + "/"):
+                        rel_p = p_norm[len(pre_norm) + 1 :]
+                    elif not input_api.os_path.isabs(abs_p):
+                        rel_p = abs_p
+                    else:
+                        rel_p = input_api.os_path.relpath(abs_p, presubmit_path)
+                    affected_files.append(rel_p)
+            except Exception:
+                pass
 
     if pylintrc is not None:
         pylintrc = input_api.os_path.join(
@@ -1743,12 +1906,19 @@ def GetPylint(
     if len(files) >= files_per_job and not any(
         "R0401" in a or "cyclic-import" in a for a in extra_args
     ):
-        return [
-            GetPylintCmd(files, ["--disable=cyclic-import"], True),
-            GetPylintCmd(
-                files, ["--disable=all", "--enable=cyclic-import"], False
-            ),
-        ]
+        commands = [GetPylintCmd(files, ["--disable=cyclic-import"], True)]
+        cyclic_files = _GetCyclicImportFiles(
+            input_api, files, affected_files, extra_paths_list=extra_paths_list
+        )
+        if len(cyclic_files) >= 2:
+            commands.append(
+                GetPylintCmd(
+                    cyclic_files,
+                    ["--disable=all", "--enable=cyclic-import"],
+                    False,
+                )
+            )
+        return commands
 
     return [
         GetPylintCmd(files, [], True),
