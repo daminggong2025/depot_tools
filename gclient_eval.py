@@ -6,6 +6,8 @@ import ast
 import collections
 from io import StringIO
 import logging
+import ntpath
+import posixpath
 import string
 import tokenize
 
@@ -19,6 +21,20 @@ schema = from_third_party.import_module("schema")
 DEPS = "DEPS"
 SYNC = "SYNC"
 SUBMODULES = "SUBMODULES"
+
+
+def _IsSafeGNArgsPath(path):
+    """Returns True if path is a safe relative path without directory traversal."""
+    if not isinstance(path, str) or not path:
+        return False
+    if posixpath.isabs(path) or ntpath.isabs(path):
+        return False
+    if any(c in path for c in ("\n", "\r", "\0")):
+        return False
+    parts = path.replace("\\", "/").split("/")
+    if any(part == ".." for part in parts):
+        return False
+    return True
 
 
 class _SafeFormatter(string.Formatter):
@@ -261,9 +277,20 @@ _GCLIENT_SCHEMA = schema.Schema(
             # they exist in the top-level solution.
             schema.Optional("gclient_gn_args_from"): str,
             # Path to GN args file to write selected variables.
-            schema.Optional("gclient_gn_args_file"): str,
+            schema.Optional("gclient_gn_args_file"): schema.And(
+                str,
+                _IsSafeGNArgsPath,
+                error="gclient_gn_args_file must be a relative path without '..' traversal",
+            ),
             # Subset of variables to write to the GN args file (see above).
-            schema.Optional("gclient_gn_args"): [schema.Optional(str)],
+            schema.Optional("gclient_gn_args"): [
+                schema.Optional(
+                    schema.Regex(
+                        r"^[a-zA-Z_][a-zA-Z0-9_]*$",
+                        error="gclient_gn_args must be a valid identifier",
+                    )
+                )
+            ],
             # Hooks executed after gclient sync (unless suppressed), or explicitly
             # on gclient hooks. See _GCLIENT_HOOKS_SCHEMA for details.
             # Also see 'pre_deps_hooks'.

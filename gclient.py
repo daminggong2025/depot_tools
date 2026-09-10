@@ -84,6 +84,7 @@ __version__ = "0.7"
 import copy
 import json
 import logging
+import ntpath
 import optparse
 import os
 import platform
@@ -160,6 +161,23 @@ def ToGNString(value):
     # NOTE: some type handling removed compared to chromium/src copy.
 
     raise GNException("Unsupported type when printing to GN.")
+
+
+_GN_ARG_REGEXP = re.compile(r"^[a-zA-Z_][a-zA-Z0-9_]*$")
+
+
+def _IsSafeGNArgsPath(path):
+    """Returns True if path is a safe relative path without directory traversal."""
+    if not isinstance(path, str) or not path:
+        return False
+    if posixpath.isabs(path) or ntpath.isabs(path):
+        return False
+    if any(c in path for c in ("\n", "\r", "\0")):
+        return False
+    parts = path.replace("\\", "/").split("/")
+    if any(part == ".." for part in parts):
+        return False
+    return True
 
 
 class Hook(object):
@@ -1060,6 +1078,22 @@ class Dependency(gclient_utils.WorkItem, DependencySettings):
             '"gclient_gn_args_file + gclient_gn_args".'
         )
 
+        if self._gn_args_file:
+            if not _IsSafeGNArgsPath(self._gn_args_file):
+                raise gclient_utils.Error(
+                    "ParseDepsFile(%s): Invalid gclient_gn_args_file %r. "
+                    "Must be a relative path without '..' traversal."
+                    % (self.name, self._gn_args_file)
+                )
+
+        if self._gn_args:
+            for arg in self._gn_args:
+                if not isinstance(arg, str) or not _GN_ARG_REGEXP.match(arg):
+                    raise gclient_utils.Error(
+                        "ParseDepsFile(%s): Invalid gclient_gn_args %r: "
+                        "Must be a valid GN identifier." % (self.name, arg)
+                    )
+
         self._vars = local_scope.get("vars", {})
         if self.parent:
             for key, value in self.parent.get_vars().items():
@@ -1594,6 +1628,11 @@ class Dependency(gclient_utils.WorkItem, DependencySettings):
         lines = ["# Generated from %r" % self.deps_file]
         variables = self.get_vars()
         for arg in self._gn_args:
+            if not isinstance(arg, str) or not _GN_ARG_REGEXP.match(arg):
+                raise gclient_utils.Error(
+                    "Invalid gclient_gn_args %r: Must be a valid GN identifier."
+                    % arg
+                )
             value = variables[arg]
             if isinstance(value, gclient_eval.ConstantString):
                 value = value.value
@@ -1606,7 +1645,31 @@ class Dependency(gclient_utils.WorkItem, DependencySettings):
         if self._use_relative_paths:
             path_prefix = os.path.join(path_prefix, self.name)
 
-        gn_args_path = os.path.join(path_prefix, self._gn_args_file)
+        if not _IsSafeGNArgsPath(self._gn_args_file):
+            raise gclient_utils.Error(
+                "Invalid gclient_gn_args_file %r: Must be a relative path "
+                "without '..' traversal." % self._gn_args_file
+            )
+
+        gn_args_path = os.path.abspath(
+            os.path.join(path_prefix, self._gn_args_file)
+        )
+        real_prefix = os.path.realpath(path_prefix)
+        real_gn_args_path = os.path.realpath(gn_args_path)
+        try:
+            if (
+                os.path.commonpath([real_prefix, real_gn_args_path])
+                != real_prefix
+            ):
+                raise gclient_utils.Error(
+                    "Invalid gclient_gn_args_file %r: Path escapes directory %r."
+                    % (self._gn_args_file, path_prefix)
+                )
+        except ValueError:
+            raise gclient_utils.Error(
+                "Invalid gclient_gn_args_file %r: Path escapes directory %r."
+                % (self._gn_args_file, path_prefix)
+            )
 
         new_content = "\n".join(lines).encode("utf-8", "replace")
 

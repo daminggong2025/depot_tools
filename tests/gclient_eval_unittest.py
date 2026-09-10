@@ -1720,6 +1720,46 @@ class ParseTest(unittest.TestCase):
             local_scope,
         )
 
+    def test_gclient_gn_args_file_valid(self):
+        content = (
+            'gclient_gn_args_file = "src/build/args.gn"\n'
+            'gclient_gn_args = ["foo_var", "bar_var"]\n'
+        )
+        local_scope = gclient_eval.Exec(content)
+        self.assertEqual(
+            "src/build/args.gn", local_scope["gclient_gn_args_file"]
+        )
+        self.assertEqual(["foo_var", "bar_var"], local_scope["gclient_gn_args"])
+
+    def test_gclient_gn_args_file_invalid(self):
+        invalid_paths = [
+            "../args.gn",
+            "src/../../args.gn",
+            "..\\args.gn",
+            "/etc/args.gn",
+            "C:\\args.gn",
+            "C:/args.gn",
+            "foo\nbar.gn",
+        ]
+        for path in invalid_paths:
+            content = "gclient_gn_args_file = %r\n" % path
+            with self.assertRaises(gclient_utils.Error):
+                gclient_eval.Exec(content)
+
+    def test_gclient_gn_args_invalid(self):
+        invalid_args = [
+            '["foo\\nbar"]',
+            '["foo bar"]',
+            '["[section]\\nkey=val"]',
+            '["123foo"]',
+            '["foo-bar"]',
+            '["foo$bar"]',
+        ]
+        for arg in invalid_args:
+            content = "gclient_gn_args = %s\n" % arg
+            with self.assertRaises(gclient_utils.Error):
+                gclient_eval.Exec(content)
+
 
 if __name__ == "__main__":
     level = logging.DEBUG if "-v" in sys.argv else logging.FATAL
