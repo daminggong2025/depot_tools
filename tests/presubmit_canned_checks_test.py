@@ -2083,5 +2083,267 @@ class CheckPatchFormattedTest(unittest.TestCase):
             )
 
 
+class GetPylintTest(unittest.TestCase):
+    def setUp(self):
+        self.input_api = mock.MagicMock()
+        self.input_api.is_committing = False
+        self.input_api.no_diffs = False
+        self.input_api.is_windows = False
+        self.input_api.cpu_count = 8
+        self.input_api.environ = {}
+        self.input_api.PresubmitLocalPath.return_value = "CWD"
+        self.input_api.change.RepositoryRoot.return_value = "CWD"
+        self.input_api.os_path = os.path
+
+        def make_cmd(
+            name, cmd, kwargs, message=None, python3=True, output_parser=None
+        ):
+            cmd_obj = mock.Mock()
+            cmd_obj.name = name
+            cmd_obj.cmd = cmd
+            cmd_obj.kwargs = kwargs
+            cmd_obj.stdin = kwargs.get("stdin")
+            return cmd_obj
+
+        self.input_api.Command = make_cmd
+        self.output_api = mock.MagicMock()
+
+    def test_cyclic_import_closure(self):
+        files = [f"file_{i}.py" for i in range(15)]
+        self.input_api.os_walk.return_value = [("CWD", [], files)]
+
+        affected = mock.Mock()
+        affected.AbsoluteLocalPath.return_value = "CWD/file_0.py"
+        self.input_api.AffectedSourceFiles.return_value = [affected]
+
+        contents = {
+            "CWD/file_0.py": b"import file_1\n",
+            "CWD/file_1.py": b"import file_0\n",
+        }
+        self.input_api.ReadFile = lambda path, mode="r": contents.get(
+            path.replace("\\", "/"), b"# empty\n"
+        )
+
+        commands = presubmit_canned_checks.GetPylint(
+            self.input_api, self.output_api, version="2.7"
+        )
+        self.assertEqual(len(commands), 2)
+        cmd_parallel, cmd_cyclic = commands
+        self.assertIn("15 files", cmd_parallel.name)
+        self.assertIn("--disable=cyclic-import", cmd_parallel.name)
+        self.assertIn("2 files", cmd_cyclic.name)
+        self.assertIn("--enable=cyclic-import", cmd_cyclic.name)
+
+        cyclic_stdin = cmd_cyclic.stdin.decode("utf-8").splitlines()
+        self.assertIn("--disable=all", cyclic_stdin)
+        self.assertIn("--enable=cyclic-import", cyclic_stdin)
+        self.assertIn("file_0.py", cyclic_stdin)
+        self.assertIn("file_1.py", cyclic_stdin)
+        self.assertNotIn("file_2.py", cyclic_stdin)
+
+    def test_cyclic_import_skipped_when_no_cycles(self):
+        files = [f"file_{i}.py" for i in range(15)]
+        self.input_api.os_walk.return_value = [("CWD", [], files)]
+
+        affected = mock.Mock()
+        affected.AbsoluteLocalPath.return_value = "CWD/file_5.py"
+        self.input_api.AffectedSourceFiles.return_value = [affected]
+
+        self.input_api.ReadFile = lambda path, mode="r": (
+            b"# no internal imports\nimport os\n"
+        )
+
+        commands = presubmit_canned_checks.GetPylint(
+            self.input_api, self.output_api, version="2.7"
+        )
+        self.assertEqual(len(commands), 1)
+        self.assertIn("15 files", commands[0].name)
+        self.assertIn("--disable=cyclic-import", commands[0].name)
+
+    def test_relative_import_closure(self):
+        files = [f"pkg/mod_{i}.py" for i in range(15)]
+        self.input_api.os_walk.return_value = [("CWD", [], files)]
+
+        affected = mock.Mock()
+        affected.AbsoluteLocalPath.return_value = "CWD/pkg/mod_0.py"
+        self.input_api.AffectedSourceFiles.return_value = [affected]
+
+        contents = {
+            "CWD/pkg/mod_0.py": b"from . import mod_1\n",
+            "CWD/pkg/mod_1.py": b"from . import mod_0\n",
+        }
+        self.input_api.ReadFile = lambda path, mode="r": contents.get(
+            path.replace("\\", "/"), b"# empty\n"
+        )
+
+        commands = presubmit_canned_checks.GetPylint(
+            self.input_api, self.output_api, version="2.7"
+        )
+        self.assertEqual(len(commands), 2)
+        cmd_parallel, cmd_cyclic = commands
+        self.assertIn("2 files", cmd_cyclic.name)
+
+        cyclic_stdin = cmd_cyclic.stdin.decode("utf-8").splitlines()
+        self.assertIn("pkg/mod_0.py", cyclic_stdin)
+        self.assertIn("pkg/mod_1.py", cyclic_stdin)
+        self.assertNotIn("pkg/mod_2.py", cyclic_stdin)
+
+    def test_parse_failure_fallback(self):
+        files = [f"file_{i}.py" for i in range(15)]
+        self.input_api.os_walk.return_value = [("CWD", [], files)]
+
+        affected = mock.Mock()
+        affected.AbsoluteLocalPath.return_value = "CWD/file_0.py"
+        self.input_api.AffectedSourceFiles.return_value = [affected]
+
+        self.input_api.ReadFile = lambda path, mode="r": b"def broken_syntax(\n"
+
+        commands = presubmit_canned_checks.GetPylint(
+            self.input_api, self.output_api, version="2.7"
+        )
+        self.assertEqual(len(commands), 2)
+        cmd_parallel, cmd_cyclic = commands
+        self.assertIn("15 files", cmd_cyclic.name)
+
+    def test_relative_import_symbol_closure(self):
+        files = [f"pkg/mod_{i}.py" for i in range(15)]
+        self.input_api.os_walk.return_value = [("CWD", [], files)]
+
+        affected = mock.Mock()
+        affected.AbsoluteLocalPath.return_value = "CWD/pkg/mod_0.py"
+        self.input_api.AffectedSourceFiles.return_value = [affected]
+
+        # from .mod_1 import func_a
+        contents = {
+            "CWD/pkg/mod_0.py": b"from .mod_1 import func_a\n",
+            "CWD/pkg/mod_1.py": b"from .mod_0 import func_b\n",
+        }
+        self.input_api.ReadFile = lambda path, mode="r": contents.get(
+            path.replace("\\", "/"), b"# empty\n"
+        )
+
+        commands = presubmit_canned_checks.GetPylint(
+            self.input_api, self.output_api, version="2.7"
+        )
+        self.assertEqual(len(commands), 2)
+        cmd_parallel, cmd_cyclic = commands
+        self.assertIn("2 files", cmd_cyclic.name)
+        cyclic_stdin = cmd_cyclic.stdin.decode("utf-8").splitlines()
+        self.assertIn("pkg/mod_0.py", cyclic_stdin)
+        self.assertIn("pkg/mod_1.py", cyclic_stdin)
+
+    def test_package_init_closure(self):
+        files = ["pkg/__init__.py", "pkg/sub.py"] + [
+            f"other_{i}.py" for i in range(13)
+        ]
+        self.input_api.os_walk.return_value = [("CWD", [], files)]
+
+        affected = mock.Mock()
+        affected.AbsoluteLocalPath.return_value = "CWD/pkg/sub.py"
+        self.input_api.AffectedSourceFiles.return_value = [affected]
+
+        contents = {
+            "CWD/pkg/sub.py": b"import pkg\n",
+            "CWD/pkg/__init__.py": b"from . import sub\n",
+        }
+        self.input_api.ReadFile = lambda path, mode="r": contents.get(
+            path.replace("\\", "/"), b"# empty\n"
+        )
+
+        commands = presubmit_canned_checks.GetPylint(
+            self.input_api, self.output_api, version="2.7"
+        )
+        self.assertEqual(len(commands), 2)
+        cmd_parallel, cmd_cyclic = commands
+        self.assertIn("2 files", cmd_cyclic.name)
+        cyclic_stdin = cmd_cyclic.stdin.decode("utf-8").splitlines()
+        self.assertIn("pkg/sub.py", cyclic_stdin)
+        self.assertIn("pkg/__init__.py", cyclic_stdin)
+
+    def test_extra_paths_package_closure(self):
+        files = ["src/lib/a.py", "src/lib/b.py"] + [
+            f"other_{i}.py" for i in range(13)
+        ]
+        self.input_api.os_walk.return_value = [("CWD", [], files)]
+
+        affected = mock.Mock()
+        affected.AbsoluteLocalPath.return_value = "CWD/src/lib/a.py"
+        self.input_api.AffectedSourceFiles.return_value = [affected]
+
+        # Under extra_paths_list=["src"], files import "lib.b"
+        contents = {
+            "CWD/src/lib/a.py": b"import lib.b\n",
+            "CWD/src/lib/b.py": b"import lib.a\n",
+        }
+        self.input_api.ReadFile = lambda path, mode="r": contents.get(
+            path.replace("\\", "/"), b"# empty\n"
+        )
+
+        commands = presubmit_canned_checks.GetPylint(
+            self.input_api,
+            self.output_api,
+            extra_paths_list=["src"],
+            version="2.7",
+        )
+        self.assertEqual(len(commands), 2)
+        cmd_parallel, cmd_cyclic = commands
+        self.assertIn("2 files", cmd_cyclic.name)
+        cyclic_stdin = cmd_cyclic.stdin.decode("utf-8").splitlines()
+        self.assertIn("src/lib/a.py", cyclic_stdin)
+        self.assertIn("src/lib/b.py", cyclic_stdin)
+
+    def test_windows_path_normalization(self):
+        self.input_api.is_windows = True
+        files = ["pkg\\mod_0.py", "pkg\\mod_1.py"] + [
+            f"other_{i}.py" for i in range(13)
+        ]
+        self.input_api.os_walk.return_value = [("CWD", [], files)]
+
+        affected = mock.Mock()
+        affected.AbsoluteLocalPath.return_value = "CWD\\PKG\\MOD_0.PY"
+        self.input_api.AffectedSourceFiles.return_value = [affected]
+
+        contents = {
+            "cwd/pkg/mod_0.py": b"from . import mod_1\n",
+            "cwd/pkg/mod_1.py": b"from . import mod_0\n",
+        }
+        self.input_api.ReadFile = lambda path, mode="r": contents.get(
+            path.replace("\\", "/").lower(), b"# empty\n"
+        )
+
+        commands = presubmit_canned_checks.GetPylint(
+            self.input_api, self.output_api, version="2.7"
+        )
+        self.assertEqual(len(commands), 2)
+        cmd_parallel, cmd_cyclic = commands
+        self.assertIn("2 files", cmd_cyclic.name)
+
+    def test_non_list_generator_affected_files(self):
+        files = [f"file_{i}.py" for i in range(15)]
+        self.input_api.os_walk.return_value = [("CWD", [], files)]
+
+        affected = mock.Mock()
+        affected.AbsoluteLocalPath.return_value = "CWD/file_0.py"
+        # Return a generator instead of a list
+        self.input_api.AffectedSourceFiles.return_value = (
+            f for f in [affected]
+        )
+
+        contents = {
+            "CWD/file_0.py": b"import file_1\n",
+            "CWD/file_1.py": b"import file_0\n",
+        }
+        self.input_api.ReadFile = lambda path, mode="r": contents.get(
+            path.replace("\\", "/"), b"# empty\n"
+        )
+
+        commands = presubmit_canned_checks.GetPylint(
+            self.input_api, self.output_api, version="2.7"
+        )
+        self.assertEqual(len(commands), 2)
+        cmd_parallel, cmd_cyclic = commands
+        self.assertIn("2 files", cmd_cyclic.name)
+
+
 if __name__ == "__main__":
     unittest.main()
