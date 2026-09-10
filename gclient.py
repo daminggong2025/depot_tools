@@ -2460,6 +2460,10 @@ it or fix the checkout.
                 # Support for --revision 123
                 revision = "%s@%s" % (solutions_names[index], revision)
             name, rev = revision.split("@", 1)
+            if rev.startswith("-"):
+                raise gclient_utils.Error(
+                    f"Invalid revision override '{rev}': revisions cannot start with '-'"
+                )
             revision_overrides[name] = rev
         return revision_overrides
 
@@ -2478,6 +2482,14 @@ it or fix the checkout.
                     "patch_repo@target_branch:patch_ref." % given_patch_ref
                 )
             target_branch, _, patch_ref = patch_ref.partition(":")
+            if target_branch.startswith("-"):
+                raise gclient_utils.Error(
+                    f"Invalid target branch '{target_branch}': target branch cannot start with '-'"
+                )
+            if patch_ref.startswith("-"):
+                raise gclient_utils.Error(
+                    f"Invalid patch ref '{patch_ref}': patch ref cannot start with '-'"
+                )
             target_branches[patch_repo] = target_branch
             patch_refs[patch_repo] = patch_ref
         return patch_refs, target_branches
