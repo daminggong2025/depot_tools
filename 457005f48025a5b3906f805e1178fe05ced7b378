@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "038caeb9_b62fd2a0",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 23
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-09-10T00:31:43Z",
+      "side": 1,
+      "message": "I don\u0027t think this CL is a good idea, with marginal speedup we get non trivial issue at hand - lots of test break daily due to poor isolation already, and now we seal the deal with this CL entirely. Overall I think this CL will do more bad than good, so I have to reject it.\n\nIn ideal world I would approve it, but with the current codebase state this sounds too risky to me.",
+      "revId": "457005f48025a5b3906f805e1178fe05ced7b378",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
