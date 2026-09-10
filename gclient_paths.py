@@ -105,6 +105,29 @@ def GetPrimarySolutionPath(from_dir=None):
     from_dir = os.path.abspath(from_dir)
     return _GetPrimarySolutionPathInternal(from_dir)
 
+def GetChromiumSrcPath(from_dir=None):
+    """Returns the Chromium src directory of the current checkout.
+
+    This is the primary solution, unless the primary solution is a project
+    nested inside Chromium's src (e.g. Electron's src/electron), in which case
+    it is <gclient_root>/src.
+    """
+    if not from_dir:
+        from_dir = os.getcwd()
+    from_dir = os.path.abspath(from_dir)
+    primary_solution = GetPrimarySolutionPath(from_dir)
+    if not primary_solution or os.path.exists(
+        os.path.join(primary_solution, "buildtools")
+    ):
+        return primary_solution
+
+    gclient_root = FindGclientRoot(from_dir)
+    if gclient_root:
+        src = os.path.join(gclient_root, "src")
+        if os.path.exists(os.path.join(src, "buildtools")):
+            return src
+    return primary_solution
+
 @functools.lru_cache
 def _GetBuildtoolsPathInternal(cwd, override):
     if override is not None:
