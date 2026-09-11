@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "80aa37cc_17a1e339",
+        "filename": "tests/bot_update_coverage_test.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 4995882
+      },
+      "writtenOn": "2026-09-11T18:14:31Z",
+      "side": 1,
+      "message": "Why so many new blank lines like this?",
+      "range": {
+        "startLine": 23,
+        "startChar": 0,
+        "endLine": 23,
+        "endChar": 0
+      },
+      "revId": "83316d86e18893a9a9ee15ad807bd672337ee217",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
