@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "a5b16cac_1f066489",
+        "filename": "tests/bot_update_coverage_test.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-09-11T19:30:22Z",
+      "side": 1,
+      "message": "`git cl format` uses ruff now, and this file was never formatted. ruff wants blank lines between top-level functions and classes",
+      "parentUuid": "80aa37cc_17a1e339",
+      "range": {
+        "startLine": 23,
+        "startChar": 0,
+        "endLine": 23,
+        "endChar": 0
+      },
+      "revId": "83316d86e18893a9a9ee15ad807bd672337ee217",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "453ca21f_abf31906",
@@ -37,6 +61,30 @@
       "writtenOn": "2026-09-11T18:17:50Z",
       "side": 1,
       "message": "This looks parameterizable",
+      "range": {
+        "startLine": 2277,
+        "startChar": 8,
+        "endLine": 2277,
+        "endChar": 12
+      },
+      "revId": "83316d86e18893a9a9ee15ad807bd672337ee217",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ddd4f81f_0a84a613",
+        "filename": "tests/gclient_scm_test.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 2277,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-09-11T19:30:22Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "453ca21f_abf31906",
       "range": {
         "startLine": 2277,
         "startChar": 8,
