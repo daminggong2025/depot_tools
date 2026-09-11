@@ -85,6 +85,7 @@ import copy
 import json
 import logging
 import optparse
+import ntpath
 import os
 import platform
 import posixpath
@@ -3216,32 +3217,53 @@ class GcsDependency(Dependency):
         return False
 
     def ValidateTarFile(self, tar, prefixes):
+        prefixes = [p for p in prefixes if p and p != "."]
+        if not prefixes:
+            return False
+
+        def _is_abs_or_drive(path):
+            return (
+                os.path.isabs(path)
+                or ntpath.isabs(path)
+                or bool(ntpath.splitdrive(path)[0])
+                or path.startswith(("/", "\\"))
+            )
 
         def _validate(tarinfo):
             """Returns false if the tarinfo is something we explicitly forbid."""
+            if _is_abs_or_drive(tarinfo.name):
+                return False
+
             if tarinfo.issym() or tarinfo.islnk():
                 # For links, check if the destination is valid.
-                if os.path.isabs(tarinfo.linkname):
+                if _is_abs_or_drive(tarinfo.linkname):
                     return False
                 link_target = os.path.normpath(
                     os.path.join(
                         os.path.dirname(tarinfo.name), tarinfo.linkname
                     )
                 )
-                if not any(
-                    link_target.startswith(prefix) for prefix in prefixes
+                if (
+                    link_target.startswith("..")
+                    or _is_abs_or_drive(link_target)
+                    or not any(
+                        link_target.startswith(prefix) for prefix in prefixes
+                    )
                 ):
                     return False
 
-            if tarinfo.name == ".":
+            if tarinfo.name in (".", "./"):
                 return True
 
             # tarfile for sysroot has paths that start with ./
             cleaned_name = tarinfo.name
             if tarinfo.name.startswith("./") and len(tarinfo.name) > 2:
                 cleaned_name = tarinfo.name[2:]
+            path_parts = set(cleaned_name.replace("\\", "/").split("/"))
             if (
-                "../" in cleaned_name
+                ".." in path_parts
+                or _is_abs_or_drive(cleaned_name)
+                or "../" in cleaned_name
                 or "..\\" in cleaned_name
                 or not any(
                     cleaned_name.startswith(prefix) for prefix in prefixes
@@ -3357,7 +3379,9 @@ class GcsDependency(Dependency):
                     else:
                         formatted_names.append(name)
                 possible_top_level_dirs = set(
-                    name.split("/")[0] for name in formatted_names
+                    name.split("/")[0]
+                    for name in formatted_names
+                    if name.split("/")[0] and name.split("/")[0] != "."
                 )
                 is_valid_tar = self.ValidateTarFile(
                     tar, possible_top_level_dirs
@@ -3373,13 +3397,12 @@ class GcsDependency(Dependency):
                 def TarFilter(member, path):
                     # Don't set mtime based on the archive metadata.
                     member.mtime = None
-                    # Match the tarfile default filter.
-                    default_filter = (
-                        tarfile.fully_trusted_filter
-                        if sys.version_info < (3, 14)
-                        else tarfile.data_filter
-                    )
-                    return default_filter(member, path)
+                    if hasattr(tarfile, "data_filter"):
+                        member = tarfile.data_filter(member, path)
+                    else:
+                        member = tarfile.fully_trusted_filter(member, path)
+                    member.mtime = None
+                    return member
 
                 tar.extractall(path=self.output_dir, filter=TarFilter)
 
