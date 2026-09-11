@@ -16,6 +16,24 @@
       "message": "Could this CL be related to the following error when running `gclient sync` ?\n\n```\nSyncing projects:   3% (12/314) src/agents/shared                                                                                                           \nsrc/ash/webui/shimless_rma/resources:chromeos_internal/ash/peripherals-and-serviceability/shimless-rma-project-simon-strings (ERROR)\n----------------------------------------\n[0:00:01] Started.\n----------------------------------------\nError: 12\u003e Invalid revision \u0027-uRXiZeA4Yl-Nv-6jP69DyDs5cGroZgGsa1NHnVySQwC\u0027: revisions cannot start with \u0027-\u0027\n```",
       "revId": "07a71782a10388962cdb12e939946fbec3a04866",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "250bf195_8cadf430",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115893
+      },
+      "writtenOn": "2026-09-11T21:05:34Z",
+      "side": 1,
+      "message": "FYI filed https://issues.chromium.org/issues/560233255 to track the problem.",
+      "parentUuid": "50f81cd6_04db8137",
+      "revId": "07a71782a10388962cdb12e939946fbec3a04866",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
