@@ -201,6 +201,46 @@ class GitCacheTest(unittest.TestCase):
             )
             self.assertEqual(mirror.fetch_specs, set(expected))
 
+    def testInvalidCommitsAndRefsRejected(self):
+        with self.assertRaises(ValueError):
+            git_cache.Mirror(
+                "test://phony.example.biz",
+                refs=["--upload-pack=touch /tmp/pwn"],
+            )
+        with self.assertRaises(ValueError):
+            git_cache.Mirror(
+                "test://phony.example.biz",
+                refs=["refs/heads/main:--upload-pack=touch /tmp/pwn"],
+            )
+        with self.assertRaises(ValueError):
+            git_cache.Mirror(
+                "test://phony.example.biz",
+                refs=["+--upload-pack=touch /tmp/pwn"],
+            )
+        with self.assertRaises(ValueError):
+            git_cache.Mirror(
+                "test://phony.example.biz", refs=["refs/heads/main;evil"]
+            )
+        with self.assertRaises(ValueError):
+            git_cache.Mirror(
+                "test://phony.example.biz",
+                commits=["--upload-pack=touch /tmp/pwn"],
+            )
+        with self.assertRaises(ValueError):
+            git_cache.Mirror(
+                "test://phony.example.biz",
+                commits=["refs/heads/main:--upload-pack=touch /tmp/pwn"],
+            )
+        with self.assertRaises(ValueError):
+            git_cache.Mirror(
+                "test://phony.example.biz",
+                commits=["+--upload-pack=touch /tmp/pwn"],
+            )
+        with self.assertRaises(ValueError):
+            git_cache.Mirror(
+                "test://phony.example.biz", commits=["deadbeef;evil"]
+            )
+
     def testPopulate(self):
         self.git(["init", "-q"])
         with open(os.path.join(self.origin_dir, "foo"), "w") as f:
