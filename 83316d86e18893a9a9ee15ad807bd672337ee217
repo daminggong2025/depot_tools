@@ -22,6 +22,29 @@
       },
       "revId": "83316d86e18893a9a9ee15ad807bd672337ee217",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "453ca21f_abf31906",
+        "filename": "tests/gclient_scm_test.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 2277,
+      "author": {
+        "id": 4995882
+      },
+      "writtenOn": "2026-09-11T18:17:50Z",
+      "side": 1,
+      "message": "This looks parameterizable",
+      "range": {
+        "startLine": 2277,
+        "startChar": 8,
+        "endLine": 2277,
+        "endChar": 12
+      },
+      "revId": "83316d86e18893a9a9ee15ad807bd672337ee217",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
