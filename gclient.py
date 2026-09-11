@@ -2460,6 +2460,18 @@ it or fix the checkout.
                 # Support for --revision 123
                 revision = "%s@%s" % (solutions_names[index], revision)
             name, rev = revision.split("@", 1)
+            if name.startswith("-") or re.search(r"[\s;=&|`$]", name):
+                raise gclient_utils.Error(
+                    f"Invalid revision override dependency name '{name}': cannot start with '-' or contain whitespace/shell metacharacters"
+                )
+            if any(
+                part.startswith("-")
+                for part in rev.lstrip("+").split(":")
+                if part
+            ) or re.search(r"[\s;=&|`$]", rev):
+                raise gclient_utils.Error(
+                    f"Invalid revision override '{rev}': revisions cannot start with '-' or contain whitespace/shell metacharacters"
+                )
             revision_overrides[name] = rev
         return revision_overrides
 
@@ -2477,7 +2489,31 @@ it or fix the checkout.
                     "Wrong revision format: %s should be of the form "
                     "patch_repo@target_branch:patch_ref." % given_patch_ref
                 )
+            if any(
+                part.startswith("-")
+                for part in patch_repo.lstrip("+").split(":")
+                if part
+            ) or re.search(r"[\s;=&|`$]", patch_repo):
+                raise gclient_utils.Error(
+                    f"Invalid patch repo '{patch_repo}': patch repo cannot start with '-' or contain whitespace/shell metacharacters"
+                )
             target_branch, _, patch_ref = patch_ref.partition(":")
+            if any(
+                part.startswith("-")
+                for part in target_branch.lstrip("+").split(":")
+                if part
+            ) or re.search(r"[\s;=&|`$]", target_branch):
+                raise gclient_utils.Error(
+                    f"Invalid target branch '{target_branch}': target branch cannot start with '-' or contain whitespace/shell metacharacters"
+                )
+            if any(
+                part.startswith("-")
+                for part in patch_ref.lstrip("+").split(":")
+                if part
+            ) or re.search(r"[\s;=&|`$]", patch_ref):
+                raise gclient_utils.Error(
+                    f"Invalid patch ref '{patch_ref}': patch ref cannot start with '-' or contain whitespace/shell metacharacters"
+                )
             target_branches[patch_repo] = target_branch
             patch_refs[patch_repo] = patch_ref
         return patch_refs, target_branches

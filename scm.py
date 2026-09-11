@@ -1266,7 +1266,10 @@ class GIT(object):
             # forces git to check if FULL_GIT_SHA refers to an object in the
             # local database.
             rev = rev[:-1]
-        res = GIT.Capture(["rev-parse", "--quiet", "--verify", rev], cwd=cwd)
+        res = GIT.Capture(
+            ["rev-parse", "--quiet", "--verify", "--end-of-options", rev],
+            cwd=cwd,
+        )
         if cache_key:
             # We don't expect concurrent execution, so we don't lock anything.
             GIT.rev_parse_cache[cache_key] = res
@@ -1279,10 +1282,20 @@ class GIT(object):
 
         sha_only: Fail unless rev is a sha hash.
         """
+        if (
+            not rev
+            or any(
+                part.startswith("-")
+                for part in rev.lstrip("+").split(":")
+                if part
+            )
+            or re.search(r"[\s;=&|`$]", rev)
+        ):
+            return False
         try:
             sha = GIT.ResolveCommit(cwd, rev)
         except subprocess2.CalledProcessError:
-            return None
+            return False
 
         if sha_only:
             return sha == rev.lower()

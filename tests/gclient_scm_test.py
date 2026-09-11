@@ -774,6 +774,40 @@ class ManagedGitWrapperTestCase(BaseGitWrapperTestCase):
         self.assertFalse(os.path.exists(file_path))
         sys.stdout.close()
 
+    def testRejectsInvalidRevisionOverrideStartingWithHyphen(self):
+        if not self.enabled:
+            return
+        options = self.Options()
+        options.revision = "--upload-pack=touch /tmp/pwn"
+        git_wrapper = gclient_scm.GitWrapper(
+            self.url, self.root_dir, self.relpath
+        )
+        with self.assertRaises(gclient_utils.Error):
+            git_wrapper.update(options, (), [])
+
+    def testCheckoutRejectsInvalidRefStartingWithHyphen(self):
+        git_wrapper = gclient_scm.GitWrapper(
+            self.url, self.root_dir, self.relpath
+        )
+        options = self.Options()
+        with self.assertRaises(gclient_utils.Error):
+            git_wrapper._Checkout(options, "--upload-pack=touch /tmp/pwn")
+        with self.assertRaises(gclient_utils.Error):
+            git_wrapper._Checkout(options, None)
+
+    def testFetchRejectsInvalidRefspecOrRemoteStartingWithHyphen(self):
+        git_wrapper = gclient_scm.GitWrapper(
+            self.url, self.root_dir, self.relpath
+        )
+        options = self.Options()
+        with self.assertRaises(gclient_utils.Error):
+            git_wrapper._Fetch(options, refspec="--upload-pack=touch /tmp/pwn")
+        with self.assertRaises(gclient_utils.Error):
+            git_wrapper._Fetch(options, remote="--upload-pack=touch /tmp/pwn")
+        git_wrapper.remote = None
+        with self.assertRaises(gclient_utils.Error):
+            git_wrapper._Fetch(options, remote=None)
+
     def testUpdateConflict(self):
         if not self.enabled:
             return
@@ -2239,6 +2273,58 @@ class GerritChangesTest(fake_repos.FakeReposTestBase):
         self.assertEqual(
             self.githash("repo_1", 5), self.gitrevparse(self.root_dir)
         )
+
+    def testRejectsInvalidRevisionsStartingWithHyphen(self):
+        git_wrapper = gclient_scm.GitWrapper(self.url, self.root_dir, ".")
+        file_list = []
+        with self.assertRaises(gclient_utils.Error):
+            git_wrapper.apply_patch_ref(
+                "--bad_repo",
+                "refs/changes/35/1235/1",
+                "refs/heads/main",
+                self.options,
+                file_list,
+            )
+        with self.assertRaises(gclient_utils.Error):
+            git_wrapper.apply_patch_ref(
+                None,
+                "refs/changes/35/1235/1",
+                "refs/heads/main",
+                self.options,
+                file_list,
+            )
+        with self.assertRaises(gclient_utils.Error):
+            git_wrapper.apply_patch_ref(
+                self.url,
+                None,
+                "refs/heads/main",
+                self.options,
+                file_list,
+            )
+        with self.assertRaises(gclient_utils.Error):
+            git_wrapper.apply_patch_ref(
+                self.url,
+                "refs/changes/35/1235/1",
+                None,
+                self.options,
+                file_list,
+            )
+        with self.assertRaises(gclient_utils.Error):
+            git_wrapper.apply_patch_ref(
+                self.url,
+                "--upload-pack=touch /tmp/pwn",
+                "refs/heads/main",
+                self.options,
+                file_list,
+            )
+        with self.assertRaises(gclient_utils.Error):
+            git_wrapper.apply_patch_ref(
+                self.url,
+                "refs/changes/35/1235/1",
+                "--upload-pack=touch /tmp/pwn",
+                self.options,
+                file_list,
+            )
 
 
 class DepsChangesFakeRepo(fake_repos.FakeReposBase):

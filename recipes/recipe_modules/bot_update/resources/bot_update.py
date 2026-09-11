@@ -1009,6 +1009,11 @@ def parse_revisions(revisions, root):
   We will always return a dict with {root: something}.  By default if root
   is unspecified, or if revisions is [], then revision will be assigned 'HEAD'
   """
+  if root.startswith("-") or re.search(r"[\s;=&|`$]", root):
+    raise ValueError(
+      "Invalid revision root '%s': root cannot start with '-' or contain whitespace/shell metacharacters"
+      % root
+    )
   results = {root.strip("/"): "HEAD"}
   expanded_revisions = []
   for revision in revisions:
@@ -1019,10 +1024,34 @@ def parse_revisions(revisions, root):
     split_revision = revision.split("@", 1)
     if len(split_revision) == 1:
       # This is just a plain revision, set it as the revision for root.
-      results[root] = split_revision[0]
+      current_rev = split_revision[0]
+      if any(
+        part.startswith("-")
+        for part in current_rev.lstrip("+").split(":")
+        if part
+      ) or re.search(r"[\s;=&|`$]", current_rev):
+        raise ValueError(
+          "Invalid revision '%s': revisions cannot start with '-' or contain whitespace/shell metacharacters"
+          % current_rev
+        )
+      results[root] = current_rev
     else:
       # This is an alt_root@revision argument.
       current_root, current_rev = split_revision
+      if current_root.startswith("-") or re.search(r"[\s;=&|`$]", current_root):
+        raise ValueError(
+          "Invalid revision root '%s': root cannot start with '-' or contain whitespace/shell metacharacters"
+          % current_root
+        )
+      if any(
+        part.startswith("-")
+        for part in current_rev.lstrip("+").split(":")
+        if part
+      ) or re.search(r"[\s;=&|`$]", current_rev):
+        raise ValueError(
+          "Invalid revision '%s': revisions cannot start with '-' or contain whitespace/shell metacharacters"
+          % current_rev
+        )
 
       parsed_root = urlparse(current_root)
       if parsed_root.scheme in ["http", "https"]:

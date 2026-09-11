@@ -450,3 +450,71 @@ def GenTests(api):
     ),
     api.post_process(post_process.DropExpectation),
   )
+
+  yield api.test(
+    "invalid_revision_starts_with_hyphen",
+    ci_build(),
+    api.properties(patch=False, revisions={"src": "-bad_revision"}),
+    api.expect_status("FAILURE"),
+    api.post_process(post_process.DropExpectation),
+  )
+
+  yield api.test(
+    "invalid_revision_compound_refspec",
+    ci_build(),
+    api.properties(
+      patch=False, revisions={"src": "refs/heads/main:--upload-pack=foo"}
+    ),
+    api.expect_status("FAILURE"),
+    api.post_process(post_process.DropExpectation),
+  )
+
+  yield api.test(
+    "invalid_revision_forced_refspec",
+    ci_build(),
+    api.properties(patch=False, revisions={"src": "+--upload-pack=foo"}),
+    api.expect_status("FAILURE"),
+    api.post_process(post_process.DropExpectation),
+  )
+
+  yield api.test(
+    "invalid_revision_contains_metacharacters",
+    ci_build(),
+    api.properties(
+      patch=False, revisions={"src": "refs/heads/main;touch /tmp/pwn"}
+    ),
+    api.expect_status("FAILURE"),
+    api.post_process(post_process.DropExpectation),
+  )
+
+  yield api.test(
+    "invalid_revision_name_starts_with_hyphen",
+    ci_build(),
+    api.properties(patch=False, revisions={("-bad_name"): "HEAD"}),
+    api.expect_status("FAILURE"),
+    api.post_process(post_process.DropExpectation),
+  )
+
+  yield api.test(
+    "invalid_revision_name_contains_metacharacters",
+    ci_build(),
+    api.properties(patch=False, revisions={"src;bad": "HEAD"}),
+    api.expect_status("FAILURE"),
+    api.post_process(post_process.DropExpectation),
+  )
+
+  yield api.test(
+    "invalid_patch_ref_starts_with_hyphen",
+    api.properties(patch_refs=["-bad_patch_ref"]),
+    api.expect_status("FAILURE"),
+    api.post_process(post_process.DropExpectation),
+  )
+
+  yield api.test(
+    "invalid_patch_ref_compound_refspec",
+    api.properties(
+      patch_refs=["refs/changes/35/1235/1:--upload-pack=touch /tmp/pwn"]
+    ),
+    api.expect_status("FAILURE"),
+    api.post_process(post_process.DropExpectation),
+  )

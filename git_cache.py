@@ -103,6 +103,24 @@ class Mirror(object):
         return ("+%s:%s" % (src, dest), regex)
 
     def __init__(self, url, refs=None, commits=None, print_func=None):
+        for c in commits or []:
+            if any(
+                part.startswith("-")
+                for part in c.lstrip("+").split(":")
+                if part
+            ) or re.search(r"[\s;=&|`$]", c):
+                raise ValueError(
+                    f"Invalid commit '{c}': cannot start with '-' or contain whitespace/shell metacharacters"
+                )
+        for r in refs or []:
+            if any(
+                part.startswith("-")
+                for part in r.lstrip("+").split(":")
+                if part
+            ) or re.search(r"[\s;=&|`$]", r):
+                raise ValueError(
+                    f"Invalid ref '{r}': cannot start with '-' or contain whitespace/shell metacharacters"
+                )
         self.url = url
         self.fetch_specs = {self.parse_fetch_spec(ref) for ref in (refs or [])}
         self.fetch_commits = set(commits or [])
@@ -734,7 +752,7 @@ class Mirror(object):
             fetch_cmd.append("--no-tags")
         if prune:
             fetch_cmd.append("--prune")
-        fetch_cmd.append("origin")
+        fetch_cmd.extend(["--", "origin"])
 
         fetch_specs = (
             subprocess.check_output(
@@ -762,10 +780,18 @@ class Mirror(object):
                     raise ClobberNeeded()  # Corrupted cache.
                 logging.warning("Fetch of %s failed" % spec)
         for commit in self.fetch_commits:
+            if any(
+                part.startswith("-")
+                for part in commit.lstrip("+").split(":")
+                if part
+            ) or re.search(r"[\s;=&|`$]", commit):
+                raise ValueError(
+                    f"Invalid commit '{commit}': cannot start with '-' or contain whitespace/shell metacharacters"
+                )
             self.print("Fetching %s" % commit)
             try:
                 with self.print_duration_of("fetch %s" % commit):
-                    self.RunGit(["fetch", "origin", commit], retry=True)
+                    self.RunGit(["fetch", "--", "origin", commit], retry=True)
             except subprocess.CalledProcessError:
                 logging.warning("Fetch of %s failed" % commit)
         if os.path.isfile(self._init_sentient_file):

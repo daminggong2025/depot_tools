@@ -7,6 +7,7 @@
 import abc
 import collections.abc
 import dataclasses
+import re
 import typing
 
 from recipe_engine import recipe_api, turboci
@@ -561,6 +562,16 @@ class BotUpdateApi(recipe_api.RecipeApi):
           ]
         )
       if patch_refs:
+        for patch_ref in patch_refs:
+          if any(
+            part.startswith("-")
+            for part in patch_ref.lstrip("+").split(":")
+            if part
+          ) or re.search(r"[\s;=&|`$]", patch_ref):
+            raise self.m.step.StepFailure(
+              "Invalid patch ref '%s': cannot start with '-' or contain whitespace/shell metacharacters"
+              % patch_ref
+            )
         flags.extend(["--patch_ref", patch_ref] for patch_ref in patch_refs)
 
     # Compute requested revisions.
@@ -622,8 +633,22 @@ class BotUpdateApi(recipe_api.RecipeApi):
     # every command line parameter "--revision name@value".
     fixed_revisions = {}
     for name, revision in sorted(revisions.items()):
+      if name.startswith("-") or re.search(r"[\s;=&|`$]", name):
+        raise self.m.step.StepFailure(
+          "Invalid revision dependency name '%s': cannot start with '-' or contain whitespace/shell metacharacters"
+          % name
+        )
       fixed_revision = self.m.gclient.resolve_revision(revision)
       if fixed_revision:
+        if any(
+          part.startswith("-")
+          for part in fixed_revision.lstrip("+").split(":")
+          if part
+        ) or re.search(r"[\s;=&|`$]", fixed_revision):
+          raise self.m.step.StepFailure(
+            "Invalid revision '%s': revisions cannot start with '-' or contain whitespace/shell metacharacters"
+            % fixed_revision
+          )
         if fixed_revision.upper() == "HEAD" and patch:
           # Sync to correct destination ref
           fixed_revision = self._destination_ref(cfg, name)
