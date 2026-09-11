@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ca10ec6d_9194bcc4",
+        "filename": "ruff_chromium",
+        "patchSetId": 1
+      },
+      "lineNbr": 344,
+      "author": {
+        "id": 1429892
+      },
+      "writtenOn": "2026-09-11T03:55:41Z",
+      "side": 1,
+      "message": "Redundant?",
+      "range": {
+        "startLine": 344,
+        "startChar": 4,
+        "endLine": 344,
+        "endChar": 41
+      },
+      "revId": "8a8461e860ae5ef5baa7832c7df8f90ee40d87fa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
