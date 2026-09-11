@@ -85,6 +85,7 @@ import copy
 import json
 import logging
 import optparse
+import ntpath
 import os
 import platform
 import posixpath
@@ -3215,42 +3216,78 @@ class GcsDependency(Dependency):
             return True
         return False
 
+    @staticmethod
+    def _is_abs_or_drive(path):
+        return (
+            os.path.isabs(path)
+            or ntpath.isabs(path)
+            or bool(ntpath.splitdrive(path)[0])
+            or path.startswith(("/", "\\"))
+        )
+
     def ValidateTarFile(self, tar, prefixes):
+        members = tar.getmembers()
+        if not members:
+            return True
+
+        prefixes = [p for p in prefixes if p and p not in (".", "..")]
+        if not prefixes:
+            if all(m.name.replace("\\", "/") in (".", "./") for m in members):
+                return True
+            return False
 
         def _validate(tarinfo):
             """Returns false if the tarinfo is something we explicitly forbid."""
+            if self._is_abs_or_drive(tarinfo.name):
+                return False
+
             if tarinfo.issym() or tarinfo.islnk():
-                # For links, check if the destination is valid.
-                if os.path.isabs(tarinfo.linkname):
+                clean_linkname = tarinfo.linkname.replace("\\", "/")
+                if not clean_linkname or self._is_abs_or_drive(clean_linkname):
                     return False
-                link_target = os.path.normpath(
-                    os.path.join(
-                        os.path.dirname(tarinfo.name), tarinfo.linkname
+                if tarinfo.issym():
+                    clean_dirname = posixpath.dirname(
+                        tarinfo.name.replace("\\", "/")
                     )
-                )
-                if not any(
-                    link_target.startswith(prefix) for prefix in prefixes
+                    link_target = posixpath.normpath(
+                        posixpath.join(clean_dirname, clean_linkname)
+                    )
+                else:
+                    # Hard link targets in tar are relative to archive root.
+                    link_target = posixpath.normpath(clean_linkname)
+
+                if (
+                    link_target.startswith("..")
+                    or self._is_abs_or_drive(link_target)
+                    or not any(
+                        link_target == prefix
+                        or link_target.startswith(prefix + "/")
+                        for prefix in prefixes
+                    )
                 ):
                     return False
 
-            if tarinfo.name == ".":
+            cleaned_name = tarinfo.name.replace("\\", "/")
+            if cleaned_name in (".", "./"):
                 return True
 
             # tarfile for sysroot has paths that start with ./
-            cleaned_name = tarinfo.name
-            if tarinfo.name.startswith("./") and len(tarinfo.name) > 2:
-                cleaned_name = tarinfo.name[2:]
+            if cleaned_name.startswith("./") and len(cleaned_name) > 2:
+                cleaned_name = cleaned_name[2:]
+            path_parts = set(cleaned_name.split("/"))
             if (
-                "../" in cleaned_name
-                or "..\\" in cleaned_name
+                ".." in path_parts
+                or self._is_abs_or_drive(cleaned_name)
                 or not any(
-                    cleaned_name.startswith(prefix) for prefix in prefixes
+                    cleaned_name == prefix
+                    or cleaned_name.startswith(prefix + "/")
+                    for prefix in prefixes
                 )
             ):
                 return False
             return True
 
-        return all(map(_validate, tar.getmembers()))
+        return all(map(_validate, members))
 
     def DownloadGoogleStorage(self):
         """Calls GCS."""
@@ -3352,13 +3389,16 @@ class GcsDependency(Dependency):
             with tarfile.open(self.artifact_output_file, "r:*") as tar:
                 formatted_names = []
                 for name in tar.getnames():
-                    if name.startswith("./") and len(name) > 2:
-                        formatted_names.append(name[2:])
+                    clean_name = name.replace("\\", "/")
+                    if clean_name.startswith("./") and len(clean_name) > 2:
+                        formatted_names.append(clean_name[2:])
                     else:
-                        formatted_names.append(name)
-                possible_top_level_dirs = set(
-                    name.split("/")[0] for name in formatted_names
-                )
+                        formatted_names.append(clean_name)
+                possible_top_level_dirs = set()
+                for name in formatted_names:
+                    top = name.split("/")[0]
+                    if top not in ("", ".", ".."):
+                        possible_top_level_dirs.add(top)
                 is_valid_tar = self.ValidateTarFile(
                     tar, possible_top_level_dirs
                 )
@@ -3371,20 +3411,24 @@ class GcsDependency(Dependency):
                 self.WriteToFile(json.dumps(tar.getnames()), tar_content_file)
 
                 def TarFilter(member, path):
-                    # Don't set mtime based on the archive metadata.
-                    member.mtime = None
-                    # Match the tarfile default filter.
-                    default_filter = (
-                        tarfile.fully_trusted_filter
-                        if sys.version_info < (3, 14)
-                        else tarfile.data_filter
-                    )
-                    return default_filter(member, path)
+                    if hasattr(tarfile, "data_filter"):
+                        member = tarfile.data_filter(member, path)
+                    # Don't set mtime based on archive metadata
+                    if member:
+                        member.mtime = None
+                    return member
 
                 tar.extractall(path=self.output_dir, filter=TarFilter)
 
         elif zipfile.is_zipfile(self.artifact_output_file):
             with zipfile.ZipFile(self.artifact_output_file) as zip_file:
+                for name in zip_file.namelist():
+                    cleaned = name.replace("\\", "/")
+                    if self._is_abs_or_drive(cleaned) or ".." in set(
+                        cleaned.split("/")
+                    ):
+                        raise Exception("zipfile contains invalid entries")
+
                 content_file = os.path.join(
                     self.output_dir, f".{self.file_prefix}_content_names"
                 )
