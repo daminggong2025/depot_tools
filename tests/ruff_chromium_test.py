@@ -22,6 +22,7 @@ import os
 import sys
 import json
 import io
+import subprocess
 import unittest
 from unittest.mock import Mock, patch
 import tempfile
@@ -54,6 +55,7 @@ parse_formatting_options = depot_tools_ruff.parse_formatting_options
 FormattingOptions = depot_tools_ruff.FormattingOptions
 ParsedArguments = depot_tools_ruff.ParsedArguments
 run_ruff_with_ranges = depot_tools_ruff.run_ruff_with_ranges
+get_formatter_config = depot_tools_ruff.get_formatter_config
 
 
 class TestHasYapfConfig(unittest.TestCase):
@@ -89,6 +91,54 @@ class TestHasYapfConfig(unittest.TestCase):
 
     def test_no_config(self):
         self.assertFalse(has_yapf_config("foo.py"))
+
+
+class TestGetFormatterConfig(unittest.TestCase):
+    def setUp(self):
+        self.test_dir = tempfile.mkdtemp(prefix="ruff_test_")
+        self.old_cwd = os.getcwd()
+        os.chdir(self.test_dir)
+
+    def tearDown(self):
+        os.chdir(self.old_cwd)
+        shutil.rmtree(self.test_dir)
+
+    def write_file(self, rel_path, content=""):
+        abs_path = os.path.join(self.test_dir, rel_path)
+        os.makedirs(os.path.dirname(abs_path), exist_ok=True)
+        with open(abs_path, "w", encoding="utf-8") as f:
+            f.write(content)
+        return abs_path
+
+    def test_find_ruff_toml(self):
+        cfg = self.write_file("a/b/ruff.toml", "")
+        self.assertEqual(
+            cfg, get_formatter_config("a/b/c/foo.py", use_ruff=True)
+        )
+
+    def test_find_dot_ruff_toml(self):
+        cfg = self.write_file("a/b/.ruff.toml", "")
+        self.assertEqual(
+            cfg, get_formatter_config("a/b/c/foo.py", use_ruff=True)
+        )
+
+    def test_find_pyproject_toml_ruff(self):
+        cfg = self.write_file("a/pyproject.toml", "[tool.ruff]\n")
+        self.assertEqual(cfg, get_formatter_config("a/b/foo.py", use_ruff=True))
+
+    def test_no_ruff_config(self):
+        self.assertIsNone(get_formatter_config("foo.py", use_ruff=True))
+
+    def test_find_style_yapf(self):
+        cfg = self.write_file("a/b/.style.yapf", "")
+        self.assertEqual(cfg, get_formatter_config("a/b/c/foo.py"))
+
+    def test_find_pyproject_toml_yapf(self):
+        cfg = self.write_file("a/pyproject.toml", "[tool.yapf]\n")
+        self.assertEqual(cfg, get_formatter_config("a/b/foo.py"))
+
+    def test_no_yapf_config_returns_pep8(self):
+        self.assertEqual("pep8", get_formatter_config("foo.py"))
 
 
 class TestShouldUseRuffRouting(unittest.TestCase):
@@ -171,7 +221,7 @@ class TestShouldUseRuffRouting(unittest.TestCase):
         self.assertFalse(has_yapf_config(test_file, root_dir=symlink_sub_dir))
         self.assertEqual(
             "pep8",
-            depot_tools_ruff.get_yapf_style(
+            depot_tools_ruff.get_formatter_config(
                 test_file, root_dir=symlink_sub_dir
             ),
         )
@@ -1309,7 +1359,71 @@ class TestMainTargetDetection(unittest.TestCase):
         mock_call.assert_called_once()
         cmd = mock_call.call_args[0][0]
         self.assertTrue(cmd[1].endswith("yapf"), cmd)
-        self.assertEqual(cmd[2:], ["--line", "1-2"])
+        style_file = os.path.join(self.test_dir, "sub/.style.yapf")
+        self.assertEqual(cmd[2:], ["--line", "1-2", "--style", style_file])
+
+
+class TestRuffExclusions(unittest.TestCase):
+    def setUp(self):
+        depot_tools_ruff._dir_config_cache.clear()
+        self.test_dir = tempfile.mkdtemp(prefix="ruff_exclusion_test_")
+        self.old_cwd = os.getcwd()
+        os.chdir(self.test_dir)
+        import ruff
+
+        self.ruff_bin = ruff.find_ruff_bin()
+
+    def tearDown(self):
+        os.chdir(self.old_cwd)
+        shutil.rmtree(self.test_dir)
+
+    def write_file(self, rel_path, content=""):
+        abs_path = os.path.join(self.test_dir, rel_path)
+        os.makedirs(os.path.dirname(abs_path), exist_ok=True)
+        with open(abs_path, "w", encoding="utf-8") as f:
+            f.write(content)
+        return abs_path
+
+    def test_relative_exclusion_real_file_in_repo(self):
+        # When files are inside the repo, relative glob exclusions like
+        # exclude = ["third_party/**"] work as intended in batch mode.
+        self.write_file("ruff.toml", 'exclude = ["third_party/**"]\n')
+        real_file = self.write_file("third_party/foo.py", "x =   1\n")
+
+        config = {
+            "root": self.test_dir,
+            "files": [{"path": "third_party/foo.py", "ranges": []}],
+        }
+        with patch("sys.stdin", io.StringIO(json.dumps(config))):
+            ret = run_batch()
+
+        self.assertEqual(ret, 0)
+        with open(real_file, "r", encoding="utf-8") as f:
+            self.assertEqual(f.read(), "x =   1\n")
+
+    def test_relative_exclusion_stdin_filename_preserved(self):
+        # Ruff's native --stdin-filename mechanism evaluates exclusions against
+        # the virtual filename rather than the temporary location on disk.
+        cfg_path = self.write_file(
+            "ruff.toml", 'exclude = ["third_party/**"]\n'
+        )
+        res = subprocess.run(
+            [
+                self.ruff_bin,
+                "format",
+                "--force-exclude",
+                "--config",
+                cfg_path,
+                "--stdin-filename=third_party/foo.py",
+                "-",
+            ],
+            input=b"x =   1\n",
+            capture_output=True,
+            cwd=self.test_dir,
+        )
+        self.assertEqual(res.returncode, 0)
+        # Content remains unformatted because --stdin-filename matches the exclusion.
+        self.assertEqual(res.stdout, b"x =   1\n")
 
 
 if __name__ == "__main__":
