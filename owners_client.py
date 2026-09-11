@@ -6,8 +6,8 @@ import os
 import random
 
 import gerrit_util
-from gerrit_cache import GerritCache
 import git_common
+from gerrit_cache import GerritCache
 
 
 class OwnersClient(object):
@@ -88,7 +88,7 @@ class OwnersClient(object):
         """Get sorted list of owners for the given paths."""
         if not paths:
             return []
-        exclude = exclude or []
+        exclude = exclude or set()
         owners = []
         queues = self.BatchListOwners(paths).values()
         for i in range(max(len(q) for q in queues)):
@@ -99,7 +99,7 @@ class OwnersClient(object):
 
     def SuggestOwners(self, paths, exclude=None):
         """Suggest a set of owners for the given paths."""
-        exclude = exclude or []
+        exclude = exclude or set()
 
         paths_by_owner = {}
         owners_by_path = self.BatchListOwners(paths)
@@ -119,41 +119,75 @@ class OwnersClient(object):
 
         return selected
 
-    def SuggestMinimalOwners(
-        self, paths: list[str], exclude: list[str] = None
-    ) -> list[str]:
+    def SuggestSingleOwner(
+        self, paths: list[str], exclude: set[str] = None
+    ) -> str | None:
         """
-        Suggest a set of owners for the given paths. Never return an owner in
-        the |exclude| list.
+        Suggest one owner covering every one of the given paths. Never return
+        an owner in the `exclude` set.
 
-        Aims to provide only one, but will provide more if it's unable to
-        find a common owner.
+        Returns None when no single owner covers all of `paths`.
         """
-        exclude = exclude or []
+        exclude = exclude or set()
 
         owners_by_path = self.BatchListOwners(paths)
         if not owners_by_path:
-            return []
+            return None
 
-        common_owners = set(owners_by_path.popitem()[1]) - set(exclude)
+        common_owners = set(owners_by_path.popitem()[1]) - exclude
         for _, owners in owners_by_path.items():
             common_owners = common_owners.intersection(set(owners))
 
-        if not common_owners:
-            # This likely means some of the files had `noparent` set.
-            # Fall back to the default suggestion algorithm, which accounts
-            # for noparent but is liable to return many different owners
-            return self.SuggestOwners(paths, exclude)
+        # Return an arbitrary common owner, preferring those with a good score.
+        for owner in self.ScoreOwners(paths, exclude=exclude):
+            if owner in common_owners:
+                return owner
 
-        # Return an arbitrary common owner, preferring those with a good score
-        sorted_common_owners = [
-            owner
-            for owner in self.ScoreOwners(paths, exclude=exclude)
-            if owner in common_owners
-        ]
+        return None
 
-        # Return a singleton list so this function has a consistent return type
-        return sorted_common_owners[:1]
+    def SuggestMinimalOwners(
+        self, paths: list[str], exclude: set[str] = None
+    ) -> list[str]:
+        """
+        Suggest a set of owners for the given paths. Never return an owner in
+        the `exclude` set.
+
+        Aims to provide only one, but will provide more if it's unable to
+        find a common owner.
+
+        Unlike SuggestOwners, which walks owners in per-path score order and so
+        tends to pick every path's nearest owner, this prefers owners who cover
+        many paths at once.
+        """
+        exclude = exclude or set()
+
+        single = self.SuggestSingleOwner(paths, exclude)
+        if single:
+            return [single]
+
+        paths_by_owner = {}
+        for path, owners in self.BatchListOwners(paths).items():
+            for owner in set(owners) - exclude:
+                paths_by_owner.setdefault(owner, set()).add(path)
+
+        # Candidates are in score order, and max() returns the first of the
+        # equally-covering ones, so ties fall to the better-scored owner.
+        candidates = self.ScoreOwners(paths, exclude=exclude)
+        missing = set(paths)
+        selected = []
+        while missing and candidates:
+            owner = max(
+                candidates, key=lambda o: len(paths_by_owner[o] & missing)
+            )
+            covered = paths_by_owner[owner] & missing
+            if not covered:
+                # Whatever is left has no owner we are allowed to suggest.
+                break
+            if owner != self.EVERYONE:
+                selected.append(owner)
+            missing -= covered
+
+        return selected
 
 
 class GerritClient(OwnersClient):

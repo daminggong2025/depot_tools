@@ -793,7 +793,7 @@ def SelectReviewersForFiles(cl, author, files, max_depth, repository_root):
         # dictionary.
         reviewers = tuple(
             cl.owners_client.SuggestOwners(
-                file_paths, exclude=[author, cl.owners_client.EVERYONE]
+                file_paths, exclude={author, cl.owners_client.EVERYONE}
             )
         )
 
@@ -1092,14 +1092,14 @@ def GroupFilesByDirectory(
         # to do with the score.
         reviewers = cl.owners_client.SuggestMinimalOwners(
             files,
-            exclude=[author, cl.owners_client.EVERYONE] + reviewers_so_far,
+            exclude={author, cl.owners_client.EVERYONE, *reviewers_so_far},
         )
 
         # Retry without excluding existing reviewers if we couldn't find any.
         # This is very unlikely since there are many fallback owners.
         if not reviewers:
             reviewers = cl.owners_client.SuggestMinimalOwners(
-                directories, exclude=[author, cl.owners_client.EVERYONE]
+                directories, exclude={author, cl.owners_client.EVERYONE}
             )
 
         reviewers_so_far.extend(reviewers)

@@ -175,7 +175,7 @@ class OwnersClientTest(unittest.TestCase):
         }
         self.assertEqual(
             self.client.ScoreOwners(
-                self.client.owners_by_path.keys(), exclude=[chris]
+                self.client.owners_by_path.keys(), exclude={chris}
             ),
             [alice, bob],
         )
@@ -215,7 +215,7 @@ class OwnersClientTest(unittest.TestCase):
         self.assertSuggestsOwners({"a": [alice]})
         self.assertSuggestsOwners({"abcd": [alice, bob, chris, dave]})
         self.assertSuggestsOwners(
-            {"abcd": [alice, bob, chris, dave]}, exclude=[alice, bob]
+            {"abcd": [alice, bob, chris, dave]}, exclude={alice, bob}
         )
         self.assertSuggestsOwners(
             {
@@ -269,6 +269,33 @@ class OwnersClientTest(unittest.TestCase):
             ),
         )
 
+    def testSuggestSingleOwner(self):
+        self.client.owners_by_path = {
+            "bar/everyone/foo.txt": [alice, bob, emily],
+            "bar/everyone/bar.txt": [bob, emily],
+            "bar/foo/": [bob, chris, emily],
+            "baz/baz/baz": [chris, dave, emily],
+        }
+
+        self.assertEqual(
+            bob,
+            self.client.SuggestSingleOwner(
+                ["bar/everyone/foo.txt", "bar/everyone/bar.txt", "bar/foo/"]
+            ),
+        )
+
+        self.assertIsNone(
+            self.client.SuggestSingleOwner(
+                [
+                    "bar/everyone/foo.txt",
+                    "bar/everyone/bar.txt",
+                    "bar/foo/",
+                    "baz/baz/baz",
+                ],
+                exclude={emily},
+            ),
+        )
+
     def testSuggestMinimalOwners(self):
         self.client.owners_by_path = {
             "bar/everyone/foo.txt": [alice, bob, emily],
@@ -289,9 +316,8 @@ class OwnersClientTest(unittest.TestCase):
             self.client.SuggestMinimalOwners(["bar/foo/", "baz/baz/baz"]),
         )
 
-        # If no common owner exists, fallback to returning multiple owners
         self.assertEqual(
-            [alice, bob, chris],
+            [bob, chris],
             self.client.SuggestMinimalOwners(
                 [
                     "bar/everyone/foo.txt",
@@ -299,7 +325,43 @@ class OwnersClientTest(unittest.TestCase):
                     "bar/foo/",
                     "baz/baz/baz",
                 ],
-                exclude=[emily],
+                exclude={emily},
+            ),
+        )
+
+        # A path whose every owner is excluded cannot be covered. Suggest the
+        # owners that cover the rest.
+        self.assertEqual(
+            [bob],
+            self.client.SuggestMinimalOwners(
+                ["bar/everyone/foo.txt", "bar/everyone/bar.txt", "baz/baz/baz"],
+                exclude={emily, chris, dave},
+            ),
+        )
+
+        # If no path can be covered at all, suggest nobody.
+        self.assertEqual(
+            [],
+            self.client.SuggestMinimalOwners(
+                ["baz/baz/baz"], exclude={chris, dave, emily}
+            ),
+        )
+
+        # A path anybody can approve needs no reviewer of its own.
+        self.client.owners_by_path["qux/qux"] = [
+            owners_client.OwnersClient.EVERYONE
+        ]
+        self.assertEqual(
+            [bob, chris],
+            self.client.SuggestMinimalOwners(
+                [
+                    "bar/everyone/foo.txt",
+                    "bar/everyone/bar.txt",
+                    "bar/foo/",
+                    "baz/baz/baz",
+                    "qux/qux",
+                ],
+                exclude={emily},
             ),
         )
 
