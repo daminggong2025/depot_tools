@@ -6,7 +6,10 @@
 
 import io
 import os
+import shutil
+import subprocess
 import sys
+import tempfile
 import unittest
 from unittest import mock
 
@@ -508,10 +511,6 @@ class IsGitShaTest(unittest.TestCase):
         self.assertFalse(gclient_utils.IsGitSha("z" * 40))
 
 
-if __name__ == "__main__":
-    unittest.main()
-
-
 class SafeReplaceTest(unittest.TestCase):
     def setUp(self):
         self.mock_os = mock.patch("gclient_utils.os").start()
@@ -534,5 +533,269 @@ class SafeReplaceTest(unittest.TestCase):
             with self.assertRaises(OSError):
                 gclient_utils.safe_replace("old", "new")
 
+
+class ReflinkOrCopyTest(unittest.TestCase):
+    def setUp(self):
+        super(ReflinkOrCopyTest, self).setUp()
+        self.tmpdir = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, self.tmpdir, ignore_errors=True)
+
+    @mock.patch("sys.platform", "linux")
+    @mock.patch("subprocess.run")
+    def test_reflink_linux_file(self, mock_run):
+        mock_run.return_value.returncode = 0
+        src = os.path.join(self.tmpdir, "src_file")
+        dst = os.path.join(self.tmpdir, "dst_file")
+        with open(src, "w") as f:
+            f.write("test content")
+
+        result = gclient_utils.reflink_or_copy(src, dst)
+        self.assertTrue(result)
+        mock_run.assert_called_once_with(
+            ["cp", "-a", "--reflink=auto", src, dst],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+
+    @mock.patch("sys.platform", "linux")
+    @mock.patch("subprocess.run")
+    def test_reflink_linux_dir(self, mock_run):
+        mock_run.return_value.returncode = 0
+        src = os.path.join(self.tmpdir, "src_dir")
+        dst = os.path.join(self.tmpdir, "dst_dir")
+        os.makedirs(src)
+
+        result = gclient_utils.reflink_or_copy(src, dst)
+        self.assertTrue(result)
+        mock_run.assert_called_once_with(
+            ["cp", "-a", "--reflink=auto", os.path.join(src, "."), dst],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+
+    @mock.patch("sys.platform", "darwin")
+    @mock.patch("subprocess.run")
+    def test_reflink_darwin_file(self, mock_run):
+        mock_run.return_value.returncode = 0
+        src = os.path.join(self.tmpdir, "src_file")
+        dst = os.path.join(self.tmpdir, "dst_file")
+        with open(src, "w") as f:
+            f.write("darwin content")
+
+        result = gclient_utils.reflink_or_copy(src, dst)
+        self.assertTrue(result)
+        mock_run.assert_called_once_with(
+            ["cp", "-p", "-c", src, dst],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+
+    @mock.patch("sys.platform", "darwin")
+    @mock.patch("subprocess.run")
+    def test_reflink_darwin_dir(self, mock_run):
+        mock_run.return_value.returncode = 0
+        src = os.path.join(self.tmpdir, "src_dir")
+        dst = os.path.join(self.tmpdir, "dst_dir")
+        os.makedirs(src)
+
+        result = gclient_utils.reflink_or_copy(src, dst)
+        self.assertTrue(result)
+        mock_run.assert_called_once_with(
+            ["cp", "-R", "-p", "-c", os.path.join(src, "."), dst],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+
+    @mock.patch("sys.platform", "win32")
+    @mock.patch("gclient_utils._windows_block_clone_file", return_value=True)
+    def test_reflink_windows_file(self, mock_clone):
+        src = os.path.join(self.tmpdir, "src_file")
+        dst = os.path.join(self.tmpdir, "dst_file")
+        with open(src, "w") as f:
+            f.write("win content")
+
+        result = gclient_utils.reflink_or_copy(src, dst)
+        self.assertTrue(result)
+        mock_clone.assert_called_once_with(src, dst)
+
+    @mock.patch("sys.platform", "win32")
+    @mock.patch("gclient_utils._windows_block_clone_dir", return_value=True)
+    def test_reflink_windows_dir(self, mock_clone):
+        src = os.path.join(self.tmpdir, "src_dir")
+        dst = os.path.join(self.tmpdir, "dst_dir")
+        os.makedirs(src)
+
+        result = gclient_utils.reflink_or_copy(src, dst)
+        self.assertTrue(result)
+        mock_clone.assert_called_once_with(src, dst)
+
+    @mock.patch("sys.platform", "linux")
+    @mock.patch("subprocess.run")
+    @mock.patch("shutil.copy2")
+    def test_fallback_on_nonzero_returncode(self, mock_copy2, mock_run):
+        mock_run.return_value.returncode = 1
+        src = os.path.join(self.tmpdir, "src_file")
+        dst = os.path.join(self.tmpdir, "dst_file")
+        with open(src, "w") as f:
+            f.write("fallback content")
+
+        result = gclient_utils.reflink_or_copy(src, dst)
+        self.assertTrue(result)
+        mock_copy2.assert_called_once_with(src, dst)
+
+    @mock.patch("sys.platform", "linux")
+    @mock.patch(
+        "subprocess.run",
+        side_effect=subprocess.SubprocessError("reflink failed"),
+    )
+    @mock.patch("shutil.copy2")
+    def test_fallback_on_subprocess_error(self, mock_copy2, mock_run):
+        src = os.path.join(self.tmpdir, "src_file")
+        dst = os.path.join(self.tmpdir, "dst_file")
+        with open(src, "w") as f:
+            f.write("fallback content")
+
+        result = gclient_utils.reflink_or_copy(src, dst)
+        self.assertTrue(result)
+        mock_copy2.assert_called_once_with(src, dst)
+
+    @mock.patch("sys.platform", "darwin")
+    @mock.patch("subprocess.run", side_effect=OSError("cp not found"))
+    @mock.patch("shutil.copy2")
+    def test_darwin_fallback_on_os_error(self, mock_copy2, mock_run):
+        src = os.path.join(self.tmpdir, "src_file")
+        dst = os.path.join(self.tmpdir, "dst_file")
+        with open(src, "w") as f:
+            f.write("fallback content")
+
+        result = gclient_utils.reflink_or_copy(src, dst)
+        self.assertTrue(result)
+        mock_copy2.assert_called_once_with(src, dst)
+
+    @mock.patch("sys.platform", "win32")
+    @mock.patch(
+        "gclient_utils._windows_block_clone_file",
+        side_effect=OSError("not ReFS"),
+    )
+    @mock.patch("shutil.copy2")
+    def test_windows_fallback_on_os_error(self, mock_copy2, mock_clone):
+        src = os.path.join(self.tmpdir, "src_file")
+        dst = os.path.join(self.tmpdir, "dst_file")
+        with open(src, "w") as f:
+            f.write("fallback content")
+
+        result = gclient_utils.reflink_or_copy(src, dst)
+        self.assertTrue(result)
+        mock_copy2.assert_called_once_with(src, dst)
+
+    @mock.patch("sys.platform", "linux")
+    @mock.patch("subprocess.run", side_effect=OSError("fail"))
+    @mock.patch("shutil.copy2", side_effect=OSError("copy failed"))
+    def test_failure_both_reflink_and_copy(self, mock_copy2, mock_run):
+        src = os.path.join(self.tmpdir, "src_file")
+        dst = os.path.join(self.tmpdir, "dst_file")
+        with open(src, "w") as f:
+            f.write("content")
+
+        result = gclient_utils.reflink_or_copy(src, dst)
+        self.assertFalse(result)
+
+    def test_real_filesystem_file_copy(self):
+        src = os.path.join(self.tmpdir, "real_src.txt")
+        dst = os.path.join(self.tmpdir, "sub", "real_dst.txt")
+        content = "hello world from real file test\n"
+        with open(src, "w") as f:
+            f.write(content)
+
+        result = gclient_utils.reflink_or_copy(src, dst)
+        self.assertTrue(result)
+        self.assertTrue(os.path.isfile(dst))
+        with open(dst, "r") as f:
+            self.assertEqual(f.read(), content)
+
+    def test_real_filesystem_dir_copy(self):
+        src_dir = os.path.join(self.tmpdir, "real_src_dir")
+        dst_dir = os.path.join(self.tmpdir, "real_dst_dir")
+        nested_dir = os.path.join(src_dir, "nested")
+        os.makedirs(nested_dir)
+        file1 = os.path.join(src_dir, "file1.txt")
+        file2 = os.path.join(nested_dir, "file2.txt")
+        with open(file1, "w") as f:
+            f.write("data 1")
+        with open(file2, "w") as f:
+            f.write("data 2")
+
+        result = gclient_utils.reflink_or_copy(src_dir, dst_dir)
+        self.assertTrue(result)
+        self.assertTrue(os.path.isdir(dst_dir))
+        self.assertTrue(os.path.isfile(os.path.join(dst_dir, "file1.txt")))
+        self.assertTrue(
+            os.path.isfile(os.path.join(dst_dir, "nested", "file2.txt"))
+        )
+        with open(os.path.join(dst_dir, "file1.txt"), "r") as f:
+            self.assertEqual(f.read(), "data 1")
+        with open(os.path.join(dst_dir, "nested", "file2.txt"), "r") as f:
+            self.assertEqual(f.read(), "data 2")
+
+    def test_windows_block_clone_file_non_windows(self):
+        src = os.path.join(self.tmpdir, "win_dummy_src")
+        dst = os.path.join(self.tmpdir, "win_dummy_dst")
+        with open(src, "w") as f:
+            f.write("dummy")
+        with mock.patch("ctypes.windll", None, create=True):
+            self.assertFalse(gclient_utils._windows_block_clone_file(src, dst))
+
+    def test_windows_block_clone_file_mock_kernel32(self):
+        src = os.path.join(self.tmpdir, "src.bin")
+        dst = os.path.join(self.tmpdir, "dst.bin")
+        with open(src, "wb") as f:
+            f.write(b"A" * 65536 + b"TAIL123456")
+
+        mock_kernel32 = mock.MagicMock()
+        mock_kernel32.CreateFileW.side_effect = [1001, 1002]
+
+        def fake_get_file_size(handle, ref):
+            ref._obj.QuadPart = 65536 + 10
+            return True
+
+        mock_kernel32.GetFileSizeEx.side_effect = fake_get_file_size
+        mock_kernel32.SetFilePointerEx.return_value = True
+        mock_kernel32.SetEndOfFile.return_value = True
+        mock_kernel32.DeviceIoControl.return_value = True
+        mock_kernel32.CloseHandle.return_value = True
+
+        fake_windll = mock.MagicMock()
+        fake_windll.kernel32 = mock_kernel32
+
+        with mock.patch("ctypes.windll", fake_windll, create=True):
+            result = gclient_utils._windows_block_clone_file(src, dst)
+
+        self.assertTrue(result)
+        self.assertEqual(mock_kernel32.CloseHandle.call_count, 2)
+        self.assertTrue(os.path.exists(dst))
+        with open(dst, "rb") as f:
+            content = f.read()
+        self.assertEqual(content[65536:], b"TAIL123456")
+
+    @mock.patch("gclient_utils._windows_block_clone_file")
+    def test_windows_block_clone_dir(self, mock_clone_file):
+        src = os.path.join(self.tmpdir, "win_dir_src")
+        dst = os.path.join(self.tmpdir, "win_dir_dst")
+        sub = os.path.join(src, "sub")
+        os.makedirs(sub)
+        file1 = os.path.join(src, "f1.txt")
+        file2 = os.path.join(sub, "f2.txt")
+        with open(file1, "w") as f:
+            f.write("f1")
+        with open(file2, "w") as f:
+            f.write("f2")
+
+        result = gclient_utils._windows_block_clone_dir(src, dst)
+        self.assertTrue(result)
+        self.assertEqual(mock_clone_file.call_count, 2)
+
+
+if __name__ == "__main__":
+    unittest.main()
 
 # vim: ts=2:sw=2:tw=80:et:
