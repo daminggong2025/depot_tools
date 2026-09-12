@@ -89,6 +89,38 @@ class GClientSmokeGcs(gclient_smoketest_base.GClientSmokeBase):
         )
         self.check((out, "", 0), results)
 
+    def testSyncGcsWithReferenceDir(self):
+        # Initial sync to populate GCS deps in reference directory
+        self.gclient(
+            ["config", self.git_base + "repo_22", "--name", "src", "--managed"]
+        )
+        self.gclient(["sync"])
+
+        ref_dir = os.path.join(self.root_dir, "reference_src")
+        src_dir = os.path.join(self.root_dir, "src")
+        # Rename initial checkout to act as the reference checkout
+        os.rename(src_dir, ref_dir)
+
+        # Sync a fresh checkout using --reference-dir
+        self.gclient(["sync", f"--reference-dir={ref_dir}"])
+
+        self.assertTrue(
+            os.path.exists(
+                os.path.join(
+                    src_dir, "gcs_dep", "extracted_dir", "extracted_file"
+                )
+            )
+        )
+        self.assertTrue(
+            os.path.exists(
+                os.path.join(
+                    src_dir,
+                    "gcs_dep_with_output_file",
+                    "clang-format-no-extract",
+                )
+            )
+        )
+
 
 if __name__ == "__main__":
     if "-v" in sys.argv:
