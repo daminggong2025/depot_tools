@@ -10,7 +10,6 @@ import os
 import queue
 
 import re
-import shutil
 import stat
 import sys
 import tarfile
@@ -18,6 +17,7 @@ import threading
 import time
 
 import subprocess2
+import fs_util
 import gclient_utils
 
 # Env vars that tempdir can be gotten from; minimally, this
@@ -470,18 +470,14 @@ def _downloader_worker_thread(
                     )
                     continue
                 if os.path.exists(extract_dir):
-                    try:
-                        shutil.rmtree(extract_dir)
-                        out_q.put(
-                            "%d> Removed %s..." % (thread_num, extract_dir)
-                        )
-                    except OSError:
+                    if not fs_util.remove_path(extract_dir):
                         out_q.put(
                             "%d> Warning: Can't delete: %s"
                             % (thread_num, extract_dir)
                         )
                         ret_codes.put((1, "Can't delete %s." % (extract_dir)))
                         continue
+                    out_q.put("%d> Removed %s..." % (thread_num, extract_dir))
                 out_q.put(
                     "%d> Extracting %d entries from %s to %s"
                     % (
@@ -491,6 +487,7 @@ def _downloader_worker_thread(
                         extract_dir,
                     )
                 )
+                fs_util.ensure_directory_or_subvolume(extract_dir)
                 with open(extract_dir + ".tmp", "a"):
                     tar.extractall(path=dirname)
                 os.remove(extract_dir + ".tmp")

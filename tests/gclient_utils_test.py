@@ -604,6 +604,55 @@ class ReflinkOrCopyTest(unittest.TestCase):
         self.assertTrue(result)
         mock_clone.assert_called_once_with(src, dst)
 
+    @mock.patch("fs_util.is_btrfs_subvolume", return_value=True)
+    def test_is_btrfs_subvolume_shim(self, mock_fn):
+        path = os.path.join(self.tmpdir, "test")
+        self.assertTrue(gclient_utils.is_btrfs_subvolume(path))
+        mock_fn.assert_called_once_with(path)
+
+    @mock.patch("fs_util.create_btrfs_subvolume", return_value=True)
+    def test_create_btrfs_subvolume_shim(self, mock_fn):
+        path = os.path.join(self.tmpdir, "test")
+        self.assertTrue(gclient_utils.create_btrfs_subvolume(path))
+        mock_fn.assert_called_once_with(path)
+
+    @mock.patch("fs_util.delete_btrfs_subvolume", return_value=True)
+    def test_delete_btrfs_subvolume_shim(self, mock_fn):
+        path = os.path.join(self.tmpdir, "test")
+        self.assertTrue(
+            gclient_utils.delete_btrfs_subvolume(path, recursive=True)
+        )
+        mock_fn.assert_called_once_with(path, recursive=True)
+
+    @mock.patch("fs_util.snapshot_btrfs_subvolume", return_value=True)
+    def test_snapshot_btrfs_subvolume_shim(self, mock_fn):
+        src = os.path.join(self.tmpdir, "src")
+        dst = os.path.join(self.tmpdir, "dst")
+        self.assertTrue(gclient_utils.snapshot_btrfs_subvolume(src, dst))
+        mock_fn.assert_called_once_with(src, dst)
+
+    @mock.patch("fs_util.ensure_directory_or_subvolume", return_value=True)
+    def test_ensure_directory_or_subvolume_shim(self, mock_fn):
+        path = os.path.join(self.tmpdir, "test")
+        self.assertTrue(gclient_utils.ensure_directory_or_subvolume(path))
+        mock_fn.assert_called_once_with(path)
+
+    @mock.patch("fs_util.delete_btrfs_subvolume", return_value=True)
+    @mock.patch("fs_util.is_btrfs_subvolume", return_value=True)
+    def test_rm_file_or_tree_subvolume(self, _mock_is_subvol, mock_delete):
+        path = os.path.join(self.tmpdir, "subvol_path")
+        os.makedirs(path)
+        gclient_utils.rm_file_or_tree(path)
+        mock_delete.assert_called_once_with(path)
+
+    @mock.patch("fs_util.delete_btrfs_subvolume", return_value=True)
+    @mock.patch("fs_util.is_btrfs_subvolume", return_value=True)
+    def test_rmtree_subvolume(self, _mock_is_subvol, mock_delete):
+        path = os.path.join(self.tmpdir, "subvol_dir")
+        os.makedirs(path)
+        gclient_utils.rmtree(path)
+        mock_delete.assert_called_once_with(path, recursive=True)
+
 
 if __name__ == "__main__":
     unittest.main()

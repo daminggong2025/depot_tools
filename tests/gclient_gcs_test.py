@@ -18,6 +18,7 @@ import zipfile
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import download_from_google_storage
+import fs_util
 import gclient
 
 
@@ -441,6 +442,47 @@ class GcsDependencyTest(unittest.TestCase):
             f.write("content")
         self.assertFalse(dep.CopyFromReference(ref_dir))
 
+    @mock.patch("fs_util.snapshot_btrfs_subvolume", return_value=True)
+    @mock.patch("fs_util.is_btrfs_subvolume", return_value=True)
+    def test_copy_from_reference_btrfs_subvolume_snapshot_success(
+        self, mock_is_subvol, mock_snapshot
+    ):
+        ref_dir = os.path.join(self.tmpdir, "ref_dir")
+        os.makedirs(ref_dir)
+        dep = self._make_gcs_dep(object_name="archive.tar.gz")
+        os.makedirs(dep.output_dir, exist_ok=True)
+
+        result = dep.CopyFromReference(ref_dir)
+        self.assertTrue(result)
+        mock_is_subvol.assert_called_once_with(ref_dir)
+        mock_snapshot.assert_called_once_with(ref_dir, dep.output_dir)
+        with open(dep.hash_file, "r") as f:
+            self.assertEqual(f.read().strip(), dep.sha256sum)
+        with open(dep.migration_toggle_file, "r") as f:
+            self.assertEqual(f.read().strip(), "1")
+
+    @mock.patch("fs_util.snapshot_btrfs_subvolume", return_value=False)
+    @mock.patch("fs_util.is_btrfs_subvolume", return_value=True)
+    def test_copy_from_reference_btrfs_subvolume_snapshot_fallback(
+        self, mock_is_subvol, mock_snapshot
+    ):
+        ref_dir = os.path.join(self.tmpdir, "ref_dir")
+        os.makedirs(ref_dir)
+        dep = self._make_gcs_dep(
+            object_name="plain.txt", output_file="plain.txt"
+        )
+        ref_artifact = os.path.join(ref_dir, "plain.txt")
+        with open(ref_artifact, "w") as f:
+            f.write("content")
+
+        result = dep.CopyFromReference(ref_dir)
+        self.assertTrue(result)
+        mock_is_subvol.assert_called_once_with(ref_dir)
+        mock_snapshot.assert_called_once_with(ref_dir, dep.output_dir)
+        self.assertTrue(os.path.isfile(dep.artifact_output_file))
+        with open(dep.artifact_output_file, "r") as f:
+            self.assertEqual(f.read(), "content")
+
     def test_maybe_extract_artifact_plain_file(self):
         dep = self._make_gcs_dep(object_name="bundle.txt")
         os.makedirs(dep.output_dir, exist_ok=True)
@@ -594,6 +636,22 @@ class GcsDependencyTest(unittest.TestCase):
         self.assertTrue(os.path.isfile(dep.migration_toggle_file))
         with open(dep.hash_file, "r") as f:
             self.assertEqual(f.read().strip(), "abcd123")
+
+    @mock.patch(
+        "fs_util.ensure_directory_or_subvolume",
+        wraps=fs_util.ensure_directory_or_subvolume,
+    )
+    def test_download_google_storage_ensures_directory_or_subvolume(
+        self, mock_ensure
+    ):
+        dep = self._make_gcs_dep(
+            object_name="archive.tar.gz",
+            sha256sum="abcd123",
+            size_bytes=10000,
+        )
+        with mock.patch.dict(os.environ, {"GCLIENT_TEST": "1"}):
+            dep.DownloadGoogleStorage(self.options)
+        mock_ensure.assert_called_once_with(dep.output_dir)
 
     def test_run_skips_runhooks_and_revinfo(self):
         dep = self._make_gcs_dep()

@@ -295,6 +295,8 @@ def safe_replace(old, new):
 def rm_file_or_tree(path):
     if os.path.isfile(path) or os.path.islink(path):
         os.remove(path)
+    elif fs_util.is_btrfs_subvolume(path):
+        fs_util.delete_btrfs_subvolume(path)
     else:
         rmtree(path)
 
@@ -318,6 +320,31 @@ def reflink_or_copy(src, dst):
     (ReFS / Dev Drive block cloning) with fallback to standard copy.
     """
     return fs_util.reflink_or_copy(src, dst)
+
+
+def is_btrfs_subvolume(path):
+    """Returns True if path is a Btrfs subvolume or snapshot."""
+    return fs_util.is_btrfs_subvolume(path)
+
+
+def create_btrfs_subvolume(path):
+    """Creates a Btrfs subvolume at path."""
+    return fs_util.create_btrfs_subvolume(path)
+
+
+def delete_btrfs_subvolume(path, recursive=True):
+    """Deletes a Btrfs subvolume at path."""
+    return fs_util.delete_btrfs_subvolume(path, recursive=recursive)
+
+
+def snapshot_btrfs_subvolume(src, dst):
+    """Snapshots a Btrfs subvolume from src to dst."""
+    return fs_util.snapshot_btrfs_subvolume(src, dst)
+
+
+def ensure_directory_or_subvolume(path):
+    """Ensures path exists as a directory or Btrfs subvolume."""
+    return fs_util.ensure_directory_or_subvolume(path)
 
 
 def rmtree(path):
@@ -351,6 +378,10 @@ def rmtree(path):
     if os.path.islink(path) or not os.path.isdir(path):
         raise Error("Called rmtree(%s) in non-directory" % path)
 
+    if fs_util.is_btrfs_subvolume(path):
+        if fs_util.delete_btrfs_subvolume(path, recursive=True):
+            return
+
     if sys.platform == "win32":
         # Give up and use cmd.exe's rd command.
         path = os.path.normcase(path)
@@ -381,11 +412,19 @@ def rmtree(path):
         fullpath = os.path.join(path, fn)
         if os.path.islink(fullpath) or not os.path.isdir(fullpath):
             remove(os.remove, fullpath)
+        elif fs_util.is_btrfs_subvolume(fullpath):
+            fs_util.delete_btrfs_subvolume(fullpath, recursive=True)
         else:
             # Recurse.
             rmtree(fullpath)
 
-    remove(os.rmdir, path)
+    try:
+        remove(os.rmdir, path)
+    except OSError:
+        if fs_util.is_btrfs_subvolume(path):
+            fs_util.delete_btrfs_subvolume(path, recursive=True)
+        else:
+            raise
 
 
 def safe_makedirs(tree):

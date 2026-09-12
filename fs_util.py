@@ -37,6 +37,11 @@ class FilesystemProvider(abc.ABC):
     def fstype(self):
         """Returns the filesystem or provider type name."""
 
+    @property
+    def supports_snapshots(self):
+        """Returns True if the provider supports subvolume snapshots."""
+        return False
+
 
 class DefaultFilesystemProvider(FilesystemProvider):
     """Fallback filesystem provider using standard file copies."""
@@ -113,6 +118,33 @@ class LinuxFilesystemProvider(FilesystemProvider):
     @property
     def fstype(self):
         return self._fstype or "linux"
+
+
+class BtrfsFilesystemProvider(LinuxFilesystemProvider):
+    """Btrfs filesystem provider supporting subvolume snapshots and reflink cloning."""
+
+    def __init__(self, fallback=None):
+        super().__init__(fallback=fallback, fstype="btrfs")
+
+    def copy(self, src, dst):
+        if is_btrfs_subvolume(src):
+            if snapshot_btrfs_subvolume(src, dst):
+                return True
+            logging.debug(
+                "Btrfs subvolume snapshot failed from %s to %s, "
+                "falling back to Linux reflink copy",
+                src,
+                dst,
+            )
+        return super().copy(src, dst)
+
+    @property
+    def supports_snapshots(self):
+        return True
+
+    @property
+    def fstype(self):
+        return "btrfs"
 
 
 class APFSFilesystemProvider(FilesystemProvider):
@@ -512,6 +544,225 @@ def get_filesystem_type(path=None, platform=None):
     return None
 
 
+def is_btrfs_subvolume(path):
+    """Returns True if path is the root of a Btrfs subvolume or snapshot."""
+    try:
+        if os.path.islink(path) or not os.path.isdir(path):
+            return False
+        st = os.stat(path)
+        if st.st_ino != 256:
+            return False
+        return get_filesystem_type(path) == "btrfs"
+    except OSError as e:
+        logging.debug("Error checking if %s is btrfs subvolume: %s", path, e)
+        return False
+
+
+def create_btrfs_subvolume(path):
+    """Creates a Btrfs subvolume at path.
+
+    Args:
+        path: Path where the subvolume will be created.
+
+    Returns:
+        True if the subvolume was created successfully, False otherwise.
+    """
+    try:
+        parent = os.path.dirname(os.path.abspath(path))
+        if parent:
+            os.makedirs(parent, exist_ok=True)
+        res = subprocess.run(
+            ["btrfs", "subvolume", "create", path],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.PIPE,
+            text=True,
+            check=False,
+        )
+        if res.returncode == 0:
+            return True
+        logging.debug(
+            "btrfs subvolume create failed for %s: %s", path, res.stderr
+        )
+        return False
+    except (subprocess.SubprocessError, OSError) as e:
+        logging.debug("Exception creating btrfs subvolume at %s: %s", path, e)
+        return False
+
+
+def delete_btrfs_subvolume(path, recursive=True):
+    """Deletes a Btrfs subvolume at path.
+
+    Args:
+        path: Path to the subvolume to delete.
+        recursive: If True, delete nested subvolumes recursively.
+
+    Returns:
+        True if the subvolume was deleted successfully, False otherwise.
+    """
+    if not os.path.exists(path) and not os.path.islink(path):
+        return True
+    try:
+        cmd = ["btrfs", "subvolume", "delete"]
+        if recursive:
+            cmd.append("-R")
+        cmd.append(path)
+        res = subprocess.run(
+            cmd,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.PIPE,
+            text=True,
+            check=False,
+        )
+        if res.returncode == 0:
+            return True
+        logging.debug(
+            "btrfs subvolume delete failed for %s: %s", path, res.stderr
+        )
+        # If recursive deletion failed with -R (e.g. older btrfs-progs or
+        # non-root iteration limits), traverse bottom-up to delete nested
+        # subvolumes first, then retry deleting the root subvolume.
+        if recursive and os.path.exists(path):
+            for root, dirs, _ in os.walk(path, topdown=False):
+                for d in dirs:
+                    sub = os.path.join(root, d)
+                    if is_btrfs_subvolume(sub):
+                        delete_btrfs_subvolume(sub, recursive=False)
+            res2 = subprocess.run(
+                ["btrfs", "subvolume", "delete", path],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.PIPE,
+                text=True,
+                check=False,
+            )
+            if res2.returncode == 0:
+                return True
+            logging.debug(
+                "btrfs subvolume delete retry failed for %s: %s",
+                path,
+                res2.stderr,
+            )
+        return False
+    except (subprocess.SubprocessError, OSError) as e:
+        logging.debug("Exception deleting btrfs subvolume at %s: %s", path, e)
+        return False
+
+
+def remove_path(path):
+    """Removes a file, directory, or subvolume at path."""
+    if not os.path.exists(path) and not os.path.islink(path):
+        return True
+    if is_btrfs_subvolume(path):
+        return delete_btrfs_subvolume(path, recursive=True)
+    if os.path.isdir(path) and not os.path.islink(path):
+        try:
+            shutil.rmtree(path)
+            return True
+        except OSError as e:
+            logging.debug(
+                "shutil.rmtree failed for %s: %s, cleaning nested subvolumes",
+                path,
+                e,
+            )
+            for root, dirs, _ in os.walk(path, topdown=False):
+                for d in dirs:
+                    sub = os.path.join(root, d)
+                    if is_btrfs_subvolume(sub):
+                        delete_btrfs_subvolume(sub, recursive=True)
+            try:
+                shutil.rmtree(path)
+                return True
+            except OSError as e2:
+                logging.debug(
+                    "Second shutil.rmtree failed for %s: %s", path, e2
+                )
+                return False
+    else:
+        try:
+            os.remove(path)
+            return True
+        except OSError as e:
+            logging.debug("Failed to remove %s: %s", path, e)
+            return False
+
+
+def snapshot_btrfs_subvolume(src, dst):
+    """Creates a Btrfs snapshot of src at dst.
+
+    If dst exists, it is removed prior to creating the snapshot.
+
+    Args:
+        src: Path to source subvolume.
+        dst: Path to destination snapshot.
+
+    Returns:
+        True if the snapshot succeeded, False otherwise.
+    """
+    try:
+        if os.path.exists(dst) or os.path.islink(dst):
+            if not remove_path(dst):
+                return False
+        parent = os.path.dirname(os.path.abspath(dst))
+        if parent:
+            os.makedirs(parent, exist_ok=True)
+        res = subprocess.run(
+            ["btrfs", "subvolume", "snapshot", src, dst],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.PIPE,
+            text=True,
+            check=False,
+        )
+        if res.returncode == 0:
+            return True
+        logging.debug(
+            "btrfs subvolume snapshot failed from %s to %s: %s",
+            src,
+            dst,
+            res.stderr,
+        )
+        return False
+    except (subprocess.SubprocessError, OSError) as e:
+        logging.debug(
+            "Exception snapshotting btrfs subvolume from %s to %s: %s",
+            src,
+            dst,
+            e,
+        )
+        return False
+
+
+def ensure_directory_or_subvolume(path):
+    """Ensures path exists as a directory or Btrfs subvolume.
+
+    If path does not exist and its parent resides on Btrfs, attempts to create
+    it as a Btrfs subvolume so subsequent operations can use subvolume snapshots.
+    Falls back to os.makedirs if subvolume creation is not supported or fails.
+
+    Args:
+        path: Path to create.
+
+    Returns:
+        True if path exists as a directory or subvolume, False otherwise.
+    """
+    if os.path.isdir(path):
+        return True
+    try:
+        fstype = get_filesystem_type(os.path.dirname(os.path.abspath(path)))
+        if fstype == "btrfs":
+            if create_btrfs_subvolume(path):
+                return True
+            logging.debug(
+                "Failed to create btrfs subvolume at %s, falling back to makedirs",
+                path,
+            )
+        os.makedirs(path, exist_ok=True)
+        return os.path.isdir(path)
+    except OSError as e:
+        logging.debug(
+            "Failed to ensure directory or subvolume at %s: %s", path, e
+        )
+        return False
+
+
 def get_windows_filesystem_provider(path=None):
     """Resolves the appropriate Windows filesystem provider."""
     if path:
@@ -557,6 +808,8 @@ def get_filesystem_provider(path=None, platform=None):
     plat = platform or sys.platform
     if plat.startswith("linux"):
         fstype = get_linux_filesystem_type(path) if path else None
+        if fstype == "btrfs":
+            return BtrfsFilesystemProvider()
         return LinuxFilesystemProvider(fstype=fstype)
     if plat == "darwin":
         return APFSFilesystemProvider()
