@@ -298,6 +298,221 @@ def rm_file_or_tree(path):
         rmtree(path)
 
 
+def _windows_block_clone_file(src, dst):
+    """Clones a single file on Windows ReFS / Dev Drive using FSCTL_DUPLICATE_EXTENTS_TO_FILE."""
+    import ctypes
+    from ctypes import wintypes
+
+    kernel32 = getattr(ctypes, "windll", None)
+    if not kernel32:
+        return False
+    kernel32 = kernel32.kernel32
+
+    generic_read = 0x80000000
+    generic_write = 0x40000000
+    file_share_read = 0x00000001
+    file_share_write = 0x00000002
+    open_existing = 3
+    create_always = 2
+    file_attribute_normal = 0x80
+    invalid_handle_value = -1
+    fsctl_duplicate_extents = 0x00098344
+
+    class LARGE_INTEGER(ctypes.Union):
+        _fields_ = [("QuadPart", ctypes.c_longlong)]
+
+    class DUPLICATE_EXTENTS_DATA(ctypes.Structure):
+        _fields_ = [
+            ("FileHandle", wintypes.HANDLE),
+            ("SourceByteOffset", LARGE_INTEGER),
+            ("TargetByteOffset", LARGE_INTEGER),
+            ("ByteCount", LARGE_INTEGER),
+        ]
+
+    src_handle = kernel32.CreateFileW(
+        src,
+        generic_read,
+        file_share_read | file_share_write,
+        None,
+        open_existing,
+        file_attribute_normal,
+        None,
+    )
+    if src_handle == invalid_handle_value:
+        raise ctypes.WinError()
+
+    try:
+        size = LARGE_INTEGER()
+        if not kernel32.GetFileSizeEx(src_handle, ctypes.byref(size)):
+            raise ctypes.WinError()
+
+        dest_handle = kernel32.CreateFileW(
+            dst,
+            generic_write,
+            file_share_read | file_share_write,
+            None,
+            create_always,
+            file_attribute_normal,
+            None,
+        )
+        if dest_handle == invalid_handle_value:
+            raise ctypes.WinError()
+
+        try:
+            if not kernel32.SetFilePointerEx(dest_handle, size, None, 0):
+                raise ctypes.WinError()
+            if not kernel32.SetEndOfFile(dest_handle):
+                raise ctypes.WinError()
+
+            alignment = 64 * 1024
+            aligned_size = (size.QuadPart // alignment) * alignment
+            chunk_size = 1024 * 1024 * 1024
+
+            if aligned_size > 0:
+                zero = LARGE_INTEGER()
+                zero.QuadPart = 0
+                if not kernel32.SetFilePointerEx(dest_handle, zero, None, 0):
+                    raise ctypes.WinError()
+
+                offset = 0
+                while offset < aligned_size:
+                    bytes_to_clone = min(chunk_size, aligned_size - offset)
+                    data = DUPLICATE_EXTENTS_DATA()
+                    data.FileHandle = src_handle
+                    data.SourceByteOffset.QuadPart = offset
+                    data.TargetByteOffset.QuadPart = offset
+                    data.ByteCount.QuadPart = bytes_to_clone
+
+                    bytes_returned = wintypes.DWORD()
+                    res = kernel32.DeviceIoControl(
+                        dest_handle,
+                        fsctl_duplicate_extents,
+                        ctypes.byref(data),
+                        ctypes.sizeof(data),
+                        None,
+                        0,
+                        ctypes.byref(bytes_returned),
+                        None,
+                    )
+                    if not res:
+                        raise ctypes.WinError()
+                    offset += bytes_to_clone
+
+            remaining = size.QuadPart - aligned_size
+            if remaining > 0:
+                with open(src, "rb") as sf, open(dst, "r+b") as df:
+                    sf.seek(aligned_size)
+                    df.seek(aligned_size)
+                    df.write(sf.read())
+            return True
+        finally:
+            kernel32.CloseHandle(dest_handle)
+    finally:
+        kernel32.CloseHandle(src_handle)
+
+
+def _windows_block_clone_dir(src, dst):
+    """Recursively clones a directory on Windows ReFS using block cloning."""
+    os.makedirs(dst, exist_ok=True)
+    for root, dirs, files in os.walk(src):
+        rel_path = os.path.relpath(root, src)
+        dest_dir = os.path.join(dst, rel_path) if rel_path != "." else dst
+        for d in dirs:
+            os.makedirs(os.path.join(dest_dir, d), exist_ok=True)
+        for f in files:
+            s_file = os.path.join(root, f)
+            d_file = os.path.join(dest_dir, f)
+            _windows_block_clone_file(s_file, d_file)
+    return True
+
+
+def reflink_or_copy(src, dst):
+    """Reflinks or copies src to dst using CoW (copy-on-write) where supported.
+
+    Supports Linux (GNU cp --reflink=auto), macOS (APFS cp -c), and Windows
+    (ReFS / Dev Drive block cloning) with fallback to standard copy.
+    """
+    if sys.platform.startswith("linux"):
+        try:
+            if os.path.isdir(src):
+                os.makedirs(dst, exist_ok=True)
+                res = subprocess.run(
+                    ["cp", "-a", "--reflink=auto", os.path.join(src, "."), dst],
+                    stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL,
+                )
+                if res.returncode == 0:
+                    return True
+            else:
+                os.makedirs(os.path.dirname(dst), exist_ok=True)
+                res = subprocess.run(
+                    ["cp", "-a", "--reflink=auto", src, dst],
+                    stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL,
+                )
+                if res.returncode == 0:
+                    return True
+        except (subprocess.SubprocessError, OSError) as e:
+            logging.debug("Linux reflink failed, falling back to copy: %s", e)
+
+    elif sys.platform == "darwin":
+        try:
+            if os.path.isdir(src):
+                os.makedirs(dst, exist_ok=True)
+                res = subprocess.run(
+                    ["cp", "-R", "-p", "-c", os.path.join(src, "."), dst],
+                    stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL,
+                )
+                if res.returncode == 0:
+                    return True
+            else:
+                os.makedirs(os.path.dirname(dst), exist_ok=True)
+                res = subprocess.run(
+                    ["cp", "-p", "-c", src, dst],
+                    stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL,
+                )
+                if res.returncode == 0:
+                    return True
+        except (subprocess.SubprocessError, OSError) as e:
+            logging.debug(
+                "macOS APFS clone failed, falling back to copy: %s", e
+            )
+
+    elif sys.platform.startswith(("cygwin", "win")):
+        try:
+            if os.path.isdir(src):
+                if _windows_block_clone_dir(src, dst):
+                    return True
+            else:
+                os.makedirs(os.path.dirname(dst), exist_ok=True)
+                if _windows_block_clone_file(src, dst):
+                    return True
+        except (OSError, AttributeError, ValueError) as e:
+            logging.debug(
+                "Windows block clone failed, falling back to copy: %s", e
+            )
+
+    try:
+        if os.path.isdir(src):
+            os.makedirs(dst, exist_ok=True)
+            for item in os.listdir(src):
+                s = os.path.join(src, item)
+                d = os.path.join(dst, item)
+                if os.path.isdir(s):
+                    shutil.copytree(s, d, dirs_exist_ok=True)
+                else:
+                    shutil.copy2(s, d)
+        else:
+            os.makedirs(os.path.dirname(dst), exist_ok=True)
+            shutil.copy2(src, dst)
+        return True
+    except (OSError, shutil.Error) as e:
+        logging.debug("copy fallback failed: %s", e)
+        return False
+
+
 def rmtree(path):
     """shutil.rmtree() on steroids.
 
