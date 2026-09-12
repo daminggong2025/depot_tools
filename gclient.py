@@ -100,6 +100,7 @@ import zipfile
 
 import detect_host_arch
 import download_from_google_storage
+import fs_util
 import git_common
 import gclient_eval
 import gclient_paths
@@ -3255,6 +3256,22 @@ class GcsDependency(Dependency):
 
     def CopyFromReference(self, ref_dir):
         """Copies or reflinks artifacts from the reference directory."""
+        if fs_util.is_btrfs_subvolume(ref_dir):
+            if fs_util.snapshot_btrfs_subvolume(ref_dir, self.output_dir):
+                self.WriteToFile(self.sha256sum, self.hash_file)
+                self.WriteToFile(str(1), self.migration_toggle_file)
+                logging.info(
+                    "[%s] Reused from reference directory via Btrfs snapshot: %s",
+                    self.name,
+                    ref_dir,
+                )
+                return True
+            logging.debug(
+                "Failed to snapshot Btrfs subvolume from reference: %s. "
+                "Falling back to reflink copy.",
+                ref_dir,
+            )
+
         ref_artifact = os.path.join(
             ref_dir, self.output_file or f".{self.gcs_file_name}"
         )
@@ -3412,7 +3429,7 @@ class GcsDependency(Dependency):
 
         # Ensure that the directory exists. Another process/thread may create
         # it, so exist_ok is used.
-        os.makedirs(self.output_dir, exist_ok=True)
+        fs_util.ensure_directory_or_subvolume(self.output_dir)
 
         gsutil = download_from_google_storage.Gsutil(
             download_from_google_storage.GSUTIL_DEFAULT_PATH
