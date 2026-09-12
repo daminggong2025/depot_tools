@@ -18,6 +18,7 @@ import threading
 import time
 
 import subprocess2
+import gclient_utils
 
 # Env vars that tempdir can be gotten from; minimally, this
 # needs to match python's tempfile module and match normal
@@ -560,6 +561,7 @@ def download_from_google_storage(
     verbose,
     auto_platform,
     extract,
+    reference_dir=None,
 ):
 
     # Tuples of sha1s and paths.
@@ -601,6 +603,39 @@ def download_from_google_storage(
         )
         if os.path.exists(migration_file_name):
             is_first_class_gcs = True
+
+    ref_base = reference_dir or os.environ.get("GCLIENT_REFERENCE_DIR")
+    if ref_base and not force and not is_first_class_gcs:
+        ref_base = os.path.abspath(os.path.expanduser(ref_base))
+        if os.path.isdir(ref_base):
+            for sha1, path in input_data:
+                if not _data_exists(sha1, path, extract):
+                    rel_p = (
+                        os.path.relpath(path, os.getcwd())
+                        if os.path.isabs(path)
+                        else path
+                    )
+                    candidates = [
+                        os.path.join(ref_base, os.path.basename(path)),
+                        os.path.join(
+                            ref_base, os.path.relpath(path, working_dir)
+                        ),
+                        os.path.join(ref_base, rel_p),
+                        os.path.join(ref_base, path),
+                    ]
+                    if rel_p.startswith("src/") or rel_p.startswith("src\\"):
+                        candidates.append(os.path.join(ref_base, rel_p[4:]))
+                    for cand in candidates:
+                        if _data_exists(sha1, cand, extract):
+                            gclient_utils.reflink_or_copy(cand, path)
+                            if extract:
+                                cand_dir = cand[: -len(".tar.gz")]
+                                path_dir = path[: -len(".tar.gz")]
+                                if os.path.isdir(cand_dir):
+                                    gclient_utils.reflink_or_copy(
+                                        cand_dir, path_dir
+                                    )
+                            break
 
     if (
         not force
@@ -795,6 +830,10 @@ def main(args):
         dest="verbose",
         help="Suppresses diagnostic and progress information.",
     )
+    parser.add_option(
+        "--reference-dir",
+        help="Path to a reference checkout to copy/reflink from.",
+    )
 
     (options, args) = parser.parse_args()
 
@@ -903,6 +942,7 @@ def main(args):
             options.verbose,
             options.auto_platform,
             options.extract,
+            options.reference_dir,
         )
     except FileNotFoundError as e:
         print("Fatal error: {}".format(e))

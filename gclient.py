@@ -3190,7 +3190,7 @@ class GcsDependency(Dependency):
             return
         if not self.should_process:
             return
-        self.DownloadGoogleStorage()
+        self.DownloadGoogleStorage(options)
         super(GcsDependency, self).run(
             revision_overrides,
             command,
@@ -3201,6 +3201,119 @@ class GcsDependency(Dependency):
             target_branches,
             skip_sync_revisions,
         )
+
+    def _GetReferenceDir(self, options=None):
+        ref_base = getattr(options, "reference_dir", None) or os.environ.get(
+            "GCLIENT_REFERENCE_DIR"
+        )
+        if not ref_base:
+            return None
+        ref_base = os.path.abspath(os.path.expanduser(ref_base))
+        if not os.path.isdir(ref_base):
+            return None
+        rel_dir = self.name.split(":")[0]
+        candidates = [
+            os.path.join(ref_base, rel_dir),
+        ]
+        if rel_dir.startswith("src/") or rel_dir.startswith("src\\"):
+            candidates.append(os.path.join(ref_base, rel_dir[4:]))
+        elif os.path.basename(ref_base) == "src":
+            candidates.append(os.path.join(os.path.dirname(ref_base), rel_dir))
+        for cand in candidates:
+            if os.path.isdir(cand):
+                return cand
+        return None
+
+    def GetMatchingReferenceDir(self, options=None):
+        """Returns the reference directory path if it contains a valid matching artifact, else None."""
+        ref_dir = self._GetReferenceDir(options)
+        if not ref_dir:
+            return None
+
+        ref_hash_file = os.path.join(ref_dir, f".{self.file_prefix}_hash")
+        if not os.path.exists(ref_hash_file):
+            return None
+        try:
+            with open(ref_hash_file, "r") as f:
+                ref_hash = f.read().strip()
+        except OSError as e:
+            logging.debug("Could not read reference hash file: %s", e)
+            return None
+
+        if ref_hash != self.sha256sum:
+            return None
+
+        ref_artifact = os.path.join(
+            ref_dir, self.output_file or f".{self.gcs_file_name}"
+        )
+        if not os.path.exists(ref_artifact):
+            return None
+        if self.size_bytes and os.path.getsize(ref_artifact) != self.size_bytes:
+            return None
+
+        return ref_dir
+
+    def CopyFromReference(self, ref_dir):
+        """Copies or reflinks artifacts from the reference directory."""
+        ref_artifact = os.path.join(
+            ref_dir, self.output_file or f".{self.gcs_file_name}"
+        )
+        files_to_remove = [
+            self.hash_file,
+            self.artifact_output_file,
+            self.migration_toggle_file,
+        ]
+        for f in files_to_remove:
+            if os.path.exists(f):
+                os.remove(f)
+
+        os.makedirs(self.output_dir, exist_ok=True)
+
+        if not gclient_utils.reflink_or_copy(
+            ref_artifact, self.artifact_output_file
+        ):
+            logging.debug("Failed to reflink/copy artifact from reference")
+            return False
+
+        ref_content_names = os.path.join(
+            ref_dir, f".{self.file_prefix}_content_names"
+        )
+        if os.path.exists(ref_content_names):
+            tar_content_file = os.path.join(
+                self.output_dir, f".{self.file_prefix}_content_names"
+            )
+            gclient_utils.reflink_or_copy(ref_content_names, tar_content_file)
+            try:
+                with open(ref_content_names, "r") as f:
+                    names = json.loads(f.read())
+                top_levels = set()
+                for name in names:
+                    if name.startswith("./") and len(name) > 2:
+                        name = name[2:]
+                    parts = name.replace("\\", "/").split("/")
+                    if parts and parts[0]:
+                        top_levels.add(parts[0])
+                for tl in top_levels:
+                    src_tl = os.path.join(ref_dir, tl)
+                    dst_tl = os.path.join(self.output_dir, tl)
+                    if os.path.exists(src_tl):
+                        gclient_utils.reflink_or_copy(src_tl, dst_tl)
+            except (OSError, json.JSONDecodeError, ValueError) as e:
+                logging.debug(
+                    "Failed to reflink extracted files from reference: %s. "
+                    "Extracting from local artifact.",
+                    e,
+                )
+                self._MaybeExtractArtifact()
+        else:
+            self._MaybeExtractArtifact()
+
+        self.WriteToFile(self.sha256sum, self.hash_file)
+        self.WriteToFile(str(1), self.migration_toggle_file)
+        logging.info(
+            "[%s] Reused from reference directory: %s", self.name, ref_dir
+        )
+        return True
 
     def WriteToFile(self, content, file):
         with open(file, "w") as f:
@@ -3272,10 +3385,14 @@ class GcsDependency(Dependency):
 
         return all(map(_validate, tar.getmembers()))
 
-    def DownloadGoogleStorage(self):
+    def DownloadGoogleStorage(self, options=None):
         """Calls GCS."""
 
         if not self.IsDownloadNeeded():
+            return
+
+        ref_dir = self.GetMatchingReferenceDir(options)
+        if ref_dir and self.CopyFromReference(ref_dir):
             return
 
         files_to_remove = [
@@ -4685,6 +4802,12 @@ def CMDsync(parser, args):
         action="append",
         default=[],
         help="Specify to skip processing of a certain type of dep.",
+    )
+    parser.add_option(
+        "--reference-dir",
+        dest="reference_dir",
+        help="Path to a reference checkout to copy/reflink dependencies from, "
+        "bypassing network downloads.",
     )
     (options, args) = parser.parse_args(args)
     client = GClient.LoadCurrentConfig(options)
