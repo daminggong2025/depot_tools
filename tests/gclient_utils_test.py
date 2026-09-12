@@ -6,7 +6,9 @@
 
 import io
 import os
+import shutil
 import sys
+import tempfile
 import unittest
 from unittest import mock
 
@@ -508,10 +510,6 @@ class IsGitShaTest(unittest.TestCase):
         self.assertFalse(gclient_utils.IsGitSha("z" * 40))
 
 
-if __name__ == "__main__":
-    unittest.main()
-
-
 class SafeReplaceTest(unittest.TestCase):
     def setUp(self):
         self.mock_os = mock.patch("gclient_utils.os").start()
@@ -534,5 +532,80 @@ class SafeReplaceTest(unittest.TestCase):
             with self.assertRaises(OSError):
                 gclient_utils.safe_replace("old", "new")
 
+
+class ReflinkOrCopyTest(unittest.TestCase):
+    def setUp(self):
+        super(ReflinkOrCopyTest, self).setUp()
+        self.tmpdir = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, self.tmpdir, ignore_errors=True)
+
+    @mock.patch("fs_util.reflink_or_copy", return_value=True)
+    def test_reflink_or_copy_delegation(self, mock_reflink):
+        src = os.path.join(self.tmpdir, "src")
+        dst = os.path.join(self.tmpdir, "dst")
+        result = gclient_utils.reflink_or_copy(src, dst)
+        self.assertTrue(result)
+        mock_reflink.assert_called_once_with(src, dst)
+
+    def test_real_filesystem_file_copy(self):
+        src = os.path.join(self.tmpdir, "real_src.txt")
+        dst = os.path.join(self.tmpdir, "sub", "real_dst.txt")
+        content = "hello world from real file test\n"
+        with open(src, "w") as f:
+            f.write(content)
+
+        result = gclient_utils.reflink_or_copy(src, dst)
+        self.assertTrue(result)
+        self.assertTrue(os.path.isfile(dst))
+        with open(dst, "r") as f:
+            self.assertEqual(f.read(), content)
+
+    def test_real_filesystem_dir_copy(self):
+        src_dir = os.path.join(self.tmpdir, "real_src_dir")
+        dst_dir = os.path.join(self.tmpdir, "real_dst_dir")
+        nested_dir = os.path.join(src_dir, "nested")
+        os.makedirs(nested_dir)
+        file1 = os.path.join(src_dir, "file1.txt")
+        file2 = os.path.join(nested_dir, "file2.txt")
+        with open(file1, "w") as f:
+            f.write("data 1")
+        with open(file2, "w") as f:
+            f.write("data 2")
+
+        result = gclient_utils.reflink_or_copy(src_dir, dst_dir)
+        self.assertTrue(result)
+        self.assertTrue(os.path.isdir(dst_dir))
+        self.assertTrue(os.path.isfile(os.path.join(dst_dir, "file1.txt")))
+        self.assertTrue(
+            os.path.isfile(os.path.join(dst_dir, "nested", "file2.txt"))
+        )
+        with open(os.path.join(dst_dir, "file1.txt"), "r") as f:
+            self.assertEqual(f.read(), "data 1")
+        with open(os.path.join(dst_dir, "nested", "file2.txt"), "r") as f:
+            self.assertEqual(f.read(), "data 2")
+
+    @mock.patch(
+        "fs_util.WindowsBlockCloneProvider._clone_file", return_value=True
+    )
+    def test_windows_block_clone_file_shim(self, mock_clone):
+        src = os.path.join(self.tmpdir, "src")
+        dst = os.path.join(self.tmpdir, "dst")
+        result = gclient_utils._windows_block_clone_file(src, dst)
+        self.assertTrue(result)
+        mock_clone.assert_called_once_with(src, dst)
+
+    @mock.patch(
+        "fs_util.WindowsBlockCloneProvider._clone_dir", return_value=True
+    )
+    def test_windows_block_clone_dir_shim(self, mock_clone):
+        src = os.path.join(self.tmpdir, "src")
+        dst = os.path.join(self.tmpdir, "dst")
+        result = gclient_utils._windows_block_clone_dir(src, dst)
+        self.assertTrue(result)
+        mock_clone.assert_called_once_with(src, dst)
+
+
+if __name__ == "__main__":
+    unittest.main()
 
 # vim: ts=2:sw=2:tw=80:et:

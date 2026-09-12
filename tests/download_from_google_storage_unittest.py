@@ -603,6 +603,41 @@ class DownloadTests(unittest.TestCase):
         self.assertEqual(self.gsutil.history, expected_calls)
         self.assertEqual(code, 0)
 
+    def test_download_from_google_storage_with_reference_dir(self):
+        output_filename = os.path.join(
+            self.base_path, "uploaded_lorem_ipsum.txt"
+        )
+        ref_dir = tempfile.mkdtemp()
+        try:
+            ref_file = os.path.join(ref_dir, "uploaded_lorem_ipsum.txt")
+            shutil.copyfile(self.lorem_ipsum, ref_file)
+            code = download_from_google_storage.download_from_google_storage(
+                input_filename=self.lorem_ipsum_sha1,
+                base_url=self.base_url,
+                gsutil=self.gsutil,
+                num_threads=1,
+                directory=False,
+                recursive=False,
+                force=False,
+                output=output_filename,
+                ignore_errors=False,
+                sha1_file=False,
+                verbose=False,
+                auto_platform=False,
+                extract=False,
+                reference_dir=ref_dir,
+            )
+            # gsutil should not be called at all because file was satisfied from reference
+            self.assertEqual(self.gsutil.history, [])
+            self.assertEqual(code, 0)
+            self.assertTrue(os.path.exists(output_filename))
+            self.assertEqual(
+                download_from_google_storage.get_sha1(output_filename),
+                self.lorem_ipsum_sha1,
+            )
+        finally:
+            shutil.rmtree(ref_dir)
+
 
 if __name__ == "__main__":
     unittest.main()

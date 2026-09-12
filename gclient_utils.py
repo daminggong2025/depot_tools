@@ -26,6 +26,7 @@ import threading
 import time
 import urllib.parse
 
+import fs_util
 import gclient_eval
 import subprocess2
 import trace_utils
@@ -296,6 +297,27 @@ def rm_file_or_tree(path):
         os.remove(path)
     else:
         rmtree(path)
+
+
+def _windows_block_clone_file(src, dst):
+    """Clones a single file on Windows ReFS using FSCTL_DUPLICATE_EXTENTS_TO_FILE."""
+    provider = fs_util.WindowsBlockCloneProvider()
+    return provider._clone_file(src, dst)
+
+
+def _windows_block_clone_dir(src, dst):
+    """Recursively clones a directory on Windows ReFS using block cloning."""
+    provider = fs_util.WindowsBlockCloneProvider()
+    return provider._clone_dir(src, dst)
+
+
+def reflink_or_copy(src, dst):
+    """Reflinks or copies src to dst using CoW (copy-on-write) where supported.
+
+    Supports Linux (GNU cp --reflink=auto), macOS (APFS cp -c), and Windows
+    (ReFS / Dev Drive block cloning) with fallback to standard copy.
+    """
+    return fs_util.reflink_or_copy(src, dst)
 
 
 def rmtree(path):
