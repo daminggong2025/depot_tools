@@ -6,7 +6,9 @@
 
 import io
 import os
+import shutil
 import sys
+import tempfile
 import unittest
 from unittest import mock
 
@@ -15,6 +17,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import gclient_utils
 import subprocess2
 from testing_support import trial_dir
+
 
 class CheckCallAndFilterTestCase(unittest.TestCase):
     class ProcessIdMock(object):
@@ -179,6 +182,7 @@ class CheckCallAndFilterTestCase(unittest.TestCase):
             ],
         )
 
+
 class AnnotatedTestCase(unittest.TestCase):
     def setUp(self):
         self.out = gclient_utils.MakeFileAnnotated(io.BytesIO())
@@ -244,6 +248,7 @@ class AnnotatedTestCase(unittest.TestCase):
             self.annotated.getvalue(), b"0>first line\n0>second line\n"
         )
 
+
 class SplitUrlRevisionTestCase(unittest.TestCase):
     def testSSHUrl(self):
         url = "ssh://test@example.com/test.git"
@@ -304,6 +309,25 @@ class SplitUrlRevisionTestCase(unittest.TestCase):
         self.assertEqual(out_rev, rev)
         self.assertEqual(out_url, url)
 
+    def testInvalidRevisionStartingWithHyphen(self):
+        with self.assertRaises(gclient_utils.Error):
+            gclient_utils.SplitUrlRevision(
+                "https://example.com/repo.git@--upload-pack=foo"
+            )
+        with self.assertRaises(gclient_utils.Error):
+            gclient_utils.SplitUrlRevision("https://example.com/repo.git@-b")
+        with self.assertRaises(gclient_utils.Error):
+            gclient_utils.SplitUrlRevision(
+                "ssh://user@example.com/repo.git@--upload-pack=foo"
+            )
+
+    def testInvalidUrlStartingWithHyphen(self):
+        with self.assertRaises(gclient_utils.Error):
+            gclient_utils.SplitUrlRevision("--upload-pack=foo@main")
+        with self.assertRaises(gclient_utils.Error):
+            gclient_utils.SplitUrlRevision("-u")
+
+
 class ExtracRefNameTest(unittest.TestCase):
     def testMatchFound(self):
         self.assertEqual(
@@ -320,6 +344,7 @@ class ExtracRefNameTest(unittest.TestCase):
 
     def testNoMatch(self):
         self.assertIsNone(gclient_utils.ExtractRefName("origin", "abcbbb1234"))
+
 
 class GClientUtilsTest(trial_dir.TestCase):
     def testHardToDelete(self):
@@ -452,6 +477,7 @@ class GClientUtilsTest(trial_dir.TestCase):
             ["AI_AGENT"],
         )
 
+
 class IsGitShaTest(unittest.TestCase):
     def testIsFullGitSha(self):
         # A full object name is 40 hex chars for SHA-1 or 64 for SHA-256.
@@ -483,8 +509,6 @@ class IsGitShaTest(unittest.TestCase):
         self.assertFalse(gclient_utils.IsGitSha("a" * 65))
         self.assertFalse(gclient_utils.IsGitSha("z" * 40))
 
-if __name__ == "__main__":
-    unittest.main()
 
 class SafeReplaceTest(unittest.TestCase):
     def setUp(self):
@@ -507,5 +531,130 @@ class SafeReplaceTest(unittest.TestCase):
         with mock.patch("time.sleep"):
             with self.assertRaises(OSError):
                 gclient_utils.safe_replace("old", "new")
+
+
+class ReflinkOrCopyTest(unittest.TestCase):
+    def setUp(self):
+        super(ReflinkOrCopyTest, self).setUp()
+        self.tmpdir = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, self.tmpdir, ignore_errors=True)
+
+    @mock.patch("fs_util.reflink_or_copy", return_value=True)
+    def test_reflink_or_copy_delegation(self, mock_reflink):
+        src = os.path.join(self.tmpdir, "src")
+        dst = os.path.join(self.tmpdir, "dst")
+        result = gclient_utils.reflink_or_copy(src, dst)
+        self.assertTrue(result)
+        mock_reflink.assert_called_once_with(src, dst)
+
+    def test_real_filesystem_file_copy(self):
+        src = os.path.join(self.tmpdir, "real_src.txt")
+        dst = os.path.join(self.tmpdir, "sub", "real_dst.txt")
+        content = "hello world from real file test\n"
+        with open(src, "w") as f:
+            f.write(content)
+
+        result = gclient_utils.reflink_or_copy(src, dst)
+        self.assertTrue(result)
+        self.assertTrue(os.path.isfile(dst))
+        with open(dst, "r") as f:
+            self.assertEqual(f.read(), content)
+
+    def test_real_filesystem_dir_copy(self):
+        src_dir = os.path.join(self.tmpdir, "real_src_dir")
+        dst_dir = os.path.join(self.tmpdir, "real_dst_dir")
+        nested_dir = os.path.join(src_dir, "nested")
+        os.makedirs(nested_dir)
+        file1 = os.path.join(src_dir, "file1.txt")
+        file2 = os.path.join(nested_dir, "file2.txt")
+        with open(file1, "w") as f:
+            f.write("data 1")
+        with open(file2, "w") as f:
+            f.write("data 2")
+
+        result = gclient_utils.reflink_or_copy(src_dir, dst_dir)
+        self.assertTrue(result)
+        self.assertTrue(os.path.isdir(dst_dir))
+        self.assertTrue(os.path.isfile(os.path.join(dst_dir, "file1.txt")))
+        self.assertTrue(
+            os.path.isfile(os.path.join(dst_dir, "nested", "file2.txt"))
+        )
+        with open(os.path.join(dst_dir, "file1.txt"), "r") as f:
+            self.assertEqual(f.read(), "data 1")
+        with open(os.path.join(dst_dir, "nested", "file2.txt"), "r") as f:
+            self.assertEqual(f.read(), "data 2")
+
+    @mock.patch(
+        "fs_util.WindowsBlockCloneProvider._clone_file", return_value=True
+    )
+    def test_windows_block_clone_file_shim(self, mock_clone):
+        src = os.path.join(self.tmpdir, "src")
+        dst = os.path.join(self.tmpdir, "dst")
+        result = gclient_utils._windows_block_clone_file(src, dst)
+        self.assertTrue(result)
+        mock_clone.assert_called_once_with(src, dst)
+
+    @mock.patch(
+        "fs_util.WindowsBlockCloneProvider._clone_dir", return_value=True
+    )
+    def test_windows_block_clone_dir_shim(self, mock_clone):
+        src = os.path.join(self.tmpdir, "src")
+        dst = os.path.join(self.tmpdir, "dst")
+        result = gclient_utils._windows_block_clone_dir(src, dst)
+        self.assertTrue(result)
+        mock_clone.assert_called_once_with(src, dst)
+
+    @mock.patch("fs_util.is_btrfs_subvolume", return_value=True)
+    def test_is_btrfs_subvolume_shim(self, mock_fn):
+        path = os.path.join(self.tmpdir, "test")
+        self.assertTrue(gclient_utils.is_btrfs_subvolume(path))
+        mock_fn.assert_called_once_with(path)
+
+    @mock.patch("fs_util.create_btrfs_subvolume", return_value=True)
+    def test_create_btrfs_subvolume_shim(self, mock_fn):
+        path = os.path.join(self.tmpdir, "test")
+        self.assertTrue(gclient_utils.create_btrfs_subvolume(path))
+        mock_fn.assert_called_once_with(path)
+
+    @mock.patch("fs_util.delete_btrfs_subvolume", return_value=True)
+    def test_delete_btrfs_subvolume_shim(self, mock_fn):
+        path = os.path.join(self.tmpdir, "test")
+        self.assertTrue(
+            gclient_utils.delete_btrfs_subvolume(path, recursive=True)
+        )
+        mock_fn.assert_called_once_with(path, recursive=True)
+
+    @mock.patch("fs_util.snapshot_btrfs_subvolume", return_value=True)
+    def test_snapshot_btrfs_subvolume_shim(self, mock_fn):
+        src = os.path.join(self.tmpdir, "src")
+        dst = os.path.join(self.tmpdir, "dst")
+        self.assertTrue(gclient_utils.snapshot_btrfs_subvolume(src, dst))
+        mock_fn.assert_called_once_with(src, dst)
+
+    @mock.patch("fs_util.ensure_directory_or_subvolume", return_value=True)
+    def test_ensure_directory_or_subvolume_shim(self, mock_fn):
+        path = os.path.join(self.tmpdir, "test")
+        self.assertTrue(gclient_utils.ensure_directory_or_subvolume(path))
+        mock_fn.assert_called_once_with(path)
+
+    @mock.patch("fs_util.delete_btrfs_subvolume", return_value=True)
+    @mock.patch("fs_util.is_btrfs_subvolume", return_value=True)
+    def test_rm_file_or_tree_subvolume(self, _mock_is_subvol, mock_delete):
+        path = os.path.join(self.tmpdir, "subvol_path")
+        os.makedirs(path)
+        gclient_utils.rm_file_or_tree(path)
+        mock_delete.assert_called_once_with(path)
+
+    @mock.patch("fs_util.delete_btrfs_subvolume", return_value=True)
+    @mock.patch("fs_util.is_btrfs_subvolume", return_value=True)
+    def test_rmtree_subvolume(self, _mock_is_subvol, mock_delete):
+        path = os.path.join(self.tmpdir, "subvol_dir")
+        os.makedirs(path)
+        gclient_utils.rmtree(path)
+        mock_delete.assert_called_once_with(path, recursive=True)
+
+
+if __name__ == "__main__":
+    unittest.main()
 
 # vim: ts=2:sw=2:tw=80:et:
