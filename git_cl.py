@@ -135,6 +135,11 @@ GIT_HASH_RE = re.compile(
 # Used to redact the cookies from the gitcookies file.
 GITCOOKIES_REDACT_RE = re.compile(r"1/.*")
 
+# Validates standard email format for reviewers and CCs added via push options.
+SAFE_EMAIL_RE = re.compile(
+    r"^(?!.*\.\.)[a-zA-Z0-9_.\+\-]+@[a-zA-Z0-9\-]+(\.[a-zA-Z0-9\-]+)+$"
+)
+
 MAX_ATTEMPTS = 3
 
 # The maximum number of traces we will keep. Multiplied by 3 since we store
@@ -218,7 +223,9 @@ _NO_BRANCH_ERROR = (
 
 
 class GitPushError(Exception):
-    pass
+    def __init__(self, message=None, push_error=None):
+        super().__init__(message)
+        self.push_error = push_error
 
 
 def time_sleep(seconds):
@@ -3501,7 +3508,8 @@ class Changelist(object):
                 "Review the files before upload, since they might contain sensitive "
                 "information.\n"
                 "Set the Restrict-View-Google label so that they are not publicly "
-                "accessible.\n" + TRACES_MESSAGE % {"trace_name": trace_name}
+                "accessible.\n" + TRACES_MESSAGE % {"trace_name": trace_name},
+                push_error=e,
             )
         finally:
             execution_time = time_time() - before_push
@@ -6610,6 +6618,42 @@ def UploadAllSquashed(
         multi_change_upload=len(uploads_by_cl) > 1,
         dogfood_path=True,
     )
+
+    # For single CL uploads, fold reviewers and CCs into push options (-o r=...,
+    # -o cc=...) to eliminate the subsequent sequential AddReviewers REST round-trip.
+    # When --send-mail is omitted, use the ':silent' modifier (-o r=...:silent)
+    # supported by Gerrit to silently add reviewers without suppressing patchset
+    # update emails for existing reviewers via notify=NONE.
+    folded_reviewers = set()
+    folded_ccs = set()
+    raw_reviewers_set = set()
+    push_options = list(options.push_options) if options.push_options else []
+    if len(uploads_by_cl) == 1 and (new_upload.reviewers or new_upload.ccs):
+        # Deduplicate reviewers and ensure CCs are disjoint from reviewers.
+        raw_reviewers_set = set(new_upload.reviewers)
+        raw_reviewers = sorted(raw_reviewers_set)
+        raw_ccs = sorted(set(new_upload.ccs) - raw_reviewers_set)
+
+        modifier = ":silent" if not options.send_mail else ""
+        for r in raw_reviewers:
+            if SAFE_EMAIL_RE.match(r):
+                push_options.append("r=%s%s" % (r, modifier))
+                folded_reviewers.add(r)
+            else:
+                logging.warning(
+                    "Reviewer %s contains non-standard characters; will use REST fallback",
+                    r,
+                )
+        for c in raw_ccs:
+            if SAFE_EMAIL_RE.match(c):
+                push_options.append("cc=%s%s" % (c, modifier))
+                folded_ccs.add(c)
+            else:
+                logging.warning(
+                    "CC %s contains non-standard characters; will use REST fallback",
+                    c,
+                )
+
     refspec_suffix = ""
     if refspec_opts:
         refspec_suffix = "%" + ",".join(refspec_opts)
@@ -6635,9 +6679,63 @@ def UploadAllSquashed(
         "description": new_upload.change_desc.description,
     }
     logging.debug("pushing to %s", refspec)
-    push_stdout = cl._RunGitPushWithTraces(
-        refspec, refspec_opts, git_push_metadata, options.push_options
-    )
+    try:
+        push_stdout = cl._RunGitPushWithTraces(
+            refspec, refspec_opts, git_push_metadata, push_options
+        )
+    except GitPushError as e:
+        # If the push failed and push_options contained :silent modifiers, check
+        # whether the remote server rejected the push because it does not support
+        # the :silent modifier. If the error text indicates a :silent push option
+        # was rejected (or reviewer not found with :silent suffix), strip :silent
+        # push options and retry, falling back to the sequential AddReviewers REST call.
+        silent_push_options = [
+            opt for opt in push_options if opt.endswith(":silent")
+        ]
+        push_output = ""
+        if e.push_error:
+            push_output = (
+                str(getattr(e.push_error, "stdout", ""))
+                + " "
+                + str(getattr(e.push_error, "stderr", ""))
+            )
+        silent_rejected = (
+            any(opt in push_output for opt in silent_push_options)
+            or ":silent" in push_output
+            or ":silent" in str(e)
+        )
+        if silent_push_options and silent_rejected:
+            logging.warning(
+                "Git push with :silent push options failed because remote server "
+                "does not support :silent; retrying push without folded "
+                "reviewers/CCs and falling back to REST."
+            )
+            push_options = [
+                opt for opt in push_options if not opt.endswith(":silent")
+            ]
+            folded_reviewers.clear()
+            folded_ccs.clear()
+            push_stdout = cl._RunGitPushWithTraces(
+                refspec, refspec_opts, git_push_metadata, push_options
+            )
+        else:
+            raise
+
+    # Strip folded reviewers and CCs only after git push has successfully executed,
+    # ensuring collections remain intact if push fails or raises an exception.
+    if len(uploads_by_cl) == 1 and (new_upload.reviewers or new_upload.ccs):
+        new_upload.reviewers[:] = list(
+            dict.fromkeys(
+                r for r in new_upload.reviewers if r not in folded_reviewers
+            )
+        )
+        new_upload.ccs[:] = list(
+            dict.fromkeys(
+                c
+                for c in new_upload.ccs
+                if c not in folded_ccs and c not in raw_reviewers_set
+            )
+        )
 
     # Post push updates
     regex = re.compile(r"remote:\s+https?://[\w\-\.\+\/#]*/(\d+)\s?.*")
