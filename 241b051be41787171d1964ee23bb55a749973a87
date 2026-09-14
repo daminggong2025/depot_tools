@@ -16,6 +16,24 @@
       "message": "Need to update and wait on https://gerrit-review.git.corp.google.com/c/gerrit/+/626881 to roll out.",
       "revId": "241b051be41787171d1964ee23bb55a749973a87",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "bba8af86_b8bb76aa",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000266
+      },
+      "writtenOn": "2026-09-14T17:32:09Z",
+      "side": 1,
+      "message": "Done and added fallback support while servers are updated.",
+      "parentUuid": "a39bfb6b_90029741",
+      "revId": "241b051be41787171d1964ee23bb55a749973a87",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
