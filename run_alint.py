@@ -58,15 +58,15 @@ def main():
     try:
         env = os.environ.copy()
         git_params = env.get("GIT_CONFIG_PARAMETERS", "").strip()
+        params = []
         if not re.search(
             r"'status\.showuntrackedfiles=no'", git_params, re.IGNORECASE
         ):
-            if git_params:
-                env["GIT_CONFIG_PARAMETERS"] = (
-                    f"{git_params} 'status.showUntrackedFiles=no'"
-                )
-            else:
-                env["GIT_CONFIG_PARAMETERS"] = "'status.showUntrackedFiles=no'"
+            params.append("'status.showUntrackedFiles=no'")
+        params.append("'diff.ignoreSubmodules=all'")
+        env["GIT_CONFIG_PARAMETERS"] = (
+            f"{git_params} {' '.join(params)}".strip()
+        )
 
         p = subprocess.Popen(
             cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, env=env
