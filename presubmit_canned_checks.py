@@ -1913,6 +1913,15 @@ def _GetCyclicImportFiles(
         return files
 
 
+_RUFF_LINT_FAILURE_HINT = (
+    "------------------------------------------------------------\n"
+    "Lint errors found in affected files.\n"
+    "Hint: Run 'git cl lint' to re-run lint checks locally,\n"
+    "and run 'git cl lint --fix' to auto-fix detected issues.\n"
+    "------------------------------------------------------------"
+)
+
+
 def GetPylint(
     input_api,
     output_api,
@@ -2161,11 +2170,22 @@ def GetRuff(
         for i in range(0, len(affected_files), chunk_size)
     ]
 
+    def output_parser(code, stdout):
+        if code == 0:
+            return None
+        cleaned = (stdout or "").strip()
+        msg = (
+            f"{cleaned}\n\n{_RUFF_LINT_FAILURE_HINT}"
+            if cleaned
+            else _RUFF_LINT_FAILURE_HINT
+        )
+        return [error_type(msg)]
+
     commands = []
     processed_count = 0
     total_files = len(affected_files)
     for chunk in chunks:
-        cmd = ["vpython3", tool, "check"]
+        cmd = ["vpython3", tool, "check", "--quiet"]
         if extra_args:
             cmd.extend(extra_args)
         cmd.extend(chunk)
@@ -2189,6 +2209,7 @@ def GetRuff(
                 kwargs={},
                 message=error_type,
                 python3=True,
+                output_parser=output_parser,
             )
         )
 
