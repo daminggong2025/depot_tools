@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f10f5f09_e5a91b78",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1001629
+      },
+      "writtenOn": "2026-09-15T14:49:54Z",
+      "side": 1,
+      "message": "(could\u0027ve used `Bug: 534712288`)",
+      "revId": "e5285b2d6e5a51de33b19d41cf0b76cef329cdee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
