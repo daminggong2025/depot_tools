@@ -1,6 +1,23 @@
 {
   "comments": [
     {
+      "unresolved": true,
+      "key": {
+        "uuid": "99381fe9_e72e0e5d",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 5
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-09-15T22:23:21Z",
+      "side": 1,
+      "message": "the message is missing a `Change-Id: Ixxxx` footer, see https://gerrit-review.googlesource.com/Documentation/user-changeid.html",
+      "revId": "cc44d9cd5cba235e3d8eb113423e2da477e22717",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": false,
       "key": {
         "uuid": "71e1821a_7765fef8",
@@ -14,6 +31,52 @@
       "writtenOn": "2026-09-10T09:34:58Z",
       "side": 1,
       "message": "Hey Gavin, Brian - could you please take a look? This fixes `git cl format` for nested projects.",
+      "revId": "cc44d9cd5cba235e3d8eb113423e2da477e22717",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "59ba8c77_a2b80920",
+        "filename": "cl_format.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 906,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-09-15T22:23:21Z",
+      "side": 1,
+      "message": "nit: hoist this out of the loop",
+      "range": {
+        "startLine": 906,
+        "startChar": 8,
+        "endLine": 906,
+        "endChar": 52
+      },
+      "revId": "cc44d9cd5cba235e3d8eb113423e2da477e22717",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5a701efb_762da9c3",
+        "filename": "gclient_paths.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 118,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-09-15T22:23:21Z",
+      "side": 1,
+      "message": "why should resolving src path rely on buildtools? can\u0027t we just directly check if \u003cgclient_root\u003e/src is a dir instead?",
+      "range": {
+        "startLine": 118,
+        "startChar": 22,
+        "endLine": 118,
+        "endChar": 48
+      },
       "revId": "cc44d9cd5cba235e3d8eb113423e2da477e22717",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
