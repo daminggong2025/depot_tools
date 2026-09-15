@@ -71,6 +71,7 @@ import presubmit_diff
 import rdb_wrapper
 import scm
 import subprocess2 as subprocess  # Exposed through the API.
+import trace_utils
 
 # Ask for feedback only once in program lifetime.
 _ASKED_FOR_FEEDBACK = False
@@ -1637,44 +1638,48 @@ def DoPostUploadExecuter(change, gerrit_obj, verbose):
         gerrit_obj: The GerritAccessor object.
         verbose: Prints debug info.
     """
-    sys.stdout.write("Running post upload checks ...\n")
-    presubmit_files = ListRelevantPresubmitFiles(
-        change.LocalPaths() + change.LocalSubmodules(), change.RepositoryRoot()
-    )
-    if not presubmit_files and verbose:
-        sys.stdout.write("Warning, no PRESUBMIT.py found.\n")
-    results = []
-    executer = GetPostUploadExecuter(change, gerrit_obj)
-    # The root presubmit file should be executed after the ones in
-    # subdirectories. i.e. the specific post upload hooks should run before the
-    # general ones. Thus, reverse the order provided by
-    # ListRelevantPresubmitFiles.
-    presubmit_files.reverse()
-
-    for filename in presubmit_files:
-        filename = os.path.abspath(filename)
-        # Accept CRLF presubmit script.
-        presubmit_script = gclient_utils.FileRead(filename).replace(
-            "\r\n", "\n"
+    with trace_utils.trace("DoPostUploadExecuter", cat="presubmit"):
+        sys.stdout.write("Running post upload checks ...\n")
+        presubmit_files = ListRelevantPresubmitFiles(
+            change.LocalPaths() + change.LocalSubmodules(),
+            change.RepositoryRoot(),
         )
-        if verbose:
-            sys.stdout.write("Running %s\n" % filename)
-        results.extend(executer.ExecPresubmitScript(presubmit_script, filename))
+        if not presubmit_files and verbose:
+            sys.stdout.write("Warning, no PRESUBMIT.py found.\n")
+        results = []
+        executer = GetPostUploadExecuter(change, gerrit_obj)
+        # The root presubmit file should be executed after the ones in
+        # subdirectories. i.e. the specific post upload hooks should run before the
+        # general ones. Thus, reverse the order provided by
+        # ListRelevantPresubmitFiles.
+        presubmit_files.reverse()
 
-    if not results:
-        return 0
+        for filename in presubmit_files:
+            filename = os.path.abspath(filename)
+            # Accept CRLF presubmit script.
+            presubmit_script = gclient_utils.FileRead(filename).replace(
+                "\r\n", "\n"
+            )
+            if verbose:
+                sys.stdout.write("Running %s\n" % filename)
+            results.extend(
+                executer.ExecPresubmitScript(presubmit_script, filename)
+            )
 
-    sys.stdout.write("\n")
-    sys.stdout.write("** Post Upload Hook Messages **\n")
+        if not results:
+            return 0
 
-    exit_code = 0
-    for result in results:
-        if result.fatal:
-            exit_code = 1
-        result.handle()
         sys.stdout.write("\n")
+        sys.stdout.write("** Post Upload Hook Messages **\n")
 
-    return exit_code
+        exit_code = 0
+        for result in results:
+            if result.fatal:
+                exit_code = 1
+            result.handle()
+            sys.stdout.write("\n")
+
+        return exit_code
 
 
 class PresubmitExecuter(object):
@@ -1728,14 +1733,20 @@ class PresubmitExecuter(object):
         # Change to the presubmit file's directory to support local imports.
         presubmit_dir = os.path.dirname(presubmit_path)
         main_path = os.getcwd()
-        try:
-            os.chdir(presubmit_dir)
-            return self._execute_with_local_working_directory(
-                script_text, presubmit_dir, presubmit_path
-            )
-        finally:
-            # Return the process to the original working directory.
-            os.chdir(main_path)
+        rel_label = os.path.basename(presubmit_dir) or "root"
+        with trace_utils.trace(
+            f"PRESUBMIT:{rel_label}",
+            cat="presubmit",
+            args={"path": presubmit_path},
+        ):
+            try:
+                os.chdir(presubmit_dir)
+                return self._execute_with_local_working_directory(
+                    script_text, presubmit_dir, presubmit_path
+                )
+            finally:
+                # Return the process to the original working directory.
+                os.chdir(main_path)
 
     def _execute_with_local_working_directory(
         self, script_text, presubmit_dir, presubmit_path
@@ -1909,7 +1920,15 @@ class PresubmitExecuter(object):
         event_thread.start()
 
         try:
-            result = eval(function_name + "(*__args)", context)
+            with trace_utils.trace(
+                function_name,
+                cat="presubmit_check",
+                args={
+                    "function": function_name,
+                    "presubmit_path": presubmit_path,
+                },
+            ):
+                result = eval(function_name + "(*__args)", context)
             self._check_result_type(result)
         except Exception:
             _, e_value, _ = sys.exc_info()
@@ -2005,161 +2024,186 @@ def DoPresubmitChecks(
     Returns:
         1 if presubmit checks failed or 0 otherwise.
     """
-    with setup_environ({"PYTHONDONTWRITEBYTECODE": "1"}):
-        running_msg = "Running presubmit "
-        running_msg += "commit " if committing else "upload "
-        running_msg += "checks "
-        branch = change.Name()
-        if not branch or branch == _NO_BRANCH_NAME:
-            branch = scm.GIT.GetBranch(change.RepositoryRoot())
-        if branch:
-            running_msg += f"on branch {branch} "
-        running_msg += "...\n"
-        sys.stdout.write(running_msg)
+    with trace_utils.trace("DoPresubmitChecks", cat="presubmit"):
+        env_dict = {"PYTHONDONTWRITEBYTECODE": "1"}
+        if trace_utils.collector.enabled and trace_utils.collector.filepath:
+            # Propagate the trace destination path to child processes and
+            # external presubmit scripts so they merge their trace events into
+            # the same file.
+            env_dict["PRESUBMIT_TRACE"] = trace_utils.collector.filepath
 
-        start_time = time_time()
-        presubmit_files = ListRelevantPresubmitFiles(
-            change.AbsoluteLocalPaths() + change.AbsoluteLocalSubmodules(),
-            change.RepositoryRoot(),
-        )
-        if not presubmit_files and verbose:
-            sys.stdout.write("Warning, no PRESUBMIT.py found.\n")
-        results = []
-        with ThreadPool() as thread_pool:
-            executer = PresubmitExecuter(
-                change,
-                committing,
-                verbose,
-                gerrit_obj,
-                dry_run,
-                thread_pool,
-                parallel,
-                no_diffs,
+            # Ensure depot_tools is in PYTHONPATH so that presubmit scripts
+            # and spawned child processes can import `trace_utils`.
+            depot_tools_dir = os.path.dirname(os.path.abspath(__file__))
+            current_pp = os.environ.get("PYTHONPATH", "")
+            if depot_tools_dir not in current_pp.split(os.pathsep):
+                env_dict["PYTHONPATH"] = (
+                    f"{depot_tools_dir}{os.pathsep}{current_pp}"
+                    if current_pp
+                    else depot_tools_dir
+                )
+        with setup_environ(env_dict):
+            running_msg = "Running presubmit "
+            running_msg += "commit " if committing else "upload "
+            running_msg += "checks "
+            branch = change.Name()
+            if not branch or branch == _NO_BRANCH_NAME:
+                branch = scm.GIT.GetBranch(change.RepositoryRoot())
+            if branch:
+                running_msg += f"on branch {branch} "
+            running_msg += "...\n"
+            sys.stdout.write(running_msg)
+
+            start_time = time_time()
+            presubmit_files = ListRelevantPresubmitFiles(
+                change.AbsoluteLocalPaths() + change.AbsoluteLocalSubmodules(),
+                change.RepositoryRoot(),
             )
-            try:
-                if default_presubmit:
-                    if verbose:
-                        sys.stdout.write("Running default presubmit script.\n")
-                    fake_path = os.path.join(
-                        change.RepositoryRoot(), "PRESUBMIT.py"
-                    )
-                    results += executer.ExecPresubmitScript(
-                        default_presubmit, fake_path
-                    )
-                for filename in presubmit_files:
-                    filename = os.path.abspath(filename)
-                    # Accept CRLF presubmit script.
-                    presubmit_script = gclient_utils.FileRead(filename).replace(
-                        "\r\n", "\n"
-                    )
-                    if verbose:
-                        sys.stdout.write("Running %s\n" % filename)
-                    results += executer.ExecPresubmitScript(
-                        presubmit_script, filename
-                    )
+            if not presubmit_files and verbose:
+                sys.stdout.write("Warning, no PRESUBMIT.py found.\n")
+            results = []
+            with ThreadPool() as thread_pool:
+                executer = PresubmitExecuter(
+                    change,
+                    committing,
+                    verbose,
+                    gerrit_obj,
+                    dry_run,
+                    thread_pool,
+                    parallel,
+                    no_diffs,
+                )
+                try:
+                    if default_presubmit:
+                        if verbose:
+                            sys.stdout.write(
+                                "Running default presubmit script.\n"
+                            )
+                        fake_path = os.path.join(
+                            change.RepositoryRoot(), "PRESUBMIT.py"
+                        )
+                        results += executer.ExecPresubmitScript(
+                            default_presubmit, fake_path
+                        )
+                    for filename in presubmit_files:
+                        filename = os.path.abspath(filename)
+                        # Accept CRLF presubmit script.
+                        presubmit_script = gclient_utils.FileRead(
+                            filename
+                        ).replace("\r\n", "\n")
+                        if verbose:
+                            sys.stdout.write("Running %s\n" % filename)
+                        results += executer.ExecPresubmitScript(
+                            presubmit_script, filename
+                        )
 
-                results += thread_pool.RunAsync()
-            finally:
-                executer.Cleanup()
+                    results += thread_pool.RunAsync()
+                finally:
+                    executer.Cleanup()
 
-        messages = {}
-        should_prompt = False
-        presubmits_failed = False
-        for result in results:
-            if result.fatal:
-                presubmits_failed = True
-                messages.setdefault("ERRORS", []).append(result)
-            elif result.should_prompt:
-                should_prompt = True
-                messages.setdefault("Warnings", []).append(result)
+            messages = {}
+            should_prompt = False
+            presubmits_failed = False
+            for result in results:
+                if result.fatal:
+                    presubmits_failed = True
+                    messages.setdefault("ERRORS", []).append(result)
+                elif result.should_prompt:
+                    should_prompt = True
+                    messages.setdefault("Warnings", []).append(result)
+                else:
+                    messages.setdefault("Messages", []).append(result)
+
+            presubmit_results_json = json.dumps(
+                {
+                    "errors": [
+                        error.json_format()
+                        for error in messages.get("ERRORS", [])
+                    ],
+                    "notifications": [
+                        notification.json_format()
+                        for notification in messages.get("Messages", [])
+                    ],
+                    "warnings": [
+                        warning.json_format()
+                        for warning in messages.get("Warnings", [])
+                    ],
+                    "more_cc": executer.more_cc,
+                },
+                sort_keys=True,
+            )
+
+            # Write json result to stdout if json_output is '-'. Otherwise, write
+            # output string to stdout and json result to the file specified by
+            # json_output
+            if json_output == "-":
+                sys.stdout.write("**** Presubmit Results ****\n")
+                sys.stdout.write(presubmit_results_json)
+                sys.stdout.write("\n**** End of Presubmit Results ****\n")
             else:
-                messages.setdefault("Messages", []).append(result)
+                # Print the different message types in a consistent order. ERRORS go
+                # last so that they will be most visible in the local-presubmit output.
+                counts = {}
+                for name in ["Messages", "Warnings", "ERRORS"]:
+                    items = messages.get(name, [])
+                    counts[name] = len(items)
+                    if items:
+                        sys.stdout.write(
+                            "** Presubmit %s: %d **\n" % (name, counts[name])
+                        )
+                        for item in items:
+                            item.handle()
+                            sys.stdout.write("\n")
+                sys.stdout.write(
+                    "** %d Presubmit Messages, %d Presubmit Warnings, "
+                    "%d Presubmit ERRORS **\n\n"
+                    % (counts["Messages"], counts["Warnings"], counts["ERRORS"])
+                )
+                if json_output:
+                    gclient_utils.FileWrite(json_output, presubmit_results_json)
 
-        presubmit_results_json = json.dumps(
-            {
-                "errors": [
-                    error.json_format() for error in messages.get("ERRORS", [])
-                ],
-                "notifications": [
-                    notification.json_format()
-                    for notification in messages.get("Messages", [])
-                ],
-                "warnings": [
-                    warning.json_format()
-                    for warning in messages.get("Warnings", [])
-                ],
-                "more_cc": executer.more_cc,
-            },
-            sort_keys=True,
-        )
+            total_time = time_time() - start_time
+            if total_time > 1.0:
+                sys.stdout.write(
+                    "Presubmit checks took %.1fs to calculate.\n" % total_time
+                )
 
-        # Write json result to stdout if json_output is '-'. Otherwise, write
-        # output string to stdout and json result to the file specified by
-        # json_output
-        if json_output == "-":
-            sys.stdout.write("**** Presubmit Results ****\n")
-            sys.stdout.write(presubmit_results_json)
-            sys.stdout.write("\n**** End of Presubmit Results ****\n")
-        else:
-            # Print the different message types in a consistent order. ERRORS go
-            # last so that they will be most visible in the local-presubmit output.
-            counts = {}
-            for name in ["Messages", "Warnings", "ERRORS"]:
-                items = messages.get(name, [])
-                counts[name] = len(items)
-                if items:
+            if not should_prompt and not presubmits_failed:
+                sys.stdout.write("presubmit checks passed.\n\n")
+            elif should_prompt and not presubmits_failed:
+                sys.stdout.write("There were presubmit warnings. ")
+                if may_prompt:
+                    presubmits_failed = not prompt_should_continue(
+                        "Are you sure you wish to continue? (y/N): "
+                    )
+                else:
+                    sys.stdout.write("\n")
+            else:
+                sys.stdout.write("There were presubmit errors.\n")
+
+            global _ASKED_FOR_FEEDBACK
+            # Ask for feedback one time out of 5.
+            if (
+                results
+                and random.randint(0, 4) == 0
+                and not _ASKED_FOR_FEEDBACK
+            ):
+                _ASKED_FOR_FEEDBACK = True
+                if gclient_utils.IsEnvCog():
                     sys.stdout.write(
-                        "** Presubmit %s: %d **\n" % (name, counts[name])
+                        "Was the presubmit check useful? If not, view the file's\n"
+                        "blame on Code Search to figure out who to ask for help.\n"
                     )
-                    for item in items:
-                        item.handle()
-                        sys.stdout.write("\n")
-            sys.stdout.write(
-                "** %d Presubmit Messages, %d Presubmit Warnings, "
-                "%d Presubmit ERRORS **\n\n"
-                % (counts["Messages"], counts["Warnings"], counts["ERRORS"])
-            )
-            if json_output:
-                gclient_utils.FileWrite(json_output, presubmit_results_json)
+                else:
+                    sys.stdout.write(
+                        "Was the presubmit check useful? If not, run "
+                        '"git cl presubmit -v"\n'
+                        "to figure out which PRESUBMIT.py was run, then run "
+                        '"git blame"\n'
+                        "on the file to figure out who to ask for help.\n"
+                    )
 
-        total_time = time_time() - start_time
-        if total_time > 1.0:
-            sys.stdout.write(
-                "Presubmit checks took %.1fs to calculate.\n" % total_time
-            )
-
-        if not should_prompt and not presubmits_failed:
-            sys.stdout.write("presubmit checks passed.\n\n")
-        elif should_prompt and not presubmits_failed:
-            sys.stdout.write("There were presubmit warnings. ")
-            if may_prompt:
-                presubmits_failed = not prompt_should_continue(
-                    "Are you sure you wish to continue? (y/N): "
-                )
-            else:
-                sys.stdout.write("\n")
-        else:
-            sys.stdout.write("There were presubmit errors.\n")
-
-        global _ASKED_FOR_FEEDBACK
-        # Ask for feedback one time out of 5.
-        if results and random.randint(0, 4) == 0 and not _ASKED_FOR_FEEDBACK:
-            _ASKED_FOR_FEEDBACK = True
-            if gclient_utils.IsEnvCog():
-                sys.stdout.write(
-                    "Was the presubmit check useful? If not, view the file's\n"
-                    "blame on Code Search to figure out who to ask for help.\n"
-                )
-            else:
-                sys.stdout.write(
-                    "Was the presubmit check useful? If not, run "
-                    '"git cl presubmit -v"\n'
-                    "to figure out which PRESUBMIT.py was run, then run "
-                    '"git blame"\n'
-                    "on the file to figure out who to ask for help.\n"
-                )
-
-        return 1 if presubmits_failed else 0
+            return 1 if presubmits_failed else 0
 
 
 def _scan_sub_dirs(mask, recursive):
@@ -2562,7 +2606,17 @@ def main(argv=None):
         action="store_true",
         help='Assume that all "modified" files have no diffs.',
     )
+    parser.add_argument(
+        "--trace",
+        nargs="?",
+        const="/tmp/presubmit_trace.json",
+        default=None,
+        help="Record Chrome Trace Event format log for Perfetto UI.",
+    )
     options = parser.parse_args(argv)
+
+    if options.trace:
+        trace_utils.collector.start(options.trace, process_name="presubmit")
 
     log_level = logging.ERROR
     if options.verbose >= 2:
@@ -2615,6 +2669,8 @@ def main(argv=None):
             file=sys.stderr,
         )
         return 2
+    finally:
+        trace_utils.collector.close()
 
 
 if __name__ == "__main__":
