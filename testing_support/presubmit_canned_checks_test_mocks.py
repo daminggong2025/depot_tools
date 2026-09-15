@@ -15,6 +15,14 @@ import sys
 from presubmit_canned_checks import _ReportErrorFileAndLine
 
 
+def normpath(path):
+    """Version of os.path.normpath that also changes backward slashes to
+    forward slashes when not running on Windows.
+    """
+    path = path.replace(os.sep, "/")
+    return os.path.normpath(path)
+
+
 class MockCannedChecks(object):
     def _FindNewViolationsOfRule(
         self,
@@ -165,6 +173,98 @@ class MockInputApi(object):
             else:
                 exts.add(os.path.splitext(basename)[1])
         return frozenset(exts)
+
+    def HasAffectedFiles(
+        self,
+        extensions=None,
+        path=None,
+        recursive=True,
+        include_deletes=True,
+    ):
+        """Returns True if any affected file matches the specified criteria.
+
+        Specify either 'extensions' (to match files by extension under the current
+        presubmit directory) or 'path' (to match a directory, file, or list of
+        paths). They are mutually exclusive. If neither is specified, returns
+        True if any file under PresubmitLocalPath() was affected.
+
+        Args:
+            extensions: A file extension (e.g. '.py') or sequence of
+                extensions (e.g. ('.py', '.gn')). Case-insensitive. Leading dot
+                is optional.
+            path: A directory or file path (or sequence of paths) to check.
+                Paths can be relative to PresubmitLocalPath() or absolute.
+            recursive: If True (default), checks files in path and any
+                subdirectories. If False, checks only direct children of path.
+            include_deletes: If True (default), includes deleted files.
+        """
+        if extensions is not None and path is not None:
+            raise ValueError(
+                "Cannot specify both 'extensions' and 'path' to "
+                "HasAffectedFiles(). Filter either by extension or by path."
+            )
+
+        presubmit_dir = os.path.normcase(normpath(self.PresubmitLocalPath()))
+
+        if extensions is not None:
+            if isinstance(extensions, str):
+                extensions = [extensions]
+            norm_exts = set()
+            for ext in extensions:
+                ext_str = ext.lower()
+                if ext_str and not ext_str.startswith("."):
+                    ext_str = "." + ext_str
+                norm_exts.add(ext_str)
+            extensions = frozenset(norm_exts)
+
+            # Fast path when checking extensions under current presubmit directory
+            if recursive and include_deletes:
+                return bool(self.AffectedExtensions().intersection(extensions))
+
+            for f in self.AffectedFiles(include_deletes=include_deletes):
+                abs_path = os.path.normcase(normpath(f.AbsoluteLocalPath()))
+                if not recursive and os.path.dirname(abs_path) != presubmit_dir:
+                    continue
+                basename = os.path.basename(abs_path).lower()
+                if basename.startswith(".") and "." not in basename[1:]:
+                    ext = basename
+                else:
+                    _, ext = os.path.splitext(basename)
+                if ext in extensions:
+                    return True
+            return False
+
+        if path is not None:
+            if isinstance(path, str):
+                paths = [path]
+            else:
+                paths = list(path)
+
+            resolved_paths = []
+            for p in paths:
+                if not os.path.isabs(p):
+                    p = os.path.join(presubmit_dir, p)
+                resolved_paths.append(os.path.normcase(normpath(p)))
+
+            for f in self.AffectedFiles(include_deletes=include_deletes):
+                abs_path = os.path.normcase(normpath(f.AbsoluteLocalPath()))
+                for target_path in resolved_paths:
+                    if abs_path == target_path:
+                        return True
+                    if not recursive:
+                        if os.path.dirname(abs_path) == target_path:
+                            return True
+                    else:
+                        target_prefix = (
+                            target_path + os.path.sep
+                            if not target_path.endswith(os.path.sep)
+                            else target_path
+                        )
+                        if abs_path.startswith(target_prefix):
+                            return True
+            return False
+
+        return bool(self.AffectedFiles(include_deletes=include_deletes))
 
     def PresubmitLocalPath(self):
         return self.presubmit_local_path
