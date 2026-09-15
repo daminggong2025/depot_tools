@@ -1309,7 +1309,8 @@ class TestMainTargetDetection(unittest.TestCase):
         mock_call.assert_called_once()
         cmd = mock_call.call_args[0][0]
         self.assertTrue(cmd[1].endswith("yapf"), cmd)
-        self.assertEqual(cmd[2:], ["--line", "1-2"])
+        style_file = os.path.join(self.test_dir, "sub/.style.yapf")
+        self.assertEqual(cmd[2:], ["--line", "1-2", "--style", style_file])
 
 
 if __name__ == "__main__":
