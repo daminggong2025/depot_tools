@@ -1,0 +1,130 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "80e672f8_1c3ab804",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2026-09-15T18:54:04Z",
+      "side": 1,
+      "message": "lgtm",
+      "revId": "bdc6120e8c26f74cd18ececa2600a06bbae1e1ed",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2bd86ac7_1fc75477",
+        "filename": "agents/skills/swarming/SKILL.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2026-09-15T18:54:04Z",
+      "side": 1,
+      "message": "@dlf@google.com",
+      "range": {
+        "startLine": 50,
+        "startChar": 30,
+        "endLine": 50,
+        "endChar": 62
+      },
+      "revId": "bdc6120e8c26f74cd18ececa2600a06bbae1e1ed",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "54038d1e_f34ee3a1",
+        "filename": "agents/skills/swarming/SKILL.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2026-09-15T18:54:04Z",
+      "side": 1,
+      "message": "specifically this is the \"JSONPB\" encoding of the request message.",
+      "range": {
+        "startLine": 58,
+        "startChar": 37,
+        "endLine": 58,
+        "endChar": 41
+      },
+      "revId": "bdc6120e8c26f74cd18ececa2600a06bbae1e1ed",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b78dd358_930029d4",
+        "filename": "agents/skills/swarming/SKILL.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2026-09-15T18:54:04Z",
+      "side": 1,
+      "message": "this is a JSONPB spec item, not a \u0027swarming convention\u0027.",
+      "range": {
+        "startLine": 73,
+        "startChar": 1,
+        "endLine": 77,
+        "endChar": 0
+      },
+      "revId": "bdc6120e8c26f74cd18ececa2600a06bbae1e1ed",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "93d5d4fb_3661e625",
+        "filename": "agents/skills/swarming/SKILL.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2026-09-15T18:54:04Z",
+      "side": 1,
+      "message": "I would note that this one IS just JSON (afaik), not JSONPB of some message.",
+      "revId": "bdc6120e8c26f74cd18ececa2600a06bbae1e1ed",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1b6425f1_2df6f9de",
+        "filename": "agents/skills/swarming/SKILL.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 162,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2026-09-15T18:54:04Z",
+      "side": 1,
+      "message": "I believe this is deprecated?",
+      "range": {
+        "startLine": 162,
+        "startChar": 37,
+        "endLine": 162,
+        "endChar": 59
+      },
+      "revId": "bdc6120e8c26f74cd18ececa2600a06bbae1e1ed",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
