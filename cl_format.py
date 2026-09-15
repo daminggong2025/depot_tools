@@ -17,6 +17,7 @@ import os
 import re
 import shutil
 import sys
+import tempfile
 import threading
 from typing import Any, Callable, Mapping, Optional
 
@@ -240,6 +241,21 @@ def _RunClangFormatDiff(opts, paths, top_dir, diffs):
 
     # Full formatting
     if not diffs:
+        if opts.stdin_filename:
+            # clang-format only honors --assume-filename when reading from stdin.
+            # When passed a file path argument, it ignores --assume-filename,
+            # which prevents it from finding the tree's .clang-format config and
+            # causes it to misidentify the file's primary header for include sorting.
+            cmd = [
+                clang_format_tool,
+                f"--assume-filename={opts.stdin_filename}",
+            ]
+            with open(paths[0], "rb") as myfile:
+                input_bytes = myfile.read()
+            stdout = RunCommand(cmd, stdin=input_bytes, cwd=top_dir)
+            with open(paths[0], "w", encoding="utf-8") as myfile:
+                myfile.write(stdout)
+            return 0
         cmd = [clang_format_tool]
         if not opts.dry_run and not opts.diff:
             cmd.append("-i")
@@ -482,12 +498,88 @@ def _RunKtfmt(opts, paths, top_dir, diffs):
     if opts.dry_run:
         cmd += ["--set-exit-if-changed", "--dry-run"]
 
+    kwargs = {}
+    if opts.stdin_filename and not opts.dry_run:
+        kwargs["stdout"] = subprocess2.DEVNULL
     for paths_batch in _SplitArgsByCmdLineLimit(paths):
-        ktfmt_exitcode = subprocess2.call(cmd + paths_batch, shell=False)
+        ktfmt_exitcode = subprocess2.call(
+            cmd + paths_batch, shell=False, **kwargs
+        )
         if opts.dry_run and ktfmt_exitcode != 0:
             return 2
 
     return 0
+
+
+def _IsRustFileIgnored(
+    rel_path: str,
+    rustfmt_toml_path: str,
+    rustfmt_tool: str,
+    cwd: Optional[str] = None,
+) -> bool:
+    """Checks if rel_path is ignored by invoking rustfmt -q --emit stdout.
+
+    rustfmt does not allow stdin formatting to pick up config files, nor does it
+    allow querying whether a file should be included or excluded. So, we are
+    forced to just call the tool and see if it responds.
+    """
+    if not cwd:
+        cwd = os.path.dirname(rustfmt_toml_path) or None
+
+    target_path = (
+        os.path.join(cwd, rel_path)
+        if cwd and not os.path.isabs(rel_path)
+        else rel_path
+    )
+
+    file_created = False
+    dirs_to_create = []
+
+    # The file itself may not exist in our current checkout, so we just put a
+    # fake one there and see what rustfmt would do.
+    if not os.path.exists(target_path):
+        parent = os.path.dirname(target_path)
+        curr = parent
+        while curr and not os.path.exists(curr):
+            dirs_to_create.append(curr)
+            curr = os.path.dirname(curr)
+        for d in reversed(dirs_to_create):
+            os.mkdir(d)
+        # Emtpy files will still output a newline when formatted.
+        with open(target_path, "wb"):
+            pass
+        file_created = True
+
+    try:
+        cmd = [
+            rustfmt_tool,
+            f"--config-path={rustfmt_toml_path}",
+            "-q",
+            "--emit",
+            "stdout",
+            target_path,
+        ]
+        (stdout, _), code = subprocess2.communicate(
+            cmd,
+            stdout=subprocess2.PIPE,
+            stderr=subprocess2.PIPE,
+            cwd=cwd,
+        )
+        # rustfmt gives no output if the file should be ignored.
+        if code == 0 and len(stdout) == 0:
+            return True
+        return False
+    except Exception:
+        print(
+            "rustfmt formatting decision failed, assuming we should format "
+            + target_path
+        )
+        return False
+    finally:
+        if file_created:
+            os.remove(target_path)
+            for d in dirs_to_create:
+                os.rmdir(d)
 
 
 def _RunRustFmt(opts, paths, top_dir, diffs):
@@ -504,6 +596,42 @@ def _RunRustFmt(opts, paths, top_dir, diffs):
 
     chromium_src_path = gclient_paths.GetPrimarySolutionPath()
     rustfmt_toml_path = os.path.join(chromium_src_path, ".rustfmt.toml")
+
+    stdin_filename = getattr(opts, "stdin_filename", None)
+    if not isinstance(stdin_filename, str):
+        stdin_filename = None
+
+    if stdin_filename:
+        if not paths:
+            return 0
+        rel_path = stdin_filename
+        if chromium_src_path and os.path.isabs(rel_path):
+            rel_path = os.path.relpath(rel_path, chromium_src_path)
+        if _IsRustFileIgnored(
+            rel_path,
+            rustfmt_toml_path,
+            rustfmt_tool,
+            cwd=chromium_src_path or top_dir,
+        ):
+            return 0
+
+        cmd = [rustfmt_tool, f"--config-path={rustfmt_toml_path}"]
+        with open(paths[0], "rb") as myfile:
+            input_bytes = myfile.read()
+
+        if opts.dry_run or opts.diff:
+            cmd.append("--check")
+            stdout = RunCommand(cmd, stdin=input_bytes, cwd=top_dir)
+            if opts.diff and stdout:
+                sys.stdout.write(stdout)
+            if opts.dry_run and stdout.strip():
+                return 2
+            return 0
+
+        stdout = RunCommand(cmd, stdin=input_bytes, cwd=top_dir)
+        with open(paths[0], "w", encoding="utf-8") as myfile:
+            myfile.write(stdout)
+        return 0
 
     # TODO(crbug.com/1440869): Support formatting only the changed lines
     # if `opts.full or settings.GetFormatFullByDefault()` is False.
@@ -586,6 +714,60 @@ def _RunPythonFormat(
     """
     ruff_chromium = _GetRuffChromiumPath()
 
+    if opts.stdin_filename:
+        # For single-file stdin formatting (e.g. jj fix), bypass batch mode and
+        # stream stdin directly to ruff_chromium. Upstream Ruff evaluates
+        # exclusions and configs against --stdin-filename accurately when
+        # reading from stdin.
+        if not os.path.exists(ruff_chromium):
+            return _RunYapf(opts, paths, top_dir, diffs)
+
+        cmd = [
+            "vpython3",
+            ruff_chromium,
+            "format",
+            f"--stdin-filename={opts.stdin_filename}",
+            "-",
+        ]
+        if opts.diff:
+            cmd.append("--diff")
+        elif opts.dry_run:
+            cmd.append("--check")
+
+        try:
+            with open(paths[0], "rb") as myfile:
+                input_bytes = myfile.read()
+        except Exception as e:
+            sys.stderr.write(f"Failed to read temp file {paths[0]}: {e}\n")
+            return 1
+
+        try:
+            (stdout, stderr), code = subprocess2.communicate(
+                cmd,
+                stdin=input_bytes,
+                stdout=subprocess2.PIPE,
+                stderr=subprocess2.PIPE,
+                cwd=top_dir,
+                shell=sys.platform == "win32",
+            )
+            if code == 1 and opts.dry_run:
+                return 2
+            if code != 0:
+                if stderr:
+                    sys.stderr.buffer.write(stderr)
+                return code
+            if opts.diff:
+                if stdout:
+                    sys.stdout.buffer.write(stdout)
+                return 0
+            if not opts.dry_run and stdout:
+                with open(paths[0], "wb") as myfile:
+                    myfile.write(stdout)
+            return 0
+        except Exception as e:
+            sys.stderr.write(f"Failed to run ruff_chromium: {e}\n")
+            return 1
+
     use_ruff_batch = False
     if os.path.exists(ruff_chromium):
         use_ruff_batch = _IsRuffBatchSupported(ruff_chromium)
@@ -655,10 +837,13 @@ def _RunYapf(opts, paths, top_dir, diffs):
 
     # Used for caching.
     yapf_configs = {}
+    target_path = getattr(opts, "stdin_filename", None)
+    if not isinstance(target_path, str):
+        target_path = None
     for p in paths:
         # Find the yapf style config for the current file, defaults to depot
         # tools default.
-        _FindYapfConfigFile(p, yapf_configs, top_dir)
+        _FindYapfConfigFile(target_path or p, yapf_configs, top_dir)
 
     # Turn on python formatting by default if a yapf config is specified.
     # This breaks in the case of this repo though since the specified
@@ -667,7 +852,8 @@ def _RunYapf(opts, paths, top_dir, diffs):
         paths = [
             p
             for p in paths
-            if _FindYapfConfigFile(p, yapf_configs, top_dir) is not None
+            if _FindYapfConfigFile(target_path or p, yapf_configs, top_dir)
+            is not None
         ]
 
     # Note: yapf still seems to fix indentation of the entire file
@@ -677,11 +863,19 @@ def _RunYapf(opts, paths, top_dir, diffs):
         line_diffs = _ComputeFormatDiffLineRanges(paths, diffs)
 
     yapfignore_patterns = _GetYapfIgnorePatterns(top_dir)
+    if target_path:
+        rel_target = target_path
+        if top_dir and os.path.isabs(rel_target):
+            rel_target = os.path.relpath(rel_target, top_dir)
+        if not _FilterYapfIgnoredFiles([rel_target], yapfignore_patterns):
+            return 0
     paths = _FilterYapfIgnoredFiles(paths, yapfignore_patterns)
 
     return_value = 0
     for path in paths:
-        yapf_style = _FindYapfConfigFile(path, yapf_configs, top_dir)
+        yapf_style = _FindYapfConfigFile(
+            target_path or path, yapf_configs, top_dir
+        )
         # Default to pep8 if not .style.yapf is found.
         if not yapf_style:
             yapf_style = "pep8"
@@ -727,25 +921,36 @@ def _RunMarkdownFormat(
     # Used for caching.
     markdown_configs: dict[str, Optional[str]] = {}
 
+    target_path = opts.stdin_filename
     # Only format files that have a .style.mdformat file in an ancestor
     # directory.
     paths = [
         p
         for p in paths
-        if _FindMarkdownConfigFile(p, markdown_configs, top_dir) is not None
+        if _FindMarkdownConfigFile(
+            target_path or p,
+            markdown_configs,
+            top_dir,
+        )
+        is not None
     ]
-
     if not paths:
         return 0
 
     return_value = 0
     cmd = ["vpython3", markdown_tool]
+    if target_path:
+        cmd.append(f"--assume-filename={target_path}")
     if opts.diff:
         cmd.append("--diff")
     elif opts.dry_run:
         cmd.append("--check")
 
-    exit_code = subprocess2.call(cmd + paths)
+    kwargs = {}
+    if opts.stdin_filename and not (opts.diff or opts.dry_run):
+        kwargs["stdout"] = subprocess2.DEVNULL
+
+    exit_code = subprocess2.call(cmd + paths, **kwargs)
     if exit_code == 2:
         return_value = 2
 
@@ -760,10 +965,13 @@ def _RunLitTemplateFormatter(
 ) -> int:
     """Runs lit_template_formatter on .html.ts files."""
     config_cache: dict[str, Optional[str]] = {}
+    target_path = opts.stdin_filename
     paths = [
         p
         for p in paths
-        if _FindLitTemplateFormatterConfigFile(p, config_cache, top_dir)
+        if _FindLitTemplateFormatterConfigFile(
+            target_path or p, config_cache, top_dir
+        )
         is not None
     ]
     if not paths:
@@ -874,7 +1082,8 @@ def _RunGnFormat(opts, paths, top_dir, diffs):
             if stderr:
                 sys.stderr.write(stderr)
             if stdout and not dry_run_or_diff:
-                sys.stdout.write(stdout)
+                if not getattr(opts, "stdin_filename", None):
+                    sys.stdout.write(stdout)
     return return_value
 
 
@@ -920,8 +1129,18 @@ def _RunMetricsXMLFormat(opts, paths, top_dir, diffs):
     return_value = 0
     import metrics_xml_format
 
+    target_path = getattr(opts, "stdin_filename", None)
+    if not isinstance(target_path, str):
+        target_path = None
+
     for path in paths:
-        pretty_print_tool = metrics_xml_format.FindMetricsXMLFormatterTool(path)
+        effective_path = target_path or path
+        if top_dir and not os.path.isabs(effective_path):
+            effective_path = os.path.join(top_dir, effective_path)
+
+        pretty_print_tool = metrics_xml_format.FindMetricsXMLFormatterTool(
+            effective_path
+        )
         if not pretty_print_tool:
             continue
 
@@ -934,7 +1153,7 @@ def _RunMetricsXMLFormat(opts, paths, top_dir, diffs):
         # tools/metrics/histogrmas, pretty-print should be run with an
         # additional relative path argument, like: $ python pretty_print.py
         # metadata/UMA/histograms.xml $ python pretty_print.py enums.xml
-        metricsDir = metrics_xml_format.GetMetricsDir(top_dir, path)
+        metricsDir = metrics_xml_format.GetMetricsDir(top_dir, effective_path)
         histogramsDir = os.path.join(top_dir, "tools", "metrics", "histograms")
         if metricsDir == histogramsDir:
             cmd.append(path)
@@ -1141,6 +1360,9 @@ def _FindFilesToFormat(
         diffs = _SplitDiffsByFile(diff_text)
         return list(diffs.keys()), diffs
 
+    if opts.stdin_filename:
+        return [f for f in files if os.path.exists(f)], None
+
     if opts.full:
         files = RunGitDiffCmd(
             ["--name-only", "--diff-filter=d"], upstream_commit, files
@@ -1169,6 +1391,11 @@ def CMDformat(parser: optparse.OptionParser, args: list[str]):
 
     clang_exts = [".cc", ".cpp", ".h", ".m", ".mm", ".proto"]
     GN_EXTS = [".gn", ".gni", ".typemap"]
+    parser.add_option(
+        "--stdin-filename",
+        dest="stdin_filename",
+        help="Format the single file content provided on stdin with the given path.",
+    )
     parser.add_option(
         "--full",
         action="store_true",
@@ -1285,6 +1512,21 @@ def CMDformat(parser: optparse.OptionParser, args: list[str]):
     upstream_commit: Optional[str] = None
     upstream_branch: Optional[str] = opts.upstream
     top_dir: Optional[str] = None
+    temp_file: Optional[str] = None
+
+    if opts.stdin_filename:
+        opts.full = True
+        stdin_bytes = sys.stdin.buffer.read()
+        if not stdin_bytes:
+            return 0
+        with tempfile.NamedTemporaryFile(
+            prefix="git_cl_fmt_",
+            suffix="_" + os.path.basename(opts.stdin_filename),
+            delete=False,
+        ) as f:
+            f.write(stdin_bytes)
+            temp_file = f.name
+        files = [temp_file]
 
     if opts.input_diff_file:
         if opts.full:
@@ -1321,17 +1563,18 @@ def CMDformat(parser: optparse.OptionParser, args: list[str]):
         # branch when it was created or the last time it was rebased. This is
         # to cover the case where the user may have called "git fetch origin",
         # moving the origin branch to a newer commit, but hasn't rebased yet.
-        if not upstream_branch:
-            upstream_branch = scm.GIT.GetUpstreamBranch(settings.GetRoot())
-        if upstream_branch:
-            upstream_commit = RunGit(
-                ["merge-base", "HEAD", upstream_branch]
-            ).strip()
-        if not upstream_commit:
-            DieWithError(
-                "Could not find base commit for this branch. "
-                "Are you in detached state?"
-            )
+        if not opts.stdin_filename:
+            if not upstream_branch:
+                upstream_branch = scm.GIT.GetUpstreamBranch(settings.GetRoot())
+            if upstream_branch:
+                upstream_commit = RunGit(
+                    ["merge-base", "HEAD", upstream_branch]
+                ).strip()
+            if not upstream_commit:
+                DieWithError(
+                    "Could not find base commit for this branch. "
+                    "Are you in detached state?"
+                )
 
     # Normalize files against the current path, so paths relative to the
     # current directory are still resolved as expected.
@@ -1377,6 +1620,19 @@ def CMDformat(parser: optparse.OptionParser, args: list[str]):
         ]
         if paths:
             active_tasks.append((format_func, paths))
+
+    if temp_file:
+        ret = 0
+        if active_tasks:
+            formatter, paths = active_tasks[0]
+            ret = formatter(opts, paths, top_dir, diffs)
+        try:
+            with open(temp_file, "rb") as f:
+                sys.stdout.buffer.write(f.read())
+        finally:
+            if os.path.exists(temp_file):
+                os.remove(temp_file)
+        return ret
 
     if not active_tasks:
         return 0
