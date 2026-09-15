@@ -26,6 +26,30 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "620233b0_fb4c5e45",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 5
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1541419
+      },
+      "writtenOn": "2026-09-15T06:59:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "114ca647_4b0a7086",
+      "range": {
+        "startLine": 11,
+        "startChar": 24,
+        "endLine": 11,
+        "endChar": 30
+      },
+      "revId": "f2fb5a6033f43c4fb56b02d73b9e4cf384c97225",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "073d0f65_6cd01875",
         "filename": "/PATCHSET_LEVEL",
         "patchSetId": 5
@@ -54,6 +78,24 @@
       "writtenOn": "2026-09-09T20:20:43Z",
       "side": 1,
       "message": "See `git diff -w HEAD~`.",
+      "revId": "f2fb5a6033f43c4fb56b02d73b9e4cf384c97225",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "83ec21fd_39c3f339",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1541419
+      },
+      "writtenOn": "2026-09-15T06:59:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7aba5902_f9a835bc",
       "revId": "f2fb5a6033f43c4fb56b02d73b9e4cf384c97225",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
