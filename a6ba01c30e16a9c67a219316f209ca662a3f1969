@@ -16,6 +16,24 @@
       "message": "This change breaks `gclient sync` for checkouts where `gclient_gn_args_file` resolves to a relative path starting with `./` (for example, `./build/config/gclient_args.gni`).\n\n### What broke\n\nIn `dart-lang/sdk`, `DEPS` defines:\n```python\ngclient_gn_args_file \u003d Var(\"dart_root\") + \u0027/build/config/gclient_args.gni\u0027\n```\nWhen a checkout configures `\"dart_root\": \".\"` in `.gclient` (e.g. when `.gclient` is placed directly inside the checkout root rather than a parent directory), `gclient_gn_args_file` evaluates to `\"./build/config/gclient_args.gni\"`.\n\nIn `gclient_eval.py`, `IsSafeGNArgsPath` splits the path on `/` and checks:\n```python\nparts \u003d path.replace(\"\\\\\", \"/\").split(\"/\")\nif any(not part or part.startswith(\".\") for part in parts):\n    return False\n```\nBecause the leading `./` produces `parts[0] \u003d\u003d \".\"`, `part.startswith(\".\")` evaluates to `True`, rejecting valid relative paths starting with `./`:\n```\nError: 1\u003e gclient_gn_args_file must be a relative path without \u0027..\u0027 traversal\n```\n\n### Suggested fix\n\nIgnore `.` path components when checking segments in `IsSafeGNArgsPath` (while still rejecting empty paths, `..`, and hidden files/directories like `.git`):\n\n```python\nparts \u003d [p for p in path.replace(\"\\\\\", \"/\").split(\"/\") if p !\u003d \".\"]\nif not parts or any(not part or part.startswith(\".\") for part in parts):\n    return False\n```",
       "revId": "a6ba01c30e16a9c67a219316f209ca662a3f1969",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "38f37c9e_28b24ccd",
+        "filename": "gclient_eval.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-09-15T19:38:49Z",
+      "side": 1,
+      "message": "thanks for report, fixed in https://crrev.com/c/8410586.",
+      "parentUuid": "10dd2066_2f7bb401",
+      "revId": "a6ba01c30e16a9c67a219316f209ca662a3f1969",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
