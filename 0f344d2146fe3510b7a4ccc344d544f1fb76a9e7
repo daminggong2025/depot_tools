@@ -39,6 +39,30 @@
       },
       "revId": "0f344d2146fe3510b7a4ccc344d544f1fb76a9e7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4b104b28_2892c71b",
+        "filename": "ruff_chromium",
+        "patchSetId": 17
+      },
+      "lineNbr": 695,
+      "author": {
+        "id": 1286337
+      },
+      "writtenOn": "2026-09-15T21:00:24Z",
+      "side": 1,
+      "message": "Alright, I believe I\u0027ve fixed this, and the same issue in rust. It does make it a bigger change. Rust is being dealt with by running rustfmt on a file in the location this file *would* come from (couldn\u0027t come up with any better solution than that), and ruff is using stdin (and passing `--stdin-filename`).",
+      "parentUuid": "210ba4e7_3e1620c6",
+      "range": {
+        "startLine": 693,
+        "startChar": 8,
+        "endLine": 695,
+        "endChar": 49
+      },
+      "revId": "0f344d2146fe3510b7a4ccc344d544f1fb76a9e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
