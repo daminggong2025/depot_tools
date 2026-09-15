@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ca00c998_04bbeca1",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-09-15T23:44:04Z",
+      "side": 1,
+      "message": "ack, please reference this in the commit msg too",
+      "parentUuid": "380e39e4_c2cdbaa0",
+      "range": {
+        "startLine": 19,
+        "startChar": 0,
+        "endLine": 22,
+        "endChar": 28
+      },
+      "revId": "dc6d5f066a1a959eea921deed5cdf82a847b69d2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "edc0e9cf_a99dfb71",
@@ -37,6 +61,24 @@
       "writtenOn": "2026-09-04T14:44:47Z",
       "side": 1,
       "message": "Hi Gavin, can you have a look at this CL? No need to go into detail, just if you see any issues with the feature or the approach.",
+      "revId": "dc6d5f066a1a959eea921deed5cdf82a847b69d2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6c78c2cc_84d9279e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-09-15T23:44:04Z",
+      "side": 1,
+      "message": "the feature only really makes sense with `--no-squash`. some 90+% of people use the `--squash` workflow, where all local commits are collapsed into one commit on Gerrit. if you\u0027d want independent commits with independent bypass footers, the standard solution would be to use stacked branches (`git new-branch`). each change is its own branch, has its own description, passes presubmit independently locally, and passes independently on CQ (without needing to change `depot_tools` at all)",
+      "parentUuid": "edc0e9cf_a99dfb71",
       "revId": "dc6d5f066a1a959eea921deed5cdf82a847b69d2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
