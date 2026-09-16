@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a19cc345_2944e7d4",
+        "filename": "cl_format.py",
+        "patchSetId": 22
+      },
+      "lineNbr": 747,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-09-16T23:44:23Z",
+      "side": 1,
+      "message": "This is Ruff only flag, and YAPF which is still around and breathing uses -q. So you should translate this over at translate_args() function when the fallback to YAPF happens.",
+      "range": {
+        "startLine": 747,
+        "startChar": 12,
+        "endLine": 747,
+        "endChar": 33
+      },
+      "revId": "f43a30dedc16447892b7d27db492c462d1548101",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "93021e45_520aa4ee",
+        "filename": "cl_format.py",
+        "patchSetId": 22
+      },
+      "lineNbr": 748,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-09-16T23:44:23Z",
+      "side": 1,
+      "message": "I don\u0027t see --root appended anywhere and missing it will have Ruff walk out and potentially wreck havoc or ignore the whole folder.",
+      "range": {
+        "startLine": 737,
+        "startChar": 8,
+        "endLine": 748,
+        "endChar": 0
+      },
+      "revId": "f43a30dedc16447892b7d27db492c462d1548101",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "429eab44_14cd66be",
+        "filename": "cl_format.py",
+        "patchSetId": 22
+      },
+      "lineNbr": 881,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-09-16T23:44:23Z",
+      "side": 1,
+      "message": "I see what you did here but this is placed within _RunYapf which is actually mostly dead code (historical rollout precedence issues, and it\u0027s kind of on me to clean it up still...)\n\nSo you should place it in _RunPythonFormat instead, assume that we are always in batch mode.",
+      "range": {
+        "startLine": 876,
+        "startChar": 4,
+        "endLine": 881,
+        "endChar": 20
+      },
+      "revId": "f43a30dedc16447892b7d27db492c462d1548101",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
