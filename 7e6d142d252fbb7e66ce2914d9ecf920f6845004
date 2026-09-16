@@ -129,6 +129,29 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "a8dd4847_e91da2f1",
+        "filename": "agents/skills/swarming/SKILL.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 165,
+      "author": {
+        "id": 1002869
+      },
+      "writtenOn": "2026-09-16T23:59:06Z",
+      "side": 1,
+      "message": "I think this might need to be anchored on the parent\u0027s `create_time` otherwise if the build failed more than 3 hours ago then this won\u0027t return anything.",
+      "range": {
+        "startLine": 165,
+        "startChar": 3,
+        "endLine": 165,
+        "endChar": 8
+      },
+      "revId": "7e6d142d252fbb7e66ce2914d9ecf920f6845004",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "0678b50e_df79c864",
         "filename": "agents/skills/swarming/SKILL.md",
         "patchSetId": 5
