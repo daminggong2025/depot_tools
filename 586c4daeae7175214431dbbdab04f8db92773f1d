@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "c6b26c1c_db371778",
+        "filename": "trace_utils.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 206,
+      "author": {
+        "id": 1541419
+      },
+      "writtenOn": "2026-09-16T12:02:48Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f4199248_d7c6cc8a",
+      "range": {
+        "startLine": 206,
+        "startChar": 0,
+        "endLine": 206,
+        "endChar": 0
+      },
+      "revId": "586c4daeae7175214431dbbdab04f8db92773f1d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "631a3600_a080aa90",
@@ -37,6 +61,30 @@
       "writtenOn": "2026-08-28T09:33:31Z",
       "side": 1,
       "message": "Calling `truncate()` before `json.dump()` is risky. If the process is killed or fails during the write, the entire existing trace data is lost. It is safer to write to a temporary file and then rename it over the original, or to use an append-only format.",
+      "range": {
+        "startLine": 223,
+        "startChar": 0,
+        "endLine": 223,
+        "endChar": 0
+      },
+      "revId": "586c4daeae7175214431dbbdab04f8db92773f1d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6a7ade4c_d23c666d",
+        "filename": "trace_utils.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 223,
+      "author": {
+        "id": 1541419
+      },
+      "writtenOn": "2026-09-16T12:02:48Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "631a3600_a080aa90",
       "range": {
         "startLine": 223,
         "startChar": 0,
