@@ -921,6 +921,13 @@ def main() -> int:
         yapf_script = os.path.join(depot_tools_dir, "yapf")
 
         yapf_args = translate_args(args)
+        # translate_args drops --stdin-filename because YAPF has no equivalent,
+        # so YAPF would otherwise resolve .style.yapf from the current working
+        # directory rather than from the file being formatted. Pass the style
+        # resolved from the real path explicitly.
+        style_config = get_yapf_style(target_path, root_dir)
+        if style_config and "--style" not in yapf_args:
+            yapf_args.extend(["--style", style_config])
 
         # We must invoke the yapf wrapper via vpython3 so it gets its own env
         vpython_bin = "vpython3"
