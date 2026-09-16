@@ -409,6 +409,81 @@ class TestLuciScripts(unittest.TestCase):
             },
         )
 
+    @mock.patch("test_history.run_prpc")
+    def test_test_history_pagination(self, mock_prpc):
+        mock_prpc.side_effect = [
+            {
+                "verdicts": [
+                    {"testId": SAMPLE_TEST_ID, "status": "UNEXPECTED"}
+                ],
+                "nextPageToken": "page2",
+            },
+            {
+                "verdicts": [{"testId": SAMPLE_TEST_ID, "status": "EXPECTED"}],
+            },
+        ]
+        verdicts = test_history.test_history(
+            "chromium", SAMPLE_TEST_ID, limit=2
+        )
+        self.assertEqual(len(verdicts), 2)
+        self.assertEqual(mock_prpc.call_count, 2)
+
+    @mock.patch("test_history.run_prpc")
+    def test_query_variant_builders_and_format_summary(self, mock_prpc):
+        mock_prpc.return_value = {
+            "variants": [
+                {
+                    "variantHash": "hash1",
+                    "variant": {"def": {"bucket": "ci", "builder": "bot-fail"}},
+                },
+                {
+                    "variantHash": "hash2",
+                    "variant": {"def": {"bucket": "ci", "builder": "bot-pass"}},
+                },
+            ]
+        }
+        mapping = test_history.query_variant_builders(
+            "chromium", SAMPLE_TEST_ID
+        )
+        self.assertEqual(mapping["hash1"], "ci/bot-fail")
+
+        verdicts = [
+            {
+                "variantHash": "hash1",
+                "status": "UNEXPECTED",
+                "partitionTime": "2026-08-25T12:00:00Z",
+            },
+            {
+                "variantHash": "hash1",
+                "status": "EXPECTED",
+                "partitionTime": "2026-08-25T10:00:00Z",
+            },
+            {
+                "variantHash": "hash2",
+                "status": "EXPECTED",
+                "partitionTime": "2026-08-25T11:00:00Z",
+            },
+        ]
+        summary = test_history.format_summary(
+            verdicts, variant_builders=mapping
+        )
+        self.assertIn("Builder: ci/bot-fail | Pass: 1, Fail: 1", summary)
+        self.assertIn("Recent (newest->oldest): FP", summary)
+        self.assertIn(
+            "100% Passing Builders (1): ci/bot-pass (1 pass)", summary
+        )
+
+    @mock.patch("test_history.run_prpc")
+    def test_query_tests(self, mock_prpc):
+        mock_prpc.return_value = {"testIds": [SAMPLE_TEST_ID]}
+        candidates = test_history.query_tests("chromium", SAMPLE_TEST_QUERY)
+        self.assertEqual(candidates, [SAMPLE_TEST_ID])
+        mock_prpc.assert_called_once_with(
+            "analysis.api.luci.app",
+            "luci.analysis.v1.TestHistory.QueryTests",
+            {"project": "chromium", "testIdSubstring": SAMPLE_TEST_QUERY},
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
