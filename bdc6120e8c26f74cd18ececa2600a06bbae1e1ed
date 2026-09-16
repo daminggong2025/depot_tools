@@ -43,6 +43,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "d6603f2d_6c457134",
+        "filename": "agents/skills/swarming/SKILL.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1559487
+      },
+      "writtenOn": "2026-09-16T00:42:58Z",
+      "side": 1,
+      "message": "Yeah I guess I\u0027d probably omit this. It should already be logged in.",
+      "parentUuid": "2bd86ac7_1fc75477",
+      "range": {
+        "startLine": 50,
+        "startChar": 30,
+        "endLine": 50,
+        "endChar": 62
+      },
+      "revId": "bdc6120e8c26f74cd18ececa2600a06bbae1e1ed",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "54038d1e_f34ee3a1",
         "filename": "agents/skills/swarming/SKILL.md",
         "patchSetId": 4
