@@ -58,6 +58,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "70d21008_35f933f8",
+        "filename": "cl_format.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 906,
+      "author": {
+        "id": 1547272
+      },
+      "writtenOn": "2026-09-16T12:05:33Z",
+      "side": 1,
+      "message": "Acknowledged",
+      "parentUuid": "59ba8c77_a2b80920",
+      "range": {
+        "startLine": 906,
+        "startChar": 8,
+        "endLine": 906,
+        "endChar": 52
+      },
+      "revId": "cc44d9cd5cba235e3d8eb113423e2da477e22717",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "5a701efb_762da9c3",
@@ -71,6 +95,30 @@
       "writtenOn": "2026-09-15T22:23:21Z",
       "side": 1,
       "message": "why should resolving src path rely on buildtools? can\u0027t we just directly check if \u003cgclient_root\u003e/src is a dir instead?",
+      "range": {
+        "startLine": 118,
+        "startChar": 22,
+        "endLine": 118,
+        "endChar": 48
+      },
+      "revId": "cc44d9cd5cba235e3d8eb113423e2da477e22717",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c57dd3ff_6831eb0d",
+        "filename": "gclient_paths.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 118,
+      "author": {
+        "id": 1547272
+      },
+      "writtenOn": "2026-09-16T12:05:33Z",
+      "side": 1,
+      "message": "I agree there\u0027s no reason, it\u0027s just already existing and used. Changed to use gclient_root/src",
+      "parentUuid": "5a701efb_762da9c3",
       "range": {
         "startLine": 118,
         "startChar": 22,
