@@ -185,9 +185,13 @@ class TestLuciScriptsIntegration(unittest.TestCase):
             )
             self.assertGreaterEqual(len(verdicts), 1)
             self.assertEqual(verdicts[0].get("testId"), test_id)
+            summary = test_history.format_summary(
+                verdicts, default_builder=SAMPLE_BUILDER
+            )
+            self.assertIn(f"Builder: {SAMPLE_BUILDER}", summary)
             print(
                 f"[PASS] test_history ({label}): Queried {len(verdicts)} verdict(s)"
-                f" for {test_id.split('!')[-1]} on {SAMPLE_BUILDER}"
+                f" for {test_id.split('!')[-1]} on {SAMPLE_BUILDER}\n{summary}"
             )
 
     def test_list_failures_and_fetch_log(self):

@@ -11,12 +11,12 @@ description: >
 # LUCI Triage Cheat Sheet
 
 This skill provides modular scripts for deep-diving into **Test-level**
-failures across LUCI shards and tasks.
+failures and test history across LUCI shards and tasks.
 
 > [!TIP]
 > **CLI Help & Flags**: Run any script with `-h` or `--help` (e.g.
 > `vpython3 scripts/list_failures.py -h` or
-> `vpython3 scripts/check_test.py -h`) to view all supported arguments,
+> `vpython3 scripts/test_history.py -h`) to view all supported arguments,
 > defaults, and flags without reading the script source files.
 
 ## 1. Resolve Build ID & Inspect Builds
@@ -77,12 +77,16 @@ grouped by Swarming task:
 vpython3 scripts/list_failures.py \
   --build-id <BUILD_ID> \
   [--ignore-flaky] \
-  [--include-exonerated]
+  [--include-exonerated] \
+  [--limit <LIMIT>]
 
 # Or resolve builder directly:
 vpython3 scripts/list_failures.py \
   --builder "<BUILDER>" \
-  --build-number <NUMBER>
+  --build-number <NUMBER> \
+  [--project chromium] \
+  [--bucket ci] \
+  [--limit <LIMIT>]
 ```
 
 - **Filtering:** By default, exonerated test variants (known flakes and baseline
@@ -120,6 +124,8 @@ vpython3 scripts/check_test.py \
 vpython3 scripts/check_test.py \
   --builder "<BUILDER>" \
   --build-number <NUMBER> \
+  [--project chromium] \
+  [--bucket ci] \
   --test-regex "<TEST_REGEX>"
 ```
 
@@ -127,22 +133,41 @@ vpython3 scripts/check_test.py \
   and automatically wraps your regex with `.*` for partial matching. It fetches
   all results (expected and unexpected) for matching tests.
 
-## 6. Get Test History
+## 6. Query Test History & Regression Timeline
 
-Query LUCI Analysis for the historical verdicts of a specific test variant:
+Query LUCI Analysis for historical verdicts grouped by builder with daily
+pass/fail/flaky counts and recent timeline glyphs:
 
 ```bash
+# Formatted per-builder summary (default):
 vpython3 scripts/test_history.py \
-  --project <PROJECT> \
-  --test-id "<TEST_ID>" \
-  [--limit <LIMIT>] \
+  --test-id '<TEST_ID>' \
+  [--project <chromium|chrome>] \
   [--builder <BUILDER>] \
   [--bucket <BUCKET>] \
   [--device-os <DEVICE_OS>] \
   [--device-type <DEVICE_TYPE>] \
   [--os <OS>] \
-  [--test-suite <TEST_SUITE>]
+  [--test-suite <TEST_SUITE>] \
+  [--limit 100] \
+  [--raw]
 ```
+
+> [!IMPORTANT]
+> **Single Quotes Required**: ResultDB Test IDs often contain exclamation marks
+> (e.g. `!junit` or `!gtest`). Always enclose `--test-id` in **single quotes**
+> (`'...'`) to prevent Bash from attempting history expansion
+> (`bash: !...: event not found`).
+
+- **Per-Builder Structuring**: Resolves `variantHash` to `<bucket>/<builder>`
+  via `QueryVariants`. Failing and flaky builders are sorted first, while 100%
+  passing builders are condensed into a single summary line.
+- **Timeline Glyphs**: Displays recent verdicts ordered newest $\rightarrow$
+  oldest (`P` = Pass, `F` = Fail, `R` = Flaky/Pass on Retry, `S` = Skip), along
+  with daily breakdowns.
+- **Raw Output**: Use `--raw` to print raw JSON verdicts instead of the summary.
+- **Fuzzy Search Fallback**: If an exact test ID returns no verdicts, the script
+  queries `QueryTests` by substring and prints matching candidate Test IDs.
 
 ## Troubleshooting
 
