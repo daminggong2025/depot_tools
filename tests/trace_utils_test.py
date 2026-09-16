@@ -19,6 +19,8 @@ import trace_utils  # noqa: E402
 
 
 class TraceUtilsTest(unittest.TestCase):
+    """Unit tests for the Chrome Trace Event format tracer in `trace_utils`."""
+
     def setUp(self) -> None:
         self.tmpdir = tempfile.mkdtemp()
         self.trace_file = os.path.join(self.tmpdir, "test_trace.json")
@@ -27,7 +29,18 @@ class TraceUtilsTest(unittest.TestCase):
         shutil.rmtree(self.tmpdir)
 
     def test_trace_basic(self) -> None:
-        trace_utils.collector.start(self.trace_file)
+        """Verifies basic trace collection and JSON event structure.
+
+        Scenario:
+        - Start tracing with a custom process name.
+        - Record a scoped trace event using the `trace` context manager.
+        - Close the collector and verify the JSON trace output.
+
+        Expected:
+        - Trace file is written containing `process_name` metadata and the
+          complete event with matching name, category, duration, and args.
+        """
+        trace_utils.collector.start(self.trace_file, process_name="gclient")
 
         # Test context manager.
         with trace_utils.trace(
@@ -60,6 +73,16 @@ class TraceUtilsTest(unittest.TestCase):
         self.assertEqual(block_events[0]["args"]["key"], "value")
 
     def test_trace_multithread(self) -> None:
+        """Verifies trace event collection across multiple concurrent threads.
+
+        Scenario:
+        - Spawn multiple worker threads that record trace events simultaneously.
+        - Close the collector after all threads complete.
+
+        Expected:
+        - All thread events are safely recorded into the trace file without data
+          loss or corruption.
+        """
         trace_utils.collector.start(self.trace_file)
 
         def worker(num: int) -> None:
@@ -84,6 +107,16 @@ class TraceUtilsTest(unittest.TestCase):
             self.assertEqual(len(task_events), 1)
 
     def test_trace_decorator(self) -> None:
+        """Verifies function tracing via the `trace_function` decorator.
+
+        Scenario:
+        - Decorate a function with `@trace_function`.
+        - Execute the function and verify return value.
+
+        Expected:
+        - Function execution produces a corresponding complete event in the
+          trace file while preserving the return value.
+        """
         trace_utils.collector.start(self.trace_file)
 
         @trace_utils.trace_function(name="my_func", cat="function")
@@ -106,6 +139,16 @@ class TraceUtilsTest(unittest.TestCase):
         self.assertEqual(func_events[0]["cat"], "function")
 
     def test_trace_env_var(self) -> None:
+        """Verifies tracing activation via the `GCLIENT_TRACE` environment variable.
+
+        Scenario:
+        - Set `GCLIENT_TRACE` to a target file path.
+        - Instantiate `TraceCollector` and record a trace event.
+
+        Expected:
+        - Collector automatically activates with the specified filepath on
+          startup.
+        """
         try:
             os.environ["GCLIENT_TRACE"] = self.trace_file
             collector = trace_utils.TraceCollector()
@@ -120,7 +163,44 @@ class TraceUtilsTest(unittest.TestCase):
         finally:
             os.environ.pop("GCLIENT_TRACE", None)
 
+    def test_trace_presubmit_env_var(self) -> None:
+        """Verifies automatic tracing and script name detection via `PRESUBMIT_TRACE`.
+
+        Scenario:
+        - Set `PRESUBMIT_TRACE` to a target file path.
+        - Instantiate `TraceCollector` and record a trace event.
+        - Close the collector and parse the output JSON.
+
+        Expected:
+        - Collector automatically activates and detects the calling script name
+          as the process name metadata (e.g. `trace_utils_test`).
+        """
+        try:
+            os.environ["PRESUBMIT_TRACE"] = self.trace_file
+            collector = trace_utils.TraceCollector()
+            self.assertTrue(collector.enabled)
+            self.assertEqual(collector.filepath, self.trace_file)
+
+            with trace_utils.trace("presubmit_test"):
+                time.sleep(0.005)
+
+            collector.close()
+            self.assertTrue(os.path.exists(self.trace_file))
+            with open(self.trace_file, "r") as f:
+                data = json.load(f)
+            process_events = [
+                e
+                for e in data["traceEvents"]
+                if e.get("name") == "process_name"
+            ]
+            self.assertEqual(
+                process_events[0]["args"]["name"], "trace_utils_test"
+            )
+        finally:
+            os.environ.pop("PRESUBMIT_TRACE", None)
+
     def test_trace_env_var_default_path(self) -> None:
+        """Verifies default output path resolution when `GCLIENT_TRACE=1` (or truthy)."""
         for val in ("1", "true", "yes", "on", "TRUE", "YES"):
             try:
                 os.environ["GCLIENT_TRACE"] = val
@@ -158,22 +238,34 @@ class TraceUtilsTest(unittest.TestCase):
                 os.environ.pop("GCLIENT_TRACE", None)
 
     def test_start_default_filepath(self) -> None:
+        """Verifies default output path resolution when `start()` is called without args."""
         collector = trace_utils.TraceCollector()
         collector.start()
         self.assertTrue(collector.enabled)
         self.assertEqual(
             collector.filepath,
-            os.path.join(tempfile.gettempdir(), "gclient_trace.json"),
+            os.path.join(tempfile.gettempdir(), "depot_tools_trace.json"),
         )
 
     def test_start_already_enabled_does_not_wipe_events(self) -> None:
+        """Verifies that calling `start()` on an active collector preserves events and updates metadata.
+
+        Scenario:
+        - Start collector and record an initial event.
+        - Call `start()` again with a new filepath and explicit `process_name`.
+        - Close and inspect the output trace file.
+
+        Expected:
+        - The initial event is preserved, the trace is written to the new filepath,
+          and the process_name metadata event reflects the updated name.
+        """
         collector = trace_utils.TraceCollector()
-        collector.start(self.trace_file)
+        collector.start(self.trace_file, process_name="initial_proc")
         collector.add_complete_event("initial_event", "cat", 1000, 2000)
 
         # Calling start again should not wipe existing events.
         new_trace_file = os.path.join(self.tmpdir, "new_trace.json")
-        collector.start(new_trace_file)
+        collector.start(new_trace_file, process_name="updated_proc")
         self.assertEqual(collector.filepath, new_trace_file)
 
         collector.close()
@@ -184,6 +276,40 @@ class TraceUtilsTest(unittest.TestCase):
             e for e in data["traceEvents"] if e.get("name") == "initial_event"
         ]
         self.assertEqual(len(events), 1)
+        proc_events = [
+            e for e in data["traceEvents"] if e.get("name") == "process_name"
+        ]
+        self.assertEqual(len(proc_events), 1)
+        self.assertEqual(proc_events[0]["args"]["name"], "updated_proc")
+
+    def test_trace_merge_existing_file(self) -> None:
+        """Verifies that multiple collector sessions merge events into an existing trace file.
+
+        Scenario:
+        - Collector 1 starts, writes an event to the trace file, and closes.
+        - Collector 2 starts on the same file, writes another event, and closes.
+        - Read and parse the resulting trace file.
+
+        Expected:
+        - Both events (`event1` and `event2`) coexist in the merged `traceEvents`
+          list, simulating sequential or concurrent subprocess trace outputs.
+        """
+        collector1 = trace_utils.TraceCollector()
+        collector1.start(self.trace_file, process_name="proc1")
+        collector1.add_complete_event("event1", "cat1", 1000, 500)
+        collector1.close()
+
+        collector2 = trace_utils.TraceCollector()
+        collector2.start(self.trace_file, process_name="proc2")
+        collector2.add_complete_event("event2", "cat2", 2000, 500)
+        collector2.close()
+
+        with open(self.trace_file, "r") as f:
+            data = json.load(f)
+
+        event_names = [e.get("name") for e in data["traceEvents"]]
+        self.assertIn("event1", event_names)
+        self.assertIn("event2", event_names)
 
 
 if __name__ == "__main__":
