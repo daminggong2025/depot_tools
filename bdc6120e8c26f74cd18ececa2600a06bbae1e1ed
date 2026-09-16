@@ -65,6 +65,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "e70e312d_c4578913",
+        "filename": "agents/skills/swarming/SKILL.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1338159
+      },
+      "writtenOn": "2026-09-16T23:28:01Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d6603f2d_6c457134",
+      "range": {
+        "startLine": 50,
+        "startChar": 30,
+        "endLine": 50,
+        "endChar": 62
+      },
+      "revId": "bdc6120e8c26f74cd18ececa2600a06bbae1e1ed",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "54038d1e_f34ee3a1",
@@ -78,6 +102,30 @@
       "writtenOn": "2026-09-15T18:54:04Z",
       "side": 1,
       "message": "specifically this is the \"JSONPB\" encoding of the request message.",
+      "range": {
+        "startLine": 58,
+        "startChar": 37,
+        "endLine": 58,
+        "endChar": 41
+      },
+      "revId": "bdc6120e8c26f74cd18ececa2600a06bbae1e1ed",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f7047e56_e1fe86c0",
+        "filename": "agents/skills/swarming/SKILL.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1338159
+      },
+      "writtenOn": "2026-09-16T23:28:01Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "54038d1e_f34ee3a1",
       "range": {
         "startLine": 58,
         "startChar": 37,
@@ -111,6 +159,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "44d7938b_f7176bf1",
+        "filename": "agents/skills/swarming/SKILL.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1338159
+      },
+      "writtenOn": "2026-09-16T23:28:01Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b78dd358_930029d4",
+      "range": {
+        "startLine": 73,
+        "startChar": 1,
+        "endLine": 77,
+        "endChar": 0
+      },
+      "revId": "bdc6120e8c26f74cd18ececa2600a06bbae1e1ed",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "93d5d4fb_3661e625",
@@ -128,6 +200,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "189ae118_4a220567",
+        "filename": "agents/skills/swarming/SKILL.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 1338159
+      },
+      "writtenOn": "2026-09-16T23:28:01Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "93d5d4fb_3661e625",
+      "revId": "bdc6120e8c26f74cd18ececa2600a06bbae1e1ed",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "1b6425f1_2df6f9de",
@@ -141,6 +231,30 @@
       "writtenOn": "2026-09-15T18:54:04Z",
       "side": 1,
       "message": "I believe this is deprecated?",
+      "range": {
+        "startLine": 162,
+        "startChar": 37,
+        "endLine": 162,
+        "endChar": 59
+      },
+      "revId": "bdc6120e8c26f74cd18ececa2600a06bbae1e1ed",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3e53d032_4f3503e8",
+        "filename": "agents/skills/swarming/SKILL.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 162,
+      "author": {
+        "id": 1338159
+      },
+      "writtenOn": "2026-09-16T23:28:01Z",
+      "side": 1,
+      "message": "Removed this from the skill.",
+      "parentUuid": "1b6425f1_2df6f9de",
       "range": {
         "startLine": 162,
         "startChar": 37,
