@@ -5,6 +5,8 @@
 """Queries LUCI Analysis for test history of a specific test variant."""
 
 import argparse
+from collections import defaultdict
+from concurrent.futures import ThreadPoolExecutor
 import json
 import os
 import sys
@@ -13,18 +15,49 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from luci_client import run_prpc
 
 
-def test_history(
-    project,
-    test_id,
-    limit=None,
-    builder=None,
-    bucket=None,
-    device_os=None,
-    device_type=None,
-    os=None,
-    test_suite=None,
+def query_tests(project, test_query):
+    """Queries LUCI Analysis for test IDs matching a substring."""
+    res = run_prpc(
+        "analysis.api.luci.app",
+        "luci.analysis.v1.TestHistory.QueryTests",
+        {"project": project, "testIdSubstring": test_query},
+    )
+    return res.get("testIds", []) if res else []
+
+
+def query_variant_builders(project, test_id, predicate=None):
+    """Maps variantHash -> bucket/builder using TestHistory.QueryVariants."""
+    mapping = {}
+    page_token = None
+    while True:
+        payload = {"project": project, "testId": test_id, "pageSize": 1000}
+        if predicate:
+            payload["predicate"] = predicate
+        if page_token:
+            payload["pageToken"] = page_token
+        res = run_prpc(
+            "analysis.api.luci.app",
+            "luci.analysis.v1.TestHistory.QueryVariants",
+            payload,
+        )
+        if not res:
+            break
+        for v in res.get("variants", []):
+            v_hash = v.get("variantHash")
+            def_map = v.get("variant", {}).get("def", {})
+            builder = def_map.get("builder")
+            bucket = def_map.get("bucket", "ci")
+            if v_hash and builder:
+                mapping[v_hash] = f"{bucket}/{builder}"
+        page_token = res.get("nextPageToken")
+        if not page_token:
+            break
+    return mapping
+
+
+def _build_predicate(
+    builder, bucket, device_os, device_type, os_val, test_suite
 ):
-    """Queries LUCI Analysis for the test history of a specific test variant."""
     variant_def = {}
     if builder:
         variant_def["builder"] = builder
@@ -34,29 +67,190 @@ def test_history(
         variant_def["device_os"] = device_os
     if device_type:
         variant_def["device_type"] = device_type
-    if os:
-        variant_def["os"] = os
+    if os_val:
+        variant_def["os"] = os_val
     if test_suite:
         variant_def["test_suite"] = test_suite
+    if not variant_def:
+        return {}
+    return {"variantPredicate": {"contains": {"def": variant_def}}}
 
-    predicate = {}
-    if variant_def:
-        predicate["variantPredicate"] = {"contains": {"def": variant_def}}
 
-    payload = {
-        "project": project,
-        "testId": test_id,
-        "predicate": predicate,
-    }
-    if limit:
-        payload["pageSize"] = int(limit)
-
-    result = run_prpc(
-        "analysis.api.luci.app", "luci.analysis.v1.TestHistory.Query", payload
+def test_history(
+    project,
+    test_id,
+    limit=100,
+    builder=None,
+    bucket=None,
+    device_os=None,
+    device_type=None,
+    os=None,
+    test_suite=None,
+):
+    """Queries LUCI Analysis for the test history of a specific test variant."""
+    predicate = _build_predicate(
+        builder, bucket, device_os, device_type, os, test_suite
     )
-    if not result or "verdicts" not in result:
-        return []
-    return result["verdicts"]
+    verdicts = []
+    page_token = None
+    target_limit = int(limit) if limit else 100
+
+    while len(verdicts) < target_limit:
+        batch_size = min(1000, target_limit - len(verdicts))
+        payload = {
+            "project": project,
+            "testId": test_id,
+            "predicate": predicate,
+            "pageSize": batch_size,
+        }
+        if page_token:
+            payload["pageToken"] = page_token
+
+        result = run_prpc(
+            "analysis.api.luci.app",
+            "luci.analysis.v1.TestHistory.Query",
+            payload,
+        )
+        if not result or "verdicts" not in result:
+            break
+        verdicts.extend(result["verdicts"])
+        page_token = result.get("nextPageToken")
+        if not page_token:
+            break
+
+    return verdicts[:target_limit]
+
+
+def fetch_multi_builder_history(
+    project,
+    test_id,
+    per_builder_limit=15,
+    bucket=None,
+    device_os=None,
+    device_type=None,
+    os=None,
+    test_suite=None,
+    max_builders=40,
+):
+    """Discovers builders via QueryVariants and fetches verdicts per builder in parallel."""
+    target_bucket = bucket or "ci"
+    predicate = _build_predicate(
+        None, target_bucket, device_os, device_type, os, test_suite
+    )
+    variant_builders = query_variant_builders(
+        project, test_id, predicate=predicate
+    )
+    distinct = sorted(
+        {
+            (b.split("/", 1)[0], b.split("/", 1)[1])
+            for b in variant_builders.values()
+            if "/" in b
+        }
+    )
+    if not distinct:
+        verdicts = test_history(
+            project,
+            test_id,
+            limit=per_builder_limit,
+            bucket=bucket,
+            device_os=device_os,
+            device_type=device_type,
+            os=os,
+            test_suite=test_suite,
+        )
+        return verdicts, variant_builders
+
+    targets = distinct[:max_builders]
+
+    def _fetch_one(bkt_bld):
+        bkt, bld = bkt_bld
+        return test_history(
+            project,
+            test_id,
+            limit=per_builder_limit,
+            builder=bld,
+            bucket=bkt,
+            device_os=device_os,
+            device_type=device_type,
+            os=os,
+            test_suite=test_suite,
+        )
+
+    with ThreadPoolExecutor(max_workers=min(16, len(targets))) as executor:
+        results = list(executor.map(_fetch_one, targets))
+
+    all_verdicts = [v for batch in results for v in batch]
+    return all_verdicts, variant_builders
+
+
+def _verdict_glyph(v):
+    status = v.get("status", "")
+    status_v2 = v.get("statusV2", "")
+    if status == "EXPECTED" or status_v2 == "PASSED":
+        return "P"
+    if status == "FLAKY" or status_v2 == "FLAKY":
+        return "R"
+    if status_v2 == "SKIPPED" or status in ("SKIPPED", "UNEXPECTEDLY_SKIPPED"):
+        return "S"
+    return "F"
+
+
+def format_summary(verdicts, variant_builders=None, default_builder=None):
+    """Formats verdicts into a compact per-builder summary with timeline glyphs."""
+    mapping = variant_builders or {}
+    by_builder = defaultdict(list)
+    for v in verdicts:
+        v_hash = v.get("variantHash", "unknown")
+        bld = (
+            default_builder
+            or mapping.get(v_hash)
+            or v.get("variant", {}).get("def", {}).get("builder")
+            or v_hash
+        )
+        by_builder[bld].append(v)
+
+    def sort_key(item):
+        bld, v_list = item
+        fails = sum(1 for v in v_list if _verdict_glyph(v) == "F")
+        flakes = sum(1 for v in v_list if _verdict_glyph(v) == "R")
+        return (-fails, -flakes, bld)
+
+    lines = []
+    passing_builders = []
+    for bld, v_list in sorted(by_builder.items(), key=sort_key):
+        glyphs = "".join(_verdict_glyph(v) for v in v_list)
+        p = glyphs.count("P")
+        f = glyphs.count("F")
+        r = glyphs.count("R")
+        s = glyphs.count("S")
+
+        if f == 0 and r == 0 and len(by_builder) > 1:
+            passing_builders.append(f"{bld} ({p} pass)")
+            continue
+
+        lines.append(
+            f"Builder: {bld} | Pass: {p}, Fail: {f}, Flaky: {r}, Skip: {s}"
+        )
+        lines.append(f"  Recent (newest->oldest): {glyphs[:80]}")
+
+        by_date = defaultdict(list)
+        for v in v_list:
+            date_str = v.get("partitionTime", "")[:10]
+            if date_str:
+                by_date[date_str].append(_verdict_glyph(v))
+        for d in sorted(by_date.keys(), reverse=True)[:5]:
+            dg = "".join(by_date[d])
+            lines.append(
+                f"  {d}: Pass={dg.count('P')}, Fail={dg.count('F')}, "
+                f"Flaky={dg.count('R')} [{dg}]"
+            )
+
+    if passing_builders:
+        lines.append(
+            f"100% Passing Builders ({len(passing_builders)}): "
+            + ", ".join(passing_builders)
+        )
+    return "\n".join(lines)
 
 
 def main():
@@ -69,7 +263,10 @@ def main():
     )
     parser.add_argument("--test-id", required=True, help="Full test ID")
     parser.add_argument(
-        "--limit", type=int, default=10, help="Maximum verdicts to return"
+        "--limit",
+        type=int,
+        default=None,
+        help="Max verdicts to return (default: 100 for single builder, 15/builder across builders)",
     )
     parser.add_argument("--builder", help="Filter by builder name")
     parser.add_argument("--bucket", help="Filter by bucket (e.g. try, ci)")
@@ -77,21 +274,65 @@ def main():
     parser.add_argument("--device-type", help="Filter by device type")
     parser.add_argument("--os", help="Filter by OS")
     parser.add_argument("--test-suite", help="Filter by test suite")
+    parser.add_argument(
+        "--raw",
+        action="store_true",
+        help="Output raw JSON verdicts instead of formatted summary",
+    )
 
     args = parser.parse_args()
 
-    verdicts = test_history(
-        args.project,
-        args.test_id,
-        args.limit,
-        builder=args.builder,
-        bucket=args.bucket,
-        device_os=args.device_os,
-        device_type=args.device_type,
-        os=args.os,
-        test_suite=args.test_suite,
-    )
-    print(json.dumps(verdicts, indent=2))
+    if args.builder:
+        verdicts = test_history(
+            args.project,
+            args.test_id,
+            limit=args.limit or 100,
+            builder=args.builder,
+            bucket=args.bucket,
+            device_os=args.device_os,
+            device_type=args.device_type,
+            os=args.os,
+            test_suite=args.test_suite,
+        )
+        variant_builders = None
+    else:
+        verdicts, variant_builders = fetch_multi_builder_history(
+            args.project,
+            args.test_id,
+            per_builder_limit=args.limit or 15,
+            bucket=args.bucket,
+            device_os=args.device_os,
+            device_type=args.device_type,
+            os=args.os,
+            test_suite=args.test_suite,
+        )
+
+    if not verdicts:
+        search_query = (
+            args.test_id.split("#")[-1]
+            if "#" in args.test_id
+            else args.test_id.split(":")[-1]
+        )
+        candidates = query_tests(args.project, search_query)
+        if candidates:
+            print(
+                f"No verdicts found for '{args.test_id}'. Did you mean:",
+                file=sys.stderr,
+            )
+            for tid in candidates[:10]:
+                print(f"  {tid}", file=sys.stderr)
+        sys.exit(1)
+
+    if args.raw:
+        print(json.dumps(verdicts, indent=2))
+    else:
+        print(
+            format_summary(
+                verdicts,
+                variant_builders=variant_builders,
+                default_builder=args.builder,
+            )
+        )
 
 
 if __name__ == "__main__":
