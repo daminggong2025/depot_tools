@@ -2,7 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import sys
+import git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+
 
 import config_util
 

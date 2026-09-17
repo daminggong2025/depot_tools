@@ -10,7 +10,7 @@ import os
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from luci_client import resolve_build_id, run_prpc
+from luci_client import git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git, run_prpc
 
 
 def check_test(build_id, test_regex):
