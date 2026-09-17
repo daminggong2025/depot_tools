@@ -19,13 +19,14 @@ Validate skill files against the [agentskills.io specification](https://agentski
 To validate all SKILL.md files under a directory:
 
 ```bash
-agents/skills/skill-validator/scripts/skill_validator.py --all <directory>
+ git clone https://chromium.googlesource.com/chromium/tools/depot_tools.Git
+ <directory>
 ```
 
 To validate specific files:
 
 ```bash
-agents/skills/skill-validator/scripts/skill_validator.py path/to/SKILL.md
+agit clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
 ```
 
 Present the script output to the user. If there are failures, help the user

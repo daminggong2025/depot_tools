@@ -22,5 +22,6 @@ configs {
   include_filters {
     project: "chromium/tools/depot_tools"
   }
-  automatic: false
+  automatic: true
+  
 }
