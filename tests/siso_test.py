@@ -1829,6 +1829,10 @@ def test_ai_agent_env_prepends_flags(
         assert "--batch=false" in subcmd_args
         assert "--namespace=developer:ai-agent" in subcmd_args
         assert f"Detected AI agent env ({env_var})" in stdout
+        assert (
+            'You can check the build status by running "siso ps -C out/Default" in another terminal.'
+            in stdout
+        )
         if exit_code == 0:
             assert "finished successfully" in stdout
         else:
@@ -1838,6 +1842,7 @@ def test_ai_agent_env_prepends_flags(
         assert "--batch=false" not in args
         assert "--namespace=developer:ai-agent" not in subcmd_args
         assert "Detected AI agent env" not in stdout
+        assert "You can check the build status by running" not in stdout
         assert "finished" not in stdout
 
 
@@ -1911,6 +1916,63 @@ def test_ai_agent_env_multiple_vars(
 
     stdout = mock_stdout.getvalue()
     assert "Detected AI agent env (GEMINI_CLI, AI_AGENT)" in stdout
+
+
+@pytest.mark.parametrize(
+    "extra_args,expected_msg",
+    [
+        (
+            ["-C", "out/Default", "--quiet"],
+            'You can check the build status by running "siso ps -C out/Default" in another terminal.',
+        ),
+        (
+            ["-C", "out/Default", "-quiet"],
+            'You can check the build status by running "siso ps -C out/Default" in another terminal.',
+        ),
+        (
+            ["-C", "out/Default", "-q"],
+            'You can check the build status by running "siso ps -C out/Default" in another terminal.',
+        ),
+        (
+            ["--quiet"],
+            'You can check the build status by running "siso ps" in another terminal.',
+        ),
+        (
+            ["-C", "out/Default", "--quiet", "--quiet=false"],
+            None,
+        ),
+        (
+            ["-C", "out/Default", "--quiet", "--help"],
+            None,
+        ),
+    ],
+)
+def test_quiet_prints_siso_ps_hint(
+    extra_args: list[str],
+    expected_msg: Optional[str],
+    siso_project_setup: None,
+    tmp_path: Path,
+    mocker: Any,
+) -> None:
+    _get_sisoenv_path(tmp_path).write_text("")
+    siso_bin_path = _get_siso_bin_path(tmp_path)
+    mock_stdout = mocker.patch("sys.stdout", new_callable=io.StringIO)
+    runner = mocker.Mock(return_value=0)
+    cfg = create_telemetry_cfg(tmp_path, mocker, enabled=False)
+    env = {"SISO_PATH": str(siso_bin_path)}
+
+    siso.main(
+        ["siso.py", "ninja"] + extra_args,
+        telemetry_cfg=cfg,
+        env=env,
+        runner=runner,
+    )
+
+    stdout = mock_stdout.getvalue()
+    if expected_msg:
+        assert expected_msg in stdout
+    else:
+        assert "You can check the build status by running" not in stdout
 
 
 # Stanza to have pytest be executed.
