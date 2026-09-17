@@ -56,6 +56,20 @@ def fetch_out_dir(args: list[str]) -> str:
     return out_dir
 
 
+def _is_quiet(args: list[str]) -> bool:
+    quiet = False
+    for arg in args:
+        if arg in ("-q", "--q", "-quiet", "--quiet"):
+            quiet = True
+        elif arg.startswith(("-q=", "--q=", "-quiet=", "--quiet=")):
+            val = arg.split("=", 1)[1].lower()
+            if val in ("1", "t", "true"):
+                quiet = True
+            elif val in ("0", "f", "false"):
+                quiet = False
+    return quiet
+
+
 def _get_siso_subcmds(siso_path: str) -> set[str]:
     res = subprocess.run(
         [siso_path, "help"], capture_output=True, text=True, check=True
@@ -686,6 +700,18 @@ def main(
                             "--batch=false",
                             "--heartbeat_period=30s",
                         ] + subcmd_args
+
+                    if (
+                        subcmd == "ninja"
+                        and _is_quiet(subcmd_args)
+                        and no_help_flag(args)
+                    ):
+                        ps_cmd = "siso ps"
+                        if out_dir != ".":
+                            ps_cmd += f" -C {out_dir}"
+                        print(
+                            f'You can check the build status by running "{ps_cmd}" in another terminal.'
+                        )
 
                     # Add ninja specific flags.
                     should_collect_logs = all(
