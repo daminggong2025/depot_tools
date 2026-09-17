@@ -418,7 +418,7 @@ def _RunRustFmt(opts, paths, top_dir, diffs):
     except rustfmt.NotFoundError as e:
         DieWithError(e)
 
-    chromium_src_path = gclient_paths.GetPrimarySolutionPath()
+    chromium_src_path = gclient_paths.GetChromiumSrcPath()
     rustfmt_toml_path = os.path.join(chromium_src_path, ".rustfmt.toml")
 
     # TODO(crbug.com/1440869): Support formatting only the changed lines
@@ -588,7 +588,7 @@ def _RunLitTemplateFormatter(
     if not paths:
         return 0
 
-    primary_solution_path = gclient_paths.GetPrimarySolutionPath()
+    primary_solution_path = gclient_paths.GetChromiumSrcPath()
     if not primary_solution_path:
         print(
             "Could not find the primary solution path, skipping Lit "
@@ -698,7 +698,7 @@ def _RunGnFormat(opts, paths, top_dir, diffs):
 
 
 def _RunMojomFormat(opts, paths, top_dir, diffs):
-    primary_solution_path = gclient_paths.GetPrimarySolutionPath()
+    primary_solution_path = gclient_paths.GetChromiumSrcPath()
     if not primary_solution_path:
         DieWithError(
             "Could not find the primary solution path (e.g. "
@@ -739,6 +739,7 @@ def _RunMetricsXMLFormat(opts, paths, top_dir, diffs):
     return_value = 0
     import metrics_xml_format
 
+    src_dir = gclient_paths.GetChromiumSrcPath()
     for path in paths:
         pretty_print_tool = metrics_xml_format.FindMetricsXMLFormatterTool(path)
         if not pretty_print_tool:
@@ -753,8 +754,8 @@ def _RunMetricsXMLFormat(opts, paths, top_dir, diffs):
         # tools/metrics/histogrmas, pretty-print should be run with an
         # additional relative path argument, like: $ python pretty_print.py
         # metadata/UMA/histograms.xml $ python pretty_print.py enums.xml
-        metricsDir = metrics_xml_format.GetMetricsDir(top_dir, path)
-        histogramsDir = os.path.join(top_dir, "tools", "metrics", "histograms")
+        metricsDir = metrics_xml_format.GetMetricsDir(src_dir, path)
+        histogramsDir = os.path.join(src_dir, "tools", "metrics", "histograms")
         if metricsDir == histogramsDir:
             cmd.append(path)
         if opts.dry_run or opts.diff:
