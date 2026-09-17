@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "c07fe6c2_1a4f3761",
+        "filename": "cl_format.py",
+        "patchSetId": 22
+      },
+      "lineNbr": 747,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-09-17T01:11:38Z",
+      "side": 1,
+      "message": "I\u0027ll do it on my end",
+      "parentUuid": "a19cc345_2944e7d4",
+      "range": {
+        "startLine": 747,
+        "startChar": 12,
+        "endLine": 747,
+        "endChar": 33
+      },
+      "revId": "f43a30dedc16447892b7d27db492c462d1548101",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "93021e45_520aa4ee",
