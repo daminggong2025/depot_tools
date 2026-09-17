@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fe80c4cf_9c00c5b9",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 24
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1286337
+      },
+      "writtenOn": "2026-09-17T17:40:13Z",
+      "side": 1,
+      "message": "I\u0027ve decided that supporting `--dry-run` and `--diff` don\u0027t make sense for this, so I\u0027ve dropped that from the CL",
+      "revId": "6a8642dc9a83d6121d90f311834125bf97832270",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

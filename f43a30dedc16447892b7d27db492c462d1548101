@@ -71,6 +71,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "66239ee0_4578bdae",
+        "filename": "cl_format.py",
+        "patchSetId": 22
+      },
+      "lineNbr": 748,
+      "author": {
+        "id": 1286337
+      },
+      "writtenOn": "2026-09-17T17:40:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "93021e45_520aa4ee",
+      "range": {
+        "startLine": 737,
+        "startChar": 8,
+        "endLine": 748,
+        "endChar": 0
+      },
+      "revId": "f43a30dedc16447892b7d27db492c462d1548101",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "429eab44_14cd66be",
@@ -108,6 +132,30 @@
       "side": 1,
       "message": "I will work on cleaning up this function so you will need to rebase on that once that\u0027s submitted.",
       "parentUuid": "429eab44_14cd66be",
+      "range": {
+        "startLine": 876,
+        "startChar": 4,
+        "endLine": 881,
+        "endChar": 20
+      },
+      "revId": "f43a30dedc16447892b7d27db492c462d1548101",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ad98d3ec_55115e54",
+        "filename": "cl_format.py",
+        "patchSetId": 22
+      },
+      "lineNbr": 881,
+      "author": {
+        "id": 1286337
+      },
+      "writtenOn": "2026-09-17T17:40:13Z",
+      "side": 1,
+      "message": "You dealt with this here: https://source.chromium.org/chromium/chromium/tools/depot_tools/+/main:ruff_chromium;l\u003d987;drc\u003d94a15a0a08091d5f6c7a5e671363fb16f6358b32",
+      "parentUuid": "5e2a8c42_682a0fcf",
       "range": {
         "startLine": 876,
         "startChar": 4,
