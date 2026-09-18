@@ -627,6 +627,30 @@
       ],
       "revId": "020a601c8f23475f1b1b2c3944b972699a9a6b41",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4cf05266_8ace2e81",
+        "filename": "agents/skills/luci-test-results/scripts/test_history.py",
+        "patchSetId": 43
+      },
+      "lineNbr": 324,
+      "author": {
+        "id": 1241393
+      },
+      "writtenOn": "2026-09-18T18:44:00Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "17f21faf_b5e21beb",
+      "range": {
+        "startLine": 310,
+        "startChar": 0,
+        "endLine": 324,
+        "endChar": 19
+      },
+      "revId": "020a601c8f23475f1b1b2c3944b972699a9a6b41",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
