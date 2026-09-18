@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 """Generic presubmit checks that can be reused by other presubmit checks."""
 
+import concurrent.futures
+import contextlib as _contextlib
 import datetime
 import functools
 import ast as _ast
@@ -366,6 +368,73 @@ def GetCppLintFilters(lint_filters=None):
     return filters
 
 
+def _RunCppLintBatch(args):
+    files, filters, output_format, pattern_templates = args
+
+    import cpplint
+
+    cpplint._re_pattern_templates = [  # pylint: disable=protected-access
+        (_re.compile(pattern, flags), template, header)
+        for pattern, flags, template, header in pattern_templates
+    ]
+    cpplint._cpplint_state.ResetErrorCounts()  # pylint: disable=protected-access
+    cpplint._SetFilters(filters)  # pylint: disable=protected-access
+    cpplint._SetOutputFormat(output_format)  # pylint: disable=protected-access
+
+    outputitems = []
+    for file_name, verbose_level in files:
+        with _io.StringIO() as error_stream:
+            with _contextlib.redirect_stderr(error_stream):
+                cpplint.ProcessFile(file_name, verbose_level)
+            outputtext = error_stream.getvalue()
+        if outputtext:
+            outputitems.append(outputtext)
+
+    state = cpplint._cpplint_state  # pylint: disable=protected-access
+    return state.error_count, state.errors_by_category, outputitems
+
+
+def _RunCppLintInParallel(
+    cpplint, files, verbose_level, filters, output_format
+):
+    max_workers = min(8, _os.cpu_count() or 1, len(files))
+    chunk_size = max(1, (len(files) + max_workers * 4 - 1) // (max_workers * 4))
+    batches = [
+        [
+            (file_name, verbose_level)
+            for file_name in files[start : start + chunk_size]
+        ]
+        for start in range(0, len(files), chunk_size)
+    ]
+    pattern_templates = [
+        (pattern.pattern, pattern.flags, template, header)
+        for pattern, template, header in cpplint._re_pattern_templates
+    ]
+    args = [
+        (batch, filters, output_format, pattern_templates) for batch in batches
+    ]
+
+    error_count = 0
+    errors_by_category = {}
+    outputitems = []
+    with concurrent.futures.ProcessPoolExecutor(
+        max_workers=max_workers
+    ) as executor:
+        for batch_error_count, batch_categories, batch_output in executor.map(
+            _RunCppLintBatch, args
+        ):
+            error_count += batch_error_count
+            outputitems.extend(batch_output)
+            for category, count in batch_categories.items():
+                errors_by_category[category] = (
+                    errors_by_category.get(category, 0) + count
+                )
+
+    cpplint._cpplint_state.error_count = error_count
+    cpplint._cpplint_state.errors_by_category = errors_by_category
+    return outputitems
+
+
 def CheckChangeLintsClean(
     input_api,
     output_api,
@@ -381,12 +450,13 @@ def CheckChangeLintsClean(
     # Access to a protected member _XX of a client class
     cpplint._cpplint_state.ResetErrorCounts()
 
-    cpplint._SetFilters(",".join(GetCppLintFilters(lint_filters)))
+    filters = ",".join(GetCppLintFilters(lint_filters))
+    cpplint._SetFilters(filters)
 
     # Use VS error format on Windows to make it easier to step through the
     # results.
-    if input_api.is_windows:
-        cpplint._SetOutputFormat("vs7")
+    output_format = "vs7" if input_api.is_windows else "emacs"
+    cpplint._SetOutputFormat(output_format)
 
     if source_file_filter == None:  # noqa: E711
         # The only valid extensions for cpplint are .cc, .h, .cpp, .cu, and .ch.
@@ -405,14 +475,19 @@ def CheckChangeLintsClean(
         f.AbsoluteLocalPath()
         for f in input_api.AffectedSourceFiles(source_file_filter)
     ]
-    for file_name in files:
-        if _RE_IS_TEST.match(file_name):
-            level = 5
-        else:
-            level = 4
+    if files:
+        first_level = 5 if _RE_IS_TEST.match(files[0]) else 4
+        verbose_level = verbose_level or first_level
 
-        verbose_level = verbose_level or level
-        cpplint.ProcessFile(file_name, verbose_level)
+    if files and getattr(input_api, "parallel", False):
+        outputitems = _RunCppLintInParallel(
+            cpplint, files, verbose_level, filters, output_format
+        )
+        for outputitem in outputitems:
+            _sys.stderr.write(outputitem)
+    else:
+        for file_name in files:
+            cpplint.ProcessFile(file_name, verbose_level)
 
     if cpplint._cpplint_state.error_count > 0:
         # cpplint errors currently cannot be counted as errors during upload
