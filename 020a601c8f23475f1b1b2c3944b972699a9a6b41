@@ -87,6 +87,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "28802d5e_f7194e55",
+        "filename": "agents/skills/luci-test-results/scripts/test_history.py",
+        "patchSetId": 43
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1241393
+      },
+      "writtenOn": "2026-09-18T18:43:43Z",
+      "side": 1,
+      "message": "Done, tahnks, good catch!",
+      "parentUuid": "064b0070_de8f6e16",
+      "range": {
+        "startLine": 34,
+        "startChar": 8,
+        "endLine": 35,
+        "endChar": 44
+      },
+      "revId": "020a601c8f23475f1b1b2c3944b972699a9a6b41",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "2520efa1_ec740686",
@@ -100,6 +124,30 @@
       "writtenOn": "2026-09-18T15:05:54Z",
       "side": 1,
       "message": "this shadows python\u0027s os module",
+      "range": {
+        "startLine": 87,
+        "startChar": 4,
+        "endLine": 87,
+        "endChar": 6
+      },
+      "revId": "020a601c8f23475f1b1b2c3944b972699a9a6b41",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "de2358ba_54e8ffa7",
+        "filename": "agents/skills/luci-test-results/scripts/test_history.py",
+        "patchSetId": 43
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 1241393
+      },
+      "writtenOn": "2026-09-18T18:43:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2520efa1_ec740686",
       "range": {
         "startLine": 87,
         "startChar": 4,
@@ -151,6 +199,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "50a96687_74ccbdea",
+        "filename": "agents/skills/luci-test-results/scripts/test_history.py",
+        "patchSetId": 43
+      },
+      "lineNbr": 163,
+      "author": {
+        "id": 1241393
+      },
+      "writtenOn": "2026-09-18T18:43:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3317068d_0db980d7",
+      "range": {
+        "startLine": 163,
+        "startChar": 14,
+        "endLine": 163,
+        "endChar": 22
+      },
+      "revId": "020a601c8f23475f1b1b2c3944b972699a9a6b41",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "74cd38a1_63f91f05",
@@ -188,6 +260,30 @@
           ]
         }
       ],
+      "revId": "020a601c8f23475f1b1b2c3944b972699a9a6b41",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "eb61dcb5_585f11b2",
+        "filename": "agents/skills/luci-test-results/scripts/test_history.py",
+        "patchSetId": 43
+      },
+      "lineNbr": 177,
+      "author": {
+        "id": 1241393
+      },
+      "writtenOn": "2026-09-18T18:43:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "74cd38a1_63f91f05",
+      "range": {
+        "startLine": 165,
+        "startChar": 0,
+        "endLine": 177,
+        "endChar": 9
+      },
       "revId": "020a601c8f23475f1b1b2c3944b972699a9a6b41",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -373,6 +469,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "bee6d2e4_7eee82b4",
+        "filename": "agents/skills/luci-test-results/scripts/test_history.py",
+        "patchSetId": 43
+      },
+      "lineNbr": 190,
+      "author": {
+        "id": 1241393
+      },
+      "writtenOn": "2026-09-18T18:43:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "059441ac_d438cb5e",
+      "range": {
+        "startLine": 190,
+        "startChar": 16,
+        "endLine": 190,
+        "endChar": 17
+      },
+      "revId": "020a601c8f23475f1b1b2c3944b972699a9a6b41",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "900b2620_e755d8f4",
@@ -410,6 +530,30 @@
           ]
         }
       ],
+      "revId": "020a601c8f23475f1b1b2c3944b972699a9a6b41",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "48195bb3_c3a50569",
+        "filename": "agents/skills/luci-test-results/scripts/test_history.py",
+        "patchSetId": 43
+      },
+      "lineNbr": 244,
+      "author": {
+        "id": 1241393
+      },
+      "writtenOn": "2026-09-18T18:43:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "900b2620_e755d8f4",
+      "range": {
+        "startLine": 244,
+        "startChar": 62,
+        "endLine": 244,
+        "endChar": 63
+      },
       "revId": "020a601c8f23475f1b1b2c3944b972699a9a6b41",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
