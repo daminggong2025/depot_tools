@@ -289,9 +289,8 @@ class OwnersClientTest(unittest.TestCase):
             self.client.SuggestMinimalOwners(["bar/foo/", "baz/baz/baz"]),
         )
 
-        # If no common owner exists, fallback to returning multiple owners
         self.assertEqual(
-            [alice, bob, chris],
+            [bob, chris],
             self.client.SuggestMinimalOwners(
                 [
                     "bar/everyone/foo.txt",
@@ -301,6 +300,53 @@ class OwnersClientTest(unittest.TestCase):
                 ],
                 exclude=[emily],
             ),
+        )
+
+        # A path whose every owner is excluded cannot be covered. Suggest the
+        # owners that cover the rest.
+        self.assertEqual(
+            [bob],
+            self.client.SuggestMinimalOwners(
+                ["bar/everyone/foo.txt", "bar/everyone/bar.txt", "baz/baz/baz"],
+                exclude=[emily, chris, dave],
+            ),
+        )
+
+        # If no path can be covered at all, suggest nobody.
+        self.assertEqual(
+            [],
+            self.client.SuggestMinimalOwners(
+                ["baz/baz/baz"], exclude=[chris, dave, emily]
+            ),
+        )
+
+        # A path anybody can approve needs no reviewer of its own.
+        self.client.owners_by_path["qux/qux"] = [
+            owners_client.OwnersClient.EVERYONE
+        ]
+        self.assertEqual(
+            [bob, chris],
+            self.client.SuggestMinimalOwners(
+                [
+                    "bar/everyone/foo.txt",
+                    "bar/everyone/bar.txt",
+                    "bar/foo/",
+                    "baz/baz/baz",
+                    "qux/qux",
+                ],
+                exclude=[emily],
+            ),
+        )
+
+
+    def testSuggestMinimalOwnersEveryoneCanApprove(self):
+        client = TestClient({
+            "a": [alice, owners_client.OwnersClient.EVERYONE],
+            "b": [bob, owners_client.OwnersClient.EVERYONE],
+        })
+        self.assertEqual(
+            [owners_client.OwnersClient.EVERYONE],
+            client.SuggestMinimalOwners(["a", "b"]),
         )
 
 
