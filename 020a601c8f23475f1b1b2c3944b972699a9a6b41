@@ -1,0 +1,488 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4ff24e42_69badfea",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 43
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002869
+      },
+      "writtenOn": "2026-09-18T15:05:54Z",
+      "side": 1,
+      "message": "lgtm % comments",
+      "revId": "020a601c8f23475f1b1b2c3944b972699a9a6b41",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "33b6fdf3_674f9210",
+        "filename": "agents/skills/luci-test-results/SKILL.md",
+        "patchSetId": 43
+      },
+      "lineNbr": 156,
+      "author": {
+        "id": 1002869
+      },
+      "writtenOn": "2026-09-18T15:05:54Z",
+      "side": 1,
+      "message": "Maybe we can clarify this defaults to 15? Unless you think 100 is better? 100 could be a lot spread across builders.",
+      "range": {
+        "startLine": 156,
+        "startChar": 5,
+        "endLine": 156,
+        "endChar": 10
+      },
+      "revId": "020a601c8f23475f1b1b2c3944b972699a9a6b41",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "baeaabb5_f027fa54",
+        "filename": "agents/skills/luci-test-results/SKILL.md",
+        "patchSetId": 43
+      },
+      "lineNbr": 176,
+      "author": {
+        "id": 1002869
+      },
+      "writtenOn": "2026-09-18T15:05:54Z",
+      "side": 1,
+      "message": "→? Text is better for agents than Latex.\n```suggestion\n- **Timeline Glyphs**: Displays recent verdicts ordered newest →\n```",
+      "range": {
+        "startLine": 176,
+        "startChar": 63,
+        "endLine": 176,
+        "endChar": 76
+      },
+      "revId": "020a601c8f23475f1b1b2c3944b972699a9a6b41",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "064b0070_de8f6e16",
+        "filename": "agents/skills/luci-test-results/scripts/test_history.py",
+        "patchSetId": 43
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1002869
+      },
+      "writtenOn": "2026-09-18T15:05:54Z",
+      "side": 1,
+      "message": "I don\u0027t think `predicate` exists, did you mean `variant_predicate`? http://google3/third_party/golang/luci_go/analysis/proto/v1/test_history.proto;l\u003d254;rcl\u003d871052951\n\n```suggestion\n        if predicate:\n            payload[\"variantPredicate\"] \u003d predicate.get(\"variantPredicate\", predicate)\n```",
+      "range": {
+        "startLine": 34,
+        "startChar": 8,
+        "endLine": 35,
+        "endChar": 44
+      },
+      "revId": "020a601c8f23475f1b1b2c3944b972699a9a6b41",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2520efa1_ec740686",
+        "filename": "agents/skills/luci-test-results/scripts/test_history.py",
+        "patchSetId": 43
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 1002869
+      },
+      "writtenOn": "2026-09-18T15:05:54Z",
+      "side": 1,
+      "message": "this shadows python\u0027s os module",
+      "range": {
+        "startLine": 87,
+        "startChar": 4,
+        "endLine": 87,
+        "endChar": 6
+      },
+      "revId": "020a601c8f23475f1b1b2c3944b972699a9a6b41",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3317068d_0db980d7",
+        "filename": "agents/skills/luci-test-results/scripts/test_history.py",
+        "patchSetId": 43
+      },
+      "lineNbr": 163,
+      "author": {
+        "id": 1002869
+      },
+      "writtenOn": "2026-09-18T15:05:54Z",
+      "side": 1,
+      "message": "Should we notify users when something is truncated? Something like:\n\nif len(distinct) \u003e max_builders:\n    print(f\"Notice: Querying 40 of {len(distinct)} discovered builders. Narrow with --builder or --os.\", file\u003dsys.stderr)",
+      "range": {
+        "startLine": 163,
+        "startChar": 14,
+        "endLine": 163,
+        "endChar": 22
+      },
+      "fixSuggestions": [
+        {
+          "fixId": "9a2a208e_eb2a6868",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "agents/skills/luci-test-results/scripts/test_history.py",
+              "range": {
+                "startLine": 1,
+                "startChar": 0,
+                "endLine": 1,
+                "endChar": 0
+              },
+              "replacement": "    if len(distinct) \u003e max_builders:\n        print(\n            f\"Notice: Querying {max_builders} of {len(distinct)} discovered builders. Narrow with --builder or --os.\",\n            file\u003dsys.stderr,\n        )\n\n"
+            }
+          ]
+        }
+      ],
+      "revId": "020a601c8f23475f1b1b2c3944b972699a9a6b41",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "74cd38a1_63f91f05",
+        "filename": "agents/skills/luci-test-results/scripts/test_history.py",
+        "patchSetId": 43
+      },
+      "lineNbr": 177,
+      "author": {
+        "id": 1002869
+      },
+      "writtenOn": "2026-09-18T15:05:54Z",
+      "side": 1,
+      "message": "Probably better to catch exceptions here as otherwise one failure will cause the entire ThreadPoolExecutor map call to fail:\n\ndef _fetch_one(bkt_bld):\n    bkt, bld \u003d bkt_bld\n    try:\n        return test_history(\n            project,\n            test_id,\n            limit\u003dper_builder_limit,\n            builder\u003dbld,\n            bucket\u003dbkt,\n            device_os\u003ddevice_os,\n            device_type\u003ddevice_type,\n            os\u003dos,\n            test_suite\u003dtest_suite,\n        )\n    except Exception as e:\n        print(f\"Warning: Failed to fetch history for {bkt}/{bld}: {e}\", file\u003dsys.stderr)\n        return []",
+      "range": {
+        "startLine": 165,
+        "startChar": 0,
+        "endLine": 177,
+        "endChar": 9
+      },
+      "fixSuggestions": [
+        {
+          "fixId": "670c8326_2abdbce1",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "agents/skills/luci-test-results/scripts/test_history.py",
+              "range": {
+                "startLine": 167,
+                "startChar": 0,
+                "endLine": 178,
+                "endChar": 0
+              },
+              "replacement": "        try:\n            return test_history(\n                project,\n                test_id,\n                limit\u003dper_builder_limit,\n                builder\u003dbld,\n                bucket\u003dbkt,\n                device_os\u003ddevice_os,\n                device_type\u003ddevice_type,\n                os\u003dos,\n                test_suite\u003dtest_suite,\n            )\n        except Exception as e:\n            print(f\"Warning: Failed to fetch history for {bkt}/{bld}: {e}\", file\u003dsys.stderr)\n            return []\n"
+            }
+          ]
+        }
+      ],
+      "revId": "020a601c8f23475f1b1b2c3944b972699a9a6b41",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "059441ac_d438cb5e",
+        "filename": "agents/skills/luci-test-results/scripts/test_history.py",
+        "patchSetId": 43
+      },
+      "lineNbr": 190,
+      "author": {
+        "id": 1002869
+      },
+      "writtenOn": "2026-09-18T15:05:54Z",
+      "side": 1,
+      "message": "Should we define top level constants:\n\nGLYPH_PASS \u003d \"P\"\nGLYPH_FAIL \u003d \"F\"\nGLYPH_FLAKY \u003d \"R\"\nGLYPH_SKIP \u003d \"S\"\nDEFAULT_SINGLE_BUILDER_LIMIT \u003d 100\nDEFAULT_MULTI_BUILDER_LIMIT \u003d 15\nMAX_PARALLEL_BUILDERS \u003d 40\nMAX_WORKERS \u003d 16",
+      "range": {
+        "startLine": 190,
+        "startChar": 16,
+        "endLine": 190,
+        "endChar": 17
+      },
+      "fixSuggestions": [
+        {
+          "fixId": "8c24dca9_fc7dd91f",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "agents/skills/luci-test-results/scripts/test_history.py",
+              "range": {
+                "startLine": 1,
+                "startChar": 0,
+                "endLine": 1,
+                "endChar": 0
+              },
+              "replacement": "GLYPH_PASS \u003d \"P\"\nGLYPH_FAIL \u003d \"F\"\nGLYPH_FLAKY \u003d \"R\"\nGLYPH_SKIP \u003d \"S\"\nDEFAULT_SINGLE_BUILDER_LIMIT \u003d 100\nDEFAULT_MULTI_BUILDER_LIMIT \u003d 15\nMAX_PARALLEL_BUILDERS \u003d 40\nMAX_WORKERS \u003d 16\n\n"
+            },
+            {
+              "path": "agents/skills/luci-test-results/scripts/test_history.py",
+              "range": {
+                "startLine": 82,
+                "startChar": 0,
+                "endLine": 83,
+                "endChar": 0
+              },
+              "replacement": "    limit\u003dDEFAULT_SINGLE_BUILDER_LIMIT,\n"
+            },
+            {
+              "path": "agents/skills/luci-test-results/scripts/test_history.py",
+              "range": {
+                "startLine": 96,
+                "startChar": 0,
+                "endLine": 97,
+                "endChar": 0
+              },
+              "replacement": "    target_limit \u003d int(limit) if limit else DEFAULT_SINGLE_BUILDER_LIMIT\n"
+            },
+            {
+              "path": "agents/skills/luci-test-results/scripts/test_history.py",
+              "range": {
+                "startLine": 127,
+                "startChar": 0,
+                "endLine": 128,
+                "endChar": 0
+              },
+              "replacement": "    per_builder_limit\u003dDEFAULT_MULTI_BUILDER_LIMIT,\n"
+            },
+            {
+              "path": "agents/skills/luci-test-results/scripts/test_history.py",
+              "range": {
+                "startLine": 133,
+                "startChar": 0,
+                "endLine": 134,
+                "endChar": 0
+              },
+              "replacement": "    max_builders\u003dMAX_PARALLEL_BUILDERS,\n"
+            },
+            {
+              "path": "agents/skills/luci-test-results/scripts/test_history.py",
+              "range": {
+                "startLine": 179,
+                "startChar": 0,
+                "endLine": 180,
+                "endChar": 0
+              },
+              "replacement": "    with ThreadPoolExecutor(max_workers\u003dmin(MAX_WORKERS, len(targets))) as executor:\n"
+            },
+            {
+              "path": "agents/skills/luci-test-results/scripts/test_history.py",
+              "range": {
+                "startLine": 190,
+                "startChar": 0,
+                "endLine": 191,
+                "endChar": 0
+              },
+              "replacement": "        return GLYPH_PASS\n"
+            },
+            {
+              "path": "agents/skills/luci-test-results/scripts/test_history.py",
+              "range": {
+                "startLine": 192,
+                "startChar": 0,
+                "endLine": 193,
+                "endChar": 0
+              },
+              "replacement": "        return GLYPH_FLAKY\n"
+            },
+            {
+              "path": "agents/skills/luci-test-results/scripts/test_history.py",
+              "range": {
+                "startLine": 194,
+                "startChar": 0,
+                "endLine": 196,
+                "endChar": 0
+              },
+              "replacement": "        return GLYPH_SKIP\n    return GLYPH_FAIL\n"
+            },
+            {
+              "path": "agents/skills/luci-test-results/scripts/test_history.py",
+              "range": {
+                "startLine": 214,
+                "startChar": 0,
+                "endLine": 216,
+                "endChar": 0
+              },
+              "replacement": "        fails \u003d sum(1 for v in v_list if _verdict_glyph(v) \u003d\u003d GLYPH_FAIL)\n        flakes \u003d sum(1 for v in v_list if _verdict_glyph(v) \u003d\u003d GLYPH_FLAKY)\n"
+            },
+            {
+              "path": "agents/skills/luci-test-results/scripts/test_history.py",
+              "range": {
+                "startLine": 223,
+                "startChar": 0,
+                "endLine": 226,
+                "endChar": 0
+              },
+              "replacement": "        f \u003d glyphs.count(GLYPH_FAIL)\n        r \u003d glyphs.count(GLYPH_FLAKY)\n        s \u003d glyphs.count(GLYPH_SKIP)\n"
+            },
+            {
+              "path": "agents/skills/luci-test-results/scripts/test_history.py",
+              "range": {
+                "startLine": 244,
+                "startChar": 0,
+                "endLine": 246,
+                "endChar": 0
+              },
+              "replacement": "                f\"  {d}: Pass\u003d{dg.count(GLYPH_PASS)}, Fail\u003d{dg.count(GLYPH_FAIL)}, \"\n                f\"Flaky\u003d{dg.count(GLYPH_FLAKY)} [{dg}]\"\n"
+            },
+            {
+              "path": "agents/skills/luci-test-results/scripts/test_history.py",
+              "range": {
+                "startLine": 269,
+                "startChar": 0,
+                "endLine": 270,
+                "endChar": 0
+              },
+              "replacement": "        help\u003df\"Max verdicts to return (default: {DEFAULT_SINGLE_BUILDER_LIMIT} for single builder, {DEFAULT_MULTI_BUILDER_LIMIT}/builder across builders)\",\n"
+            },
+            {
+              "path": "agents/skills/luci-test-results/scripts/test_history.py",
+              "range": {
+                "startLine": 289,
+                "startChar": 0,
+                "endLine": 290,
+                "endChar": 0
+              },
+              "replacement": "            limit\u003dargs.limit or DEFAULT_SINGLE_BUILDER_LIMIT,\n"
+            },
+            {
+              "path": "agents/skills/luci-test-results/scripts/test_history.py",
+              "range": {
+                "startLine": 302,
+                "startChar": 0,
+                "endLine": 303,
+                "endChar": 0
+              },
+              "replacement": "            per_builder_limit\u003dargs.limit or DEFAULT_MULTI_BUILDER_LIMIT,\n"
+            }
+          ]
+        }
+      ],
+      "revId": "020a601c8f23475f1b1b2c3944b972699a9a6b41",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "900b2620_e755d8f4",
+        "filename": "agents/skills/luci-test-results/scripts/test_history.py",
+        "patchSetId": 43
+      },
+      "lineNbr": 244,
+      "author": {
+        "id": 1002869
+      },
+      "writtenOn": "2026-09-18T15:05:54Z",
+      "side": 1,
+      "message": "skips skip counts?",
+      "range": {
+        "startLine": 244,
+        "startChar": 62,
+        "endLine": 244,
+        "endChar": 63
+      },
+      "fixSuggestions": [
+        {
+          "fixId": "eb37c196_f4b602c8",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "agents/skills/luci-test-results/scripts/test_history.py",
+              "range": {
+                "startLine": 245,
+                "startChar": 0,
+                "endLine": 246,
+                "endChar": 0
+              },
+              "replacement": "                f\"Flaky\u003d{dg.count(\u0027R\u0027)}, Skip\u003d{dg.count(\u0027S\u0027)} [{dg}]\"\n"
+            }
+          ]
+        }
+      ],
+      "revId": "020a601c8f23475f1b1b2c3944b972699a9a6b41",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "17f21faf_b5e21beb",
+        "filename": "agents/skills/luci-test-results/scripts/test_history.py",
+        "patchSetId": 43
+      },
+      "lineNbr": 324,
+      "author": {
+        "id": 1002869
+      },
+      "writtenOn": "2026-09-18T15:05:54Z",
+      "side": 1,
+      "message": "Maybe better to have more logging even when there are no candidates (and separate logging for raw):\n\nif not verdicts:\n    if args.raw:\n        print(\"[]\")\n        return\n    search_query \u003d (\n        args.test_id.split(\"#\")[-1]\n        if \"#\" in args.test_id\n        else args.test_id.split(\":\")[-1]\n    ).strip()\n    candidates \u003d [c for c in query_tests(args.project, search_query) if c !\u003d args.test_id]\n    print(f\"No verdicts found for \u0027{args.test_id}\u0027.\", file\u003dsys.stderr)\n    if candidates:\n        print(\"Did you mean one of these active tests?\", file\u003dsys.stderr)\n        for tid in candidates[:10]:\n            print(f\"  {tid}\", file\u003dsys.stderr)\n    else:\n        print(\"No similar test IDs found in project.\", file\u003dsys.stderr)\n    sys.exit(1)",
+      "range": {
+        "startLine": 310,
+        "startChar": 0,
+        "endLine": 324,
+        "endChar": 19
+      },
+      "fixSuggestions": [
+        {
+          "fixId": "c69dd741_b8bab6cb",
+          "description": "prompt_to_edit API",
+          "replacements": [
+            {
+              "path": "agents/skills/luci-test-results/scripts/test_history.py",
+              "range": {
+                "startLine": 1,
+                "startChar": 0,
+                "endLine": 1,
+                "endChar": 0
+              },
+              "replacement": "        if args.raw:\n            print(\"[]\")\n            return\n"
+            },
+            {
+              "path": "agents/skills/luci-test-results/scripts/test_history.py",
+              "range": {
+                "startLine": 315,
+                "startChar": 0,
+                "endLine": 317,
+                "endChar": 0
+              },
+              "replacement": "        ).strip()\n        candidates \u003d [c for c in query_tests(args.project, search_query) if c !\u003d args.test_id]\n        print(f\"No verdicts found for \u0027{args.test_id}\u0027.\", file\u003dsys.stderr)\n"
+            },
+            {
+              "path": "agents/skills/luci-test-results/scripts/test_history.py",
+              "range": {
+                "startLine": 318,
+                "startChar": 0,
+                "endLine": 322,
+                "endChar": 0
+              },
+              "replacement": "            print(\"Did you mean one of these active tests?\", file\u003dsys.stderr)\n"
+            },
+            {
+              "path": "agents/skills/luci-test-results/scripts/test_history.py",
+              "range": {
+                "startLine": 1,
+                "startChar": 0,
+                "endLine": 1,
+                "endChar": 0
+              },
+              "replacement": "        else:\n            print(\"No similar test IDs found in project.\", file\u003dsys.stderr)\n"
+            }
+          ]
+        }
+      ],
+      "revId": "020a601c8f23475f1b1b2c3944b972699a9a6b41",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
