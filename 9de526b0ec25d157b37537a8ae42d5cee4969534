@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6c60e4e1_8e9fce9c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 8
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1547272
+      },
+      "writtenOn": "2026-09-18T12:06:06Z",
+      "side": 1,
+      "message": "Hey @gavinmak@google.com, I fixed the comments. Could you please re-review?",
+      "revId": "9de526b0ec25d157b37537a8ae42d5cee4969534",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
