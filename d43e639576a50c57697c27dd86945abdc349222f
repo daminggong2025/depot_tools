@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "64c5349e_30616cf9",
+        "filename": "presubmit_thread_pool.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1126674
+      },
+      "writtenOn": "2026-09-18T01:51:42Z",
+      "side": 0,
+      "message": "I couldn\u0027t find a reason why this was here... Seems safer to just check signature length IMO.",
+      "revId": "d43e639576a50c57697c27dd86945abdc349222f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
