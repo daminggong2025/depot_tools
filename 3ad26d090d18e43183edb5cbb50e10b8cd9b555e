@@ -43,6 +43,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "52166695_4b82c7cc",
+        "filename": "owners_client.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 137,
+      "author": {
+        "id": 1244248
+      },
+      "writtenOn": "2026-09-18T11:43:08Z",
+      "side": 1,
+      "message": "Removed method. Instead, I modified `SuggestMinimalOwners` so that it can also return `*`, but only if it\u0027s the only result, keeping the original behavior, and also, what probably makes more sense.",
+      "parentUuid": "edd7f4af_d485cf98",
+      "range": {
+        "startLine": 137,
+        "startChar": 8,
+        "endLine": 137,
+        "endChar": 21
+      },
+      "revId": "3ad26d090d18e43183edb5cbb50e10b8cd9b555e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "e59824a6_789b5974",
         "filename": "owners_client.py",
         "patchSetId": 2
@@ -54,6 +78,30 @@
       "writtenOn": "2026-09-15T22:59:32Z",
       "side": 1,
       "message": "this used to be a list. can we maintain backwards compatability?",
+      "range": {
+        "startLine": 149,
+        "startChar": 41,
+        "endLine": 149,
+        "endChar": 44
+      },
+      "revId": "3ad26d090d18e43183edb5cbb50e10b8cd9b555e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8d46e1bf_1dd85e19",
+        "filename": "owners_client.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 149,
+      "author": {
+        "id": 1244248
+      },
+      "writtenOn": "2026-09-18T11:43:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e59824a6_789b5974",
       "range": {
         "startLine": 149,
         "startChar": 41,
@@ -77,6 +125,30 @@
       "writtenOn": "2026-09-15T22:59:32Z",
       "side": 1,
       "message": "do we need SuggestSingleOwner at all? iiuc the loop at L178 handles this single owner case",
+      "range": {
+        "startLine": 164,
+        "startChar": 8,
+        "endLine": 166,
+        "endChar": 27
+      },
+      "revId": "3ad26d090d18e43183edb5cbb50e10b8cd9b555e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d1d40d2d_9e94fbc0",
+        "filename": "owners_client.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 166,
+      "author": {
+        "id": 1244248
+      },
+      "writtenOn": "2026-09-18T11:43:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a2a5abc_56017e69",
       "range": {
         "startLine": 164,
         "startChar": 8,
