@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "117d8a54_0c0365c3",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 25
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-09-18T00:07:46Z",
+      "side": 1,
+      "message": "I am fine to approve but I want to get Matt\u0027s opinion first as JJ owner: @msta@google.com",
+      "revId": "735b2167934a0a01b061b1ea1868bbebbd3bb04d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
