@@ -651,6 +651,80 @@ class PresubmitUnittest(PresubmitTestsBase):
             "CheckChangeOnCommit", rdb_wrapper.STATUS_FAIL, 0, "error\n"
         )
 
+    def testExecPresubmitScriptParallelChecksPreserveOrder(self):
+        fake_presubmit = os.path.join(self.fake_root_dir, "PRESUBMIT.py")
+        executer = presubmit.PresubmitExecuter(
+            self.fake_change,
+            False,
+            None,
+            presubmit.GerritAccessor(),
+            parallel=True,
+            no_diffs=True,
+        )
+        sink = self.rdb_client.__enter__.return_value
+
+        results = executer.ExecPresubmitScript(
+            """
+import threading
+import time
+
+PRESUBMIT_VERSION = '2.0.0'
+PRESUBMIT_PARALLEL_CHECKS = (
+    'CheckFirst',
+    'CheckSecond',
+)
+
+_barrier = threading.Barrier(2)
+
+def CheckFirst(input_api, output_api):
+  _barrier.wait(timeout=1)
+  time.sleep(0.05)
+  output_api.AppendCC('z@example.com')
+  return [output_api.PresubmitNotifyResult('first')]
+
+def CheckSecond(input_api, output_api):
+  _barrier.wait(timeout=1)
+  output_api.AppendCC('a@example.com')
+  return [output_api.PresubmitNotifyResult('second')]
+""",
+            fake_presubmit,
+        )
+
+        self.assertEqual(
+            ["first", "second"], [result._message for result in results]
+        )
+        self.assertEqual(["a@example.com", "z@example.com"], executer.more_cc)
+        self.assertEqual(
+            ["CheckFirst", "CheckSecond"],
+            [call.args[0] for call in sink.report.call_args_list],
+        )
+
+    def testExecPresubmitScriptParallelChecksRequireAllFilesAndParallel(self):
+        fake_presubmit = os.path.join(self.fake_root_dir, "PRESUBMIT.py")
+        script = """
+PRESUBMIT_VERSION = '2.0.0'
+PRESUBMIT_PARALLEL_CHECKS = ('CheckOne',)
+
+def CheckOne(input_api, output_api):
+  return []
+"""
+
+        for parallel, no_diffs in ((True, False), (False, True)):
+            with self.subTest(parallel=parallel, no_diffs=no_diffs):
+                executer = presubmit.PresubmitExecuter(
+                    self.fake_change,
+                    False,
+                    None,
+                    presubmit.GerritAccessor(),
+                    parallel=parallel,
+                    no_diffs=no_diffs,
+                )
+                with mock.patch.object(
+                    executer, "_run_parallel_check_function"
+                ) as parallel_run:
+                    executer.ExecPresubmitScript(script, fake_presubmit)
+                parallel_run.assert_not_called()
+
     def testExecPresubmitScriptTemporaryFilesRemoval(self):
         tempfile.NamedTemporaryFile.side_effect = [
             MockTemporaryFile("baz"),
@@ -1817,6 +1891,55 @@ class InputApiUnittest(PresubmitTestsBase):
         self.assertEqual(
             rhs_lines[13][0].LocalPath(), presubmit.normpath(files[4][1])
         )
+
+    def testInputApiAllFilesFiltersAfterPresubmitDirectory(self):
+        files = [
+            ["A", os.path.join("foo", "first.cc")],
+            ["M", os.path.join("foo", "nested", "second.cc")],
+            ["M", os.path.join("outside", "third.cc")],
+        ]
+        change = presubmit.Change(
+            "mychange", "", self.fake_root_dir, files, 0, 0, "testauthor"
+        )
+        original_affected_files = change.AffectedFiles
+        change.AffectedFiles = mock.Mock(wraps=original_affected_files)
+        input_api = presubmit.InputApi(
+            change,
+            os.path.join(self.fake_root_dir, "foo", "PRESUBMIT.py"),
+            False,
+            None,
+            False,
+            no_diffs=True,
+        )
+        filtered_paths = []
+
+        def file_filter(affected_file):
+            filtered_paths.append(affected_file.LocalPath())
+            return True
+
+        expected = [
+            presubmit.normpath("foo/first.cc"),
+            presubmit.normpath("foo/nested/second.cc"),
+        ]
+        self.assertEqual(
+            expected,
+            [
+                f.LocalPath()
+                for f in input_api.AffectedFiles(file_filter=file_filter)
+            ],
+        )
+        self.assertEqual(expected, filtered_paths)
+
+        filtered_paths.clear()
+        self.assertEqual(
+            expected,
+            [
+                f.LocalPath()
+                for f in input_api.AffectedFiles(file_filter=file_filter)
+            ],
+        )
+        self.assertEqual(expected, filtered_paths)
+        change.AffectedFiles.assert_called_once_with(True)
 
     def testInputApiFilterSourceFile(self):
         files = [
