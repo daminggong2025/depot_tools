@@ -41,6 +41,54 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "c0dc4078_b1d0ebec",
+        "filename": "agents/skills/luci-test-results/SKILL.md",
+        "patchSetId": 43
+      },
+      "lineNbr": 156,
+      "author": {
+        "id": 1241393
+      },
+      "writtenOn": "2026-09-18T19:37:39Z",
+      "side": 1,
+      "message": "Done. Clarified in the notes that the default limit is dynamic and removed the hardcoded 100 here.",
+      "parentUuid": "33b6fdf3_674f9210",
+      "range": {
+        "startLine": 156,
+        "startChar": 5,
+        "endLine": 156,
+        "endChar": 10
+      },
+      "revId": "020a601c8f23475f1b1b2c3944b972699a9a6b41",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c03fceab_d73aee06",
+        "filename": "agents/skills/luci-test-results/SKILL.md",
+        "patchSetId": 43
+      },
+      "lineNbr": 156,
+      "author": {
+        "id": 1241393
+      },
+      "writtenOn": "2026-09-18T19:37:39Z",
+      "side": 1,
+      "message": "Justr put",
+      "parentUuid": "33b6fdf3_674f9210",
+      "range": {
+        "startLine": 156,
+        "startChar": 5,
+        "endLine": 156,
+        "endChar": 10
+      },
+      "revId": "020a601c8f23475f1b1b2c3944b972699a9a6b41",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "baeaabb5_f027fa54",
@@ -54,6 +102,30 @@
       "writtenOn": "2026-09-18T15:05:54Z",
       "side": 1,
       "message": "→? Text is better for agents than Latex.\n```suggestion\n- **Timeline Glyphs**: Displays recent verdicts ordered newest →\n```",
+      "range": {
+        "startLine": 176,
+        "startChar": 63,
+        "endLine": 176,
+        "endChar": 76
+      },
+      "revId": "020a601c8f23475f1b1b2c3944b972699a9a6b41",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "57af9d99_ebb25f7c",
+        "filename": "agents/skills/luci-test-results/SKILL.md",
+        "patchSetId": 43
+      },
+      "lineNbr": 176,
+      "author": {
+        "id": 1241393
+      },
+      "writtenOn": "2026-09-18T19:37:39Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "baeaabb5_f027fa54",
       "range": {
         "startLine": 176,
         "startChar": 63,
