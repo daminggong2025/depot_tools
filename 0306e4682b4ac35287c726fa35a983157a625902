@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "679e1f76_4d7f6782",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 46
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 5170473
+      },
+      "writtenOn": "2026-09-19T04:56:59Z",
+      "side": 1,
+      "message": "git pull https://chromium.googlesource.com/chromium/tools/depot_tools refs/changes/76/1489476/2",
+      "revId": "0306e4682b4ac35287c726fa35a983157a625902",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
