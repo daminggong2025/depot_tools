@@ -1468,6 +1468,7 @@ class Changelist(object):
 
     def __init__(
         self,
+        *,
         branchref=None,
         issue=None,
         codereview_host=None,
@@ -1517,7 +1518,7 @@ class Changelist(object):
     def owners_client(self):
         if self._owners_client is None:
             remote, remote_branch = self.GetRemoteBranch()
-            branch = GetTargetRef(remote, remote_branch, None)
+            branch = GetTargetRef(remote, remote_branch, self.branchref)
             self._owners_client = owners_client.GetCodeOwnersClient(
                 host=self.GetGerritHost(),
                 project=self.GetGerritProject(),
@@ -1714,7 +1715,7 @@ class Changelist(object):
     def _GetIssueFromTripletId(self):
         project = self.GetGerritProject()
         remote, branch = self.GetRemoteBranch()
-        remote_ref = GetTargetRef(remote, branch, None).replace(
+        remote_ref = GetTargetRef(remote, branch, self.branchref).replace(
             "refs/heads/", ""
         )
         # _create_description_from_log calls into `git log
@@ -1910,7 +1911,7 @@ class Changelist(object):
         args.extend(["--verbose"] * verbose)
 
         remote, remote_branch = self.GetRemoteBranch()
-        target_ref = GetTargetRef(remote, remote_branch, None)
+        target_ref = GetTargetRef(remote, remote_branch, self.branchref)
         if settings.GetIsGerrit():
             args.extend(["--gerrit_url", self.GetCodereviewServer()])
             args.extend(["--gerrit_project", self.GetGerritProject()])

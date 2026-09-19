@@ -7615,6 +7615,27 @@ class ChangelistTest(unittest.TestCase):
             },
         )
 
+    def testGetIssueFromTripletId_WithTargetBranch(self):
+        mock.patch(
+            "git_cl._create_description_from_log",
+            return_value="Title\n\nChange-Id: I123456\n",
+        ).start()
+        mock.patch(
+            "git_cl.Changelist._GetGerritHostFromRemoteUrl",
+            return_value="chromium-review.googlesource.com",
+        ).start()
+        mock_get_change = mock.patch(
+            "gerrit_util.GetChange", return_value={"_number": 987654}
+        ).start()
+
+        cl = git_cl.Changelist(branchref="refs/branch-heads/8010")
+        self.assertEqual(987654, cl._GetIssueFromTripletId())
+        mock_get_change.assert_called_once_with(
+            "chromium-review.googlesource.com",
+            "project~refs%2Fbranch-heads%2F8010~I123456",
+            accept_statuses=[200, 404],
+        )
+
     def testRunHook_FewerOptions(self):
         expected_results = {
             "more_cc": ["cc@example.com", "more@example.com"],
