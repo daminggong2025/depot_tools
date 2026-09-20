@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "bf3a9aec_60a4b51a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1323125
+      },
+      "writtenOn": "2026-09-20T23:15:31Z",
+      "side": 1,
+      "message": "Hi @tikuta@chromium.org and @ovsienko@google.com,\n\nThis issue has now hit Node.js:\nhttps://github.com/nodejs/build/issues/4462\n\nand is causing fetch to fail even on x64 hosts as they also don\u0027t use the hermetic python.\n\nWould it be possible to use my original proposal instead of hard coding HOSTTYPEs and make use of an env variable?\n```\nif [[ \"X$DEPOT_TOOLS_BOOTSTRAP_PYTHON3\" \u003d\u003d \"X0\" ]]; then\n  exec python3 \"$@\"\nfi\n```\n\nI understand that we patched V8 itself to skip its usage by `host_cpu` but for this specific usage this env variable might be more helpful.\n\n`depot_tools/update_depot_tools` line 127 already uses DEPOT_TOOLS_BOOTSTRAP_PYTHON3 to avoid bootstrapping hermetic python, which we rely on as such on V8:\n```\nDEPOT_TOOLS_BOOTSTRAP_PYTHON3\u003d0 gclient sync\n```\nSince that flag already controls whether the hermetic python is downloaded, wouldn\u0027t it make sense to reuse it to also control whether it\u0027s used?",
+      "revId": "2cea9cdd785391335d448773124631cb711225e2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
