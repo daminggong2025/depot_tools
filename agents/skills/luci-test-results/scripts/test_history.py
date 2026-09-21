@@ -182,7 +182,7 @@ def fetch_multi_builder_history(
     def _fetch_one(bkt_bld):
         bkt, bld = bkt_bld
         try:
-            return test_history(
+            batch = test_history(
                 project,
                 test_id,
                 limit=per_builder_limit,
@@ -193,6 +193,10 @@ def fetch_multi_builder_history(
                 os_val=os_val,
                 test_suite=test_suite,
             )
+            for v in batch:
+                v.setdefault("bucket", bkt)
+                v.setdefault("builder", bld)
+            return batch
         except Exception as e:
             print(
                 f"Warning: Failed to fetch history for {bkt}/{bld}: {e}",
@@ -230,6 +234,7 @@ def format_summary(verdicts, variant_builders=None, default_builder=None):
         bld = (
             default_builder
             or mapping.get(v_hash)
+            or v.get("builder")
             or v.get("variant", {}).get("def", {}).get("builder")
             or v_hash
         )
@@ -289,7 +294,14 @@ def main():
     parser.add_argument(
         "--project", default="chromium", help="LUCI project name"
     )
-    parser.add_argument("--test-id", required=True, help="Full test ID")
+    parser.add_argument(
+        "--test-id",
+        help="Full ResultDB test ID (or Class#method substring)",
+    )
+    parser.add_argument(
+        "--test-substring",
+        help="Test ID substring (e.g. Class#method) to resolve via QueryTests",
+    )
     parser.add_argument(
         "--limit",
         type=int,
@@ -313,11 +325,30 @@ def main():
     )
 
     args = parser.parse_args()
+    if not args.test_id and not args.test_substring:
+        parser.error("Must provide either --test-id or --test-substring")
+
+    target_test_id = args.test_id
+    if args.test_substring or (
+        target_test_id and not target_test_id.startswith(("://", "ninja://"))
+    ):
+        sub_query = args.test_substring or target_test_id
+        matched_ids = query_tests(args.project, sub_query)
+        if len(matched_ids) == 1 or (args.test_substring and matched_ids):
+            target_test_id = matched_ids[0]
+            if len(matched_ids) > 1:
+                print(
+                    f"Notice: Resolved '{sub_query}' to '{target_test_id}' "
+                    f"({len(matched_ids)} matches).",
+                    file=sys.stderr,
+                )
+        elif not target_test_id:
+            target_test_id = sub_query
 
     if args.builder:
         verdicts = test_history(
             args.project,
-            args.test_id,
+            target_test_id,
             limit=args.limit or DEFAULT_SINGLE_BUILDER_LIMIT,
             builder=args.builder,
             bucket=args.bucket,
@@ -330,7 +361,7 @@ def main():
     else:
         verdicts, variant_builders = fetch_multi_builder_history(
             args.project,
-            args.test_id,
+            target_test_id,
             per_builder_limit=args.limit or DEFAULT_MULTI_BUILDER_LIMIT,
             bucket=args.bucket,
             device_os=args.device_os,
@@ -344,16 +375,16 @@ def main():
             print("[]")
             return
         search_query = (
-            args.test_id.split("#")[-1]
-            if "#" in args.test_id
-            else args.test_id.split(":")[-1]
+            target_test_id.split("#")[-1]
+            if "#" in target_test_id
+            else target_test_id.split(":")[-1]
         ).strip()
         candidates = [
             c
             for c in query_tests(args.project, search_query)
-            if c != args.test_id
+            if c != target_test_id
         ]
-        print(f"No verdicts found for '{args.test_id}'.", file=sys.stderr)
+        print(f"No verdicts found for '{target_test_id}'.", file=sys.stderr)
         if candidates:
             print("Did you mean one of these active tests?", file=sys.stderr)
             for tid in candidates[:10]:
