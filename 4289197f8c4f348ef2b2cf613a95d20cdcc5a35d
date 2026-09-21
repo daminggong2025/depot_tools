@@ -52,6 +52,24 @@
       "parentUuid": "18419e2e_75289feb",
       "revId": "4289197f8c4f348ef2b2cf613a95d20cdcc5a35d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "eaaf3573_e285dbae",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1338159
+      },
+      "writtenOn": "2026-09-21T18:20:52Z",
+      "side": 1,
+      "message": "Will submit this skill and remove the duplicated one. Thanks!",
+      "parentUuid": "9535c945_c3aa7501",
+      "revId": "4289197f8c4f348ef2b2cf613a95d20cdcc5a35d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
