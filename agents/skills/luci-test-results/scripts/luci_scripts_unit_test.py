@@ -348,15 +348,21 @@ class TestLuciScripts(unittest.TestCase):
         mock_prpc.return_value = {
             "testResults": [
                 {
+                    "name": SAMPLE_RESULT_NAME,
                     "testId": SAMPLE_TEST_ID,
-                    "status": "PASS",
-                    "expected": True,
+                    "status": "FAIL",
+                    "failureReason": {
+                        "primaryErrorMessage": "Expected 1 to equal 2"
+                    },
                 }
             ]
         }
         res = check_test.check_test(f"b{SAMPLE_BUILD_ID}", SAMPLE_TEST_QUERY)
         self.assertEqual(len(res), 1)
-        self.assertEqual(res[0]["status"], "PASS")
+        self.assertEqual(res[0]["status"], "FAIL")
+        self.assertFalse(res[0]["expected"])
+        self.assertEqual(res[0]["res"], SAMPLE_RESULT_NAME)
+        self.assertEqual(res[0]["err"], "Expected 1 to equal 2")
         mock_prpc.assert_called_once_with(
             "results.api.luci.app",
             "luci.resultdb.v1.ResultDB.QueryTestResults",
@@ -369,6 +375,14 @@ class TestLuciScripts(unittest.TestCase):
                 "pageSize": 1000,
             },
         )
+
+    @mock.patch("fetch_log.fetch_log_snippet")
+    def test_fetch_log_helper_alias(self, mock_snippet):
+        mock_snippet.return_value = "snippet-text"
+        self.assertEqual(
+            fetch_log.fetch_log(SAMPLE_RESULT_NAME, raw=True), "snippet-text"
+        )
+        mock_snippet.assert_called_once_with(SAMPLE_RESULT_NAME, raw=True)
 
     @mock.patch("test_history.run_prpc")
     def test_test_history(self, mock_prpc):

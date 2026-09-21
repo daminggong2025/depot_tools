@@ -19,7 +19,8 @@ def find_cl_builds(cl_number, patchset=None, host=None, show_all=False):
     if not host:
         host = "chromium-review.googlesource.com"
 
-    if not patchset:
+    auto_patchset = patchset is None
+    if auto_patchset:
         base_url = f"https://{host}/changes"
         cmd = ["curl", "-s", f"{base_url}/{cl_number}?o=CURRENT_REVISION"]
         try:
@@ -32,22 +33,33 @@ def find_cl_builds(cl_number, patchset=None, host=None, show_all=False):
             print(f"Error getting latest patchset: {e}", file=sys.stderr)
             return []
 
-    payload = {
-        "predicate": {
-            "gerritChanges": [
-                {
-                    "host": host,
-                    "change": int(cl_number),
-                    "patchset": int(patchset),
-                }
-            ]
+    candidate_patchsets = [int(patchset)]
+    if auto_patchset and int(patchset) > 1:
+        candidate_patchsets.extend(
+            range(int(patchset) - 1, max(0, int(patchset) - 4), -1)
+        )
+
+    result = None
+    for ps in candidate_patchsets:
+        payload = {
+            "predicate": {
+                "gerritChanges": [
+                    {
+                        "host": host,
+                        "change": int(cl_number),
+                        "patchset": ps,
+                    }
+                ]
+            }
         }
-    }
-    result = run_prpc(
-        "cr-buildbucket.appspot.com",
-        "buildbucket.v2.Builds.SearchBuilds",
-        payload,
-    )
+        result = run_prpc(
+            "cr-buildbucket.appspot.com",
+            "buildbucket.v2.Builds.SearchBuilds",
+            payload,
+        )
+        if result and result.get("builds"):
+            break
+
     if not result or "builds" not in result:
         return []
 
