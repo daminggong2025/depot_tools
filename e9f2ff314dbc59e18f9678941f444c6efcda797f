@@ -190,6 +190,30 @@
       },
       "revId": "e9f2ff314dbc59e18f9678941f444c6efcda797f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7a450de2_196bcd75",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1577257
+      },
+      "writtenOn": "2026-09-21T09:49:36Z",
+      "side": 1,
+      "message": "I believe our goal is to enable `fail-on-bad-deps` for every build everywhere.\n\nI agree that +6 minutes to each CQ build sounds problematic, but I\u0027d argue that either we can optimize this feature so that the overhead becomes negligible, or if that\u0027s not possible, we have to accept that that\u0027s the price to pay for correct builds and then we have to enable it even if it means slower builds.\n\nWhat do you think?",
+      "parentUuid": "19389053_021ee903",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 9,
+        "endChar": 48
+      },
+      "revId": "e9f2ff314dbc59e18f9678941f444c6efcda797f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
