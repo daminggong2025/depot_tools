@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4bc6d17e_103d7bc2",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1323125
+      },
+      "writtenOn": "2026-09-21T17:59:57Z",
+      "side": 1,
+      "message": "PTAL.\n\nPer my comments under https://chromium-review.googlesource.com/c/chromium/tools/depot_tools/+/8367685.",
+      "revId": "250f3b35530f83b5854bb7a90e54ed0403981e6f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
