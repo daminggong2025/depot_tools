@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e28f4e7c_3b4678ef",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 4323820
+      },
+      "writtenOn": "2026-09-22T19:04:43Z",
+      "side": 1,
+      "message": "Not sure who to send this to... this is a bit of a naive implementation, and I expect this CL to be the start of a conversation, not the final solution.\n\nAt a high level: when running lots of parallel workspaces with a tool like go/rift, we\u0027re spending a lot of time redownloading artifacts that could be cached. This creates that cache.\n\nHere\u0027s the design doc I put together: http://doc/1tMIzlE019EseydswkaZHjsnoUJ0o48lj7QH1ToXsjqc#heading\u003dh.jiirb3wj8m3t\n\nLet me know what you think.",
+      "revId": "95a97a2a193e8985d795c97b077d5af2bd36b2d9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
