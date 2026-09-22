@@ -4068,30 +4068,30 @@ def CheckAyeAye(input_api, output_api):
     )
 
 
-def CheckSkillFiles(input_api, output_api):
-    """Validates SKILL.md files have correct frontmatter and formatting."""
-    skill_files = [
-        f.AbsoluteLocalPath()
-        for f in input_api.AffectedFiles(include_deletes=False)
-        if f.LocalPath().endswith("SKILL.md")
-    ]
+_AGENT_CONFIG_FILENAMES = frozenset(
+    {"agent_configs.textproto", "agent_configs.txtpb"}
+)
+_CANDIDATE_AGENT_CONFIG_REL_PATHS = (
+    "agent_configs.textproto",
+    "agent_configs.txtpb",
+    _os.path.join("agents", "agent_configs.textproto"),
+    _os.path.join("agents", "agent_configs.txtpb"),
+    _os.path.join(".agents", "agent_configs.textproto"),
+    _os.path.join(".agents", "agent_configs.txtpb"),
+    _os.path.join(".agents", "code-review", "agent_configs.textproto"),
+    _os.path.join("depot_tools_agents", "agent_configs.txtpb"),
+    _os.path.join("configs", "agent_configs.textproto"),
+)
 
-    if not skill_files:
-        return []
 
+def _RunValidatorScript(input_api, output_api, label, script_name, args):
+    """Runs a skill-validator script via vpython3 and returns presubmit errors."""
     validator_path = _os.path.join(
-        _HERE,
-        "agents",
-        "skills",
-        "skill-validator",
-        "scripts",
-        "skill_validator.py",
+        _HERE, "agents", "skills", "skill-validator", "scripts", script_name
     )
-
-    cmd = ["vpython3", validator_path] + skill_files
     try:
         p = input_api.subprocess.Popen(
-            cmd,
+            ["vpython3", validator_path] + args,
             stdout=input_api.subprocess.PIPE,
             stderr=input_api.subprocess.PIPE,
         )
@@ -4099,20 +4099,62 @@ def CheckSkillFiles(input_api, output_api):
     except OSError as e:
         return [
             output_api.PresubmitError(
-                f"Failed to run skill validator: {e}.\n"
-                "Is vpython3 in your PATH?"
+                f"Failed to run {label}: {e}.\nIs vpython3 in your PATH?"
             )
         ]
-
     if p.returncode != 0:
         message = (
-            f"Skill validator ({validator_path}) failed with exit "
-            f"code {p.returncode}."
+            f"{label.capitalize()} ({validator_path}) failed with exit code "
+            f"{p.returncode}."
         )
         long_text = (
             f"STDOUT:\n{stdout.decode('utf-8', 'replace')}\n"
             f"STDERR:\n{stderr.decode('utf-8', 'replace')}\n"
         )
         return [output_api.PresubmitError(message, long_text=long_text)]
-
     return []
+
+
+def CheckSkillFiles(input_api, output_api):
+    """Validates SKILL.md files have correct frontmatter and formatting."""
+    skill_files = [
+        f.AbsoluteLocalPath()
+        for f in input_api.AffectedFiles(include_deletes=False)
+        if f.LocalPath().endswith("SKILL.md")
+    ]
+    if not skill_files:
+        return []
+    return _RunValidatorScript(
+        input_api,
+        output_api,
+        "skill validator",
+        "skill_validator.py",
+        skill_files,
+    )
+
+
+def CheckAgentConfigs(input_api, output_api):
+    """Validates CRACS agent_configs.textproto / agent_configs.txtpb files."""
+    config_files = [
+        f.AbsoluteLocalPath()
+        for f in input_api.AffectedFiles(include_deletes=False)
+        if _os.path.basename(f.LocalPath()) in _AGENT_CONFIG_FILENAMES
+    ]
+    repo_root = input_api.change.RepositoryRoot()
+    if input_api.is_committing or any(
+        f.LocalPath().endswith("SKILL.md")
+        for f in input_api.AffectedFiles(include_deletes=True)
+    ):
+        for rel_path in _CANDIDATE_AGENT_CONFIG_REL_PATHS:
+            candidate = _os.path.join(repo_root, rel_path)
+            if _os.path.isfile(candidate):
+                config_files.append(candidate)
+    if not config_files:
+        return []
+    return _RunValidatorScript(
+        input_api,
+        output_api,
+        "agent config validator",
+        "agent_config_validator.py",
+        ["--root", repo_root] + sorted(set(config_files)),
+    )
