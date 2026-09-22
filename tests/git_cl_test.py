@@ -11954,6 +11954,81 @@ class TestCMDDescription(unittest.TestCase):
         mock_prompt.assert_called_once()
 
 
+class CMDWebTest(unittest.TestCase):
+    """Tests for `git cl web` (CMDweb)."""
+
+    def setUp(self):
+        super().setUp()
+        mock.patch("git_cl.gclient_utils.IsEnvCog", return_value=False).start()
+        mock.patch(
+            "git_cl.Changelist.GetIssueURL",
+            return_value="https://chromium-review.googlesource.com/c/12345",
+        ).start()
+        mock.patch("git_cl.os.dup", side_effect=lambda fd: fd + 10).start()
+        mock.patch("git_cl.os.close").start()
+        mock.patch("git_cl.os.open").start()
+        mock.patch("git_cl.os.dup2").start()
+        self.addCleanup(mock.patch.stopall)
+
+    def test_web_darwin_clears_display_during_browser_open(self):
+        """Verifies DISPLAY/WAYLAND_DISPLAY are unset on macOS during webbrowser.open."""
+        observed_env = {}
+
+        def fake_open(_url):
+            observed_env["DISPLAY"] = os.environ.get("DISPLAY")
+            observed_env["WAYLAND_DISPLAY"] = os.environ.get("WAYLAND_DISPLAY")
+            return True
+
+        with (
+            mock.patch.object(git_cl.sys, "platform", "darwin"),
+            mock.patch.dict(
+                os.environ,
+                {
+                    "DISPLAY": "/private/tmp/com.apple.launchd.123/org.xquartz:0",
+                    "WAYLAND_DISPLAY": "wayland-0",
+                },
+                clear=False,
+            ),
+            mock.patch(
+                "git_cl.webbrowser.open", side_effect=fake_open
+            ) as m_open,
+        ):
+            rc = git_cl.CMDweb(git_cl.OptionParser(), [])
+            self.assertEqual(rc, 0)
+            m_open.assert_called_once_with(
+                "https://chromium-review.googlesource.com/c/12345"
+            )
+            self.assertIsNone(observed_env["DISPLAY"])
+            self.assertIsNone(observed_env["WAYLAND_DISPLAY"])
+            self.assertEqual(
+                os.environ.get("DISPLAY"),
+                "/private/tmp/com.apple.launchd.123/org.xquartz:0",
+            )
+            self.assertEqual(os.environ.get("WAYLAND_DISPLAY"), "wayland-0")
+
+    def test_web_linux_preserves_display_during_browser_open(self):
+        """Verifies DISPLAY is preserved on non-macOS platforms."""
+        observed_env = {}
+
+        def fake_open(_url):
+            observed_env["DISPLAY"] = os.environ.get("DISPLAY")
+            return True
+
+        with (
+            mock.patch.object(git_cl.sys, "platform", "linux"),
+            mock.patch.dict(os.environ, {"DISPLAY": ":0"}, clear=False),
+            mock.patch(
+                "git_cl.webbrowser.open", side_effect=fake_open
+            ) as m_open,
+        ):
+            rc = git_cl.CMDweb(git_cl.OptionParser(), [])
+            self.assertEqual(rc, 0)
+            m_open.assert_called_once_with(
+                "https://chromium-review.googlesource.com/c/12345"
+            )
+            self.assertEqual(observed_env["DISPLAY"], ":0")
+
+
 if __name__ == "__main__":
     logging.basicConfig(
         level=logging.DEBUG if "-v" in sys.argv else logging.ERROR

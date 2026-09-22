@@ -8259,9 +8259,21 @@ def CMDweb(parser, args):
     os.close(1)
     os.close(2)
     os.open(os.devnull, os.O_RDWR)
+    saved_display = None
+    saved_wayland_display = None
+    if sys.platform == "darwin":
+        # Work around Python 3.11 webbrowser bug (gh-87277, crbug.com/539636540)
+        # where DISPLAY/WAYLAND_DISPLAY on macOS triggers `xdg-settings` and
+        # autostarts XQuartz. Fixed upstream in Python 3.13.
+        saved_display = os.environ.pop("DISPLAY", None)
+        saved_wayland_display = os.environ.pop("WAYLAND_DISPLAY", None)
     try:
         webbrowser.open(issue_url)
     finally:
+        if saved_display is not None:
+            os.environ["DISPLAY"] = saved_display
+        if saved_wayland_display is not None:
+            os.environ["WAYLAND_DISPLAY"] = saved_wayland_display
         os.dup2(saved_stdout, 1)
         os.dup2(saved_stderr, 2)
     return 0
