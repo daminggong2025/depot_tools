@@ -3035,22 +3035,33 @@ def CheckForCommitObjects(input_api, output_api):
 
     config = configparser.ConfigParser()
     config.read(gitmodules_file)
-    gitmodule_paths = set([])
+    gitmodules = {}
     for name, section in config.items():
         if not name.startswith("submodule "):
             continue
         if "path" not in section:
             continue
-        gitmodule_paths.add(section["path"])
+        gitmodules[section["path"]] = section.get("url", "")
+
+    def normalize_url(u):
+        if not u:
+            return ""
+        u = u.rstrip("/")
+        if u.endswith(".git"):
+            u = u[:-4].rstrip("/")
+        return u
 
     mismatch_entries = []
     deps_msg = ""
+    vars_dict = deps.get("vars", {})
     for dep_path, dep in deps["deps"].items():
         if "dep_type" in dep and dep["dep_type"] != "git":
             continue
 
         url = dep if isinstance(dep, str) else dep["url"]
-        commit_hash = url.split("@")[-1]
+        if "{" in url and vars_dict:
+            url = url.format(**vars_dict)
+        repo_url, _, commit_hash = url.rpartition("@")
 
         # One exception is made prior to this check enforcement.
         #
@@ -3089,7 +3100,7 @@ def CheckForCommitObjects(input_api, output_api):
                     )
                 ]
             try:
-                gitmodule_paths.remove(submodule_path)
+                gitmodule_url = gitmodules.pop(submodule_path)
             except KeyError:
                 return [
                     output_api.PresubmitError(
@@ -3098,6 +3109,12 @@ def CheckForCommitObjects(input_api, output_api):
                         "gitlink locations in the tree."
                     )
                 ]
+            if normalize_url(gitmodule_url) != normalize_url(repo_url):
+                mismatch_entries.append(submodule_path)
+                deps_msg += (
+                    f"\n [DEPS]        {dep_path} -> {repo_url}"
+                    f"\n [.gitmodules] {submodule_path} -> {gitmodule_url}"
+                )
         else:
             mismatch_entries.append(dep_path)
             deps_msg += f"\n [DEPS]      {dep_path} -> {commit_hash}"
@@ -3111,7 +3128,7 @@ def CheckForCommitObjects(input_api, output_api):
         return [
             output_api.PresubmitError(
                 "DEPS file indicates git submodule migration is in progress,\n"
-                "but the commit objects do not match DEPS entries.\n\n"
+                "but the commit objects or submodule URLs do not match DEPS entries.\n\n"
                 "To reset all git submodule git entries to match DEPS, run\n"
                 "the following command in the root of this repository:\n"
                 "    gclient gitmodules\n"
@@ -3122,14 +3139,14 @@ def CheckForCommitObjects(input_api, output_api):
             )
         ]
 
-    if len(gitmodule_paths) > 0:
+    if len(gitmodules) > 0:
         return [
             output_api.PresubmitError(
                 ".gitmodules file contains submodules that no longer exist\n"
                 "in DEPS or Git (gitlink).\n"
                 "Remove the following entries from .gitmodules:\n"
                 "\n\t"
-                + "\n\t".join(gitmodule_paths)
+                + "\n\t".join(gitmodules.keys())
                 + "\n\nor run the following command:\n"
                 "    gclient gitmodules\n"
             )

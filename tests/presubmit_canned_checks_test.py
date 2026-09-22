@@ -1823,8 +1823,14 @@ class CheckForCommitObjectsTest(unittest.TestCase):
 
         mock_instance = mock_config_parser.return_value
         mock_instance.items.return_value = [
-            ('submodule "sub1"', {"path": "src/third_party/sub1"}),
-            ('submodule "sub2"', {"path": "src/third_party/sub2"}),
+            (
+                'submodule "sub1"',
+                {"path": "src/third_party/sub1", "url": "https://repo"},
+            ),
+            (
+                'submodule "sub2"',
+                {"path": "src/third_party/sub2", "url": "https://repo.git"},
+            ),
         ]
 
         results = presubmit_canned_checks.CheckForCommitObjects(
@@ -1832,6 +1838,52 @@ class CheckForCommitObjectsTest(unittest.TestCase):
         )
 
         self.assertEqual(0, len(results))
+
+    @mock.patch("configparser.ConfigParser")
+    def testSubmoduleUrlMismatchSync(self, mock_config_parser):
+        # DEPS and gitlink commit hashes match, but .gitmodules URL diverges.
+        self.mock_parse_deps.return_value = {
+            "git_dependencies": "SYNC",
+            "vars": {
+                "chromium_git": "https://chromium.googlesource.com",
+            },
+            "deps": {
+                "src/third_party/pthreadpool/src": (
+                    "{chromium_git}/external/github.com/google/pthreadpool.git@1111"
+                ),
+            },
+        }
+        self.input_api.subprocess.check_output.side_effect = [
+            b"",  # git show HEAD:DEPS
+            b"160000 commit 1111\tthird_party/pthreadpool/src\0",
+        ]
+
+        mock_instance = mock_config_parser.return_value
+        mock_instance.items.return_value = [
+            (
+                'submodule "third_party/pthreadpool/src"',
+                {
+                    "path": "third_party/pthreadpool/src",
+                    "url": "https://chromium.googlesource.com/external/github.com/Maratyszcza/pthreadpool",
+                },
+            ),
+        ]
+
+        results = presubmit_canned_checks.CheckForCommitObjects(
+            self.input_api, self.output_api
+        )
+
+        self.assertEqual(1, len(results))
+        self.assertIn(
+            "[DEPS]        src/third_party/pthreadpool/src -> "
+            "https://chromium.googlesource.com/external/github.com/google/pthreadpool.git",
+            results[0].message,
+        )
+        self.assertIn(
+            "[.gitmodules] third_party/pthreadpool/src -> "
+            "https://chromium.googlesource.com/external/github.com/Maratyszcza/pthreadpool",
+            results[0].message,
+        )
 
     def testFalsePositiveText(self):
         # "160000" in filename but not mode.
