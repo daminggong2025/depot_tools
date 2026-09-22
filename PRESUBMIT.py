@@ -207,6 +207,11 @@ def CheckSkillFiles(input_api, output_api):
     return input_api.canned_checks.CheckSkillFiles(input_api, output_api)
 
 
+def CheckAgentConfigs(input_api, output_api):
+    """Validates CRACS agent_configs.textproto / agent_configs.txtpb files."""
+    return input_api.canned_checks.CheckAgentConfigs(input_api, output_api)
+
+
 def CheckSkillValidatorTestsOnCommit(input_api, output_api):
     """Runs skill-validator tests on commit."""
     tests = input_api.canned_checks.GetUnitTestsInDirectory(
