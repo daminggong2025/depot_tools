@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2964fde2_c222e178",
+        "filename": "agents/skills/luci-test-results/SKILL.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 151,
+      "author": {
+        "id": 1002869
+      },
+      "writtenOn": "2026-09-22T14:51:06Z",
+      "side": 1,
+      "message": "Do you think it\u0027s worth specifying these are mutually exclusive? Maybe with `group \u003d parser.add_mutually_exclusive_group(required\u003dTrue)` in `test_history.py`?",
+      "range": {
+        "startLine": 151,
+        "startChar": 5,
+        "endLine": 151,
+        "endChar": 9
+      },
+      "revId": "2df9cc8016d6dbfd1ad89d1f8c48d3efe24486d6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "55896021_789c514b",
+        "filename": "agents/skills/luci-test-results/scripts/find_cl_builds.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 1002869
+      },
+      "writtenOn": "2026-09-22T14:51:06Z",
+      "side": 1,
+      "message": "run_prpc returns `None` on failed prpc calls, so maybe we should early out here? It returns `{}` on valid response with 0 builds.",
+      "range": {
+        "startLine": 61,
+        "startChar": 11,
+        "endLine": 61,
+        "endChar": 17
+      },
+      "revId": "2df9cc8016d6dbfd1ad89d1f8c48d3efe24486d6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
