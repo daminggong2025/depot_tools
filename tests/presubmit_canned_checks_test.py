@@ -3201,5 +3201,74 @@ class MockInputApiTest(unittest.TestCase):
         )
 
 
+class CheckAgentConfigsTest(unittest.TestCase):
+    def setUp(self):
+        super().setUp()
+        self.addCleanup(mock.patch.stopall)
+        self.input_api = MockInputApi()
+        self.output_api = MockOutputApi()
+        self.mock_repo_root = mock.patch.object(
+            self.input_api.change, "RepositoryRoot", create=True
+        ).start()
+        self.mock_repo_root.return_value = "/fake/repo"
+        self.mock_popen = mock.patch.object(
+            self.input_api.subprocess, "Popen", autospec=True
+        ).start()
+        self.mock_proc = mock.Mock()
+        self.mock_popen.return_value = self.mock_proc
+        self.input_api.subprocess.PIPE = subprocess.PIPE
+        self.input_api.subprocess.STDOUT = subprocess.STDOUT
+
+    def test_no_relevant_files(self):
+        self.input_api.files = [MockAffectedFile("foo/bar.py", [])]
+        results = presubmit_canned_checks.CheckAgentConfigs(
+            self.input_api, self.output_api
+        )
+        self.assertEqual(results, [])
+        self.mock_popen.assert_not_called()
+
+    def test_valid_agent_configs_file(self):
+        self.input_api.files = [
+            MockAffectedFile("agents/agent_configs.textproto", [])
+        ]
+        self.mock_proc.communicate.return_value = (b"[PASS]", b"")
+        self.mock_proc.returncode = 0
+        results = presubmit_canned_checks.CheckAgentConfigs(
+            self.input_api, self.output_api
+        )
+        self.assertEqual(results, [])
+        self.mock_popen.assert_called_once()
+
+    def test_invalid_agent_configs_file(self):
+        self.input_api.files = [
+            MockAffectedFile("agents/agent_configs.textproto", [])
+        ]
+        self.mock_proc.communicate.return_value = (
+            b"",
+            b"Validation errors in agents/agent_configs.textproto",
+        )
+        self.mock_proc.returncode = 1
+        results = presubmit_canned_checks.CheckAgentConfigs(
+            self.input_api, self.output_api
+        )
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0].type, "error")
+        self.assertIn("failed with exit code 1", results[0].message)
+
+    def test_deleted_skill_file_triggers_validation(self):
+        self.input_api.files = [
+            MockAffectedFile("agents/skills/foo/SKILL.md", [], action="D")
+        ]
+        mock_isfile = mock.patch("os.path.isfile", return_value=True).start()
+        self.mock_proc.communicate.return_value = (b"[PASS]", b"")
+        self.mock_proc.returncode = 0
+        results = presubmit_canned_checks.CheckAgentConfigs(
+            self.input_api, self.output_api
+        )
+        self.assertEqual(results, [])
+        mock_isfile.assert_called()
+        self.mock_popen.assert_called_once()
+
+
 if __name__ == "__main__":
     unittest.main()
