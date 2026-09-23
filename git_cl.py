@@ -6461,6 +6461,7 @@ def CMDpresubmit(parser, args):
 
     start = time.time()
     try:
+        print(11)
         # For upload checks (-u), use the local git commit message to avoid a
         # Gerrit RPC.
         if (
@@ -6469,8 +6470,10 @@ def CMDpresubmit(parser, args):
             and cl.GetIssue()
         ):
             description = cl.FetchDescription()
+            print(12)
         else:
             description = _create_description_from_log([base_branch])
+            print(13)
     except Exception as e:
         print("Failed to fetch CL description - %s" % str(e))
         description = _create_description_from_log([base_branch])
