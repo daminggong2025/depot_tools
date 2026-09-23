@@ -46,6 +46,30 @@
       },
       "revId": "1b8589dfdb36b59d7e5d0b714e38e8589f5607ba",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "896dc470_ed71e977",
+        "filename": "git_cl.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 6472,
+      "author": {
+        "id": 1000266
+      },
+      "writtenOn": "2026-09-23T23:15:48Z",
+      "side": 1,
+      "message": "Ah, I see _fetch() inside AsyncWarmChangeDetail catches Exception and defers raising it until _GetChangeDetail joins the thread in FetchDescription().\n\nThe one subtlety is that AsyncWarmChangeDetail calls self.GetIssue() and self.GetGerritHost() synchronously on the main thread before starting the thread but previously cl.GetIssue() was inside the try/except below. For squash\u003dfalse repos, GetIssue() calls _GetIssueFromTripletId() which makes a synchronous gerrit_util.GetChange() RPC that could raise before reaching the try/except fallback. Either way, still LGTM!",
+      "parentUuid": "de89f227_324918db",
+      "range": {
+        "startLine": 6472,
+        "startChar": 11,
+        "endLine": 6472,
+        "endChar": 32
+      },
+      "revId": "1b8589dfdb36b59d7e5d0b714e38e8589f5607ba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
