@@ -28,5 +28,11 @@ To validate specific files:
 agents/skills/skill-validator/scripts/skill_validator.py path/to/SKILL.md
 ```
 
+To validate CRACS agent configuration files (`agent_configs.textproto` / `agent_configs.txtpb`):
+
+```bash
+agents/skills/skill-validator/scripts/agent_config_validator.py path/to/agent_configs.textproto
+```
+
 Present the script output to the user. If there are failures, help the user
 understand and fix the issues based on the error messages.
