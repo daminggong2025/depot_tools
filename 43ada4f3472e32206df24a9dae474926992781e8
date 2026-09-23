@@ -16,6 +16,23 @@
       "message": "PTAL to get early feebdack. We recently added a agent_configs.txtpb to the crossbench repos but noticed there is no validation for the textproto file. \nHappy to keep on iterating on this to get it upstreamed.",
       "revId": "43ada4f3472e32206df24a9dae474926992781e8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a64a4794_1a430aea",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 8
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-09-23T22:45:03Z",
+      "side": 1,
+      "message": "I don\u0027t think we want this validation in depot_tools (or forked into other repos either). doesn\u0027t it make the most sense to validate it even further upstream? like http://b/529409356",
+      "revId": "43ada4f3472e32206df24a9dae474926992781e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
