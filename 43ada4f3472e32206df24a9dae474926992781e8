@@ -33,6 +33,24 @@
       "message": "I don\u0027t think we want this validation in depot_tools (or forked into other repos either). doesn\u0027t it make the most sense to validate it even further upstream? like http://b/529409356",
       "revId": "43ada4f3472e32206df24a9dae474926992781e8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "736ee6e0_81712130",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 8
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1132654
+      },
+      "writtenOn": "2026-09-23T23:07:57Z",
+      "side": 1,
+      "message": "As long as we get validation warnings in gerrit when we break things in that config file I\u0027m happy. So this is enabled or / working for chromium repos on https://chromium-review.git.corp.google.com/?\n\nEarly validation on presubmit is a nicer user experience though and speeds up developemnt.",
+      "parentUuid": "a64a4794_1a430aea",
+      "revId": "43ada4f3472e32206df24a9dae474926992781e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
