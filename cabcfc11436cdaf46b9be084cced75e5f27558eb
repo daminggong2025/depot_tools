@@ -33,6 +33,23 @@
       "message": "Adding team members who are more familiar with the license allowlist.",
       "revId": "cabcfc11436cdaf46b9be084cced75e5f27558eb",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "898112aa_4c6c0aeb",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2026-09-23T02:10:13Z",
+      "side": 1,
+      "message": "I found the license text for \u0027CLARIN PUB +BY\u0027 in crrev.com/c/8407645\n\nOur internal license tool (go/lican) hasn\u0027t seen this license before so I filed a bug to add it to the system https://b.corp.google.com/issues/565115962\n\nIs \u0027CLARIN PUB\u0027 a separate thing? \n\nOnce OSL has added it, it\u0027ll have an identifier (likely \u0027CLARIN-PUB-BY\u0027) and this will need to match our allowlist. In the meantime you can add \u0027Metadata-Validate-Bypass: ...\u0027 to the CL (I\u0027ll leave a comment)",
+      "revId": "cabcfc11436cdaf46b9be084cced75e5f27558eb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
