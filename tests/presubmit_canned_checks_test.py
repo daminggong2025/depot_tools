@@ -27,6 +27,115 @@ import presubmit_canned_checks  # noqa: E402
 import run_alint  # noqa: E402
 
 
+class CheckChangeLintsCleanTest(unittest.TestCase):
+    def setUp(self):
+        self.input_api = MockInputApi()
+        self.input_api.cpplint = mock.Mock()
+        self.input_api.cpplint._cpplint_state.error_count = 0
+        self.input_api.stringIO = io.StringIO
+        self.input_api.files = [MockFile("foo.cc", [])]
+        self.output_api = MockOutputApi()
+
+    def testParallelUsesProcessWorkers(self):
+        self.input_api.parallel = True
+        self.input_api.no_diffs = True
+        self.input_api.files = [
+            MockFile(f"foo{i}.cc", [])
+            for i in range(presubmit_canned_checks.MIN_FILES_FOR_PARALLEL_CPPLINT)
+        ]
+
+        with mock.patch.object(
+            presubmit_canned_checks, "_RunCppLintInParallel", return_value=[]
+        ) as run_parallel:
+            results = presubmit_canned_checks.CheckChangeLintsClean(
+                self.input_api, self.output_api
+            )
+
+        self.assertEqual([], results)
+        run_parallel.assert_called_once()
+        self.input_api.cpplint.ProcessFile.assert_not_called()
+
+    def testParallelChangedFilesUsesProcessWorkers(self):
+        self.input_api.parallel = True
+        self.input_api.no_diffs = False
+        self.input_api.files = [
+            MockFile(f"foo{i}.cc", [])
+            for i in range(presubmit_canned_checks.MIN_FILES_FOR_PARALLEL_CPPLINT)
+        ]
+
+        with mock.patch.object(
+            presubmit_canned_checks, "_RunCppLintInParallel", return_value=[]
+        ) as run_parallel:
+            results = presubmit_canned_checks.CheckChangeLintsClean(
+                self.input_api, self.output_api
+            )
+
+        self.assertEqual([], results)
+        run_parallel.assert_called_once()
+        self.input_api.cpplint.ProcessFile.assert_not_called()
+
+    def testSmallDiffRemainsSerialEvenWhenParallelEnabled(self):
+        self.input_api.parallel = True
+        self.input_api.no_diffs = False
+        self.input_api.files = [MockFile("foo.cc", [])]
+
+        with mock.patch.object(
+            presubmit_canned_checks, "_RunCppLintInParallel"
+        ) as run_parallel:
+            results = presubmit_canned_checks.CheckChangeLintsClean(
+                self.input_api, self.output_api
+            )
+
+        self.assertEqual([], results)
+        run_parallel.assert_not_called()
+        self.input_api.cpplint.ProcessFile.assert_called_once()
+
+    def testSerialChangedFilesRemainSerial(self):
+        self.input_api.parallel = False
+        self.input_api.no_diffs = False
+
+        with mock.patch.object(
+            presubmit_canned_checks, "_RunCppLintInParallel"
+        ) as run_parallel:
+            results = presubmit_canned_checks.CheckChangeLintsClean(
+                self.input_api, self.output_api
+            )
+
+        self.assertEqual([], results)
+        run_parallel.assert_not_called()
+        self.input_api.cpplint.ProcessFile.assert_called_once()
+
+    def testParallelResultsPreserveBatchOrderAndErrorState(self):
+        cpplint = mock.Mock()
+        cpplint._re_pattern_templates = []
+        cpplint._cpplint_state.error_count = 0
+        cpplint._cpplint_state.errors_by_category = {}
+        executor = mock.MagicMock()
+        executor.map.return_value = [
+            (2, {"runtime": 2}, ["first"]),
+            (3, {"runtime": 1, "whitespace": 2}, ["second"]),
+        ]
+
+        with mock.patch.object(
+            presubmit_canned_checks.concurrent.futures, "ProcessPoolExecutor"
+        ) as executor_class:
+            executor_class.return_value.__enter__.return_value = executor
+            output = presubmit_canned_checks._RunCppLintInParallel(
+                cpplint, ["first.cc", "second.cc"], 4, "-filter", "vs7"
+            )
+
+        self.assertEqual(["first", "second"], output)
+        self.assertEqual(5, cpplint._cpplint_state.error_count)
+        self.assertEqual(
+            {
+                "runtime": 3,
+                "whitespace": 2,
+            },
+            cpplint._cpplint_state.errors_by_category,
+        )
+        executor.map.assert_called_once()
+
+
 class InclusiveLanguageCheckTest(unittest.TestCase):
     def testBlockedTerms(self):
         input_api = MockInputApi()

@@ -12,6 +12,7 @@ __version__ = "2.0.0"
 
 import argparse
 import ast  # Exposed through the API.
+import concurrent.futures
 import contextlib
 import cpplint
 import fnmatch  # Exposed through the API.
@@ -443,6 +444,7 @@ class InputApi(object):
         # Temporary files and directories we must manually remove at the end of a run.
         self._named_temporary_files = []
         self._temporary_directories = []
+        self._affected_files_by_delete_state = {}
 
         # Cached result of AffectedExtensions().
         self._cached_affected_extensions = None
@@ -497,14 +499,28 @@ class InputApi(object):
         if len(dir_with_slash) > 0:
             dir_with_slash += os.path.sep
 
-        return list(
-            filter(
-                lambda x: normpath(x.AbsoluteLocalPath()).startswith(
-                    dir_with_slash
-                ),
-                self.change.AffectedFiles(include_deletes, file_filter),
+        if not self.no_diffs:
+            return list(
+                filter(
+                    lambda x: normpath(x.AbsoluteLocalPath()).startswith(
+                        dir_with_slash
+                    ),
+                    self.change.AffectedFiles(include_deletes, file_filter),
+                )
             )
-        )
+
+        if include_deletes not in self._affected_files_by_delete_state:
+            self._affected_files_by_delete_state[include_deletes] = [
+                affected_file
+                for affected_file in self.change.AffectedFiles(include_deletes)
+                if normpath(affected_file.AbsoluteLocalPath()).startswith(
+                    dir_with_slash
+                )
+            ]
+        affected_files = self._affected_files_by_delete_state[include_deletes]
+        if file_filter:
+            affected_files = filter(file_filter, affected_files)
+        return list(affected_files)
 
     def LocalPaths(self):
         """Returns platform-native local paths of .AffectedFiles().
@@ -1796,32 +1812,112 @@ class PresubmitExecuter(object):
             with rdb_wrapper.client(prefix) as sink:
                 if version >= [2, 0, 0]:
                     # Copy the keys to prevent "dictionary changed size during
-                    # iteration" exception if checks add globals to context.
-                    # E.g. sometimes the Python runtime will add
-                    # __warningregistry__.
-                    for function_name in list(context.keys()):
-                        if not function_name.startswith("Check"):
-                            continue
-                        if (
+                    # iteration" exceptions if checks add globals to context.
+                    # For example, Python may add __warningregistry__.
+                    function_names = [
+                        function_name
+                        for function_name in list(context.keys())
+                        if function_name.startswith("Check")
+                        and not (
                             function_name.endswith("Commit")
                             and not self.committing
+                        )
+                        and not (
+                            function_name.endswith("Upload") and self.committing
+                        )
+                    ]
+                    parallel_check_names = set()
+                    parallel_executor = None
+                    parallel_futures = {}
+                    if self.parallel and self.no_diffs:
+                        configured_checks = context.get(
+                            "PRESUBMIT_PARALLEL_CHECKS", ()
+                        )
+                        if not isinstance(
+                            configured_checks, (list, tuple, set, frozenset)
                         ):
-                            continue
-                        if function_name.endswith("Upload") and self.committing:
-                            continue
-                        logging.debug(
-                            "Running %s in %s", function_name, presubmit_path
-                        )
-                        results.extend(
-                            self._run_check_function(
-                                function_name, context, sink, presubmit_path
+                            raise PresubmitFailure(
+                                "PRESUBMIT_PARALLEL_CHECKS must be a "
+                                "collection of check function names."
                             )
+                        parallel_check_names = set(function_names) & set(
+                            configured_checks
                         )
-                        logging.debug("Running %s done.", function_name)
-                        self.more_cc.extend(output_api.more_cc)
-                        # Clear the CC list between running each presubmit check
-                        # to prevent CCs from being repeatedly appended.
-                        output_api.more_cc = []
+
+                    try:
+                        for function_name in function_names:
+                            if (
+                                function_name in parallel_check_names
+                                and parallel_executor is None
+                            ):
+                                max_workers = context.get(
+                                    "PRESUBMIT_PARALLEL_MAX_WORKERS", 4
+                                )
+                                if (
+                                    not isinstance(max_workers, int)
+                                    or max_workers < 1
+                                ):
+                                    raise PresubmitFailure(
+                                        "PRESUBMIT_PARALLEL_MAX_WORKERS must "
+                                        "be a positive integer."
+                                    )
+                                parallel_executor = (
+                                    concurrent.futures.ThreadPoolExecutor(
+                                        max_workers=min(
+                                            max_workers,
+                                            len(parallel_check_names),
+                                        )
+                                    )
+                                )
+                                parallel_futures = {
+                                    name: parallel_executor.submit(
+                                        self._run_parallel_check_function,
+                                        name,
+                                        context,
+                                        presubmit_path,
+                                    )
+                                    for name in function_names
+                                    if name in parallel_check_names
+                                }
+
+                            logging.debug(
+                                "Running %s in %s",
+                                function_name,
+                                presubmit_path,
+                            )
+                            if function_name in parallel_futures:
+                                check_results, elapsed_time, more_cc = (
+                                    parallel_futures[function_name].result()
+                                )
+                                results.extend(check_results)
+                                self.more_cc.extend(more_cc)
+                                if sink:
+                                    status, failure_reason = RDBStatusFrom(
+                                        check_results
+                                    )
+                                    sink.report(
+                                        function_name,
+                                        status,
+                                        elapsed_time,
+                                        failure_reason,
+                                    )
+                            else:
+                                results.extend(
+                                    self._run_check_function(
+                                        function_name,
+                                        context,
+                                        sink,
+                                        presubmit_path,
+                                    )
+                                )
+                                self.more_cc.extend(output_api.more_cc)
+                                # Clear the CC list between checks to prevent
+                                # CCs from being repeatedly appended.
+                                output_api.more_cc = []
+                            logging.debug("Running %s done.", function_name)
+                    finally:
+                        if parallel_executor:
+                            parallel_executor.shutdown(wait=True)
 
                 else:  # Old format
                     if self.committing:
@@ -1879,7 +1975,46 @@ class PresubmitExecuter(object):
                 except OSError:
                     pass
 
-    def _run_check_function(self, function_name, context, sink, presubmit_path):
+    def _run_parallel_check_function(
+        self, function_name, context, presubmit_path
+    ):
+        input_api = InputApi(
+            self.change,
+            presubmit_path,
+            self.committing,
+            self.verbose,
+            gerrit_obj=self.gerrit,
+            dry_run=self.dry_run,
+            thread_pool=self.thread_pool,
+            parallel=self.parallel,
+            no_diffs=self.no_diffs,
+        )
+        output_api = OutputApi(self.committing)
+        parallel_context = context.copy()
+        parallel_context["__args"] = (input_api, output_api)
+        try:
+            result, elapsed_time = self._run_check_function(
+                function_name,
+                parallel_context,
+                None,
+                presubmit_path,
+                return_elapsed=True,
+            )
+            return result, elapsed_time, output_api.more_cc
+        finally:
+            while input_api._named_temporary_files:
+                os.remove(input_api._named_temporary_files.pop())
+            while input_api._temporary_directories:
+                input_api._temporary_directories.pop().cleanup()
+
+    def _run_check_function(
+        self,
+        function_name,
+        context,
+        sink,
+        presubmit_path,
+        return_elapsed=False,
+    ):
         """Evaluates and returns the result of a given presubmit function.
 
         If sink is given, the result of the presubmit function will be reported
@@ -1933,6 +2068,8 @@ class PresubmitExecuter(object):
             status, failure_reason = RDBStatusFrom(result)
             sink.report(function_name, status, elapsed_time, failure_reason)
 
+        if return_elapsed:
+            return result, elapsed_time
         return result
 
     def _check_result_type(self, result):
