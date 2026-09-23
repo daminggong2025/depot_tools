@@ -16,6 +16,23 @@
       "message": "opensource-licensing@ internally said this license is OK to use \u0026 add to the allowlist",
       "revId": "cabcfc11436cdaf46b9be084cced75e5f27558eb",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e7cbad96_489efbab",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1272455
+      },
+      "writtenOn": "2026-09-23T01:12:42Z",
+      "side": 1,
+      "message": "Adding team members who are more familiar with the license allowlist.",
+      "revId": "cabcfc11436cdaf46b9be084cced75e5f27558eb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
