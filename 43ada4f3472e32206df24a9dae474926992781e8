@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "44c4d5cf_03bde5b8",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 8
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1132654
+      },
+      "writtenOn": "2026-09-23T21:41:40Z",
+      "side": 1,
+      "message": "PTAL to get early feebdack. We recently added a agent_configs.txtpb to the crossbench repos but noticed there is no validation for the textproto file. \nHappy to keep on iterating on this to get it upstreamed.",
+      "revId": "43ada4f3472e32206df24a9dae474926992781e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
