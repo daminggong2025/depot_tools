@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "245cf76a_9abe8a0a",
+        "filename": "owners_client.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 156,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-09-23T22:38:51Z",
+      "side": 1,
+      "message": "would it make sense to add `candidates.remove(owner)` after this line so already-selected owners are not considered again?",
+      "range": {
+        "startLine": 156,
+        "startChar": 12,
+        "endLine": 156,
+        "endChar": 34
+      },
+      "revId": "a993592a63fa0528a6d2ee1e768c8dee8fa39534",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6b99205e_a1c87ee9",
+        "filename": "tests/owners_client_test.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 325,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-09-23T22:38:51Z",
+      "side": 1,
+      "message": "wondering what would happen if we added dave as an owner here? since `qux/qux` can be approved by anyone, L329 should still return bob,chris right? IIUC dave would tie with everyone and win since `ScoreOwners` ranks dave ahead of EVERYONE, and L329 would return bob,chris,dave?",
+      "range": {
+        "startLine": 325,
+        "startChar": 0,
+        "endLine": 325,
+        "endChar": 47
+      },
+      "revId": "a993592a63fa0528a6d2ee1e768c8dee8fa39534",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "627b0138_4141f994",
+        "filename": "tests/owners_client_test.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 349,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-09-23T22:38:51Z",
+      "side": 1,
+      "message": "since CMDowners just prints SuggestMinimalOwners, won\u0027t it print `*` instead of a reviewer email even though alice or bob can approve the whole change?",
+      "range": {
+        "startLine": 349,
+        "startChar": 13,
+        "endLine": 349,
+        "endChar": 49
+      },
+      "revId": "a993592a63fa0528a6d2ee1e768c8dee8fa39534",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
