@@ -16,6 +16,24 @@
       "message": "Hey Andrew — two heads-ups on this change:\n\nThis modifies git cl presubmit -u, not git cl upload: Line 6464 is in CMDpresubmit (git cl presubmit), whereas git cl upload resolves the description in Changelist._GetDescriptionForUpload (around line 2110: elif self.GetIssue() and options.squash: description \u003d self.FetchDescription()). (Note: for git cl upload, CMDupload already kicks off cl.AsyncWarmChangeDetail() on a background thread in https://crrev.com/c/8273777 so the Gerrit RPC runs concurrently with local git checks instead of blocking startup.)\n\nI checked and it looks like skipping FetchDescription() when cl.GetIssue() is set breaks description checks in the default squash workflow. In squash mode, once a CL has been uploaded, the canonical CL description lives on Gerrit rather than in local git commits:\n\nDescription edits or footers (Bug:, Change-Id:, Cq-Include-Trybots:, etc.) added in the upload editor prompt, via git cl description, or in the Gerrit UI are stored on Gerrit without amending local commits.\n\nWith not options.upload, running git cl presubmit -u on an already-uploaded CL concatenates raw local commit messages (git log \u003cbase_branch\u003e..) instead of using the Gerrit description, causing description presubmit checks (like CheckChangeHasBugField or footer validation) to evaluate WIP local commit messages and disagree with what git cl upload checks.\n\nWe could call cl.AsyncWarmChangeDetail() at the start of CMDpresubmit (before is_dirty_git_tree and GetCommonAncestorWithUpstream) so the Gerrit RPC runs in parallel with the local git commands while still using the real Gerrit description when cl.GetIssue() is set.",
       "revId": "6b07b4abc0fa4e65e06caf5c1daf963cf0cf334b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "adc11383_c778d595",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1126674
+      },
+      "writtenOn": "2026-09-23T20:26:46Z",
+      "side": 1,
+      "message": "Thanks! I should have verified more of this manually :/.\n\nI\u0027ll revert this.\n\nI\u0027m kinda tempted to say we should just skip checks that rely on a remote commit message... but probably low priority to be worth a breaking change.\n\nSounds like we should:\n1) Move checks that query the message to the bottom of PRESUBMIT.py, and\n2) Add the prefetching to \"git cl presubmit -u\"?",
+      "parentUuid": "3067142d_d55f3310",
+      "revId": "6b07b4abc0fa4e65e06caf5c1daf963cf0cf334b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
