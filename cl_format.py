@@ -308,18 +308,15 @@ def _RunGoogleJavaFormat(opts, paths, top_dir, diffs):
     def RunFormat(cmd, path, range_args, **kwds):
         stdout = RunCommand(cmd + range_args + [path], **kwds)
 
-        if changed_lines_only:
+        if changed_lines_only and opts.diff:
             # google-java-format will not remove unused imports because they
             # do not fall within the changed lines. Run the command again to
             # remove them.
-            if opts.diff:
-                stdout = RunCommand(
-                    cmd + ["--fix-imports-only", "-"],
-                    stdin=stdout.encode(),
-                    **kwds,
-                )
-            else:
-                stdout += RunCommand(cmd + ["--fix-imports-only", path], **kwds)
+            stdout = RunCommand(
+                cmd + ["--fix-imports-only", "-"],
+                stdin=stdout.encode(),
+                **kwds,
+            )
 
         # If --diff is passed, google-java-format will output formatted content.
         # Diff it with the existing file in the checkout and output the result.
@@ -352,6 +349,19 @@ def _RunGoogleJavaFormat(opts, paths, top_dir, diffs):
                 )
             )
 
+        # google-java-format will not remove unused imports because they do not
+        # fall within the changed lines. Run --fix-imports-only on all files at
+        # once. In dry-run mode this can run in parallel with --lines; in
+        # replace mode it must run after --lines finishes modifying files.
+        if changed_lines_only and not opts.diff and opts.dry_run and paths:
+            results.append(
+                pool.apply_async(
+                    RunCommand,
+                    args=[base_cmd + ["--fix-imports-only"] + paths],
+                    kwds=kwds,
+                )
+            )
+
         return_value = 0
         for result in results:
             stdout = result.get()
@@ -361,7 +371,10 @@ def _RunGoogleJavaFormat(opts, paths, top_dir, diffs):
                 if opts.dry_run:
                     return_value = 2
 
-        return return_value
+    if changed_lines_only and not opts.diff and not opts.dry_run and paths:
+        RunCommand(base_cmd + ["--fix-imports-only"] + paths, **kwds)
+
+    return return_value
 
 
 def _RunKtfmt(opts, paths, top_dir, diffs):
