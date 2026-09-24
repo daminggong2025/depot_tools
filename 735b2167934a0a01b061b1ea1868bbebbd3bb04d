@@ -35,6 +35,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "aa96bd05_ce065e81",
+        "filename": "cl_format.py",
+        "patchSetId": 25
+      },
+      "lineNbr": 176,
+      "author": {
+        "id": 1286337
+      },
+      "writtenOn": "2026-09-24T21:07:28Z",
+      "side": 1,
+      "message": "No, it returns 0 just fine even if it\u0027s invalid C++. So I don\u0027t think there\u0027s a change needed.",
+      "parentUuid": "6e7cd1b3_dcf59599",
+      "revId": "735b2167934a0a01b061b1ea1868bbebbd3bb04d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "ed52c191_0e728933",
@@ -48,6 +66,24 @@
       "writtenOn": "2026-09-24T00:58:00Z",
       "side": 1,
       "message": "Why do we need this? This process looks the same as non-stdin-filename formatting, so I\u0027m confused what this is for. Could you add a comment",
+      "revId": "735b2167934a0a01b061b1ea1868bbebbd3bb04d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "88e5aeb6_7e4ad215",
+        "filename": "cl_format.py",
+        "patchSetId": 25
+      },
+      "lineNbr": 421,
+      "author": {
+        "id": 1286337
+      },
+      "writtenOn": "2026-09-24T21:07:28Z",
+      "side": 1,
+      "message": "Ya, this probably isn\u0027t necessary.",
+      "parentUuid": "ed52c191_0e728933",
       "revId": "735b2167934a0a01b061b1ea1868bbebbd3bb04d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -69,6 +105,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "f9f6bf16_cc994f68",
+        "filename": "cl_format.py",
+        "patchSetId": 25
+      },
+      "lineNbr": 432,
+      "author": {
+        "id": 1286337
+      },
+      "writtenOn": "2026-09-24T21:07:28Z",
+      "side": 1,
+      "message": "Done, with one change. We already get the config anyways, so no need to hunt for it.",
+      "parentUuid": "72df58e2_416a93ab",
+      "revId": "735b2167934a0a01b061b1ea1868bbebbd3bb04d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "91886e14_b19f0dee",
@@ -82,6 +136,24 @@
       "writtenOn": "2026-09-24T00:58:00Z",
       "side": 1,
       "message": "Too broad an exception. This catches things such as IndexError",
+      "revId": "735b2167934a0a01b061b1ea1868bbebbd3bb04d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b7579496_7991dcc0",
+        "filename": "cl_format.py",
+        "patchSetId": 25
+      },
+      "lineNbr": 621,
+      "author": {
+        "id": 1286337
+      },
+      "writtenOn": "2026-09-24T21:07:28Z",
+      "side": 1,
+      "message": "Just deleted the try catch, not valuable",
+      "parentUuid": "91886e14_b19f0dee",
       "revId": "735b2167934a0a01b061b1ea1868bbebbd3bb04d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -103,6 +175,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "5c8bb2ba_cd8b6bfa",
+        "filename": "cl_format.py",
+        "patchSetId": 25
+      },
+      "lineNbr": 642,
+      "author": {
+        "id": 1286337
+      },
+      "writtenOn": "2026-09-24T21:07:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "83d60faf_d0ac0f57",
+      "revId": "735b2167934a0a01b061b1ea1868bbebbd3bb04d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "4b9d66a9_e0f6bbf1",
@@ -116,6 +206,24 @@
       "writtenOn": "2026-09-24T00:58:00Z",
       "side": 1,
       "message": "DieWithError?",
+      "revId": "735b2167934a0a01b061b1ea1868bbebbd3bb04d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3302354f_1c11a0ba",
+        "filename": "cl_format.py",
+        "patchSetId": 25
+      },
+      "lineNbr": 1313,
+      "author": {
+        "id": 1286337
+      },
+      "writtenOn": "2026-09-24T21:07:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4b9d66a9_e0f6bbf1",
       "revId": "735b2167934a0a01b061b1ea1868bbebbd3bb04d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -137,6 +245,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "126a9bac_671e37a6",
+        "filename": "cl_format.py",
+        "patchSetId": 25
+      },
+      "lineNbr": 1318,
+      "author": {
+        "id": 1286337
+      },
+      "writtenOn": "2026-09-24T21:07:28Z",
+      "side": 1,
+      "message": "Ya, added a comment. A chunk of the formatters don\u0027t support this, and I believe this was the behaviour that we were seeing with the old jj fix anyways. But we can definitely add support in a followup if there\u0027s demand.",
+      "parentUuid": "7b5f74ee_c711bcd5",
+      "revId": "735b2167934a0a01b061b1ea1868bbebbd3bb04d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "6bdcc26d_3b1e9157",
@@ -150,6 +276,24 @@
       "writtenOn": "2026-09-24T00:58:00Z",
       "side": 1,
       "message": "Could you split this part into a seperate CL? Feels very unrelated and I\u0027m not even sure why it\u0027s needed.",
+      "revId": "735b2167934a0a01b061b1ea1868bbebbd3bb04d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "cd1f8010_dba68691",
+        "filename": "git_cl_core.py",
+        "patchSetId": 25
+      },
+      "lineNbr": 191,
+      "author": {
+        "id": 1286337
+      },
+      "writtenOn": "2026-09-24T21:07:28Z",
+      "side": 1,
+      "message": "Sure, this is required since `jj fix` sends them all off in parallel and without this, they all contest the Git config and usually one fails.\n\nI can split this and land it first",
+      "parentUuid": "6bdcc26d_3b1e9157",
       "revId": "735b2167934a0a01b061b1ea1868bbebbd3bb04d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -171,6 +315,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "55f0d471_f651e3c8",
+        "filename": "tests/cl_format_test.py",
+        "patchSetId": 25
+      },
+      "lineNbr": 1870,
+      "author": {
+        "id": 1286337
+      },
+      "writtenOn": "2026-09-24T21:07:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ceadf383_da684d0b",
+      "revId": "735b2167934a0a01b061b1ea1868bbebbd3bb04d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "81cdb643_a746ee71",
@@ -184,6 +346,24 @@
       "writtenOn": "2026-09-24T00:58:00Z",
       "side": 1,
       "message": "Is this standard practice? A little concerned about what happens if a test runner decides to run tests in parallel",
+      "revId": "735b2167934a0a01b061b1ea1868bbebbd3bb04d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "90259c25_659f96ae",
+        "filename": "tests/cl_format_test.py",
+        "patchSetId": 25
+      },
+      "lineNbr": 1872,
+      "author": {
+        "id": 1286337
+      },
+      "writtenOn": "2026-09-24T21:07:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "81cdb643_a746ee71",
       "revId": "735b2167934a0a01b061b1ea1868bbebbd3bb04d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
