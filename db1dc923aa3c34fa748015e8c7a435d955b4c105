@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1e5eff1e_9181a719",
+        "filename": "cl_format.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 1126674
+      },
+      "writtenOn": "2026-09-24T02:37:35Z",
+      "side": 0,
+      "message": "Gemini spotted this. This was comparing `\u00270\u0027` with `0`, so never true. It would have prevented unused imports from being removed anyways, so just deleted it.",
+      "revId": "db1dc923aa3c34fa748015e8c7a435d955b4c105",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e7b733ca_0447dbd0",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1126674
+      },
+      "writtenOn": "2026-09-24T02:37:35Z",
+      "side": 1,
+      "message": "Sorry for the churn here. Spent more time with it and found that running it a second time seems unnecessary. If we do find cases where it\u0027s not properly formatting imports, we can revert this and add proper test cases.",
+      "revId": "f957bbeeecc31a01b6a12b06fe1f6085add638df",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

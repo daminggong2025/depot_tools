@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "f5c0752c_aaef553f",
+        "filename": "cl_format.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 360,
+      "author": {
+        "id": 1126674
+      },
+      "writtenOn": "2026-09-24T02:37:35Z",
+      "side": 1,
+      "message": "Acknowledged",
+      "parentUuid": "ddb35e14_adad534d",
+      "range": {
+        "startLine": 360,
+        "startChar": 20,
+        "endLine": 360,
+        "endChar": 67
+      },
+      "revId": "dfa40ed8d058b91e286ad487d1c734e79b765c06",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "818ad91e_f26ed947",
@@ -37,6 +61,30 @@
       "writtenOn": "2026-09-23T22:09:57Z",
       "side": 1,
       "message": "same thing here with using `_SplitArgsByCmdLineLimit`",
+      "range": {
+        "startLine": 375,
+        "startChar": 8,
+        "endLine": 375,
+        "endChar": 69
+      },
+      "revId": "dfa40ed8d058b91e286ad487d1c734e79b765c06",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e757ef35_566fb817",
+        "filename": "cl_format.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 375,
+      "author": {
+        "id": 1126674
+      },
+      "writtenOn": "2026-09-24T02:37:35Z",
+      "side": 1,
+      "message": "Acknowledged",
+      "parentUuid": "818ad91e_f26ed947",
       "range": {
         "startLine": 375,
         "startChar": 8,
