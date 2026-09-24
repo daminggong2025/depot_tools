@@ -16,6 +16,176 @@
       "message": "I am fine to approve but I want to get Matt\u0027s opinion first as JJ owner: @msta@google.com",
       "revId": "735b2167934a0a01b061b1ea1868bbebbd3bb04d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6e7cd1b3_dcf59599",
+        "filename": "cl_format.py",
+        "patchSetId": 25
+      },
+      "lineNbr": 176,
+      "author": {
+        "id": 1450817
+      },
+      "writtenOn": "2026-09-24T00:58:00Z",
+      "side": 1,
+      "message": "clang-format can fail if it\u0027s not valid C++ code, can\u0027t it? Shouldn\u0027t we return the return code of RunCommand? Also, the check should probably come before we write bytes, because I\u0027m not sure if it prints to stdout in that case.",
+      "revId": "735b2167934a0a01b061b1ea1868bbebbd3bb04d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ed52c191_0e728933",
+        "filename": "cl_format.py",
+        "patchSetId": 25
+      },
+      "lineNbr": 421,
+      "author": {
+        "id": 1450817
+      },
+      "writtenOn": "2026-09-24T00:58:00Z",
+      "side": 1,
+      "message": "Why do we need this? This process looks the same as non-stdin-filename formatting, so I\u0027m confused what this is for. Could you add a comment",
+      "revId": "735b2167934a0a01b061b1ea1868bbebbd3bb04d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "72df58e2_416a93ab",
+        "filename": "cl_format.py",
+        "patchSetId": 25
+      },
+      "lineNbr": 432,
+      "author": {
+        "id": 1450817
+      },
+      "writtenOn": "2026-09-24T00:58:00Z",
+      "side": 1,
+      "message": "Let\u0027s suppose we have\n```\nsrc/\n  .rustfmt.toml\n  subdir/\n    .rustfmt.toml\n    other_file.rs\n    my_filel.rs\n```\n\nIt feels easier to just copy a relevant subtree into a temporary directory and format that:\n```\ndef format(repo_root: Path, rel_path: Path):\n    with tempfile.TemporaryDirectory() as td:\n        tmp \u003d td.path()\n        (tmp / rel_path).parent.mkdir(parents\u003dTrue)\n        (tmp / rel_path).write((repo_root / rel_path).read_bytes())\n        subdir \u003d rel_path.parent\n        while subdir.parent !\u003d subdir:\n           orig \u003d repo_root / subdir / \u0027.rustfmt.toml\u0027\n           if orig.exists():\n               (tmp / subdir / \u0027.rustfmt.toml\u0027).write(orig.read_bytes())\n           # run formatter\n```",
+      "revId": "735b2167934a0a01b061b1ea1868bbebbd3bb04d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "91886e14_b19f0dee",
+        "filename": "cl_format.py",
+        "patchSetId": 25
+      },
+      "lineNbr": 621,
+      "author": {
+        "id": 1450817
+      },
+      "writtenOn": "2026-09-24T00:58:00Z",
+      "side": 1,
+      "message": "Too broad an exception. This catches things such as IndexError",
+      "revId": "735b2167934a0a01b061b1ea1868bbebbd3bb04d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "83d60faf_d0ac0f57",
+        "filename": "cl_format.py",
+        "patchSetId": 25
+      },
+      "lineNbr": 642,
+      "author": {
+        "id": 1450817
+      },
+      "writtenOn": "2026-09-24T00:58:00Z",
+      "side": 1,
+      "message": "Too broad an exception. This catches things such as undeclared variables",
+      "revId": "735b2167934a0a01b061b1ea1868bbebbd3bb04d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4b9d66a9_e0f6bbf1",
+        "filename": "cl_format.py",
+        "patchSetId": 25
+      },
+      "lineNbr": 1313,
+      "author": {
+        "id": 1450817
+      },
+      "writtenOn": "2026-09-24T00:58:00Z",
+      "side": 1,
+      "message": "DieWithError?",
+      "revId": "735b2167934a0a01b061b1ea1868bbebbd3bb04d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7b5f74ee_c711bcd5",
+        "filename": "cl_format.py",
+        "patchSetId": 25
+      },
+      "lineNbr": 1318,
+      "author": {
+        "id": 1450817
+      },
+      "writtenOn": "2026-09-24T00:58:00Z",
+      "side": 1,
+      "message": "Why do we need --full to be set to true here? jj supports fixing only changed lines. This might be the right decision even so, but it should be documented at least.\n\nhttps://docs.jj-vcs.dev/prerelease/config/#configuration_1:~:text\u003dline%2Drange%2Dargs,line%2Dend%3D%24last%22%5D",
+      "revId": "735b2167934a0a01b061b1ea1868bbebbd3bb04d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6bdcc26d_3b1e9157",
+        "filename": "git_cl_core.py",
+        "patchSetId": 25
+      },
+      "lineNbr": 191,
+      "author": {
+        "id": 1450817
+      },
+      "writtenOn": "2026-09-24T00:58:00Z",
+      "side": 1,
+      "message": "Could you split this part into a seperate CL? Feels very unrelated and I\u0027m not even sure why it\u0027s needed.",
+      "revId": "735b2167934a0a01b061b1ea1868bbebbd3bb04d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ceadf383_da684d0b",
+        "filename": "tests/cl_format_test.py",
+        "patchSetId": 25
+      },
+      "lineNbr": 1870,
+      "author": {
+        "id": 1450817
+      },
+      "writtenOn": "2026-09-24T00:58:00Z",
+      "side": 1,
+      "message": "`self.test_dir \u003d self.enterContext(tempfile.TemporaryDirectory)`",
+      "revId": "735b2167934a0a01b061b1ea1868bbebbd3bb04d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "81cdb643_a746ee71",
+        "filename": "tests/cl_format_test.py",
+        "patchSetId": 25
+      },
+      "lineNbr": 1872,
+      "author": {
+        "id": 1450817
+      },
+      "writtenOn": "2026-09-24T00:58:00Z",
+      "side": 1,
+      "message": "Is this standard practice? A little concerned about what happens if a test runner decides to run tests in parallel",
+      "revId": "735b2167934a0a01b061b1ea1868bbebbd3bb04d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
