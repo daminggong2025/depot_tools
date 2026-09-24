@@ -50,6 +50,47 @@
       "message": "@gavinmak@google.com @brgan@google.com apologies, I\u0027m not entirely sure what\u0027s missing to get this merged. Could you assist?",
       "revId": "9de526b0ec25d157b37537a8ae42d5cee4969534",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8ec72d46_95fb928a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 8
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-09-24T21:14:05Z",
+      "side": 1,
+      "message": "you\u0027ll need a Code-Review+1 vote from both of us, and after that you should be able to vote Commit-Queue+2 to submit",
+      "parentUuid": "b445c5d0_b074075e",
+      "revId": "9de526b0ec25d157b37537a8ae42d5cee4969534",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "26640296_f59c00fe",
+        "filename": "gclient_paths.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 119,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-09-24T21:14:05Z",
+      "side": 1,
+      "message": "iiuc this won\u0027t work for some configs like angle that set `\"name\": \".\",`:\nhttps://source.chromium.org/chromium/chromium/tools/depot_tools/+/main:fetch_configs/angle.py;l\u003d18;drc\u003dc733c4a38fd67edd89e2c48dfc33d884e830ad79\n\n(also please add a test to cover this case)",
+      "range": {
+        "startLine": 119,
+        "startChar": 0,
+        "endLine": 119,
+        "endChar": 52
+      },
+      "revId": "9de526b0ec25d157b37537a8ae42d5cee4969534",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
