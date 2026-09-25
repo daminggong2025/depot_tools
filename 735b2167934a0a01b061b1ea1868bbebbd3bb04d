@@ -125,6 +125,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "5b37dce9_6896b0b4",
+        "filename": "cl_format.py",
+        "patchSetId": 25
+      },
+      "lineNbr": 432,
+      "author": {
+        "id": 1450817
+      },
+      "writtenOn": "2026-09-25T00:50:05Z",
+      "side": 1,
+      "message": "Not quite what I meant, I mean that why do we need to have IsRustFileIgnored at all? Can\u0027t we just set up the directories like we now do and then rustfmt would presumably not edit the file if it was marked as ignored?\n\nNote that I\u0027m not 100% familiar with the intricacies of rustfmt so I might be misunderstanding something",
+      "parentUuid": "f9f6bf16_cc994f68",
+      "revId": "735b2167934a0a01b061b1ea1868bbebbd3bb04d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "91886e14_b19f0dee",
         "filename": "cl_format.py",
         "patchSetId": 25
@@ -294,6 +312,24 @@
       "side": 1,
       "message": "Sure, this is required since `jj fix` sends them all off in parallel and without this, they all contest the Git config and usually one fails.\n\nI can split this and land it first",
       "parentUuid": "6bdcc26d_3b1e9157",
+      "revId": "735b2167934a0a01b061b1ea1868bbebbd3bb04d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3aeae125_e0fb43be",
+        "filename": "git_cl_core.py",
+        "patchSetId": 25
+      },
+      "lineNbr": 191,
+      "author": {
+        "id": 1450817
+      },
+      "writtenOn": "2026-09-25T00:50:05Z",
+      "side": 1,
+      "message": "SGTM, leaving this open as a reminder to split it",
+      "parentUuid": "cd1f8010_dba68691",
       "revId": "735b2167934a0a01b061b1ea1868bbebbd3bb04d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },

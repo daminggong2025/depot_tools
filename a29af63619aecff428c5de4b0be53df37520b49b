@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2bdd0830_ecb02aef",
+        "filename": "cl_format.py",
+        "patchSetId": 28
+      },
+      "lineNbr": 1318,
+      "author": {
+        "id": 1450817
+      },
+      "writtenOn": "2026-09-25T00:50:05Z",
+      "side": 1,
+      "message": "I don\u0027t particularly like delete \u003d False.\n\nI\u0027m pretty sure this would work, but I haven\u0027t tested it. Why not:\n```\ntemp_file \u003d NamedTemporaryFile(...) # without delete \u003d false\ntry:\n  temp_file.write(...)\nexcept:\n  temp_file.close()\n  raise\n```\n  \nThen later below you could drop the try/finally and instead do `with temp_file as f`.",
+      "revId": "a29af63619aecff428c5de4b0be53df37520b49b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
