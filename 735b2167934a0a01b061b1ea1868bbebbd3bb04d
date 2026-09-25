@@ -334,6 +334,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "aa5ac7a2_950ff467",
+        "filename": "git_cl_core.py",
+        "patchSetId": 25
+      },
+      "lineNbr": 191,
+      "author": {
+        "id": 1450817
+      },
+      "writtenOn": "2026-09-25T00:51:21Z",
+      "side": 1,
+      "message": "Nvm this has been done and was just showing because I was diffing patchsets so it included the diffbase.",
+      "parentUuid": "3aeae125_e0fb43be",
+      "revId": "735b2167934a0a01b061b1ea1868bbebbd3bb04d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "ceadf383_da684d0b",
