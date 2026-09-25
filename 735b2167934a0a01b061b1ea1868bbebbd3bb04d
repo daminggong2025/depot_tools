@@ -143,6 +143,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "491a35a6_401e516f",
+        "filename": "cl_format.py",
+        "patchSetId": 25
+      },
+      "lineNbr": 432,
+      "author": {
+        "id": 1286337
+      },
+      "writtenOn": "2026-09-25T17:23:59Z",
+      "side": 1,
+      "message": "I think I got what you\u0027re saying now. I originally did it this way since rustfmt would by default look to format other modules that are imported and fail when the child modules weren\u0027t found (strange design decision IMO), but I found I can skip this with a `--unstable-feature` (`--skip-children`). I\u0027ve updated the CL assuming this is what you meant, let me know if you\u0027re OK with using the `--unstable-feature`",
+      "parentUuid": "5b37dce9_6896b0b4",
+      "revId": "735b2167934a0a01b061b1ea1868bbebbd3bb04d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "91886e14_b19f0dee",
         "filename": "cl_format.py",
         "patchSetId": 25

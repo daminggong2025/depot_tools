@@ -16,6 +16,24 @@
       "message": "I don\u0027t particularly like delete \u003d False.\n\nI\u0027m pretty sure this would work, but I haven\u0027t tested it. Why not:\n```\ntemp_file \u003d NamedTemporaryFile(...) # without delete \u003d false\ntry:\n  temp_file.write(...)\nexcept:\n  temp_file.close()\n  raise\n```\n  \nThen later below you could drop the try/finally and instead do `with temp_file as f`.",
       "revId": "a29af63619aecff428c5de4b0be53df37520b49b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5c405e98_80e4b9d8",
+        "filename": "cl_format.py",
+        "patchSetId": 28
+      },
+      "lineNbr": 1318,
+      "author": {
+        "id": 1286337
+      },
+      "writtenOn": "2026-09-25T17:23:59Z",
+      "side": 1,
+      "message": "So, I don\u0027t have a Windows machine to confirm/deny, but my reading of the Python docs say this solution will break on Windows, since we will need to reopen a named temporary file.  https://docs.python.org/3.11/library/tempfile.html#tempfile.NamedTemporaryFile:~:text\u003dWhether%20the%20name%20can%20be%20used%20to%20open%20the%20file%20a%20second%20time%2C%20while%20the%20named%20temporary%20file%20is%20still%20open%2C%20varies%20across%20platforms%20(it%20can%20be%20so%20used%20on%20Unix%3B%20it%20cannot%20on%20Windows\n\nI\u0027ll mark as resolved and you can reopen if you disagree or have a different proposed way of doing this.",
+      "parentUuid": "2bdd0830_ecb02aef",
+      "revId": "a29af63619aecff428c5de4b0be53df37520b49b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
