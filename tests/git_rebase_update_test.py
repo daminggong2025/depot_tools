@@ -467,7 +467,12 @@ class GitRebaseUpdateTest(git_test_utils.GitRepoReadWriteTestBase):
         self.assertTrue(self.repo.run(self.gc.in_rebase))
 
     def testRebaseUpdateRunControlWithoutRun(self):
-        for flag in ("--continue", "--skip-branch", "--abort"):
+        for flag in (
+            "--continue",
+            "--skip-branch",
+            "--resolve-conflict",
+            "--abort",
+        ):
             output, _ = self.repo.capture_stdio(self.reup.main, [flag])
             self.assertIn("No git rebase-update in progress.", output)
 
@@ -479,6 +484,139 @@ class GitRebaseUpdateTest(git_test_utils.GitRepoReadWriteTestBase):
         )
         output, _ = self.repo.capture_stdio(self.reup.main, ["--skip-branch"])
         self.assertIn("git rebase-update is not stopped on a conflict.", output)
+        output, _ = self.repo.capture_stdio(
+            self.reup.main, ["--resolve-conflict"]
+        )
+        self.assertIn(
+            "git rebase-update is not stopped before a conflict.", output
+        )
+
+    def _skipIfNoReplay(self):
+        if not self.repo.run(self.gc.meets_git_version, (2, 55)):
+            self.skipTest(
+                "git replay with --ref-action=print requires Git >= 2.55"
+            )
+
+    def testRebaseUpdateStopBeforeConflicts(self):
+        self._skipIfNoReplay()
+        self._makeTwoConflictingBranches()
+        self.repo.git("checkout", "branch_L")
+
+        output, _ = self.repo.capture_stdio(
+            self.reup.main, ["--stop-before-conflicts"]
+        )
+
+        self.assertIn("Nothing has been checked out yet.", output)
+        self.assertIn("git rebase-update --resolve-conflict", output)
+        self.assertFalse(self.repo.run(self.gc.in_rebase))
+        self.assertEqual("branch_L", self.repo.run(self.gc.current_branch))
+        self.assertIn(
+            self._getConfig(self.reup.CONFLICT_BRANCH_KEY), ("branch_K", "foo")
+        )
+
+    def testRebaseUpdateStopBeforeConflictsConfig(self):
+        self._skipIfNoReplay()
+        self._makeTwoConflictingBranches()
+        self.repo.git("checkout", "branch_L")
+        self.repo.run(
+            self.gc.set_config, self.reup.STOP_BEFORE_CONFLICTS_KEY, "true"
+        )
+
+        output, _ = self.repo.capture_stdio(self.reup.main, [])
+
+        self.assertIn("Nothing has been checked out yet.", output)
+        self.assertFalse(self.repo.run(self.gc.in_rebase))
+        self.assertEqual("branch_L", self.repo.run(self.gc.current_branch))
+
+    def testRebaseUpdateResolveConflict(self):
+        self._skipIfNoReplay()
+        self._makeTwoConflictingBranches()
+        self.repo.git("checkout", "branch_L")
+
+        self.repo.capture_stdio(self.reup.main, ["--stop-before-conflicts"])
+        first = self._getConfig(self.reup.CONFLICT_BRANCH_KEY)
+
+        # --resolve-conflict checks out the branch and stops mid-rebase.
+        output, _ = self.repo.capture_stdio(
+            self.reup.main, ["--resolve-conflict"]
+        )
+        self.assertIn("%s is now in mid-rebase." % first, output)
+        self.assertTrue(self.repo.run(self.gc.in_rebase))
+
+        # Resolve by dropping the conflicting commit. Continuing stops before
+        # the other conflicting branch.
+        self.repo.git(
+            "checkout", "--theirs", "M" if first == "branch_K" else "N"
+        )
+        self.repo.git("rebase", "--skip")
+        output, _ = self.repo.capture_stdio(
+            self.reup.main, ["--continue", "--stop-before-conflicts"]
+        )
+        self.assertIn("Nothing has been checked out yet.", output)
+        second = self._getConfig(self.reup.CONFLICT_BRANCH_KEY)
+        self.assertIn(second, ("branch_K", "foo"))
+        self.assertNotEqual(first, second)
+        self.assertFalse(self.repo.run(self.gc.in_rebase))
+        second_sha = self.repo.git("rev-parse", second).stdout.strip()
+
+        # --skip-branch after an early stop leaves the branch alone and
+        # finishes the run.
+        output, _ = self.repo.capture_stdio(self.reup.main, ["--skip-branch"])
+        self.assertIn(
+            "The following branches were skipped for this run:\n  %s" % second,
+            output,
+        )
+        self.assertEqual(
+            second_sha, self.repo.git("rev-parse", second).stdout.strip()
+        )
+        self.assertEqual("branch_L", self.repo.run(self.gc.current_branch))
+        self.assertEqual("", self._getConfig(self.reup.STARTING_WORKDIR_KEY))
+
+    def testRebaseUpdateStopBeforeConflictsKeepGoing(self):
+        self._skipIfNoReplay()
+        self._makeTwoConflictingBranches()
+        self.repo.git("checkout", "branch_L")
+
+        output, _ = self.repo.capture_stdio(
+            self.reup.main, ["--stop-before-conflicts", "-k"]
+        )
+
+        self.assertIn("could not be cleanly rebased:", output)
+        self.assertIn("  branch_K", output)
+        self.assertIn("  foo", output)
+        self.assertFalse(self.repo.run(self.gc.in_rebase))
+        self.assertEqual("branch_L", self.repo.run(self.gc.current_branch))
+
+    def testRebaseUpdateStopBeforeConflictsSquashesLandedBranch(self):
+        self._skipIfNoReplay()
+        # Pretend that branch_L landed.
+        self.origin.git("checkout", "main")
+        with self.origin.open("L", "w") as f:
+            f.write("L")
+        self.origin.git("add", "L")
+        self.origin.git_commit("L")
+
+        # Rewrite branch_L into commits which only apply cleanly when
+        # squashed.
+        self.repo.git("checkout", "branch_L")
+        self.repo.git("reset", "branch_L~")
+        with self.repo.open("L", "w") as f:
+            f.write("NOPE")
+        self.repo.git("add", "L")
+        self.repo.git_commit("L NOPE")
+        with self.repo.open("L", "w") as f:
+            f.write("L")
+        self.repo.git("add", "L")
+        self.repo.git_commit("L YUP")
+
+        self.repo.git("checkout", "branch_G")
+        output, _ = self.repo.capture_stdio(
+            self.reup.main, ["--stop-before-conflicts"]
+        )
+
+        self.assertIn("Squashing branch_L: already upstream", output)
+        self.assertNotIn("Failed! Attempting to squash", output)
+        self.assertIn("Deleted branch branch_L", output)
 
     def testRebaseUpdateSkipWorktrees(self):
         self.repo.git("checkout", "branch_L")
@@ -627,20 +765,35 @@ branch refs/heads/empty_branch_in_worktree
         self.repo.git_commit("feat1")
 
         start_hash = self.repo.git("rev-parse", "branch_K").stdout.strip()
-        new_sha = self.repo.run(
+        replay_ret = self.repo.run(
             self.gc.replay_rebase, "origin/main", start_hash, "feature_branch"
         )
-        self.assertIsNotNone(new_sha)
+        self.assertIsNotNone(replay_ret.new_sha)
+        self.assertFalse(replay_ret.conflict)
         old_sha = self.repo.git("rev-parse", "feature_branch").stdout.strip()
         self.repo.run(
             self.gc.update_refs_atomic,
-            [("feature_branch", new_sha, old_sha)],
+            [("feature_branch", replay_ret.new_sha, old_sha)],
             "test-rebase",
         )
         self.assertEqual(
             self.repo.git("rev-parse", "feature_branch~").stdout.strip(),
             self.repo.git("rev-parse", "origin/main").stdout.strip(),
         )
+
+        # A branch that changes the same file differently conflicts.
+        self.repo.git("checkout", "-b", "conflicting_branch", start_hash)
+        with self.repo.open("feat", "w") as f:
+            f.write("other feature work")
+        self.repo.git("add", "feat")
+        self.repo.git_commit("feat2")
+        replay_ret = self.repo.run(
+            self.gc.replay_rebase,
+            "feature_branch",
+            start_hash,
+            "conflicting_branch",
+        )
+        self.assertEqual(self.gc.ReplayRet(None, True), replay_ret)
 
     def testFetchRemotesWithUnresolvableParent(self):
         # branch_tree contains a valid upstream parent ("origin/main") and an

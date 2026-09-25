@@ -29,6 +29,8 @@ STARTING_WORKDIR_KEY = "depot-tools.rebase-update.starting-workdir"
 SKIPPED_BRANCHES_KEY = "depot-tools.rebase-update.skipped-branches"
 # The branch the current run stopped on because of a conflict.
 CONFLICT_BRANCH_KEY = "depot-tools.rebase-update.conflict-branch"
+# User setting: "true" to always behave as if --stop-before-conflicts was set.
+STOP_BEFORE_CONFLICTS_KEY = "depot-tools.rebase-update.stop-before-conflicts"
 
 RESET = colorama.Fore.RESET + colorama.Back.RESET + colorama.Style.RESET_ALL
 BRIGHT = colorama.Style.BRIGHT
@@ -261,6 +263,8 @@ def rebase_branch(
     start_hash,
     no_squash,
     branches_in_other_worktrees,
+    stop_before_conflicts=False,
+    resolving_conflict=False,
 ):
     """Rebases `branch` onto `parent` from `start_hash`.
 
@@ -275,6 +279,11 @@ def rebase_branch(
         start_hash: The merge-base commit SHA between branch and parent.
         no_squash: If True, disables automated commit squashing on rebase failure.
         branches_in_other_worktrees: Set of branch names checked out in other worktrees.
+        stop_before_conflicts: If True and `git replay` finds a conflict, stop
+            before checking out the branch instead of falling back to porcelain
+            `git rebase`.
+        resolving_conflict: If True, the user asked to resolve this branch's
+            conflicts (--resolve-conflict); only affects the conflict message.
 
     Returns:
         True if the branch rebased successfully, False on failure.
@@ -323,9 +332,48 @@ def rebase_branch(
         ):
             old_sha = git.hash_one(branch)
             if old_sha == start_hash:
-                new_sha = git.hash_one(parent)
+                replay_ret = git.ReplayRet(git.hash_one(parent), False)
             else:
-                new_sha = git.replay_rebase(parent, start_hash, branch)
+                replay_ret = git.replay_rebase(parent, start_hash, branch)
+
+            new_sha = replay_ret.new_sha
+            if not new_sha and replay_ret.conflict and stop_before_conflicts:
+                # In-memory equivalent of the squash attempt below: if the
+                # squashed branch doesn't change anything on top of its
+                # parent, it already landed upstream.
+                squash_ret = (
+                    git.ReplayRet(None, False)
+                    if no_squash
+                    else git.replay_squashed(parent, start_hash, branch)
+                )
+                if squash_ret.new_sha and git.hash_one(
+                    squash_ret.new_sha + "^{tree}"
+                ) == git.hash_one(parent + "^{tree}"):
+                    print(
+                        "Squashing %s: already upstream"
+                        % format_branch_name(branch)
+                    )
+                    new_sha = git.hash_one(parent)
+                else:
+                    print(
+                        textwrap.dedent(
+                            """\
+                        %s has conflicts with its new base.
+                        Nothing has been checked out yet. Either:
+                         * check it out and resolve the conflicts:
+                               git rebase-update --resolve-conflict
+                         * skip this branch for this run only and keep going:
+                               git rebase-update --skip-branch
+                         * mark this branch as dormant (skipped on every run):
+                               git config branch.%s.dormant true
+                           then resume with `git rebase-update --continue`.
+                         * give up on the whole run:
+                               git rebase-update --abort
+                        """
+                        )
+                        % (branch, branch)
+                    )
+                    return False
 
             if new_sha:
                 git.update_refs_atomic(
@@ -342,24 +390,35 @@ def rebase_branch(
             parent, start_hash, branch, abort=consider_squashing
         )
         if not rebase_ret.success:
-            mid_rebase_message = textwrap.dedent(
-                """\
-                Your working copy is in mid-rebase. Either:
-                 * completely resolve like a normal git-rebase, then run
-                       git rebase-update --continue
-                   to resume; OR
-                 * skip this branch for this run only and keep going:
-                       git rebase-update --skip-branch
-                 * abort the rebase and mark this branch as dormant (skipped on
-                   every run):
-                       git rebase --abort && \\
-                       git config branch.%s.dormant true
-                   and then run `git rebase-update --continue` to resume.
-                 * give up on the whole run:
-                       git rebase-update --abort
-                """
-                % branch
-            )
+            if resolving_conflict:
+                mid_rebase_message = textwrap.dedent(
+                    """\
+                    %s is now in mid-rebase. Resolve the conflicts like a
+                    normal git-rebase, then run `git rebase-update --continue`.
+                    Changed your mind? `git rebase-update --skip-branch` skips
+                    it for this run and keeps going.
+                    """
+                    % branch
+                )
+            else:
+                mid_rebase_message = textwrap.dedent(
+                    """\
+                    Your working copy is in mid-rebase. Either:
+                     * completely resolve like a normal git-rebase, then run
+                           git rebase-update --continue
+                       to resume; OR
+                     * skip this branch for this run only and keep going:
+                           git rebase-update --skip-branch
+                     * abort the rebase and mark this branch as dormant
+                       (skipped on every run):
+                           git rebase --abort && \\
+                           git config branch.%s.dormant true
+                       then resume with `git rebase-update --continue`.
+                     * give up on the whole run:
+                           git rebase-update --abort
+                    """
+                    % branch
+                )
             if not consider_squashing:
                 print(mid_rebase_message)
                 return False
@@ -484,6 +543,13 @@ def main(args=None):
         action="store_true",
         help="Skip branches checked out in a different worktree.",
     )
+    parser.add_argument(
+        "--stop-before-conflicts",
+        action="store_true",
+        help="Detect conflicts before checking out a branch, and stop "
+        "without touching the working tree. Can also be enabled with "
+        "`git config %s true`." % STOP_BEFORE_CONFLICTS_KEY,
+    )
     run_control = parser.add_mutually_exclusive_group()
     run_control.add_argument(
         "--continue",
@@ -497,6 +563,12 @@ def main(args=None):
         action="store_true",
         help="Skip the branch the run stopped on for the rest of this run, "
         "and continue. Implies --no-fetch.",
+    )
+    run_control.add_argument(
+        "--resolve-conflict",
+        action="store_true",
+        help="After a run stopped before a conflict, rebase the conflicting "
+        "branch so the conflict can be resolved. Implies --no-fetch.",
     )
     run_control.add_argument(
         "--abort",
@@ -517,7 +589,12 @@ def main(args=None):
     #       * Then we could view a summary of each run as a
     #         `diff --stat` on that secret ref.
 
-    resuming = opts.continue_run or opts.skip_branch or opts.abort
+    resuming = (
+        opts.continue_run
+        or opts.skip_branch
+        or opts.resolve_conflict
+        or opts.abort
+    )
     if resuming:
         if not git.get_config(STARTING_WORKDIR_KEY):
             print("No git rebase-update in progress.")
@@ -541,6 +618,19 @@ def main(args=None):
         if git.in_rebase():
             git.run_with_retcode("rebase", "--abort")
         add_skipped_branch(conflict_branch)
+
+    resolve_branch = None
+    if opts.resolve_conflict:
+        resolve_branch = git.get_config(CONFLICT_BRANCH_KEY)
+        if not resolve_branch or git.in_rebase():
+            print("git rebase-update is not stopped before a conflict.")
+            return 1
+
+    stop_before_conflicts = (
+        opts.stop_before_conflicts
+        or opts.resolve_conflict
+        or git.get_config(STOP_BEFORE_CONFLICTS_KEY) == "true"
+    )
 
     if git.in_rebase():
         print(
@@ -627,6 +717,10 @@ def main(args=None):
                 merge_base[branch],
                 opts.no_squash,
                 branches_in_other_worktrees,
+                stop_before_conflicts=(
+                    stop_before_conflicts and branch != resolve_branch
+                ),
+                resolving_conflict=branch == resolve_branch,
             )
             if not ret:
                 retcode = 1

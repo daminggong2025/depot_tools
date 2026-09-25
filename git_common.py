@@ -905,7 +905,10 @@ def rebase(parent, start, branch, abort=False, allow_gc=False):
         )
 
 
-def replay_rebase(parent: str, start: str, branch: str) -> Optional[str]:
+ReplayRet = collections.namedtuple("ReplayRet", "new_sha conflict")
+
+
+def replay_rebase(parent: str, start: str, branch: str) -> ReplayRet:
     """Attempts an in-memory rebase of `branch` onto `parent` from `start` using `git replay`.
 
     Note:
@@ -914,24 +917,28 @@ def replay_rebase(parent: str, start: str, branch: str) -> Optional[str]:
           1. It is powered by Git's standard `merge-ort` engine.
           2. It operates entirely in memory and does not modify the working tree, index,
              or refs, leaving the repository completely clean on failure.
-          3. Any failure, merge conflict, or Git version < 2.55 safely returns None so callers
-             can fall back to porcelain `git rebase`.
+          3. Any failure, merge conflict, or Git version < 2.55 safely returns
+             no new SHA so callers can fall back to porcelain `git rebase`.
 
     Args:
         parent: The new upstream parent ref or commit SHA to rebase onto.
         start: The merge-base commit SHA representing the start of the commit range.
         branch: The branch name or ref to rebase.
 
-    Returns the new tip commit SHA if successful on Git >= 2.55, or None if conflicts occur or replay fails.
+    Returns a ReplayRet namedtuple with fields:
+        new_sha - the new tip commit SHA if successful on Git >= 2.55, or None
+            if conflicts occur or replay fails.
+        conflict - True if the replay failed because of a merge conflict.
     Does not modify the working tree or index.
 
     Note:
         Callers should ensure `start` does not equal the commit SHA of `branch`.
         For branches with no commits beyond `start` (pure fast-forwards), `git replay`
-        produces no ref updates for an empty revision range and returns None.
+        produces no ref updates for an empty revision range and returns no new
+        SHA.
     """
     if not meets_git_version((2, 55)):
-        return None
+        return ReplayRet(None, False)
     try:
         ref = branch if branch.startswith("refs/") else f"refs/heads/{branch}"
         out = run(
@@ -947,10 +954,46 @@ def replay_rebase(parent: str, start: str, branch: str) -> Optional[str]:
         for line in out.splitlines():
             parts = line.strip().split()
             if len(parts) >= 3 and parts[0] == "update" and parts[1] == ref:
-                return parts[2]
-        return None
-    except subprocess2.CalledProcessError:
-        return None
+                return ReplayRet(parts[2], False)
+        return ReplayRet(None, False)
+    except subprocess2.CalledProcessError as cpe:
+        # `git replay` exits with 1 on conflicts, and >1 on other errors.
+        return ReplayRet(None, cpe.returncode == 1)
+
+
+def replay_squashed(parent: str, start: str, branch: str) -> ReplayRet:
+    """In-memory equivalent of squashing `start`..`branch` into a single commit
+    and rebasing it onto `parent`.
+
+    Does not modify the working tree, index, or refs.
+
+    Returns a ReplayRet namedtuple with fields:
+        new_sha - the SHA of the squashed commit on top of `parent`, or None if
+            the squash has conflicts or fails.
+        conflict - True if the squash failed because of a merge conflict.
+    """
+    try:
+        tree = run(
+            "merge-tree",
+            "--write-tree",
+            "--merge-base",
+            start,
+            parent,
+            branch,
+        )
+    except subprocess2.CalledProcessError as cpe:
+        # `git merge-tree` exits with 1 on conflicts, and >1 on other errors.
+        return ReplayRet(None, cpe.returncode == 1)
+    assert isinstance(tree, str)
+    new_sha = run(
+        "commit-tree",
+        tree.splitlines()[0],
+        "-p",
+        parent,
+        "-m",
+        f"Squashed {branch}",
+    )
+    return ReplayRet(new_sha, False)
 
 
 def remove_merge_base(branch):
