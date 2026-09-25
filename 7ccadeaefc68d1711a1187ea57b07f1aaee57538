@@ -34,6 +34,24 @@
       "parentUuid": "75ef4242_a4f74a92",
       "revId": "7ccadeaefc68d1711a1187ea57b07f1aaee57538",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b33c4ffa_7b3e42d0",
+        "filename": "python-bin/python3",
+        "patchSetId": 2
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1323125
+      },
+      "writtenOn": "2026-09-25T13:31:57Z",
+      "side": 0,
+      "message": "Done",
+      "parentUuid": "8d0646be_ebc5a925",
+      "revId": "7ccadeaefc68d1711a1187ea57b07f1aaee57538",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
