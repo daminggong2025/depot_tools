@@ -5,7 +5,9 @@
 """Unit tests for git_rebase_update.py"""
 
 import os
+import shutil
 import sys
+import tempfile
 from unittest import mock
 
 DEPOT_TOOLS_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -659,6 +661,190 @@ branch refs/heads/empty_branch_in_worktree
             "Skipping deletion of branch checked out in another worktree empty_branch_in_worktree",
             output,
         )
+
+    def _addWorktree(self, branch):
+        path = tempfile.mkdtemp(prefix="rebase_update_worktree_")
+        self.addCleanup(shutil.rmtree, path, ignore_errors=True)
+        self.repo.git("worktree", "add", path, branch)
+        return path
+
+    def _gitIn(self, path, *args):
+        return self.repo.git("-C", path, *args).stdout.strip()
+
+    def testRebaseUpdateCleanWorktree(self):
+        self.repo.git("checkout", "branch_G")
+        worktree = self._addWorktree("branch_K")
+
+        output, _ = self.repo.capture_stdio(self.reup.main, [])
+
+        self.assertIn("Rebasing: branch_K", output)
+        self.assertNotIn("Skipping branch_K", output)
+        self.assertNotIn("were not rebased", output)
+        # The branch was rebased, and the worktree follows it.
+        self.assertEqual(
+            0,
+            self.repo.git(
+                "merge-base", "--is-ancestor", "origin/main", "branch_K"
+            ).retcode,
+        )
+        self.assertEqual(
+            self._gitIn(worktree, "rev-parse", "HEAD"),
+            self.repo.git("rev-parse", "branch_K").stdout.strip(),
+        )
+        self.assertEqual("", self._gitIn(worktree, "status", "--porcelain"))
+        self.assertTrue(os.path.exists(os.path.join(worktree, "O")))
+
+    def testRebaseUpdateDirtyWorktree(self):
+        self.repo.git("checkout", "branch_G")
+        worktree = self._addWorktree("branch_K")
+        old_sha = self.repo.git("rev-parse", "branch_K").stdout.strip()
+        with open(os.path.join(worktree, "K"), "w") as f:
+            f.write("uncommitted")
+
+        output, _ = self.repo.capture_stdio(self.reup.main, [])
+
+        self.assertIn(
+            "Skipping branch_K: worktree %s has uncommitted changes" % worktree,
+            output,
+        )
+        self.assertIn(
+            "The following branches checked out in other worktrees were not "
+            "rebased:\n  branch_K (%s)" % worktree,
+            output,
+        )
+        self.assertEqual(
+            old_sha, self.repo.git("rev-parse", "branch_K").stdout.strip()
+        )
+        with open(os.path.join(worktree, "K")) as f:
+            self.assertEqual("uncommitted", f.read())
+
+    def _makeWorktreeConflict(self):
+        """Checks out branch_K, which conflicts with upstream, in another
+        worktree. Returns the worktree path and branch_K's SHA."""
+        # Make upstream conflict with branch_K's commit.
+        self.origin.git("checkout", "main")
+        with self.origin.open("K", "w") as f:
+            f.write("conflicting K")
+        self.origin.git("add", "K")
+        self.origin.git_commit("conflicting K")
+
+        self.repo.git("checkout", "branch_G")
+        worktree = self._addWorktree("branch_K")
+        old_sha = self.repo.git("rev-parse", "branch_K").stdout.strip()
+        return worktree, old_sha
+
+    def _assertWorktreeUntouched(self, worktree, old_sha):
+        self.assertFalse(self.repo.run(self.gc.in_rebase, cwd=worktree))
+        self.assertEqual("", self._gitIn(worktree, "status", "--porcelain"))
+        self.assertEqual(old_sha, self._gitIn(worktree, "rev-parse", "HEAD"))
+        self.assertEqual(
+            old_sha, self.repo.git("rev-parse", "branch_K").stdout.strip()
+        )
+
+    def testRebaseUpdateWorktreeConflict(self):
+        worktree, old_sha = self._makeWorktreeConflict()
+
+        output, _ = self.repo.capture_stdio(self.reup.main, [])
+
+        # The run stops before touching the worktree, even without
+        # --stop-before-conflicts.
+        self.assertIn(
+            "branch_K has conflicts with its new base. It is checked out in\n"
+            "worktree %s, which was left untouched." % worktree,
+            output,
+        )
+        self.assertIn("git rebase-update --resolve-conflict", output)
+        self.assertEqual(
+            "branch_K", self._getConfig(self.reup.CONFLICT_BRANCH_KEY)
+        )
+        self.assertFalse(self.repo.run(self.gc.in_rebase))
+        self._assertWorktreeUntouched(worktree, old_sha)
+
+    def testRebaseUpdateWorktreeResolveConflict(self):
+        worktree, _ = self._makeWorktreeConflict()
+        self.repo.capture_stdio(self.reup.main, [])
+
+        # --resolve-conflict leaves the other worktree mid-rebase.
+        output, _ = self.repo.capture_stdio(
+            self.reup.main, ["--resolve-conflict"]
+        )
+        self.assertIn(
+            "branch_K is now in mid-rebase in worktree %s." % worktree, output
+        )
+        self.assertTrue(self.repo.run(self.gc.in_rebase, cwd=worktree))
+        self.assertFalse(self.repo.run(self.gc.in_rebase))
+
+        # --continue refuses to run until that rebase is finished.
+        output, _ = self.repo.capture_stdio(self.reup.main, ["--continue"])
+        self.assertIn("Rebase in progress in worktree %s." % worktree, output)
+
+        # Resolve by dropping the conflicting commit, then continue.
+        self._gitIn(worktree, "rebase", "--skip")
+        self.repo.capture_stdio(self.reup.main, ["--continue"])
+
+        self.assertFalse(self.repo.run(self.gc.in_rebase, cwd=worktree))
+        self.assertEqual(
+            0,
+            self.repo.git(
+                "merge-base", "--is-ancestor", "origin/main", "branch_K"
+            ).retcode,
+        )
+        self.assertEqual("", self._getConfig(self.reup.STARTING_WORKDIR_KEY))
+
+    def testRebaseUpdateWorktreeSkipBranch(self):
+        worktree, old_sha = self._makeWorktreeConflict()
+        self.repo.capture_stdio(self.reup.main, [])
+        self.repo.capture_stdio(self.reup.main, ["--resolve-conflict"])
+
+        output, _ = self.repo.capture_stdio(self.reup.main, ["--skip-branch"])
+
+        self.assertIn(
+            "The following branches were skipped for this run:\n  branch_K",
+            output,
+        )
+        self._assertWorktreeUntouched(worktree, old_sha)
+        self.assertEqual("", self._getConfig(self.reup.STARTING_WORKDIR_KEY))
+
+    def testRebaseUpdateWorktreeAbort(self):
+        worktree, old_sha = self._makeWorktreeConflict()
+        self.repo.capture_stdio(self.reup.main, [])
+        self.repo.capture_stdio(self.reup.main, ["--resolve-conflict"])
+
+        retcode = self.repo.run(self.reup.main, ["--abort"])
+
+        self.assertEqual(0, retcode)
+        self._assertWorktreeUntouched(worktree, old_sha)
+        self.assertEqual("branch_G", self.repo.run(self.gc.current_branch))
+        self.assertEqual("", self._getConfig(self.reup.STARTING_WORKDIR_KEY))
+
+    def testRebaseUpdateWorktreeConflictKeepGoing(self):
+        worktree, old_sha = self._makeWorktreeConflict()
+
+        output, _ = self.repo.capture_stdio(self.reup.main, ["-k"])
+
+        self.assertIn("could not be cleanly rebased:\n  branch_K", output)
+        self._assertWorktreeUntouched(worktree, old_sha)
+
+    def testRebaseUpdateWorktreeMidRebase(self):
+        worktree, _ = self._makeWorktreeConflict()
+        self.repo.capture_stdio(self.reup.main, [])
+        self.repo.capture_stdio(self.reup.main, ["--resolve-conflict"])
+
+        # A new run leaves the branch being rebased in the other worktree
+        # alone.
+        output, _ = self.repo.capture_stdio(self.reup.main, ["-n"])
+
+        self.assertIn(
+            "Skipping branch_K: worktree %s has a rebase in progress"
+            % worktree,
+            output,
+        )
+        self.assertTrue(self.repo.run(self.gc.in_rebase, cwd=worktree))
+        self.assertEqual(
+            "branch_K",
+            self.repo.run(self.gc.rebasing_branch, cwd=worktree),
+        )
+        self.assertIsNone(self.repo.run(self.gc.rebasing_branch))
 
     def testTrackTag(self):
         self.origin.git("tag", "tag-to-track", self.origin["M"])

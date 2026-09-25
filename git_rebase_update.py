@@ -111,9 +111,13 @@ def restore_starting_branch(return_branch, return_workdir):
 
 
 def get_branches_in_other_worktrees():
-    """Returns a set of branches checked out in other worktrees."""
+    """Returns a dict mapping branches checked out in other worktrees to the
+    path of the worktree they are checked out in.
+
+    This includes branches being rebased in other worktrees, which `git
+    worktree list` reports as detached."""
     output = git.run("worktree", "list", "--porcelain")
-    branches = set()
+    branches = {}
     current_worktree_path = os.path.realpath(
         git.run("rev-parse", "--show-toplevel").strip()
     )
@@ -122,13 +126,18 @@ def get_branches_in_other_worktrees():
     for line in output.splitlines():
         if line.startswith("worktree "):
             worktree_path = line[len("worktree ") :]
-        elif line.startswith("branch refs/heads/"):
-            worktree_branch = line[len("branch refs/heads/") :]
-            if (
-                worktree_path
-                and os.path.realpath(worktree_path) != current_worktree_path
-            ):
-                branches.add(worktree_branch)
+            continue
+        if (
+            not worktree_path
+            or os.path.realpath(worktree_path) == current_worktree_path
+        ):
+            continue
+        if line.startswith("branch refs/heads/"):
+            branches[line[len("branch refs/heads/") :]] = worktree_path
+        elif line == "detached" and os.path.isdir(worktree_path):
+            worktree_branch = git.rebasing_branch(cwd=worktree_path)
+            if worktree_branch:
+                branches[worktree_branch] = worktree_path
 
     return branches
 
@@ -257,12 +266,86 @@ def format_branch_name(branch):
     return BRIGHT + branch + RESET
 
 
+def get_conflict_worktree():
+    """Returns the path of the other worktree where the branch the current run
+    stopped on is checked out, or None."""
+    conflict_branch = git.get_config(CONFLICT_BRANCH_KEY)
+    if not conflict_branch:
+        return None
+    worktree_path = get_branches_in_other_worktrees().get(conflict_branch)
+    if worktree_path and os.path.isdir(worktree_path):
+        return worktree_path
+    return None
+
+
+def rebase_branch_in_worktree(
+    branch, parent, start_hash, worktree_path, abort=True
+):
+    """Rebases `branch` by running `git rebase` inside `worktree_path`, the
+    worktree where `branch` is checked out.
+
+    The worktree is left untouched if it is missing, has uncommitted changes,
+    or has a rebase in progress. If the rebase has conflicts, it is aborted
+    (leaving the worktree untouched) if `abort` is True, and left in progress
+    otherwise.
+
+    Returns:
+        True if the branch was rebased, False if the rebase had conflicts, or
+        None if the branch was skipped.
+    """
+    if not os.path.isdir(worktree_path):
+        reason = "worktree %s is missing (see `git worktree prune`)"
+    elif git.in_rebase(cwd=worktree_path):
+        reason = "worktree %s has a rebase in progress"
+    elif git.is_worktree_dirty(worktree_path):
+        reason = "worktree %s has uncommitted changes"
+    else:
+        return git.rebase(
+            parent, start_hash, branch, abort=abort, cwd=worktree_path
+        ).success
+
+    print(
+        "Skipping %s: %s" % (format_branch_name(branch), reason % worktree_path)
+    )
+    return None
+
+
+def print_early_stop_message(branch, worktree_path=None):
+    """Prints the options after stopping before rebasing a conflicting
+    branch."""
+    if worktree_path:
+        header = (
+            "%s has conflicts with its new base. It is checked out in\n"
+            "worktree %s, which was left untouched. Either:\n"
+            " * rebase it there and resolve the conflicts:"
+            % (branch, worktree_path)
+        )
+    else:
+        header = (
+            "%s has conflicts with its new base.\n"
+            "Nothing has been checked out yet. Either:\n"
+            " * check it out and resolve the conflicts:" % branch
+        )
+    print(header)
+    print(
+        "       git rebase-update --resolve-conflict\n"
+        " * skip this branch for this run only and keep going:\n"
+        "       git rebase-update --skip-branch\n"
+        " * mark this branch as dormant (skipped on every run):\n"
+        "       git config branch.%s.dormant true\n"
+        "   then resume with `git rebase-update --continue`.\n"
+        " * give up on the whole run:\n"
+        "       git rebase-update --abort\n" % branch
+    )
+
+
 def rebase_branch(
     branch,
     parent,
     start_hash,
     no_squash,
     branches_in_other_worktrees,
+    skipped_worktree_branches,
     stop_before_conflicts=False,
     resolving_conflict=False,
 ):
@@ -273,12 +356,18 @@ def rebase_branch(
     `git rebase` (and optional commit squashing) when conflicts occur, or when
     operating on active/worktree branches or repositories with GPG signing enabled.
 
+    Branches checked out in other worktrees are rebased inside their worktree,
+    or skipped (and appended to `skipped_worktree_branches`) if that isn't safe.
+
     Args:
         branch: The local branch name to rebase.
         parent: The upstream parent ref or branch name.
         start_hash: The merge-base commit SHA between branch and parent.
         no_squash: If True, disables automated commit squashing on rebase failure.
-        branches_in_other_worktrees: Set of branch names checked out in other worktrees.
+        branches_in_other_worktrees: Dict mapping branch names checked out in
+            other worktrees to their worktree path.
+        skipped_worktree_branches: List to which worktree branches that could
+            not be rebased are appended.
         stop_before_conflicts: If True and `git replay` finds a conflict, stop
             before checking out the branch instead of falling back to porcelain
             `git rebase`.
@@ -286,7 +375,8 @@ def rebase_branch(
             conflicts (--resolve-conflict); only affects the conflict message.
 
     Returns:
-        True if the branch rebased successfully, False on failure.
+        True if the branch rebased successfully (or was a skipped worktree
+        branch), False on failure.
     """
     logging.debug(
         "considering %s(%s) -> %s(%s) : %s",
@@ -316,8 +406,15 @@ def rebase_branch(
         )
 
     if git.hash_one(parent) != start_hash:
+        worktree_path = branches_in_other_worktrees.get(branch)
         # Try a plain rebase first
-        print("Rebasing:", format_branch_name(branch))
+        if worktree_path:
+            print(
+                "Rebasing: %s (in worktree %s)"
+                % (format_branch_name(branch), worktree_path)
+            )
+        else:
+            print("Rebasing:", format_branch_name(branch))
 
         # Only attempt in-memory fast-forward/replay for background branches
         # (not the currently checked-out branch, nor branches in other worktrees).
@@ -355,24 +452,7 @@ def rebase_branch(
                     )
                     new_sha = git.hash_one(parent)
                 else:
-                    print(
-                        textwrap.dedent(
-                            """\
-                        %s has conflicts with its new base.
-                        Nothing has been checked out yet. Either:
-                         * check it out and resolve the conflicts:
-                               git rebase-update --resolve-conflict
-                         * skip this branch for this run only and keep going:
-                               git rebase-update --skip-branch
-                         * mark this branch as dormant (skipped on every run):
-                               git config branch.%s.dormant true
-                           then resume with `git rebase-update --continue`.
-                         * give up on the whole run:
-                               git rebase-update --abort
-                        """
-                        )
-                        % (branch, branch)
-                    )
+                    print_early_stop_message(branch)
                     return False
 
             if new_sha:
@@ -382,6 +462,43 @@ def rebase_branch(
                 git.remove_merge_base(branch)
                 git.get_or_create_merge_base(branch, orig_parent)
                 return True
+
+        # A branch checked out in another worktree can't be rebased from here.
+        # Rebase it inside its own worktree instead, leaving that worktree
+        # untouched if it isn't safe to do so. On conflicts, always stop before
+        # touching that worktree, unless the user asked to resolve them.
+        if worktree_path:
+            rebased = rebase_branch_in_worktree(
+                branch,
+                parent,
+                start_hash,
+                worktree_path,
+                abort=not resolving_conflict,
+            )
+            if rebased is None:
+                skipped_worktree_branches.append(branch)
+                return True
+            if not rebased:
+                if resolving_conflict:
+                    print(
+                        textwrap.dedent(
+                            """\
+                            %s is now in mid-rebase in worktree %s.
+                            Resolve the conflicts there like a normal
+                            git-rebase, then run `git rebase-update --continue`
+                            from this worktree.
+                            Changed your mind? `git rebase-update --skip-branch`
+                            skips it for this run and keeps going.
+                            """
+                        )
+                        % (branch, worktree_path)
+                    )
+                else:
+                    print_early_stop_message(branch, worktree_path)
+                return False
+            git.remove_merge_base(branch)
+            git.get_or_create_merge_base(branch, orig_parent)
+            return True
 
         consider_squashing = git.get_num_commits(branch) != 1 and not (
             no_squash
@@ -541,7 +658,9 @@ def main(args=None):
     parser.add_argument(
         "--skip-worktrees",
         action="store_true",
-        help="Skip branches checked out in a different worktree.",
+        help="Skip branches checked out in a different worktree. By default, "
+        "such branches are rebased inside their worktree, unless it has "
+        "uncommitted changes.",
     )
     parser.add_argument(
         "--stop-before-conflicts",
@@ -595,15 +714,20 @@ def main(args=None):
         or opts.resolve_conflict
         or opts.abort
     )
+    conflict_worktree = None
     if resuming:
         if not git.get_config(STARTING_WORKDIR_KEY):
             print("No git rebase-update in progress.")
             return 1
         opts.no_fetch = True
+        # The branch the run stopped on may be checked out in another worktree.
+        conflict_worktree = get_conflict_worktree()
 
     if opts.abort:
         if git.in_rebase():
             git.run_with_retcode("rebase", "--abort")
+        if conflict_worktree and git.in_rebase(cwd=conflict_worktree):
+            git.run_with_retcode("rebase", "--abort", cwd=conflict_worktree)
         return_branch, return_workdir = find_return_branch_workdir()
         os.chdir(git.run("rev-parse", "--show-toplevel"))
         restore_starting_branch(return_branch, return_workdir)
@@ -617,12 +741,18 @@ def main(args=None):
             return 1
         if git.in_rebase():
             git.run_with_retcode("rebase", "--abort")
+        if conflict_worktree and git.in_rebase(cwd=conflict_worktree):
+            git.run_with_retcode("rebase", "--abort", cwd=conflict_worktree)
         add_skipped_branch(conflict_branch)
 
     resolve_branch = None
     if opts.resolve_conflict:
         resolve_branch = git.get_config(CONFLICT_BRANCH_KEY)
-        if not resolve_branch or git.in_rebase():
+        if (
+            not resolve_branch
+            or git.in_rebase()
+            or (conflict_worktree and git.in_rebase(cwd=conflict_worktree))
+        ):
             print("git rebase-update is not stopped before a conflict.")
             return 1
 
@@ -639,6 +769,18 @@ def main(args=None):
             run `git rebase-update --continue`. Or run
             `git rebase-update --skip-branch` to skip this branch for this run
             only and keep going, or `git rebase-update --abort`.""")
+        )
+        return 1
+
+    if conflict_worktree and git.in_rebase(cwd=conflict_worktree):
+        print(
+            textwrap.dedent("""\
+            Rebase in progress in worktree %s. Finish it there with
+            `git rebase --continue`, then run `git rebase-update --continue`
+            from this worktree. Or run `git rebase-update --skip-branch` to
+            skip this branch for this run only and keep going, or
+            `git rebase-update --abort`.""")
+            % conflict_worktree
         )
         return 1
 
@@ -689,9 +831,10 @@ def main(args=None):
     retcode = 0
     unrebased_branches = []
     skipped_branches = get_skipped_branches()
+    skipped_worktree_branches = []
     branches_in_other_worktrees = get_branches_in_other_worktrees()
     worktree_branches = (
-        branches_in_other_worktrees if opts.skip_worktrees else set()
+        branches_in_other_worktrees if opts.skip_worktrees else {}
     )
     # Rebase each branch starting with the root-most branches and working
     # towards the leaves.
@@ -717,6 +860,7 @@ def main(args=None):
                 merge_base[branch],
                 opts.no_squash,
                 branches_in_other_worktrees,
+                skipped_worktree_branches,
                 stop_before_conflicts=(
                     stop_before_conflicts and branch != resolve_branch
                 ),
@@ -746,9 +890,25 @@ def main(args=None):
         for branch in unrebased_branches:
             print("  %s" % format_branch_name(branch))
 
+    if skipped_worktree_branches:
+        print()
+        print(
+            "The following branches checked out in other worktrees were not "
+            "rebased:"
+        )
+        for branch in skipped_worktree_branches:
+            print(
+                "  %s (%s)"
+                % (
+                    format_branch_name(branch),
+                    branches_in_other_worktrees[branch],
+                )
+            )
+
     if not retcode:
         if not opts.keep_empty:
-            remove_empty_branches(branch_tree, worktree_branches)
+            # Branches checked out in another worktree can never be deleted.
+            remove_empty_branches(branch_tree, branches_in_other_worktrees)
 
     # Restore return_branch and thaw uncommitted changes if everything succeeded
     # OR if --keep-going was used (since --keep-going aborts mid-rebase conflicts,
