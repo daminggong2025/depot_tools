@@ -109,9 +109,13 @@ def restore_starting_branch(return_branch, return_workdir):
 
 
 def get_branches_in_other_worktrees():
-    """Returns a set of branches checked out in other worktrees."""
+    """Returns a dict mapping branches checked out in other worktrees to the
+    path of the worktree they are checked out in.
+
+    This includes branches being rebased in other worktrees, which `git
+    worktree list` reports as detached."""
     output = git.run("worktree", "list", "--porcelain")
-    branches = set()
+    branches = {}
     current_worktree_path = os.path.realpath(
         git.run("rev-parse", "--show-toplevel").strip()
     )
@@ -120,13 +124,18 @@ def get_branches_in_other_worktrees():
     for line in output.splitlines():
         if line.startswith("worktree "):
             worktree_path = line[len("worktree ") :]
-        elif line.startswith("branch refs/heads/"):
-            worktree_branch = line[len("branch refs/heads/") :]
-            if (
-                worktree_path
-                and os.path.realpath(worktree_path) != current_worktree_path
-            ):
-                branches.add(worktree_branch)
+            continue
+        if (
+            not worktree_path
+            or os.path.realpath(worktree_path) == current_worktree_path
+        ):
+            continue
+        if line.startswith("branch refs/heads/"):
+            branches[line[len("branch refs/heads/") :]] = worktree_path
+        elif line == "detached" and os.path.isdir(worktree_path):
+            worktree_branch = git.rebasing_branch(cwd=worktree_path)
+            if worktree_branch:
+                branches[worktree_branch] = worktree_path
 
     return branches
 
@@ -255,12 +264,43 @@ def format_branch_name(branch):
     return BRIGHT + branch + RESET
 
 
+def rebase_branch_in_worktree(branch, parent, start_hash, worktree_path):
+    """Rebases `branch` by running `git rebase` inside `worktree_path`, the
+    worktree where `branch` is checked out.
+
+    The worktree is left alone if it is missing, has uncommitted changes, or
+    has a rebase in progress. If the rebase fails (e.g. conflicts), it is
+    aborted, which restores the worktree to its original commit (the files
+    touched by the rebase get rewritten, so their mtimes change).
+
+    Returns:
+        None if the branch was rebased, or the reason it wasn't.
+    """
+    if not os.path.isdir(worktree_path):
+        return "worktree %s is missing (see `git worktree prune`)" % (
+            worktree_path
+        )
+    if git.in_rebase(cwd=worktree_path):
+        return "worktree %s has a rebase in progress" % worktree_path
+    if git.is_worktree_dirty(worktree_path):
+        return "worktree %s has uncommitted changes" % worktree_path
+    if not git.rebase(
+        parent, start_hash, branch, abort=True, cwd=worktree_path
+    ).success:
+        return (
+            "rebase in worktree %s failed (e.g. conflicts) and was aborted"
+            % worktree_path
+        )
+    return None
+
+
 def rebase_branch(
     branch,
     parent,
     start_hash,
     no_squash,
     branches_in_other_worktrees,
+    unrebased_worktree_branches,
 ):
     """Rebases `branch` onto `parent` from `start_hash`.
 
@@ -269,15 +309,23 @@ def rebase_branch(
     `git rebase` (and optional commit squashing) when conflicts occur, or when
     operating on active/worktree branches or repositories with GPG signing enabled.
 
+    Branches checked out in other worktrees are rebased inside their worktree,
+    or left alone (and appended to `unrebased_worktree_branches`) if that isn't
+    safe or fails.
+
     Args:
         branch: The local branch name to rebase.
         parent: The upstream parent ref or branch name.
         start_hash: The merge-base commit SHA between branch and parent.
         no_squash: If True, disables automated commit squashing on rebase failure.
-        branches_in_other_worktrees: Set of branch names checked out in other worktrees.
+        branches_in_other_worktrees: Dict mapping branch names checked out in
+            other worktrees to their worktree path.
+        unrebased_worktree_branches: List to which (branch, reason) pairs are
+            appended for worktree branches that were not rebased.
 
     Returns:
-        True if the branch rebased successfully, False on failure.
+        True if the branch rebased successfully (or is a worktree branch that
+        was left alone), False on failure.
     """
     logging.debug(
         "considering %s(%s) -> %s(%s) : %s",
@@ -307,8 +355,15 @@ def rebase_branch(
         )
 
     if git.hash_one(parent) != start_hash:
+        worktree_path = branches_in_other_worktrees.get(branch)
         # Try a plain rebase first
-        print("Rebasing:", format_branch_name(branch))
+        if worktree_path:
+            print(
+                "Rebasing: %s (in worktree %s)"
+                % (format_branch_name(branch), worktree_path)
+            )
+        else:
+            print("Rebasing:", format_branch_name(branch))
 
         # Only attempt in-memory fast-forward/replay for background branches
         # (not the currently checked-out branch, nor branches in other worktrees).
@@ -334,6 +389,22 @@ def rebase_branch(
                 git.remove_merge_base(branch)
                 git.get_or_create_merge_base(branch, orig_parent)
                 return True
+
+        # A branch checked out in another worktree can't be rebased from here.
+        # Rebase it inside its own worktree instead. If that isn't safe, or if
+        # the rebase fails (e.g. conflicts), leave the branch alone and report
+        # it at the end of the run.
+        if worktree_path:
+            reason = rebase_branch_in_worktree(
+                branch, parent, start_hash, worktree_path
+            )
+            if reason:
+                print("Skipping %s: %s" % (format_branch_name(branch), reason))
+                unrebased_worktree_branches.append((branch, reason))
+                return True
+            git.remove_merge_base(branch)
+            git.get_or_create_merge_base(branch, orig_parent)
+            return True
 
         consider_squashing = git.get_num_commits(branch) != 1 and not (
             no_squash
@@ -482,7 +553,10 @@ def main(args=None):
     parser.add_argument(
         "--skip-worktrees",
         action="store_true",
-        help="Skip branches checked out in a different worktree.",
+        help="Skip branches checked out in a different worktree. By default, "
+        "such branches are rebased inside their worktree, unless it has "
+        "uncommitted changes. If that rebase fails, it is aborted and the "
+        "branch is reported at the end of the run.",
     )
     run_control = parser.add_mutually_exclusive_group()
     run_control.add_argument(
@@ -599,9 +673,10 @@ def main(args=None):
     retcode = 0
     unrebased_branches = []
     skipped_branches = get_skipped_branches()
+    unrebased_worktree_branches = []
     branches_in_other_worktrees = get_branches_in_other_worktrees()
     worktree_branches = (
-        branches_in_other_worktrees if opts.skip_worktrees else set()
+        branches_in_other_worktrees if opts.skip_worktrees else {}
     )
     # Rebase each branch starting with the root-most branches and working
     # towards the leaves.
@@ -627,6 +702,7 @@ def main(args=None):
                 merge_base[branch],
                 opts.no_squash,
                 branches_in_other_worktrees,
+                unrebased_worktree_branches,
             )
             if not ret:
                 retcode = 1
@@ -652,9 +728,19 @@ def main(args=None):
         for branch in unrebased_branches:
             print("  %s" % format_branch_name(branch))
 
+    if unrebased_worktree_branches:
+        print()
+        print(
+            "The following branches checked out in other worktrees were not "
+            "rebased:"
+        )
+        for branch, reason in unrebased_worktree_branches:
+            print("  %s: %s" % (format_branch_name(branch), reason))
+
     if not retcode:
         if not opts.keep_empty:
-            remove_empty_branches(branch_tree, worktree_branches)
+            # Branches checked out in another worktree can never be deleted.
+            remove_empty_branches(branch_tree, branches_in_other_worktrees)
 
     # Restore return_branch and thaw uncommitted changes if everything succeeded
     # OR if --keep-going was used (since --keep-going aborts mid-rebase conflicts,

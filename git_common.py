@@ -782,12 +782,30 @@ def hash_one(reflike, short=False):
     return run(*args)
 
 
-def in_rebase():
-    git_dir = run("rev-parse", "--git-dir")
+def in_rebase(cwd=None):
+    git_dir = run("rev-parse", "--git-dir", cwd=cwd)
     assert isinstance(git_dir, str)
+    # --git-dir may be relative to |cwd|.
+    git_dir = os.path.join(cwd or "", git_dir)
     return os.path.exists(
         os.path.join(git_dir, "rebase-merge")
     ) or os.path.exists(os.path.join(git_dir, "rebase-apply"))
+
+
+def rebasing_branch(cwd=None):
+    """Returns the name of the branch being rebased in the worktree at |cwd|,
+    or None if no branch is being rebased there."""
+    git_dir = run("rev-parse", "--absolute-git-dir", cwd=cwd)
+    assert isinstance(git_dir, str)
+    for state_dir in ("rebase-merge", "rebase-apply"):
+        try:
+            with open(os.path.join(git_dir, state_dir, "head-name")) as f:
+                head_name = f.read().strip()
+        except OSError:
+            continue
+        if head_name.startswith("refs/heads/"):
+            return head_name[len("refs/heads/") :]
+    return None
 
 
 def intern_f(f, kind="blob"):
@@ -807,6 +825,20 @@ def intern_f(f, kind="blob"):
 def is_dormant(branch):
     # TODO(iannucci): Do an oldness check?
     return branch_config(branch, "dormant", "false") != "false"
+
+
+def is_worktree_dirty(worktree_path):
+    """Returns True if tracked files in |worktree_path| have uncommitted
+    changes (staged or unstaged). Untracked files are ignored."""
+    return bool(
+        run(
+            "status",
+            "--porcelain",
+            "--untracked-files=no",
+            "--ignore-submodules=all",
+            cwd=worktree_path,
+        )
+    )
 
 
 def is_unmerged(stat_value):
@@ -856,7 +888,7 @@ def parse_commitrefs(*commitrefs):
 RebaseRet = collections.namedtuple("RebaseRet", "success stdout stderr")
 
 
-def rebase(parent, start, branch, abort=False, allow_gc=False):
+def rebase(parent, start, branch, abort=False, allow_gc=False, cwd=None):
     """Rebases |start|..|branch| onto the branch |parent|.
 
     Sets 'gc.auto=0' for the duration of this call to prevent the rebase from
@@ -872,6 +904,8 @@ def rebase(parent, start, branch, abort=False, allow_gc=False):
             "-c gc.auto=0". Usually if you're doing a series of rebases,
             you'll only want to run a single gc pass at the end of all the
             rebase activity.
+        cwd - If set, runs the rebase in this directory (e.g. the worktree
+            where |branch| is checked out).
 
     Returns a namedtuple with fields:
         success - a boolean indicating that the rebase command completed
@@ -893,11 +927,11 @@ def rebase(parent, start, branch, abort=False, allow_gc=False):
             start,
             branch,
         ]
-        run(*args)
+        run(*args, cwd=cwd)
         return RebaseRet(True, "", "")
     except subprocess2.CalledProcessError as cpe:
         if abort:
-            run_with_retcode("rebase", "--abort")  # ignore failure
+            run_with_retcode("rebase", "--abort", cwd=cwd)  # ignore failure
         return RebaseRet(
             False,
             cpe.stdout.decode("utf-8", "replace"),
