@@ -25,6 +25,10 @@ colorama = from_third_party.import_module("colorama")
 
 STARTING_BRANCH_KEY = "depot-tools.rebase-update.starting-branch"
 STARTING_WORKDIR_KEY = "depot-tools.rebase-update.starting-workdir"
+# Branches skipped with --skip-branch for the current run (space separated).
+SKIPPED_BRANCHES_KEY = "depot-tools.rebase-update.skipped-branches"
+# The branch the current run stopped on because of a conflict.
+CONFLICT_BRANCH_KEY = "depot-tools.rebase-update.conflict-branch"
 
 RESET = colorama.Fore.RESET + colorama.Back.RESET + colorama.Style.RESET_ALL
 BRIGHT = colorama.Style.BRIGHT
@@ -47,6 +51,61 @@ def find_return_branch_workdir():
             git.set_config(STARTING_BRANCH_KEY, return_branch)
 
     return return_branch, workdir
+
+
+def get_skipped_branches():
+    """Returns the branches skipped with --skip-branch for the current run."""
+    return (git.get_config(SKIPPED_BRANCHES_KEY) or "").split()
+
+
+def add_skipped_branch(branch):
+    """Skips `branch` for the rest of the current run."""
+    branches = get_skipped_branches()
+    if branch not in branches:
+        branches.append(branch)
+    git.set_config(SKIPPED_BRANCHES_KEY, " ".join(branches))
+
+
+def clear_run_state():
+    """Forgets everything about the current run."""
+    for key in (
+        STARTING_BRANCH_KEY,
+        STARTING_WORKDIR_KEY,
+        SKIPPED_BRANCHES_KEY,
+        CONFLICT_BRANCH_KEY,
+    ):
+        git.set_config(key, "")
+
+
+def restore_starting_branch(return_branch, return_workdir):
+    """Checks out the branch the run started from, restores the uncommitted
+    changes frozen at the start of the run, and returns to the starting
+    working directory."""
+    # return_branch may not be there any more.
+    if return_branch in git.branches(use_limit=False):
+        git.run("checkout", return_branch)
+        git.thaw()
+    else:
+        root_branch = git.root()
+        if return_branch != "HEAD":
+            print(
+                "%s was merged with its parent, checking out %s instead."
+                % (
+                    git.unicode_repr(return_branch),
+                    git.unicode_repr(root_branch),
+                )
+            )
+        git.run("checkout", root_branch)
+
+    # return_workdir may also not be there any more.
+    if return_workdir:
+        try:
+            os.chdir(return_workdir)
+        except OSError as e:
+            print(
+                "Unable to return to original workdir %r: %s"
+                % (return_workdir, e)
+            )
 
 
 def get_branches_in_other_worktrees():
@@ -286,12 +345,18 @@ def rebase_branch(
             mid_rebase_message = textwrap.dedent(
                 """\
                 Your working copy is in mid-rebase. Either:
-                 * completely resolve like a normal git-rebase; OR
-                 * abort the rebase and mark this branch as dormant:
+                 * completely resolve like a normal git-rebase, then run
+                       git rebase-update --continue
+                   to resume; OR
+                 * skip this branch for this run only and keep going:
+                       git rebase-update --skip-branch
+                 * abort the rebase and mark this branch as dormant (skipped on
+                   every run):
                        git rebase --abort && \\
                        git config branch.%s.dormant true
-
-                And then run `git rebase-update -n` to resume.
+                   and then run `git rebase-update --continue` to resume.
+                 * give up on the whole run:
+                       git rebase-update --abort
                 """
                 % branch
             )
@@ -419,6 +484,26 @@ def main(args=None):
         action="store_true",
         help="Skip branches checked out in a different worktree.",
     )
+    run_control = parser.add_mutually_exclusive_group()
+    run_control.add_argument(
+        "--continue",
+        dest="continue_run",
+        action="store_true",
+        help="Continue a run that stopped on a conflict, after the conflict "
+        "was resolved. Implies --no-fetch.",
+    )
+    run_control.add_argument(
+        "--skip-branch",
+        action="store_true",
+        help="Skip the branch the run stopped on for the rest of this run, "
+        "and continue. Implies --no-fetch.",
+    )
+    run_control.add_argument(
+        "--abort",
+        action="store_true",
+        help="Give up on a run that stopped on a conflict: abort the rebase "
+        "and return to the starting branch.",
+    )
 
     opts = parser.parse_args(args)
 
@@ -432,14 +517,47 @@ def main(args=None):
     #       * Then we could view a summary of each run as a
     #         `diff --stat` on that secret ref.
 
+    resuming = opts.continue_run or opts.skip_branch or opts.abort
+    if resuming:
+        if not git.get_config(STARTING_WORKDIR_KEY):
+            print("No git rebase-update in progress.")
+            return 1
+        opts.no_fetch = True
+
+    if opts.abort:
+        if git.in_rebase():
+            git.run_with_retcode("rebase", "--abort")
+        return_branch, return_workdir = find_return_branch_workdir()
+        os.chdir(git.run("rev-parse", "--show-toplevel"))
+        restore_starting_branch(return_branch, return_workdir)
+        clear_run_state()
+        return 0
+
+    if opts.skip_branch:
+        conflict_branch = git.get_config(CONFLICT_BRANCH_KEY)
+        if not conflict_branch:
+            print("git rebase-update is not stopped on a conflict.")
+            return 1
+        if git.in_rebase():
+            git.run_with_retcode("rebase", "--abort")
+        add_skipped_branch(conflict_branch)
+
     if git.in_rebase():
-        # TODO(iannucci): Be able to resume rebase with flags like --continue,
-        # etc.
         print(
-            "Rebase in progress. Please complete the rebase before running "
-            "`git rebase-update`."
+            textwrap.dedent("""\
+            Rebase in progress. Finish it with `git rebase --continue`, then
+            run `git rebase-update --continue`. Or run
+            `git rebase-update --skip-branch` to skip this branch for this run
+            only and keep going, or `git rebase-update --abort`.""")
         )
         return 1
+
+    if resuming:
+        git.set_config(CONFLICT_BRANCH_KEY, "")
+    else:
+        # A new run forgets the branches skipped by any previous run.
+        git.set_config(SKIPPED_BRANCHES_KEY, "")
+        git.set_config(CONFLICT_BRANCH_KEY, "")
 
     return_branch, return_workdir = find_return_branch_workdir()
     os.chdir(git.run("rev-parse", "--show-toplevel"))
@@ -480,6 +598,7 @@ def main(args=None):
 
     retcode = 0
     unrebased_branches = []
+    skipped_branches = get_skipped_branches()
     branches_in_other_worktrees = get_branches_in_other_worktrees()
     worktree_branches = (
         branches_in_other_worktrees if opts.skip_worktrees else set()
@@ -495,6 +614,9 @@ def main(args=None):
                 "Skipping branch checked out in another worktree",
                 format_branch_name(branch),
             )
+            continue
+        if branch in skipped_branches:
+            print("Skipping %s for this run" % format_branch_name(branch))
             continue
         if git.is_dormant(branch):
             print("Skipping dormant branch", format_branch_name(branch))
@@ -520,6 +642,8 @@ def main(args=None):
                         )
                         break
                 else:
+                    # Remember where we stopped for --skip-branch.
+                    git.set_config(CONFLICT_BRANCH_KEY, branch)
                     break
 
     if unrebased_branches:
@@ -536,33 +660,14 @@ def main(args=None):
     # OR if --keep-going was used (since --keep-going aborts mid-rebase conflicts,
     # ensuring the working tree is clean and ready to return to starting state).
     if not retcode or (opts.keep_going and not git.in_rebase()):
-        # return_branch may not be there any more.
-        if return_branch in git.branches(use_limit=False):
-            git.run("checkout", return_branch)
-            git.thaw()
-        else:
-            root_branch = git.root()
-            if return_branch != "HEAD":
-                print(
-                    "%s was merged with its parent, checking out %s instead."
-                    % (
-                        git.unicode_repr(return_branch),
-                        git.unicode_repr(root_branch),
-                    )
-                )
-            git.run("checkout", root_branch)
+        if skipped_branches:
+            print()
+            print("The following branches were skipped for this run:")
+            for branch in skipped_branches:
+                print("  %s" % format_branch_name(branch))
 
-        # return_workdir may also not be there any more.
-        if return_workdir:
-            try:
-                os.chdir(return_workdir)
-            except OSError as e:
-                print(
-                    "Unable to return to original workdir %r: %s"
-                    % (return_workdir, e)
-                )
-        git.set_config(STARTING_BRANCH_KEY, "")
-        git.set_config(STARTING_WORKDIR_KEY, "")
+        restore_starting_branch(return_branch, return_workdir)
+        clear_run_state()
 
         print()
         print("Running `git gc --auto` - Ctrl-C to abort is OK.")
