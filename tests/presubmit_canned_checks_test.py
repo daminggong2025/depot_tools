@@ -1721,8 +1721,22 @@ class CheckForCommitObjectsTest(unittest.TestCase):
     def tearDown(self):
         self.patcher.stop()
 
+    def testEmptyChangeSkipsLsTree(self):
+        # Empty change should skip ls-tree and return no errors.
+        self.input_api.files = []
+        self.input_api.subprocess.check_output.side_effect = [
+            b"",  # git show HEAD:DEPS
+        ]
+        results = presubmit_canned_checks.CheckForCommitObjects(
+            self.input_api, self.output_api
+        )
+        self.assertEqual(0, len(results))
+        # Only git show HEAD:DEPS is called; no ls-tree calls.
+        self.assertEqual(1, self.input_api.subprocess.check_output.call_count)
+
     def testNoGitlinks(self):
         # No gitlinks at all.
+        self.input_api.files = [MockAffectedFile("file.txt", "")]
         self.input_api.subprocess.check_output.side_effect = [
             b"",  # git show HEAD:DEPS
             b"100644 blob 1234\tfile.txt\0",
@@ -1735,6 +1749,7 @@ class CheckForCommitObjectsTest(unittest.TestCase):
 
     def testGitlinkFound(self):
         # One gitlink found.
+        self.input_api.files = [MockAffectedFile("submodule", "")]
         self.input_api.subprocess.check_output.side_effect = [
             b"",  # git show HEAD:DEPS
             b"160000 commit 1234\tsubmodule\0",
@@ -1748,6 +1763,11 @@ class CheckForCommitObjectsTest(unittest.TestCase):
 
     def testGitlinkMiddle(self):
         # Gitlink in the middle of other files.
+        self.input_api.files = [
+            MockAffectedFile("file1", ""),
+            MockAffectedFile("submodule", ""),
+            MockAffectedFile("file2", ""),
+        ]
         self.input_api.subprocess.check_output.side_effect = [
             b"",  # git show HEAD:DEPS
             b"100644 blob 1111\tfile1\0"
@@ -1764,6 +1784,10 @@ class CheckForCommitObjectsTest(unittest.TestCase):
 
     def testGitlinkStart(self):
         # Gitlink at the very start.
+        self.input_api.files = [
+            MockAffectedFile("submodule", ""),
+            MockAffectedFile("file2", ""),
+        ]
         self.input_api.subprocess.check_output.side_effect = [
             b"",  # git show HEAD:DEPS
             b"160000 commit 2222\tsubmodule\0" + b"100644 blob 3333\tfile2\0",
@@ -1777,6 +1801,10 @@ class CheckForCommitObjectsTest(unittest.TestCase):
 
     def testGitlinkEnd(self):
         # Gitlink at the very end.
+        self.input_api.files = [
+            MockAffectedFile("file2", ""),
+            MockAffectedFile("submodule", ""),
+        ]
         self.input_api.subprocess.check_output.side_effect = [
             b"",  # git show HEAD:DEPS
             b"100644 blob 3333\tfile2\0" + b"160000 commit 2222\tsubmodule\0",
@@ -1790,6 +1818,11 @@ class CheckForCommitObjectsTest(unittest.TestCase):
 
     def testMultipleGitlinks(self):
         # Multiple gitlinks.
+        self.input_api.files = [
+            MockAffectedFile("sub1", ""),
+            MockAffectedFile("file", ""),
+            MockAffectedFile("sub2", ""),
+        ]
         self.input_api.subprocess.check_output.side_effect = [
             b"",  # git show HEAD:DEPS
             b"160000 commit 1111\tsub1\0"
@@ -1900,11 +1933,11 @@ class CheckForCommitObjectsTest(unittest.TestCase):
         self.assertIn("submodule", results[0].items)
 
     def testWindowsCommandLineLimit(self):
-        # On Windows, if the command line is too long, we should fall back to a
-        # recursive ls-tree.
+        # On Windows, if the command line is too long, we batch the files
+        # across multiple ls-tree commands instead of scanning the full tree.
         self.input_api.platform = "win32"
         self.input_api.files = [
-            MockAffectedFile("a" * 100, "") for i in range(350)
+            MockAffectedFile(f"file_{i}_" + "a" * 90, "") for i in range(350)
         ]
         self.input_api.subprocess.check_output.return_value = b""
 
@@ -1913,12 +1946,14 @@ class CheckForCommitObjectsTest(unittest.TestCase):
         )
 
         # The first call is to `git show HEAD:DEPS`.
-        # The second call is to `git ls-tree`.
-        self.assertEqual(2, self.input_api.subprocess.check_output.call_count)
-        ls_tree_cmd = self.input_api.subprocess.check_output.call_args_list[1][
-            0
-        ][0]
-        self.assertIn("-r", ls_tree_cmd)
+        # Subsequent calls are chunked `git ls-tree`.
+        self.assertGreater(self.input_api.subprocess.check_output.call_count, 2)
+        for call in self.input_api.subprocess.check_output.call_args_list[1:]:
+            cmd = call[0][0]
+            self.assertIn("ls-tree", cmd)
+            self.assertNotIn("-r", cmd)
+            cmd_len = len(" ".join(cmd))
+            self.assertLessEqual(cmd_len, 25000)
 
     def testWindowsCommandLineNotTooLong(self):
         # On Windows, if the command line is not too long, we should pass the
