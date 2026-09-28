@@ -214,6 +214,30 @@
       },
       "revId": "e9f2ff314dbc59e18f9678941f444c6efcda797f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3e525ab6_f9778a4f",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2026-09-28T04:49:18Z",
+      "side": 1,
+      "message": "Looking at the benchmarks http://screen/1qnkd1269lkko, there is a regression on the deps check overhead this week. A developer Mac build takes \u003e30 minutes. We need to stabilize the performance before enabling it by default on agent/developer builds.",
+      "parentUuid": "7a450de2_196bcd75",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 9,
+        "endChar": 48
+      },
+      "revId": "e9f2ff314dbc59e18f9678941f444c6efcda797f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
