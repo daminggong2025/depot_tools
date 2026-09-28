@@ -237,6 +237,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "a80595ad_afee3095",
+        "filename": "git_cl.py",
+        "patchSetId": 20
+      },
+      "lineNbr": 2455,
+      "author": {
+        "id": 4733581
+      },
+      "writtenOn": "2026-09-28T21:21:58Z",
+      "side": 1,
+      "message": "Thank you, I believe flows have some existing support for time Zones we could probably use. Will take note so we could take a look into it in a following iteration of the feature.",
+      "parentUuid": "e0f8e50a_8146f018",
+      "range": {
+        "startLine": 2455,
+        "startChar": 77,
+        "endLine": 2455,
+        "endChar": 82
+      },
+      "revId": "2582181358aafe15b868b0faf9723694224ce30b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "737829b0_8b953013",
