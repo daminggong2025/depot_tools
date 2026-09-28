@@ -11,6 +11,7 @@ import hashlib
 import json
 import os
 import shutil
+import signal
 import subprocess
 import sys
 import tempfile
@@ -206,7 +207,63 @@ def _run_subprocess(cmd, interactive=False, env=None):
         kwargs["stdout"] = subprocess.PIPE
         kwargs["stderr"] = subprocess.PIPE
 
-    return subprocess.run(cmd, **kwargs)
+    with subprocess.Popen(cmd, **kwargs) as proc:
+
+        def _handle_sigterm(_signum, _frame):
+            proc.terminate()
+
+        old_sigterm = None
+        try:
+            old_sigterm = signal.signal(signal.SIGTERM, _handle_sigterm)
+        except ValueError:
+            pass
+        try:
+            stdout, stderr = proc.communicate()
+        finally:
+            if old_sigterm is not None:
+                signal.signal(signal.SIGTERM, old_sigterm)
+        return subprocess.CompletedProcess(cmd, proc.returncode, stdout, stderr)
+
+
+def _exec_gsutil_bin(gsutil_bin, args):
+    """Runs gsutil_bin in-process with fixed SIGTERM signal handling."""
+    gsutil_dir = os.path.dirname(os.path.abspath(os.path.realpath(gsutil_bin)))
+    sys.argv = [gsutil_bin] + args
+    sys.path[0] = gsutil_dir
+    sys.modules["__main__"].__file__ = gsutil_bin
+    sys.modules.pop("gsutil", None)
+
+    import gsutil as gsutil_entrypoint
+
+    gsutil_entrypoint._fix_google_module()
+    import gslib.__main__
+    import gslib.sig_handling
+
+    main_pid = os.getpid()
+    in_handler = False
+    orig_signal_handler = gslib.sig_handling._SignalHandler
+
+    def _safe_signal_handler(signal_num, cur_stack_frame):
+        nonlocal in_handler
+        if os.getpid() != main_pid:
+            # Forked multiprocessing.Manager() server processes inherit
+            # gsutil's signal handler before handlers are registered. Exit
+            # immediately on SIGTERM instead of ignoring it.
+            os._exit(0)
+        if in_handler:
+            return
+        in_handler = True
+        orig_signal_handler(signal_num, cur_stack_frame)
+
+    gslib.sig_handling._SignalHandler = _safe_signal_handler
+    # gslib.__main__ registers _HandleControlC only for SIGINT in non-parallel
+    # mode, leaving SIGTERM without a final handler that exits the process.
+    gslib.__main__.RegisterSignalHandler(
+        signal.SIGTERM,
+        gslib.__main__._HandleControlC,
+        is_final_handler=True,
+    )
+    return gslib.__main__.main()
 
 
 def _print_subprocess_result(p):
@@ -264,6 +321,8 @@ def run_gsutil(target, args, clean=False):
             "-vpython-spec",
             os.path.join(THIS_DIR, "gsutil.vpython.toml"),
             "--",
+            os.path.abspath(__file__),
+            "--_wrapper",
             gsutil_bin,
         ]
         + args_opt
@@ -382,6 +441,8 @@ def parse_args():
 
 
 def main():
+    if len(sys.argv) >= 3 and sys.argv[1] == "--_wrapper":
+        return _exec_gsutil_bin(sys.argv[2], sys.argv[3:])
     args = parse_args()
     return run_gsutil(args.target, args.args, clean=args.clean)
 

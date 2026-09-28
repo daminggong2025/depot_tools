@@ -76,6 +76,8 @@ class Config:
         return self._config.get("version")
 
     def enabled(self):
+        if os.environ.get("DEPOT_TOOLS_BUILD_TELEMETRY") == "0":
+            return False
         if not self.is_googler or not self.is_corp_machine:
             return False
         if self._config.get("status") == "opt-out":

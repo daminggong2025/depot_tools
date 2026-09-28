@@ -10,6 +10,7 @@ import io
 import json
 import os
 import shutil
+import signal
 import subprocess
 import sys
 import tempfile
@@ -184,6 +185,102 @@ class GsutilUnitTests(unittest.TestCase):
         self,
     ):
         self.assertFalse(gsutil._is_luci_auth_supported_platform())
+
+    def test__run_subprocess_forwards_sigterm(self):
+        mock_proc = mock.MagicMock()
+        mock_proc.__enter__.return_value = mock_proc
+        mock_proc.returncode = -signal.SIGTERM
+
+        captured_handler = {}
+
+        def fake_communicate():
+            # Simulate receiving SIGTERM while waiting in communicate().
+            captured_handler["handler"](signal.SIGTERM, None)
+            return (b"out", b"err")
+
+        mock_proc.communicate.side_effect = fake_communicate
+
+        orig_signal = signal.getsignal(signal.SIGTERM)
+
+        def fake_signal(sig, handler):
+            if sig == signal.SIGTERM and callable(handler):
+                captured_handler["handler"] = handler
+            return orig_signal
+
+        with (
+            mock.patch("subprocess.Popen", return_value=mock_proc),
+            mock.patch("signal.signal", side_effect=fake_signal) as mock_sig,
+        ):
+            result = gsutil._run_subprocess(["fake_cmd"])
+
+        mock_proc.terminate.assert_called_once_with()
+        self.assertEqual(result.returncode, -signal.SIGTERM)
+        self.assertEqual(result.stdout, b"out")
+        self.assertEqual(result.stderr, b"err")
+        self.assertEqual(mock_sig.call_count, 2)
+        self.assertEqual(
+            mock_sig.call_args_list[1], mock.call(signal.SIGTERM, orig_signal)
+        )
+
+    def test__exec_gsutil_bin_registers_sigterm_handler(self):
+        fake_gsutil_entry = mock.MagicMock()
+        fake_gslib_main = mock.MagicMock()
+        fake_gslib_main.main.return_value = 0
+        fake_sig_handling = mock.MagicMock()
+        orig_handler = mock.MagicMock()
+        fake_sig_handling._SignalHandler = orig_handler
+
+        fake_gslib = mock.MagicMock()
+        fake_gslib.__main__ = fake_gslib_main
+        fake_gslib.sig_handling = fake_sig_handling
+
+        orig_argv = list(sys.argv)
+        orig_path0 = sys.path[0]
+        orig_main_file = getattr(sys.modules["__main__"], "__file__", None)
+        try:
+            with mock.patch.dict(
+                sys.modules,
+                {
+                    "gslib": fake_gslib,
+                    "gslib.__main__": fake_gslib_main,
+                    "gslib.sig_handling": fake_sig_handling,
+                },
+            ):
+                import builtins
+
+                orig_import = builtins.__import__
+
+                def custom_import(name, *args, **kwargs):
+                    if name == "gsutil":
+                        return fake_gsutil_entry
+                    return orig_import(name, *args, **kwargs)
+
+                with mock.patch(
+                    "builtins.__import__", side_effect=custom_import
+                ):
+                    rc = gsutil._exec_gsutil_bin(
+                        "/fake/dir/gsutil", ["cp", "src", "dst"]
+                    )
+
+            self.assertEqual(rc, 0)
+            fake_gsutil_entry._fix_google_module.assert_called_once_with()
+            fake_gslib_main.RegisterSignalHandler.assert_called_once_with(
+                signal.SIGTERM,
+                fake_gslib_main._HandleControlC,
+                is_final_handler=True,
+            )
+            # Verify re-entrancy guard in _safe_signal_handler.
+            wrapped_handler = fake_sig_handling._SignalHandler
+            self.assertNotEqual(wrapped_handler, orig_handler)
+            wrapped_handler(signal.SIGTERM, None)
+            wrapped_handler(signal.SIGTERM, None)
+            orig_handler.assert_called_once_with(signal.SIGTERM, None)
+        finally:
+            sys.argv = orig_argv
+            sys.path[0] = orig_path0
+            sys.modules["gsutil"] = gsutil
+            if orig_main_file is not None:
+                sys.modules["__main__"].__file__ = orig_main_file
 
 
 if __name__ == "__main__":
