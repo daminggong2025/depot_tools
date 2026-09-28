@@ -94,6 +94,24 @@
       "isAi": true,
       "revId": "e114f37db82307b260b277bbd72058e4ee8e2e3f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2fb9e6d7_6dd759e2",
+        "filename": "tests/presubmit_canned_checks_test.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 1149,
+      "author": {
+        "id": 3329068
+      },
+      "writtenOn": "2026-09-28T15:57:49Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3c955307_8f4eda46",
+      "revId": "e114f37db82307b260b277bbd72058e4ee8e2e3f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
