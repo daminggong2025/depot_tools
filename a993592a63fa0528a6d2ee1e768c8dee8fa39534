@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "dc464d87_f14a0198",
+        "filename": "owners_client.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 156,
+      "author": {
+        "id": 1244248
+      },
+      "writtenOn": "2026-09-28T10:24:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "245cf76a_9abe8a0a",
+      "range": {
+        "startLine": 156,
+        "startChar": 12,
+        "endLine": 156,
+        "endChar": 34
+      },
+      "revId": "a993592a63fa0528a6d2ee1e768c8dee8fa39534",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "6b99205e_a1c87ee9",
@@ -49,6 +73,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "09ee0f01_60eb5e4f",
+        "filename": "tests/owners_client_test.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 325,
+      "author": {
+        "id": 1244248
+      },
+      "writtenOn": "2026-09-28T10:24:33Z",
+      "side": 1,
+      "message": "It would actually return bob,dave. But this exposed a bug in that directories that anyone can approve might give a wrong score, leading to wrong results. Fixed in the latest PS.",
+      "parentUuid": "6b99205e_a1c87ee9",
+      "range": {
+        "startLine": 325,
+        "startChar": 0,
+        "endLine": 325,
+        "endChar": 47
+      },
+      "revId": "a993592a63fa0528a6d2ee1e768c8dee8fa39534",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "627b0138_4141f994",
         "filename": "tests/owners_client_test.py",
         "patchSetId": 5
@@ -60,6 +108,30 @@
       "writtenOn": "2026-09-23T22:38:51Z",
       "side": 1,
       "message": "since CMDowners just prints SuggestMinimalOwners, won\u0027t it print `*` instead of a reviewer email even though alice or bob can approve the whole change?",
+      "range": {
+        "startLine": 349,
+        "startChar": 13,
+        "endLine": 349,
+        "endChar": 49
+      },
+      "revId": "a993592a63fa0528a6d2ee1e768c8dee8fa39534",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bd3b1f47_82acfbab",
+        "filename": "tests/owners_client_test.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 349,
+      "author": {
+        "id": 1244248
+      },
+      "writtenOn": "2026-09-28T10:24:33Z",
+      "side": 1,
+      "message": "That\u0027s the current behavior. The difference is that it was never exposed as --batch uses `SuggestOwners`. I believe it makes more sense for a flag called --minimal, that doesn\u0027t care about scores: if anyone can approve, why suggest a single owner?",
+      "parentUuid": "627b0138_4141f994",
       "range": {
         "startLine": 349,
         "startChar": 13,
