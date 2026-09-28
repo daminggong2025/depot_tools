@@ -12,6 +12,7 @@ import re as _re
 import sys as _sys
 import time
 
+import gclient_utils
 import metadata.discover
 import metadata.validate
 
@@ -4043,7 +4044,17 @@ def CheckAyeAye(input_api, output_api):
             msg = f"AyeAye execution failed (exit code {err['exit_code']})"
             if err.get("output"):
                 msg += f":\n{err['output']}"
-            results.append(output_api.PresubmitPromptWarning(msg))
+            msg += (
+                "\nPlease file a bug at http://go/alint-bug if you think this "
+                "is an issue."
+            )
+            if (
+                gclient_utils.IsEnvAi(input_api.environ)
+                or input_api.environ.get("CHROME_HEADLESS") == "1"
+            ):
+                results.append(output_api.PresubmitNotifyResult(msg))
+            else:
+                results.append(output_api.PresubmitPromptWarning(msg))
         return results
 
     cmd = [
