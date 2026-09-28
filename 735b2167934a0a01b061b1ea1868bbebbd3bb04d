@@ -159,6 +159,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "a7700bd6_2d788357",
+        "filename": "cl_format.py",
+        "patchSetId": 25
+      },
+      "lineNbr": 432,
+      "author": {
+        "id": 1450817
+      },
+      "writtenOn": "2026-09-28T01:53:41Z",
+      "side": 1,
+      "message": "I think this is the right way to do this, but I don\u0027t have owners over depot_tools, so I don\u0027t have the final say.",
+      "parentUuid": "491a35a6_401e516f",
+      "revId": "735b2167934a0a01b061b1ea1868bbebbd3bb04d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "91886e14_b19f0dee",
