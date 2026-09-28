@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "0a6e000c_9dcfc384",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3329068
+      },
+      "writtenOn": "2026-09-28T15:42:15Z",
+      "side": 1,
+      "message": "Done — our previous fix hyper-fixated on the execution_error case mentioned in the bug. Switched to a shared warning_factory for both warnings and execution_error.",
+      "parentUuid": "07a9391e_2a59bb9b",
+      "revId": "e114f37db82307b260b277bbd72058e4ee8e2e3f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "07a9391e_2a59bb9b",
@@ -38,6 +56,24 @@
         "endChar": 9999
       },
       "isAi": true,
+      "revId": "e114f37db82307b260b277bbd72058e4ee8e2e3f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8bfecfec_df855c1e",
+        "filename": "tests/presubmit_canned_checks_test.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3329068
+      },
+      "writtenOn": "2026-09-28T15:42:15Z",
+      "side": 1,
+      "message": "Done.",
+      "parentUuid": "3c955307_8f4eda46",
       "revId": "e114f37db82307b260b277bbd72058e4ee8e2e3f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
