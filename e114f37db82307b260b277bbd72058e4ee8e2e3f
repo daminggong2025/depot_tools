@@ -1,0 +1,63 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c0736d7a_0c7cc2e7",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1607747
+      },
+      "writtenOn": "2026-09-28T14:19:01Z",
+      "side": 1,
+      "message": "I created a parallel CL this morning, and asked Jetski to compare the CLs and add comments below. I think it makes sense?",
+      "revId": "e114f37db82307b260b277bbd72058e4ee8e2e3f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "07a9391e_2a59bb9b",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 4057,
+      "author": {
+        "id": 1607747
+      },
+      "writtenOn": "2026-09-28T14:19:01Z",
+      "side": 1,
+      "message": "Advisory `warnings` on line 4040 still unconditionally use `output_api.PresubmitPromptWarning(x)`, which will still block AI agents and `CHROME_HEADLESS\u003d1` runs on an interactive `(y/N)` stdin prompt during `git cl upload` whenever `alint` emits a non-blocking `WARNING:` (or emits a warning before a non-zero exit in `run_alint.py`).\n\nThe way Jetski implemented it was defining a shared `warning_factory` and using it for both `json_dict[\"warnings\"]` and `execution_error`:\n\n```python\n        warning_factory \u003d (\n            output_api.PresubmitNotifyResult\n            if (\n                gclient_utils.IsEnvAi(input_api.environ)\n                or input_api.environ.get(\"CHROME_HEADLESS\") \u003d\u003d \"1\"\n            )\n            else output_api.PresubmitPromptWarning\n        )\n        results \u003d [output_api.PresubmitError(x) for x in json_dict[\"errors\"]]\n        results +\u003d [warning_factory(x) for x in json_dict[\"warnings\"]]\n        if \"execution_error\" in json_dict:\n            err \u003d json_dict[\"execution_error\"]\n            msg \u003d f\"AyeAye execution failed (exit code {err[\u0027exit_code\u0027]})\"\n            if err.get(\"output\"):\n                msg +\u003d f\":\\n{err[\u0027output\u0027]}\"\n            msg +\u003d (\n                \"\\nPlease file a bug at http://go/alint-bug if you think this \"\n                \"is an issue.\"\n            )\n            results.append(warning_factory(msg))\n```",
+      "range": {
+        "startLine": 4039,
+        "startChar": 0,
+        "endLine": 4057,
+        "endChar": 9999
+      },
+      "isAi": true,
+      "revId": "e114f37db82307b260b277bbd72058e4ee8e2e3f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3c955307_8f4eda46",
+        "filename": "tests/presubmit_canned_checks_test.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 1149,
+      "author": {
+        "id": 1607747
+      },
+      "writtenOn": "2026-09-28T14:19:01Z",
+      "side": 1,
+      "message": "If we also use `PresubmitNotifyResult` for `json_dict[\"warnings\"]` in AI agent / headless environments, please also add a test case (or assert in `test_ayeaye_execution_error_ai_agent`) verifying that `\"warnings\": [...]` emits `type \u003d\u003d \"notify\"`.",
+      "isAi": true,
+      "revId": "e114f37db82307b260b277bbd72058e4ee8e2e3f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
