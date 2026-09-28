@@ -68,6 +68,24 @@
       "parentUuid": "898112aa_4c6c0aeb",
       "revId": "cabcfc11436cdaf46b9be084cced75e5f27558eb",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4097279d_740b12ac",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3388142
+      },
+      "writtenOn": "2026-09-28T08:37:13Z",
+      "side": 1,
+      "message": "OSL have added it as \u0027CLARIN-PUB-BY\u0027 so just that will suffice 😊\n\nhttp://b/565115962",
+      "parentUuid": "d1b23c60_a72d6506",
+      "revId": "cabcfc11436cdaf46b9be084cced75e5f27558eb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
