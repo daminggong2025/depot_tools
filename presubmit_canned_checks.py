@@ -2938,10 +2938,20 @@ def CheckForCommitObjects(input_api, output_api):
 
     import git_common
 
-    cmd = [git_common.GIT_EXE, "ls-tree", "-z", "--full-tree", "HEAD"]
-    if len(affected_files) < 1000 and not deps_modified:
-        # We need to pass the paths relative to the repository root.
-        repo_root = input_api.change.RepositoryRoot()
+    def _GetTreeData():
+        base_cmd = [git_common.GIT_EXE, "ls-tree", "-z", "--full-tree", "HEAD"]
+        if deps_modified:
+            return input_api.subprocess.check_output(
+                base_cmd + ["-r"],
+                cwd=input_api.PresubmitLocalPath(),
+                shell=False,
+            )
+
+        repo_root = (
+            input_api.change.RepositoryRoot()
+            if hasattr(input_api.change, "RepositoryRoot")
+            else input_api.PresubmitLocalPath()
+        )
 
         # Git uses forward slashes on all platforms.
         files_to_check = [
@@ -2958,22 +2968,34 @@ def CheckForCommitObjects(input_api, output_api):
                 ]
             )
 
-        # On Windows, the command line is limited to 8191 characters when
-        # shell=True. But if we use shell=False, the limit is 32767 characters.
-        cmd_len = len(" ".join(cmd + ["--"] + files_to_check))
-        if input_api.is_windows and cmd_len > 32_000:
-            cmd.extend(["-r"])
-        else:
-            cmd.extend(["--"] + files_to_check)
-    else:
-        cmd.extend(["-r"])
+        # Batch paths to stay well under command line length limits
+        # (e.g. 32k on Windows).
+        batches = []
+        current_batch = []
+        current_len = len(" ".join(base_cmd))
+        for p in files_to_check:
+            if current_batch and (
+                len(current_batch) >= 500 or current_len + len(p) + 1 > 25000
+            ):
+                batches.append(current_batch)
+                current_batch = []
+                current_len = len(" ".join(base_cmd))
+            current_batch.append(p)
+            current_len += len(p) + 1
+        if current_batch or not batches:
+            batches.append(current_batch)
 
-    # Use shell=False for Windows to allow longer command lines (32k vs 8k).
-    tree_data = input_api.subprocess.check_output(
-        cmd, cwd=input_api.PresubmitLocalPath(), shell=False
-    )
+        return b"".join(
+            input_api.subprocess.check_output(
+                base_cmd + ["--"] + batch,
+                cwd=input_api.PresubmitLocalPath(),
+                shell=False,
+            )
+            for batch in batches
+        )
 
-    if _GIT_MODE_SUBMODULE not in tree_data:
+    tree_data = _GetTreeData()
+    if not tree_data or _GIT_MODE_SUBMODULE not in tree_data:
         return []
 
     # commit_tree_entries holds all commit entries (ie gitlink, submodule
@@ -2992,7 +3014,9 @@ def CheckForCommitObjects(input_api, output_api):
             end = tree_data.find(b"\0", pos)
             entry = tree_data[pos:end]
 
-            tree_entry = parse_tree_entry(entry.decode("utf-8"))
+            tree_entry = parse_tree_entry(
+                entry.decode("utf-8", "surrogateescape")
+            )
             if tree_entry[1] == "commit":
                 commit_tree_entries.append(tree_entry)
 
