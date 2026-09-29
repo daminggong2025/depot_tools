@@ -1,0 +1,257 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a5150014_705b7047",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 2942,
+      "author": {
+        "id": 1000266
+      },
+      "writtenOn": "2026-09-29T05:00:16Z",
+      "side": 1,
+      "message": "Please fix this WARNING reported by crossbench-python-style: [crossbench-python-style] Missing return type annotation.\n\n**Suggestion**\n\n```py...\n\n[crossbench-python-style] Missing return type annotation.\n\n**Suggestion**\n\n```python\n    def _GetTreeData() -\u003e bytes:\n```",
+      "range": {
+        "startLine": 2941,
+        "startChar": 0,
+        "endLine": 2942,
+        "endChar": 0
+      },
+      "revId": "ea8e442d939a6e76da4c8a7ba8efe2e74a1e7035",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "716ef3f5_4426997a",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 2942,
+      "author": {
+        "id": 1000266
+      },
+      "writtenOn": "2026-09-29T05:00:16Z",
+      "side": 1,
+      "message": "Please fix this WARNING reported by crossbench-python-style: [crossbench-python-style] Missing return type annotation.\n\n**Suggestion**\n\n```py...\n\n[crossbench-python-style] Missing return type annotation.\n\n**Suggestion**\n\n```python\n    def _GetTreeData() -\u003e bytes:\n```",
+      "range": {
+        "startLine": 2941,
+        "startChar": 0,
+        "endLine": 2942,
+        "endChar": 0
+      },
+      "revId": "ea8e442d939a6e76da4c8a7ba8efe2e74a1e7035",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "98919e9d_f79e1949",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 2955,
+      "author": {
+        "id": 1000266
+      },
+      "writtenOn": "2026-09-29T05:00:16Z",
+      "side": 1,
+      "message": "Please fix this WARNING reported by crossbench-python-style: [crossbench-python-style] Avoid using `hasattr`. It is an antipattern that can h...\n\n[crossbench-python-style] Avoid using `hasattr`. It is an antipattern that can hide errors.\n\n**Suggestion**\n\nAccess the property directly and ensure test mocks are updated to provide the necessary values instead of relying on defensive `hasattr` checks.",
+      "range": {
+        "startLine": 2950,
+        "startChar": 0,
+        "endLine": 2955,
+        "endChar": 0
+      },
+      "revId": "ea8e442d939a6e76da4c8a7ba8efe2e74a1e7035",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "77d227b5_d49c33a2",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 2979,
+      "author": {
+        "id": 1000266
+      },
+      "writtenOn": "2026-09-29T05:00:16Z",
+      "side": 1,
+      "message": "Please fix this WARNING reported by crossbench-python-style: [crossbench-python-style] Avoid magic numbers; prefer using well-named constants...\n\n[crossbench-python-style] Avoid magic numbers; prefer using well-named constants.\n\n**Suggestion**\n\nExtract `500` and `25000` into well-named constants (e.g., `MAX_BATCH_FILES` and `MAX_COMMAND_LENGTH`) to make the code self-documenting and reduce the need for comments.",
+      "range": {
+        "startLine": 2978,
+        "startChar": 0,
+        "endLine": 2979,
+        "endChar": 0
+      },
+      "revId": "ea8e442d939a6e76da4c8a7ba8efe2e74a1e7035",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "571fbdd7_ad614777",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 2999,
+      "author": {
+        "id": 1000266
+      },
+      "writtenOn": "2026-09-29T05:00:16Z",
+      "side": 1,
+      "message": "Please fix this WARNING reported by crossbench-python-style: [crossbench-python-style] Use the walrus operator for compact assignment and che...\n\n[crossbench-python-style] Use the walrus operator for compact assignment and checking.\n\n**Suggestion**\n\n```python\n    if not (tree_data :\u003d _GetTreeData()) or _GIT_MODE_SUBMODULE not in tree_data:\n```",
+      "range": {
+        "startLine": 2997,
+        "startChar": 0,
+        "endLine": 2999,
+        "endChar": 0
+      },
+      "revId": "ea8e442d939a6e76da4c8a7ba8efe2e74a1e7035",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8a9f4531_a5207b06",
+        "filename": "tests/check_for_commit_objects_test.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1000266
+      },
+      "writtenOn": "2026-09-29T05:00:16Z",
+      "side": 1,
+      "message": "Please fix this WARNING reported by crossbench-python-style: [crossbench-python-style] Missing return type annotation.\n\n**Suggestion**\n\n```py...\n\n[crossbench-python-style] Missing return type annotation.\n\n**Suggestion**\n\n```python\n    def testChunkedExecutionLargeCL(self) -\u003e None:\n```",
+      "range": {
+        "startLine": 69,
+        "startChar": 0,
+        "endLine": 70,
+        "endChar": 0
+      },
+      "revId": "ea8e442d939a6e76da4c8a7ba8efe2e74a1e7035",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2effb6d4_4cf225bc",
+        "filename": "tests/check_for_commit_objects_test.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 1000266
+      },
+      "writtenOn": "2026-09-29T05:00:16Z",
+      "side": 1,
+      "message": "Please fix this WARNING reported by crossbench-python-style: [crossbench-python-style] Line exceeds the 80 characters limit (84 characters).\n...\n\n[crossbench-python-style] Line exceeds the 80 characters limit (84 characters).\n\n**Suggestion**\n\nWrap or shorten the comment to observe the 80 characters per line limit.",
+      "range": {
+        "startLine": 83,
+        "startChar": 0,
+        "endLine": 84,
+        "endChar": 0
+      },
+      "revId": "ea8e442d939a6e76da4c8a7ba8efe2e74a1e7035",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "66079e15_90526188",
+        "filename": "tests/check_for_commit_objects_test.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 167,
+      "author": {
+        "id": 1000266
+      },
+      "writtenOn": "2026-09-29T05:00:16Z",
+      "side": 1,
+      "message": "Please fix this WARNING reported by crossbench-python-style: [crossbench-python-style] Missing return type annotation.\n\n**Suggestion**\n\n```py...\n\n[crossbench-python-style] Missing return type annotation.\n\n**Suggestion**\n\n```python\n    def testSurrogateEscapePathDecoding(self) -\u003e None:\n```",
+      "range": {
+        "startLine": 166,
+        "startChar": 0,
+        "endLine": 167,
+        "endChar": 0
+      },
+      "revId": "ea8e442d939a6e76da4c8a7ba8efe2e74a1e7035",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "177ad706_ca4f8831",
+        "filename": "tests/check_for_commit_objects_test.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 168,
+      "author": {
+        "id": 1000266
+      },
+      "writtenOn": "2026-09-29T05:00:16Z",
+      "side": 1,
+      "message": "Please fix this WARNING reported by crossbench-python-style: [crossbench-python-style] Line exceeds the 80 characters limit (81 characters).\n...\n\n[crossbench-python-style] Line exceeds the 80 characters limit (81 characters).\n\n**Suggestion**\n\nWrap or shorten the comment to observe the 80 characters per line limit.",
+      "range": {
+        "startLine": 167,
+        "startChar": 0,
+        "endLine": 168,
+        "endChar": 0
+      },
+      "revId": "ea8e442d939a6e76da4c8a7ba8efe2e74a1e7035",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9eaf2c22_7313ba2d",
+        "filename": "tests/check_for_commit_objects_test.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 186,
+      "author": {
+        "id": 1000266
+      },
+      "writtenOn": "2026-09-29T05:00:16Z",
+      "side": 1,
+      "message": "Please fix this WARNING reported by crossbench-python-style: [crossbench-python-style] Missing return type annotation.\n\n**Suggestion**\n\n```py...\n\n[crossbench-python-style] Missing return type annotation.\n\n**Suggestion**\n\n```python\n    def testRepositoryRootEvaluatedOnce(self) -\u003e None:\n```",
+      "range": {
+        "startLine": 185,
+        "startChar": 0,
+        "endLine": 186,
+        "endChar": 0
+      },
+      "revId": "ea8e442d939a6e76da4c8a7ba8efe2e74a1e7035",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d33b63e3_3fa99557",
+        "filename": "tests/check_for_commit_objects_test.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 190,
+      "author": {
+        "id": 1000266
+      },
+      "writtenOn": "2026-09-29T05:00:16Z",
+      "side": 1,
+      "message": "Please fix this WARNING reported by crossbench-python-style: [crossbench-python-style] Missing return type annotation.\n\n**Suggestion**\n\n```py...\n\n[crossbench-python-style] Missing return type annotation.\n\n**Suggestion**\n\n```python\n        def counting_repo_root() -\u003e str:\n```",
+      "range": {
+        "startLine": 189,
+        "startChar": 0,
+        "endLine": 190,
+        "endChar": 0
+      },
+      "revId": "ea8e442d939a6e76da4c8a7ba8efe2e74a1e7035",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
