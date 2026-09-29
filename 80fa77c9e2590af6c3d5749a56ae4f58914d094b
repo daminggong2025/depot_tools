@@ -1,6 +1,25 @@
 {
   "comments": [
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "182c92e1_3758eec3",
+        "filename": "gclient_scm.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000266
+      },
+      "writtenOn": "2026-09-29T20:17:38Z",
+      "side": 1,
+      "message": "Done.",
+      "parentUuid": "34689494_34896e51",
+      "isAi": true,
+      "revId": "80fa77c9e2590af6c3d5749a56ae4f58914d094b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "34689494_34896e51",
@@ -20,6 +39,101 @@
         "endLine": 780,
         "endChar": 0
       },
+      "revId": "80fa77c9e2590af6c3d5749a56ae4f58914d094b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "86ba81ee_56108703",
+        "filename": "tests/gclient_scm_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000266
+      },
+      "writtenOn": "2026-09-29T20:17:38Z",
+      "side": 1,
+      "message": "Done.",
+      "parentUuid": "3cd24b7a_a26ab395",
+      "isAi": true,
+      "revId": "80fa77c9e2590af6c3d5749a56ae4f58914d094b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "11d76ff9_d632e2e8",
+        "filename": "tests/gclient_scm_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000266
+      },
+      "writtenOn": "2026-09-29T20:17:38Z",
+      "side": 1,
+      "message": "Done.",
+      "parentUuid": "67e443cb_3b26526a",
+      "isAi": true,
+      "revId": "80fa77c9e2590af6c3d5749a56ae4f58914d094b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c25811ee_0d75c85a",
+        "filename": "tests/gclient_scm_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000266
+      },
+      "writtenOn": "2026-09-29T20:17:38Z",
+      "side": 1,
+      "message": "Done.",
+      "parentUuid": "d30f6057_b5a8851e",
+      "isAi": true,
+      "revId": "80fa77c9e2590af6c3d5749a56ae4f58914d094b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "bbbc93d9_3a82d2e5",
+        "filename": "tests/gclient_scm_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000266
+      },
+      "writtenOn": "2026-09-29T20:17:38Z",
+      "side": 1,
+      "message": "Done.",
+      "parentUuid": "f92f7a0d_890d94d6",
+      "isAi": true,
+      "revId": "80fa77c9e2590af6c3d5749a56ae4f58914d094b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "735f0dbb_8b422861",
+        "filename": "tests/gclient_scm_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000266
+      },
+      "writtenOn": "2026-09-29T20:17:38Z",
+      "side": 1,
+      "message": "Done.",
+      "parentUuid": "1b10e4f6_ca90b288",
+      "isAi": true,
       "revId": "80fa77c9e2590af6c3d5749a56ae4f58914d094b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
