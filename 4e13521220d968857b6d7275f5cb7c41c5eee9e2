@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "46853ce5_d10a73ac",
+        "filename": "git_cl.py",
+        "patchSetId": 30
+      },
+      "lineNbr": 7031,
+      "author": {
+        "id": 4733581
+      },
+      "writtenOn": "2026-09-29T20:32:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "edefc6c5_47d6a1c6",
+      "range": {
+        "startLine": 7028,
+        "startChar": 0,
+        "endLine": 7031,
+        "endChar": 68
+      },
+      "revId": "4e13521220d968857b6d7275f5cb7c41c5eee9e2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "ed124d04_70696c97",
@@ -37,6 +61,30 @@
       "writtenOn": "2026-09-28T23:21:58Z",
       "side": 1,
       "message": "also use `ComputeScheduleTime` and show a validation/parsing error earlier",
+      "range": {
+        "startLine": 8395,
+        "startChar": 0,
+        "endLine": 8404,
+        "endChar": 9
+      },
+      "revId": "4e13521220d968857b6d7275f5cb7c41c5eee9e2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4ddb6927_5afad297",
+        "filename": "git_cl.py",
+        "patchSetId": 30
+      },
+      "lineNbr": 8404,
+      "author": {
+        "id": 4733581
+      },
+      "writtenOn": "2026-09-29T20:32:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ed124d04_70696c97",
       "range": {
         "startLine": 8395,
         "startChar": 0,
