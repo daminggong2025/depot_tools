@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6bd389c0_6a8f78ed",
+        "filename": "gclient_scm.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 745,
+      "author": {
+        "id": 1000266
+      },
+      "writtenOn": "2026-09-29T20:20:07Z",
+      "side": 1,
+      "message": "Please fix this WARNING reported by crossbench-python-style: [crossbench-python-style] The style guide discourages inline code comments in fa...\n\n[crossbench-python-style] The style guide discourages inline code comments in favor of well-named helper methods or constants.\n\n**Suggestion**\n\nConsider removing this inline comment and extracting the filter generation logic into a well-named helper method (e.g., `_get_cherry_pick_rev_filter(target_rev, base_rev, pr)`) to serve as executable documentation.\n\n**Reference**\n\nCrossbench Python Style: Reduce Code Comments",
+      "range": {
+        "startLine": 742,
+        "startChar": 0,
+        "endLine": 745,
+        "endChar": 0
+      },
+      "revId": "ab36e4177265261fd91bb3e1df5c394e601305c0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f4129497_68e00ee8",
+        "filename": "gclient_scm.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 749,
+      "author": {
+        "id": 1000266
+      },
+      "writtenOn": "2026-09-29T20:20:07Z",
+      "side": 1,
+      "message": "Please fix this WARNING reported by crossbench-python-style: [crossbench-python-style] The logic to conditionally append `--end-of-options` b...\n\n[crossbench-python-style] The logic to conditionally append `--end-of-options` based on the git version is duplicated here and again for `cherry_pick_cmd` on line 796.\n\n**Suggestion**\n\nExtract this logic into a reusable helper method to reduce code duplication. For example:\n```python\ndef _add_end_of_options(self, cmd: list[str]) -\u003e None:\n    if git_common.meets_git_version((2, 44, 0)):\n        cmd.append(\"--end-of-options\")\n```\n\n**Reference**\n\nCrossbench Python Style: Code Duplication",
+      "range": {
+        "startLine": 747,
+        "startChar": 0,
+        "endLine": 749,
+        "endChar": 0
+      },
+      "revId": "ab36e4177265261fd91bb3e1df5c394e601305c0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7822ea62_6270820c",
+        "filename": "gclient_scm.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 781,
+      "author": {
+        "id": 1000266
+      },
+      "writtenOn": "2026-09-29T20:20:07Z",
+      "side": 1,
+      "message": "Please fix this WARNING reported by crossbench-python-style: [crossbench-python-style] Inline code comments are discouraged by the style guid...\n\n[crossbench-python-style] Inline code comments are discouraged by the style guidelines.\n\n**Suggestion**\n\nRemove the inline comment. If the meaning of the condition isn\u0027t self-explanatory, consider extracting it to a well-named helper method to document the intent.\n\n**Reference**\n\nCrossbench Python Style: Reduce Code Comments",
+      "range": {
+        "startLine": 778,
+        "startChar": 0,
+        "endLine": 781,
+        "endChar": 0
+      },
+      "revId": "ab36e4177265261fd91bb3e1df5c394e601305c0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
