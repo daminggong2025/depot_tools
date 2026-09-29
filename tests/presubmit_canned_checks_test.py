@@ -1900,11 +1900,9 @@ class CheckForCommitObjectsTest(unittest.TestCase):
         self.assertIn("submodule", results[0].items)
 
     def testWindowsCommandLineLimit(self):
-        # On Windows, if the command line is too long, we should fall back to a
-        # recursive ls-tree.
         self.input_api.platform = "win32"
         self.input_api.files = [
-            MockAffectedFile("a" * 100, "") for i in range(350)
+            MockAffectedFile(f"file_{i}_" + "a" * 90, "") for i in range(350)
         ]
         self.input_api.subprocess.check_output.return_value = b""
 
@@ -1912,13 +1910,15 @@ class CheckForCommitObjectsTest(unittest.TestCase):
             self.input_api, self.output_api
         )
 
-        # The first call is to `git show HEAD:DEPS`.
-        # The second call is to `git ls-tree`.
-        self.assertEqual(2, self.input_api.subprocess.check_output.call_count)
-        ls_tree_cmd = self.input_api.subprocess.check_output.call_args_list[1][
-            0
-        ][0]
-        self.assertIn("-r", ls_tree_cmd)
+        self.assertGreater(self.input_api.subprocess.check_output.call_count, 2)
+        for call in self.input_api.subprocess.check_output.call_args_list[1:]:
+            cmd = call[0][0]
+            self.assertIn("ls-tree", cmd)
+            self.assertNotIn("-r", cmd)
+            cmd_len = len(" ".join(cmd))
+            self.assertLessEqual(
+                cmd_len, presubmit_canned_checks._MAX_COMMAND_LENGTH
+            )
 
     def testWindowsCommandLineNotTooLong(self):
         # On Windows, if the command line is not too long, we should pass the
