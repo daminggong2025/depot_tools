@@ -47,6 +47,54 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "dd37da68_17e24dd2",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 2942,
+      "author": {
+        "id": 1000266
+      },
+      "writtenOn": "2026-09-29T05:08:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a5150014_705b7047",
+      "range": {
+        "startLine": 2941,
+        "startChar": 0,
+        "endLine": 2942,
+        "endChar": 0
+      },
+      "revId": "ea8e442d939a6e76da4c8a7ba8efe2e74a1e7035",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b0dff804_678be105",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 2942,
+      "author": {
+        "id": 1000266
+      },
+      "writtenOn": "2026-09-29T05:08:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "716ef3f5_4426997a",
+      "range": {
+        "startLine": 2941,
+        "startChar": 0,
+        "endLine": 2942,
+        "endChar": 0
+      },
+      "revId": "ea8e442d939a6e76da4c8a7ba8efe2e74a1e7035",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "98919e9d_f79e1949",
@@ -60,6 +108,30 @@
       "writtenOn": "2026-09-29T05:00:16Z",
       "side": 1,
       "message": "Please fix this WARNING reported by crossbench-python-style: [crossbench-python-style] Avoid using `hasattr`. It is an antipattern that can h...\n\n[crossbench-python-style] Avoid using `hasattr`. It is an antipattern that can hide errors.\n\n**Suggestion**\n\nAccess the property directly and ensure test mocks are updated to provide the necessary values instead of relying on defensive `hasattr` checks.",
+      "range": {
+        "startLine": 2950,
+        "startChar": 0,
+        "endLine": 2955,
+        "endChar": 0
+      },
+      "revId": "ea8e442d939a6e76da4c8a7ba8efe2e74a1e7035",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "373a5bb3_71a5544b",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 2955,
+      "author": {
+        "id": 1000266
+      },
+      "writtenOn": "2026-09-29T05:08:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "98919e9d_f79e1949",
       "range": {
         "startLine": 2950,
         "startChar": 0,
@@ -93,6 +165,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "6fd7a720_b9d27606",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 2979,
+      "author": {
+        "id": 1000266
+      },
+      "writtenOn": "2026-09-29T05:08:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "77d227b5_d49c33a2",
+      "range": {
+        "startLine": 2978,
+        "startChar": 0,
+        "endLine": 2979,
+        "endChar": 0
+      },
+      "revId": "ea8e442d939a6e76da4c8a7ba8efe2e74a1e7035",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "571fbdd7_ad614777",
@@ -106,6 +202,30 @@
       "writtenOn": "2026-09-29T05:00:16Z",
       "side": 1,
       "message": "Please fix this WARNING reported by crossbench-python-style: [crossbench-python-style] Use the walrus operator for compact assignment and che...\n\n[crossbench-python-style] Use the walrus operator for compact assignment and checking.\n\n**Suggestion**\n\n```python\n    if not (tree_data :\u003d _GetTreeData()) or _GIT_MODE_SUBMODULE not in tree_data:\n```",
+      "range": {
+        "startLine": 2997,
+        "startChar": 0,
+        "endLine": 2999,
+        "endChar": 0
+      },
+      "revId": "ea8e442d939a6e76da4c8a7ba8efe2e74a1e7035",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "165209a6_be69f73e",
+        "filename": "presubmit_canned_checks.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 2999,
+      "author": {
+        "id": 1000266
+      },
+      "writtenOn": "2026-09-29T05:08:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "571fbdd7_ad614777",
       "range": {
         "startLine": 2997,
         "startChar": 0,
@@ -139,6 +259,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "048f1c89_d9782e11",
+        "filename": "tests/check_for_commit_objects_test.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1000266
+      },
+      "writtenOn": "2026-09-29T05:08:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8a9f4531_a5207b06",
+      "range": {
+        "startLine": 69,
+        "startChar": 0,
+        "endLine": 70,
+        "endChar": 0
+      },
+      "revId": "ea8e442d939a6e76da4c8a7ba8efe2e74a1e7035",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "2effb6d4_4cf225bc",
@@ -152,6 +296,30 @@
       "writtenOn": "2026-09-29T05:00:16Z",
       "side": 1,
       "message": "Please fix this WARNING reported by crossbench-python-style: [crossbench-python-style] Line exceeds the 80 characters limit (84 characters).\n...\n\n[crossbench-python-style] Line exceeds the 80 characters limit (84 characters).\n\n**Suggestion**\n\nWrap or shorten the comment to observe the 80 characters per line limit.",
+      "range": {
+        "startLine": 83,
+        "startChar": 0,
+        "endLine": 84,
+        "endChar": 0
+      },
+      "revId": "ea8e442d939a6e76da4c8a7ba8efe2e74a1e7035",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f04ef226_268cd6a3",
+        "filename": "tests/check_for_commit_objects_test.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 1000266
+      },
+      "writtenOn": "2026-09-29T05:08:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2effb6d4_4cf225bc",
       "range": {
         "startLine": 83,
         "startChar": 0,
@@ -185,6 +353,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "de664fc1_8f38eb9b",
+        "filename": "tests/check_for_commit_objects_test.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 167,
+      "author": {
+        "id": 1000266
+      },
+      "writtenOn": "2026-09-29T05:08:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "66079e15_90526188",
+      "range": {
+        "startLine": 166,
+        "startChar": 0,
+        "endLine": 167,
+        "endChar": 0
+      },
+      "revId": "ea8e442d939a6e76da4c8a7ba8efe2e74a1e7035",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "177ad706_ca4f8831",
@@ -198,6 +390,30 @@
       "writtenOn": "2026-09-29T05:00:16Z",
       "side": 1,
       "message": "Please fix this WARNING reported by crossbench-python-style: [crossbench-python-style] Line exceeds the 80 characters limit (81 characters).\n...\n\n[crossbench-python-style] Line exceeds the 80 characters limit (81 characters).\n\n**Suggestion**\n\nWrap or shorten the comment to observe the 80 characters per line limit.",
+      "range": {
+        "startLine": 167,
+        "startChar": 0,
+        "endLine": 168,
+        "endChar": 0
+      },
+      "revId": "ea8e442d939a6e76da4c8a7ba8efe2e74a1e7035",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8e24d967_2ab0adac",
+        "filename": "tests/check_for_commit_objects_test.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 168,
+      "author": {
+        "id": 1000266
+      },
+      "writtenOn": "2026-09-29T05:08:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "177ad706_ca4f8831",
       "range": {
         "startLine": 167,
         "startChar": 0,
@@ -231,6 +447,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "b368b394_0eb410f1",
+        "filename": "tests/check_for_commit_objects_test.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 186,
+      "author": {
+        "id": 1000266
+      },
+      "writtenOn": "2026-09-29T05:08:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9eaf2c22_7313ba2d",
+      "range": {
+        "startLine": 185,
+        "startChar": 0,
+        "endLine": 186,
+        "endChar": 0
+      },
+      "revId": "ea8e442d939a6e76da4c8a7ba8efe2e74a1e7035",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d33b63e3_3fa99557",
@@ -244,6 +484,30 @@
       "writtenOn": "2026-09-29T05:00:16Z",
       "side": 1,
       "message": "Please fix this WARNING reported by crossbench-python-style: [crossbench-python-style] Missing return type annotation.\n\n**Suggestion**\n\n```py...\n\n[crossbench-python-style] Missing return type annotation.\n\n**Suggestion**\n\n```python\n        def counting_repo_root() -\u003e str:\n```",
+      "range": {
+        "startLine": 189,
+        "startChar": 0,
+        "endLine": 190,
+        "endChar": 0
+      },
+      "revId": "ea8e442d939a6e76da4c8a7ba8efe2e74a1e7035",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8ab5b570_bbc8e30a",
+        "filename": "tests/check_for_commit_objects_test.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 190,
+      "author": {
+        "id": 1000266
+      },
+      "writtenOn": "2026-09-29T05:08:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d33b63e3_3fa99557",
       "range": {
         "startLine": 189,
         "startChar": 0,
