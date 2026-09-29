@@ -1,0 +1,142 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "34689494_34896e51",
+        "filename": "gclient_scm.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 780,
+      "author": {
+        "id": 1000266
+      },
+      "writtenOn": "2026-09-29T20:14:24Z",
+      "side": 1,
+      "message": "Please fix this WARNING reported by crossbench-python-style: [crossbench-python-style] This line exceeds the 80-character limit (81 character...\n\n[crossbench-python-style] This line exceeds the 80-character limit (81 characters).\n\n**Suggestion**\n\n```python\n                        # (e.g. pr is an ancestor of base_rev or already\n                        # landed),\n```",
+      "range": {
+        "startLine": 779,
+        "startChar": 0,
+        "endLine": 780,
+        "endChar": 0
+      },
+      "revId": "80fa77c9e2590af6c3d5749a56ae4f58914d094b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d30f6057_b5a8851e",
+        "filename": "tests/gclient_scm_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 2084,
+      "author": {
+        "id": 1000266
+      },
+      "writtenOn": "2026-09-29T20:14:24Z",
+      "side": 1,
+      "message": "Please fix this WARNING reported by crossbench-python-style: [crossbench-python-style] Method is missing a return type annotation.\n\n**Suggest...\n\n[crossbench-python-style] Method is missing a return type annotation.\n\n**Suggestion**\n\n```python\n    def testApplyPatchWithStaleTargetRev(self) -\u003e None:\n```",
+      "range": {
+        "startLine": 2083,
+        "startChar": 0,
+        "endLine": 2084,
+        "endChar": 0
+      },
+      "revId": "80fa77c9e2590af6c3d5749a56ae4f58914d094b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1b10e4f6_ca90b288",
+        "filename": "tests/gclient_scm_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 2085,
+      "author": {
+        "id": 1000266
+      },
+      "writtenOn": "2026-09-29T20:14:24Z",
+      "side": 1,
+      "message": "Please fix this WARNING reported by crossbench-python-style: [crossbench-python-style] This line exceeds the 80-character limit.\n\n**Suggestio...\n\n[crossbench-python-style] This line exceeds the 80-character limit.\n\n**Suggestion**\n\n```python\n        \"\"\"Test applying a patch when target_rev points to an older commit\n        than patch base.\n```",
+      "range": {
+        "startLine": 2084,
+        "startChar": 0,
+        "endLine": 2085,
+        "endChar": 0
+      },
+      "revId": "80fa77c9e2590af6c3d5749a56ae4f58914d094b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3cd24b7a_a26ab395",
+        "filename": "tests/gclient_scm_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 2094,
+      "author": {
+        "id": 1000266
+      },
+      "writtenOn": "2026-09-29T20:14:24Z",
+      "side": 1,
+      "message": "Please fix this WARNING reported by crossbench-python-style: [crossbench-python-style] This line exceeds the 80-character limit.\n\n**Suggestio...\n\n[crossbench-python-style] This line exceeds the 80-character limit.\n\n**Suggestion**\n\n```python\n        The final result must contain commits 1, 2, 3, 4, 5, 6 without\n        re-applying or conflicting on commit 3.\n```",
+      "range": {
+        "startLine": 2092,
+        "startChar": 0,
+        "endLine": 2094,
+        "endChar": 0
+      },
+      "revId": "80fa77c9e2590af6c3d5749a56ae4f58914d094b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f92f7a0d_890d94d6",
+        "filename": "tests/gclient_scm_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 2106,
+      "author": {
+        "id": 1000266
+      },
+      "writtenOn": "2026-09-29T20:14:24Z",
+      "side": 1,
+      "message": "Please fix this WARNING reported by crossbench-python-style: [crossbench-python-style] This line exceeds the 80-character limit.\n\n**Suggestio...\n\n[crossbench-python-style] This line exceeds the 80-character limit.\n\n**Suggestion**\n\n```python\n        # Apply the change with target_rev pointing to commit 2 (stale\n        # target_rev).\n```",
+      "range": {
+        "startLine": 2105,
+        "startChar": 0,
+        "endLine": 2106,
+        "endChar": 0
+      },
+      "revId": "80fa77c9e2590af6c3d5749a56ae4f58914d094b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "67e443cb_3b26526a",
+        "filename": "tests/gclient_scm_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 2120,
+      "author": {
+        "id": 1000266
+      },
+      "writtenOn": "2026-09-29T20:14:24Z",
+      "side": 1,
+      "message": "Please fix this WARNING reported by crossbench-python-style: [crossbench-python-style] Method is missing a return type annotation.\n\n**Suggest...\n\n[crossbench-python-style] Method is missing a return type annotation.\n\n**Suggestion**\n\n```python\n    def testApplyPatchAlreadyInBaseRev(self) -\u003e None:\n```",
+      "range": {
+        "startLine": 2119,
+        "startChar": 0,
+        "endLine": 2120,
+        "endChar": 0
+      },
+      "revId": "80fa77c9e2590af6c3d5749a56ae4f58914d094b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
