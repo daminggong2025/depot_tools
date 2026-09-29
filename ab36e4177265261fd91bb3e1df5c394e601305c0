@@ -1,6 +1,63 @@
 {
   "comments": [
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "bc01998a_9ba0177a",
+        "filename": "gclient_scm.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000266
+      },
+      "writtenOn": "2026-09-29T20:23:15Z",
+      "side": 1,
+      "message": "Done.",
+      "parentUuid": "6bd389c0_6a8f78ed",
+      "isAi": true,
+      "revId": "ab36e4177265261fd91bb3e1df5c394e601305c0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9b0efe39_c28e7f30",
+        "filename": "gclient_scm.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000266
+      },
+      "writtenOn": "2026-09-29T20:23:15Z",
+      "side": 1,
+      "message": "Done.",
+      "parentUuid": "f4129497_68e00ee8",
+      "isAi": true,
+      "revId": "ab36e4177265261fd91bb3e1df5c394e601305c0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7d12d991_b3247091",
+        "filename": "gclient_scm.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000266
+      },
+      "writtenOn": "2026-09-29T20:23:15Z",
+      "side": 1,
+      "message": "Done.",
+      "parentUuid": "7822ea62_6270820c",
+      "isAi": true,
+      "revId": "ab36e4177265261fd91bb3e1df5c394e601305c0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "6bd389c0_6a8f78ed",
