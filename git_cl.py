@@ -1666,6 +1666,13 @@ class Changelist(object):
             return value
 
         remote, _ = self.GetRemoteBranch()
+        pushurl = scm.GIT.GetConfig(
+            settings.GetRoot(), "remote.%s.pushurl" % remote, ""
+        )
+        if pushurl and urllib.parse.urlparse(pushurl).netloc:
+            self._cached_remote_url = (True, pushurl)
+            return pushurl
+
         url = scm.GIT.GetConfig(
             settings.GetRoot(), "remote.%s.url" % remote, ""
         )
@@ -1675,6 +1682,12 @@ class Changelist(object):
         if host:
             self._cached_remote_url = (True, url)
             return url
+
+        # If it cannot be parsed as an url, check if a pushurl was configured
+        # even if netloc was not immediately found (e.g. non-standard URL scheme).
+        if pushurl:
+            self._cached_remote_url = (True, pushurl)
+            return pushurl
 
         # If it cannot be parsed as an url, assume it is a local directory,
         # probably a git cache.
