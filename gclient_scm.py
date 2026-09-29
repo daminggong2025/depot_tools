@@ -682,7 +682,13 @@ class GitWrapper(SCMWrapper):
                         mirror, options, "branch", target_rev
                     )
                 self._Capture(
-                    ["fetch", "--no-tags", "--", self.remote, target_rev]
+                    [
+                        "fetch",
+                        "--no-tags",
+                        "--",
+                        self.remote,
+                        f"+{target_rev}:{remote_ref}",
+                    ]
                 )
                 target_rev = remote_ref
         elif not scm.GIT.IsValidRevision(self.checkout_path, target_rev):
@@ -733,14 +739,15 @@ class GitWrapper(SCMWrapper):
                 target_rev_hash = self._Capture(
                     ["rev-parse", "--verify", "--end-of-options", target_rev]
                 )
-                commit_list = self._Capture(
-                    [
-                        "log",
-                        "--oneline",
-                        "--end-of-options",
-                        target_rev + ".." + pr,
-                    ]
-                )
+                # Exclude both target_rev and base_rev. Any commit reachable
+                # from base_rev is already present in the current working tree
+                # and must not be cherry-picked even if target_rev was stale.
+                rev_filter = ["^" + target_rev, "^" + base_rev, pr]
+                log_cmd = ["log", "--oneline"]
+                if git_common.meets_git_version((2, 44, 0)):
+                    log_cmd.append("--end-of-options")
+                log_cmd.extend(rev_filter)
+                commit_list = self._Capture(log_cmd)
                 self.Print(
                     "Will cherrypick %r (%r) .. %r on top of %r:"
                     % (target_rev_hash, target_rev, pr, base_rev)
@@ -767,6 +774,14 @@ class GitWrapper(SCMWrapper):
                             checkout_cmd.append("--end-of-options")
                         checkout_cmd.append(pr)
                         self._Capture(checkout_cmd)
+                    elif not commit_list.strip():
+                        # If all commits in |pr| are already present in base_rev
+                        # (e.g. pr is an ancestor of base_rev or already
+                        # landed), there is nothing to cherry-pick.
+                        self.Print(
+                            "All changes from %s are already present in HEAD."
+                            % pr
+                        )
                     else:
                         # If a change was uploaded on top of another change,
                         # which has already landed, one of the commits in the
@@ -774,13 +789,14 @@ class GitWrapper(SCMWrapper):
                         # already landed and its changes incorporated in the
                         # tree. We pass '--keep-redundant-commits' to ignore
                         # those changes.
-                        self._Capture(
-                            [
-                                "cherry-pick",
-                                target_rev + ".." + pr,
-                                "--keep-redundant-commits",
-                            ]
-                        )
+                        cherry_pick_cmd = [
+                            "cherry-pick",
+                            "--keep-redundant-commits",
+                        ]
+                        if git_common.meets_git_version((2, 44, 0)):
+                            cherry_pick_cmd.append("--end-of-options")
+                        cherry_pick_cmd.extend(rev_filter)
+                        self._Capture(cherry_pick_cmd)
 
                 except subprocess2.CalledProcessError as e:
                     self.Print("Failed to apply patch.")
@@ -788,8 +804,8 @@ class GitWrapper(SCMWrapper):
                         "Revision to patch was %r @ %r." % (patch_repo, pr)
                     )
                     self.Print(
-                        "Tried to cherrypick %r .. %r on top of %r."
-                        % (target_rev, pr, base_rev)
+                        "Tried to cherrypick %s on top of %r."
+                        % (" ".join(rev_filter), base_rev)
                     )
                     self.Print("Current dir is %r" % self.checkout_path)
                     self.Print(
