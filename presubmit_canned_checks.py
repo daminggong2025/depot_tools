@@ -2872,6 +2872,67 @@ def CheckCIPDClientDigests(input_api, output_api, client_version_file):
     )
 
 
+def _BatchFiles(files, max_files=500, max_chars=24000):
+    """Batches file paths to stay within command-line length limits."""
+    batch = []
+    current_chars = 0
+    for f in files:
+        item_len = len(f) + 1
+        if batch and (
+            len(batch) >= max_files or current_chars + item_len > max_chars
+        ):
+            yield batch
+            batch = [f]
+            current_chars = item_len
+        else:
+            batch.append(f)
+            current_chars += item_len
+    if batch:
+        yield batch
+
+
+def _ExtractGitDepPaths(deps_dict, repo_name):
+    """Extracts candidate submodule paths from DEPS dictionary."""
+    paths = set()
+    if not deps_dict:
+        return paths
+    for dep_path, dep in deps_dict.items():
+        if not dep:
+            continue
+        if isinstance(dep, dict) and dep.get("dep_type", "git") != "git":
+            continue
+        dep_path = dep_path.replace("\\", "/").strip().strip("/")
+        if not dep_path or dep_path == ".":
+            continue
+        paths.add(dep_path)
+        if repo_name and dep_path.startswith(repo_name + "/"):
+            cleaned = dep_path[len(repo_name) + 1 :].strip("/")
+            if cleaned and cleaned != ".":
+                paths.add(cleaned)
+        elif dep_path.startswith("src/"):
+            cleaned = dep_path[4:].strip("/")
+            if cleaned and cleaned != ".":
+                paths.add(cleaned)
+    return paths
+
+
+def _ExtractSubmodulePathsFromConfig(config):
+    """Extracts declared submodule paths from a ConfigParser instance."""
+    paths = set()
+    try:
+        for name, section in config.items():
+            if not name.startswith("submodule "):
+                continue
+            if "path" not in section:
+                continue
+            p = section["path"].replace("\\", "/").strip().strip("/")
+            if p and p != ".":
+                paths.add(p)
+    except Exception:
+        pass
+    return paths
+
+
 def CheckForCommitObjects(input_api, output_api):
     """Validates that commit objects match DEPS.
 
@@ -2893,10 +2954,13 @@ def CheckForCommitObjects(input_api, output_api):
             )
         ]
 
+    import git_common
+
     # Get DEPS file.
     try:
         deps_content = input_api.subprocess.check_output(
-            ["git", "show", "HEAD:DEPS"], cwd=input_api.PresubmitLocalPath()
+            [git_common.GIT_EXE, "show", "HEAD:DEPS"],
+            cwd=input_api.PresubmitLocalPath(),
         )
         deps = _ParseDeps(deps_content)
     except Exception:
@@ -2904,7 +2968,7 @@ def CheckForCommitObjects(input_api, output_api):
         return []
 
     # set default
-    if "deps" not in deps:
+    if not deps.get("deps"):
         deps["deps"] = {}
     if "git_dependencies" not in deps:
         deps["git_dependencies"] = "DEPS"
@@ -2926,52 +2990,178 @@ def CheckForCommitObjects(input_api, output_api):
         spaceparts = tabparts[0].split(" ", 2)
         return (spaceparts[0], spaceparts[1], spaceparts[2], tabparts[1])
 
-    # If the number of affected files is small, we can avoid scanning the entire
-    # tree.
     affected_files = list(input_api.AffectedFiles()) + list(
         input_api.change.AffectedSubmodules()
     )
 
-    # We must scan the full tree if DEPS is modified to ensure that any change
-    # in DEPS is reflected in the gitlinks.
-    deps_modified = any(f.LocalPath() == "DEPS" for f in affected_files)
-
-    import git_common
-
-    cmd = [git_common.GIT_EXE, "ls-tree", "-z", "--full-tree", "HEAD"]
-    if len(affected_files) < 1000 and not deps_modified:
-        # We need to pass the paths relative to the repository root.
-        repo_root = input_api.change.RepositoryRoot()
-
-        # Git uses forward slashes on all platforms.
-        files_to_check = [
-            input_api.os_path.relpath(f.AbsoluteLocalPath(), repo_root).replace(
-                input_api.os_path.sep, "/"
-            )
-            for f in affected_files
-        ]
-        if deps["git_dependencies"] == "SYNC":
-            files_to_check.extend(
-                [
-                    p.replace(input_api.os_path.sep, "/")
-                    for p in input_api.change.AllLocalSubmodules()
-                ]
-            )
-
-        # On Windows, the command line is limited to 8191 characters when
-        # shell=True. But if we use shell=False, the limit is 32767 characters.
-        cmd_len = len(" ".join(cmd + ["--"] + files_to_check))
-        if input_api.is_windows and cmd_len > 32_000:
-            cmd.extend(["-r"])
-        else:
-            cmd.extend(["--"] + files_to_check)
-    else:
-        cmd.extend(["-r"])
-
-    # Use shell=False for Windows to allow longer command lines (32k vs 8k).
-    tree_data = input_api.subprocess.check_output(
-        cmd, cwd=input_api.PresubmitLocalPath(), shell=False
+    repo_root = (
+        input_api.change.RepositoryRoot()
+        if hasattr(input_api.change, "RepositoryRoot")
+        else None
+    ) or input_api.PresubmitLocalPath()
+    repo_name = (
+        input_api.os_path.basename(repo_root.rstrip("\\/")) if repo_root else ""
     )
+    files_to_check = set()
+    for f in affected_files:
+        abs_path = f.AbsoluteLocalPath()
+        if repo_root and input_api.os_path.isabs(abs_path):
+            rel_path = input_api.os_path.relpath(abs_path, repo_root)
+        else:
+            rel_path = f.LocalPath()
+        p = rel_path.replace(input_api.os_path.sep, "/").strip().strip("/")
+        if p and p != ".":
+            files_to_check.add(p)
+
+    deps_modified = "DEPS" in files_to_check or any(
+        f.LocalPath() == "DEPS" for f in affected_files
+    )
+    gitmodules_modified = ".gitmodules" in files_to_check or any(
+        f.LocalPath() == ".gitmodules" for f in affected_files
+    )
+    gitmodules_deleted = any(
+        (
+            f.LocalPath() == ".gitmodules"
+            or (
+                repo_root
+                and input_api.os_path.isabs(f.AbsoluteLocalPath())
+                and input_api.os_path.relpath(f.AbsoluteLocalPath(), repo_root)
+                .replace(input_api.os_path.sep, "/")
+                .strip("/")
+                == ".gitmodules"
+            )
+        )
+        and getattr(f, "Action", lambda: "")() == "D"
+        for f in affected_files
+    )
+
+    gitmodule_paths = set()
+    if deps["git_dependencies"] == "SYNC":
+        import configparser
+
+        config = configparser.ConfigParser(strict=False)
+        read_files = []
+        if not gitmodules_deleted:
+            gitmodules_file = input_api.os_path.join(
+                input_api.PresubmitLocalPath(), ".gitmodules"
+            )
+            if not input_api.os_path.exists(gitmodules_file) and repo_root:
+                candidate = input_api.os_path.join(repo_root, ".gitmodules")
+                if input_api.os_path.exists(candidate):
+                    gitmodules_file = candidate
+
+            try:
+                read_files = config.read(gitmodules_file, encoding="utf-8")
+            except Exception:
+                pass
+
+        if read_files:
+            gitmodule_paths = _ExtractSubmodulePathsFromConfig(config)
+        elif not gitmodules_deleted:
+            try:
+                gm_data = input_api.subprocess.check_output(
+                    [git_common.GIT_EXE, "show", "HEAD:.gitmodules"],
+                    cwd=input_api.PresubmitLocalPath(),
+                    stderr=input_api.subprocess.DEVNULL,
+                )
+                config.read_string(gm_data.decode("utf-8", errors="replace"))
+                gitmodule_paths = _ExtractSubmodulePathsFromConfig(config)
+            except Exception:
+                pass
+
+        files_to_check.update(gitmodule_paths)
+
+        if hasattr(input_api.change, "AllLocalSubmodules"):
+            for p in input_api.change.AllLocalSubmodules():
+                cleaned = (
+                    p.replace(input_api.os_path.sep, "/").strip().strip("/")
+                )
+                if cleaned and cleaned != ".":
+                    files_to_check.add(cleaned)
+
+        if deps_modified:
+            files_to_check.update(
+                _ExtractGitDepPaths(deps.get("deps") or {}, repo_name)
+            )
+
+        if deps_modified or gitmodules_modified:
+            # Check submodules from base commit to catch orphaned gitlinks
+            # left in the tree when a submodule is deleted.
+            base_rev = None
+            upstream = getattr(input_api.change, "UpstreamBranch", None)
+            if callable(upstream):
+                upstream = upstream()
+            if upstream:
+                try:
+                    mb_raw = input_api.subprocess.check_output(
+                        [git_common.GIT_EXE, "merge-base", "HEAD", upstream],
+                        cwd=input_api.PresubmitLocalPath(),
+                        stderr=input_api.subprocess.DEVNULL,
+                    )
+                    base_rev = mb_raw.decode("utf-8").strip()
+                except Exception:
+                    pass
+            if not base_rev:
+                base_rev = "HEAD~1"
+
+            if deps_modified:
+                try:
+                    base_deps_raw = input_api.subprocess.check_output(
+                        [git_common.GIT_EXE, "show", f"{base_rev}:DEPS"],
+                        cwd=input_api.PresubmitLocalPath(),
+                        stderr=input_api.subprocess.DEVNULL,
+                    )
+                    base_deps = _ParseDeps(base_deps_raw)
+                    files_to_check.update(
+                        _ExtractGitDepPaths(
+                            base_deps.get("deps") or {}, repo_name
+                        )
+                    )
+                except Exception:
+                    pass
+
+            if gitmodules_modified:
+                try:
+                    base_gm_raw = input_api.subprocess.check_output(
+                        [
+                            git_common.GIT_EXE,
+                            "show",
+                            f"{base_rev}:.gitmodules",
+                        ],
+                        cwd=input_api.PresubmitLocalPath(),
+                        stderr=input_api.subprocess.DEVNULL,
+                    )
+                    base_config = configparser.ConfigParser(strict=False)
+                    base_config.read_string(
+                        base_gm_raw.decode("utf-8", errors="replace")
+                    )
+                    files_to_check.update(
+                        _ExtractSubmodulePathsFromConfig(base_config)
+                    )
+                except Exception:
+                    pass
+
+    files_to_check = {p for p in files_to_check if p and p != "."}
+    if not files_to_check:
+        return []
+
+    batches = list(_BatchFiles(sorted(files_to_check)))
+    tree_data_chunks = []
+    for chunk in batches:
+        cmd = [
+            git_common.GIT_EXE,
+            "ls-tree",
+            "-z",
+            "--full-tree",
+            "HEAD",
+            "--",
+        ] + chunk
+        tree_data_chunks.append(
+            input_api.subprocess.check_output(
+                cmd, cwd=input_api.PresubmitLocalPath(), shell=False
+            )
+        )
+    tree_data = b"".join(tree_data_chunks)
 
     if _GIT_MODE_SUBMODULE not in tree_data:
         return []
@@ -2992,7 +3182,9 @@ def CheckForCommitObjects(input_api, output_api):
             end = tree_data.find(b"\0", pos)
             entry = tree_data[pos:end]
 
-            tree_entry = parse_tree_entry(entry.decode("utf-8"))
+            tree_entry = parse_tree_entry(
+                entry.decode("utf-8", "surrogateescape")
+            )
             if tree_entry[1] == "commit":
                 commit_tree_entries.append(tree_entry)
 
@@ -3028,25 +3220,12 @@ def CheckForCommitObjects(input_api, output_api):
             commit_tree_entry[3]
         )
 
-    gitmodules_file = input_api.os_path.join(
-        input_api.PresubmitLocalPath(), ".gitmodules"
-    )
-    import configparser
-
-    config = configparser.ConfigParser()
-    config.read(gitmodules_file)
-    gitmodule_paths = set([])
-    for name, section in config.items():
-        if not name.startswith("submodule "):
-            continue
-        if "path" not in section:
-            continue
-        gitmodule_paths.add(section["path"])
-
     mismatch_entries = []
     deps_msg = ""
-    for dep_path, dep in deps["deps"].items():
-        if "dep_type" in dep and dep["dep_type"] != "git":
+    for dep_path, dep in (deps.get("deps") or {}).items():
+        if not dep:
+            continue
+        if isinstance(dep, dict) and dep.get("dep_type", "git") != "git":
             continue
 
         url = dep if isinstance(dep, str) else dep["url"]

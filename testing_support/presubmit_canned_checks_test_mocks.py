@@ -476,11 +476,14 @@ class MockChange(object):
     current change.
     """
 
-    def __init__(self, changed_files, description="", issue=0):
+    def __init__(
+        self, changed_files, description="", issue=0, repository_root=""
+    ):
         self._changed_files = changed_files
         self.footers = defaultdict(list)
         self._description = description
         self.issue = issue
+        self._repository_root = repository_root
 
     def LocalPaths(self):
         return self._changed_files
@@ -504,3 +507,6 @@ class MockChange(object):
 
     def UpstreamBranch(self):
         return None
+
+    def RepositoryRoot(self):
+        return self._repository_root
