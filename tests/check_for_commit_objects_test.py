@@ -66,8 +66,8 @@ class CheckForCommitObjectsTest(unittest.TestCase):
         self.assertIn("b.txt", args)
         self.assertIn("--full-tree", args)
 
-    def testFullTreeExecutionLargeCL(self):
-        # 1001 files, should run full tree scan
+    def testChunkedExecutionLargeCL(self) -> None:
+        # 1001 files, should run batched git ls-tree across chunks without -r
         self.input_api.files = [
             MockFile(os.path.join("/tmp/repo", f"f{i}.txt"), [])
             for i in range(1001)
@@ -80,11 +80,20 @@ class CheckForCommitObjectsTest(unittest.TestCase):
             self.input_api, self.output_api
         )
 
-        # Verify check_output was called with --full-tree
-        args = self.input_api.subprocess.check_output.call_args[0][0]
-        self.assertIn("ls-tree", args)
-        self.assertIn("--full-tree", args)
-        self.assertNotIn("f0.txt", args)
+        # Call 0 is git show HEAD:DEPS, calls 1..3 are the 3 batches
+        # (500 + 500 + 1).
+        calls = self.input_api.subprocess.check_output.call_args_list
+        self.assertEqual(4, len(calls))
+        all_checked = []
+        for call in calls[1:]:
+            args = call[0][0]
+            self.assertIn("ls-tree", args)
+            self.assertIn("--full-tree", args)
+            self.assertNotIn("-r", args)
+            all_checked.extend(args[args.index("--") + 1 :])
+        self.assertEqual(1001, len(all_checked))
+        self.assertIn("f0.txt", all_checked)
+        self.assertIn("f1000.txt", all_checked)
 
     def testFullTreeExecutionWhenDepsModified(self):
         # Small CL but DEPS is modified, should run full tree scan
@@ -154,6 +163,43 @@ class CheckForCommitObjectsTest(unittest.TestCase):
         self.assertIn("a.txt", args)
         self.assertIn("third_party/perl", args)
         self.assertIn("--full-tree", args)
+
+    def testSurrogateEscapePathDecoding(self) -> None:
+        # Non-UTF-8 bytes in tree entry names should decode using
+        # surrogateescape rather than throwing UnicodeDecodeError.
+        self.input_api.files = [MockRelativeFile("submodule", [])]
+        # "\xff\xfe" is invalid UTF-8.
+        non_utf8_entry = b"160000 commit 1234\tsub_\xff\xfe\0"
+        self.input_api.subprocess.check_output = mock.Mock(
+            side_effect=[
+                b"",  # git show HEAD:DEPS
+                non_utf8_entry,  # git ls-tree
+            ]
+        )
+
+        results = presubmit_canned_checks.CheckForCommitObjects(
+            self.input_api, self.output_api
+        )
+        self.assertEqual(len(results), 1)
+        self.assertIn("sub_\udcff\udcfe", results[0].items)
+
+    def testRepositoryRootEvaluatedOnce(self) -> None:
+        # input_api.change.RepositoryRoot() should only be called once.
+        call_count = 0
+
+        def counting_repo_root() -> str:
+            nonlocal call_count
+            call_count += 1
+            return "/tmp/repo"
+
+        self.input_api.change.RepositoryRoot = counting_repo_root
+        self.input_api.files = [MockRelativeFile("a.txt", [])]
+        self.input_api.subprocess.check_output = mock.Mock(return_value=b"")
+
+        presubmit_canned_checks.CheckForCommitObjects(
+            self.input_api, self.output_api
+        )
+        self.assertEqual(1, call_count)
 
 
 if __name__ == "__main__":
