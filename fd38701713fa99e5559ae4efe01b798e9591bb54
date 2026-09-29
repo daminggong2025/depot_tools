@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e4d607a7_11813b2f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 10
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1547272
+      },
+      "writtenOn": "2026-09-29T09:18:37Z",
+      "side": 1,
+      "message": "Hey @gavinmak@google.com, @brgan@google.com, apologies again - fixed the merge conflict. Your approval was dismissed.",
+      "revId": "fd38701713fa99e5559ae4efe01b798e9591bb54",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
