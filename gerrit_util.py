@@ -2726,9 +2726,10 @@ def CreateScheduledSubmitFlow(
     issue: Union[int, str],
     custom_time: Optional[str] = None,
     tz: str = "America/Los_Angeles",
+    hashtag: Optional[str] = None,
 ) -> Dict[str, Any]:
     """Creates a Gerrit Flow to trigger CQ+2 at scheduled time once
-    submittable.
+    submittable, and optionally attaches a Gerrit hashtag.
     """
     target_time = ComputeScheduleTime(issue, custom_time)
     cl_url = f"https://{host}/c/{issue}"
@@ -2759,9 +2760,24 @@ def CreateScheduledSubmitFlow(
             f"Created submit flow for CL {issue} "
             f"(scheduled for today at {target_time} in {tz})."
         )
-        return res
     except Exception as e:
         print(f"WARNING: Failed to create submit flow for CL {issue}: {e}")
         raise
+
+    if hashtag:
+        try:
+            CallGerritApi(
+                host,
+                f"changes/{issue}/hashtags",
+                reqtype="POST",
+                body={"add": [hashtag]},
+                accept_statuses=(200,),
+            )
+        except Exception as e:
+            logging.debug(
+                "Failed to add hashtag %s to CL %s: %s", hashtag, issue, e
+            )
+
+    return res
 
 
