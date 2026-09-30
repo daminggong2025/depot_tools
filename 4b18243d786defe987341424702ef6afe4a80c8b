@@ -16,6 +16,29 @@
       "message": "Adding another reviewer since I am not a committer in this repo. Thanks!",
       "revId": "4b18243d786defe987341424702ef6afe4a80c8b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "dba9d793_8dc654d2",
+        "filename": "gerrit_client.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 300,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-09-30T21:35:33Z",
+      "side": 1,
+      "message": "move the API call into a gerrit_util.py helper",
+      "range": {
+        "startLine": 300,
+        "startChar": 13,
+        "endLine": 300,
+        "endChar": 38
+      },
+      "revId": "4b18243d786defe987341424702ef6afe4a80c8b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
