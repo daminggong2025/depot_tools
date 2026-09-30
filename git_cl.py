@@ -2277,6 +2277,10 @@ class Changelist(object):
         #    by adding them post `git push`.
         if not (self.GetIssue() and dogfood_path):
             hashtags.update(change_desc.get_hash_tags())
+        if getattr(options, "nightly", False) is True:
+            hashtags.add("upload-nightly")
+        elif isinstance(getattr(options, "submit_at", None), str):
+            hashtags.add("upload-submit-at")
         refspec_opts.extend(["hashtag=%s" % t for t in hashtags])
 
         # Note: Reviewers, and ccs are handled individually for each
@@ -2623,6 +2627,7 @@ class Changelist(object):
         self,
         tz: str = "America/Los_Angeles",
         custom_time: Optional[str] = None,
+        hashtag: Optional[str] = None,
     ) -> int:
         """Creates a Gerrit Flow to trigger submit at scheduled time once
         submittable.
@@ -2631,7 +2636,11 @@ class Changelist(object):
         if not issue:
             raise RuntimeError("Must upload the issue first.")
         gerrit_util.CreateScheduledSubmitFlow(
-            self.GetGerritHost(), issue, custom_time=custom_time, tz=tz
+            self.GetGerritHost(),
+            issue,
+            custom_time=custom_time,
+            tz=tz,
+            hashtag=hashtag,
         )
         return 0
 
@@ -8443,7 +8452,15 @@ def CMDset_commit(parser, args):
         parser.error("Must upload the issue first.")
 
     if has_nightly:
-        return cl.CreateScheduledSubmitFlow(custom_time=options.submit_at)
+        hashtag = (
+            "set-commit-submit-at"
+            if options.submit_at is not None
+            else "set-commit-nightly"
+        )
+        return cl.CreateScheduledSubmitFlow(
+            custom_time=options.submit_at,
+            hashtag=hashtag,
+        )
     elif options.clear:
         state = _CQState.NONE
     elif options.dry_run:

@@ -2275,6 +2275,64 @@ class GerritFlowsTest(unittest.TestCase):
             accept_statuses=(200, 201),
         )
 
+    @mock.patch("gerrit_util.CallGerritApi")
+    def testCreateScheduledSubmitFlow_WithHashtag(self, mockCallGerritApi):
+        mockCallGerritApi.return_value = {"uuid": "test-uuid"}
+        result = gerrit_util.CreateScheduledSubmitFlow(
+            "example.com",
+            123456,
+            custom_time="20:30",
+            hashtag="set-commit-submit-at",
+        )
+        self.assertEqual(result, {"uuid": "test-uuid"})
+        self.assertEqual(
+            mockCallGerritApi.mock_calls,
+            [
+                mock.call(
+                    "example.com",
+                    "changes/123456/flows",
+                    reqtype="POST",
+                    body={
+                        "stage_expressions": [
+                            {
+                                "condition": (
+                                    "https://example.com/c/123456 is is:submittable, "
+                                    "wait until today at 20:30 in America/Los_Angeles"
+                                ),
+                                "action": {
+                                    "name": "vote",
+                                    "parameters": ["Commit-Queue+2"],
+                                },
+                            }
+                        ]
+                    },
+                    accept_statuses=(200, 201),
+                ),
+                mock.call(
+                    "example.com",
+                    "changes/123456/hashtags",
+                    reqtype="POST",
+                    body={"add": ["set-commit-submit-at"]},
+                    accept_statuses=(200,),
+                ),
+            ],
+        )
+
+    @mock.patch("gerrit_util.CallGerritApi")
+    def testCreateScheduledSubmitFlow_HashtagFailureNonFatal(
+        self, mockCallGerritApi
+    ):
+        mockCallGerritApi.side_effect = [
+            {"uuid": "test-uuid"},
+            gerrit_util.GerritError(403, "Forbidden"),
+        ]
+        result = gerrit_util.CreateScheduledSubmitFlow(
+            "example.com",
+            123456,
+            hashtag="set-commit-nightly",
+        )
+        self.assertEqual(result, {"uuid": "test-uuid"})
+        self.assertEqual(mockCallGerritApi.call_count, 2)
 
     @mock.patch("gerrit_util.CallGerritApi")
     def testCreateScheduledSubmitFlow_ApiFailure(self, mockCallGerritApi):
