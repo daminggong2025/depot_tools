@@ -2251,30 +2251,44 @@ class GerritFlowsTest(unittest.TestCase):
     def testCreateScheduledSubmitFlow_CustomTime(self, mockCallGerritApi):
         mockCallGerritApi.return_value = {"uuid": "test-uuid"}
         result = gerrit_util.CreateScheduledSubmitFlow(
-            "example.com", 123456, custom_time="20:30"
+            "example.com",
+            123456,
+            custom_time="20:30",
+            hashtag="set-commit-submit-at",
         )
         self.assertEqual(result, {"uuid": "test-uuid"})
-        mockCallGerritApi.assert_called_once_with(
-            "example.com",
-            "changes/123456/flows",
-            reqtype="POST",
-            body={
-                "stage_expressions": [
-                    {
-                        "condition": (
-                            "https://example.com/c/123456 is is:submittable, "
-                            "wait until today at 20:30 in America/Los_Angeles"
-                        ),
-                        "action": {
-                            "name": "vote",
-                            "parameters": ["Commit-Queue+2"],
-                        },
-                    }
-                ]
-            },
-            accept_statuses=(200, 201),
+        self.assertEqual(
+            mockCallGerritApi.mock_calls,
+            [
+                mock.call(
+                    "example.com",
+                    "changes/123456/flows",
+                    reqtype="POST",
+                    body={
+                        "stage_expressions": [
+                            {
+                                "condition": (
+                                    "https://example.com/c/123456 is is:submittable, "
+                                    "wait until today at 20:30 in America/Los_Angeles"
+                                ),
+                                "action": {
+                                    "name": "vote",
+                                    "parameters": ["Commit-Queue+2"],
+                                },
+                            }
+                        ]
+                    },
+                    accept_statuses=(200, 201),
+                ),
+                mock.call(
+                    "example.com",
+                    "changes/123456/hashtags",
+                    reqtype="POST",
+                    body={"add": ["set-commit-submit-at"]},
+                    accept_statuses=(200,),
+                ),
+            ],
         )
-
 
     @mock.patch("gerrit_util.CallGerritApi")
     def testCreateScheduledSubmitFlow_ApiFailure(self, mockCallGerritApi):

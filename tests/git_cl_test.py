@@ -12043,6 +12043,7 @@ class CMDScheduledSubmitFlowTestCase(CMDTestCaseBase):
             123456,
             custom_time=None,
             tz="America/Los_Angeles",
+            hashtag=None,
         )
 
     @unittest.skipIf(
@@ -12054,12 +12055,18 @@ class CMDScheduledSubmitFlowTestCase(CMDTestCaseBase):
     ):
         mockCreateScheduledSubmitFlow.return_value = {"uuid": "test-uuid"}
         cl = git_cl.Changelist(issue=123456)
-        self.assertEqual(0, cl.CreateScheduledSubmitFlow(custom_time="20:30"))
+        self.assertEqual(
+            0,
+            cl.CreateScheduledSubmitFlow(
+                custom_time="20:30", hashtag="set-commit-submit-at"
+            ),
+        )
         mockCreateScheduledSubmitFlow.assert_called_once_with(
             "chromium-review.googlesource.com",
             123456,
             custom_time="20:30",
             tz="America/Los_Angeles",
+            hashtag="set-commit-submit-at",
         )
 
     @unittest.skipIf(
@@ -12082,7 +12089,10 @@ class CMDScheduledSubmitFlowTestCase(CMDTestCaseBase):
     def testSetCommitNightly(self, mockCreateScheduledSubmitFlow):
         mockCreateScheduledSubmitFlow.return_value = 0
         self.assertEqual(0, git_cl.main(["set-commit", "--nightly"]))
-        mockCreateScheduledSubmitFlow.assert_called_once_with(custom_time=None)
+        mockCreateScheduledSubmitFlow.assert_called_once_with(
+            custom_time=None,
+            hashtag="set-commit-nightly",
+        )
 
     @unittest.skipIf(
         gclient_utils.IsEnvCog(), "not supported in non-git environment"
@@ -12092,7 +12102,8 @@ class CMDScheduledSubmitFlowTestCase(CMDTestCaseBase):
         mockCreateScheduledSubmitFlow.return_value = 0
         self.assertEqual(0, git_cl.main(["set-commit", "--submit-at", "21:00"]))
         mockCreateScheduledSubmitFlow.assert_called_once_with(
-            custom_time="21:00"
+            custom_time="21:00",
+            hashtag="set-commit-submit-at",
         )
 
     @unittest.skipIf(
@@ -12122,6 +12133,21 @@ class CMDScheduledSubmitFlowTestCase(CMDTestCaseBase):
             git_cl.main(["upload", "--cq-dry-run", "--submit-at", "21:00"])
         with self.assertRaises(SystemExit):
             git_cl.main(["upload", "--submit-at", "invalid"])
+
+    def testGetRefSpecOptions_NightlyAndSubmitAtHashtags(self):
+        cl = git_cl.Changelist(issue=123456)
+        desc = git_cl.ChangeDescription("Test description")
+        options = mock.MagicMock(hashtags=[], title="Title")
+        options.nightly, options.submit_at = True, None
+        self.assertIn(
+            "hashtag=upload-nightly",
+            cl._GetRefSpecOptions(options, desc, dogfood_path=True),
+        )
+        options.nightly, options.submit_at = False, "19:45"
+        self.assertIn(
+            "hashtag=upload-submit-at",
+            cl._GetRefSpecOptions(options, desc, dogfood_path=True),
+        )
 
     @mock.patch("git_cl.Changelist.CreateScheduledSubmitFlow")
     def testPostUploadUpdates_MockOptionsDoesNotTriggerFlow(
