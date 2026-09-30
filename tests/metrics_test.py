@@ -747,6 +747,22 @@ class MetricsUtilsTest(unittest.TestCase):
         )
         self.assertEqual("changes/revisions/commit", http_metrics["path"])
 
+        http_metrics = metrics_utils.extract_http_metrics(
+            "https://review.example.com/a/changes/1234/flows",
+            "",
+            0,
+            0,
+        )
+        self.assertEqual("changes/flows", http_metrics["path"])
+
+        http_metrics = metrics_utils.extract_http_metrics(
+            "https://review.example.com/a/changes/1234/hashtags",
+            "",
+            0,
+            0,
+        )
+        self.assertEqual("changes/hashtags", http_metrics["path"])
+
         # No matching paths
         http_metrics = metrics_utils.extract_http_metrics(
             "https://review.example.com/changes/1234/unexpected/path", "", 0, 0
