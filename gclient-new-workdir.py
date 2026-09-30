@@ -10,6 +10,7 @@
 import argparse
 import ctypes
 import ctypes.util
+import glob
 import os
 import random
 import shutil
@@ -76,6 +77,13 @@ def parse_options():
         """sub-directories of the workspace, and so on. A value of -1 means """
         """there is no limit. The default is 1 if copy-on-write is used, """
         """otherwise the default is -1.""",
+    )
+    parser.add_argument(
+        "--share-gn-args",
+        action="store_true",
+        help="""For each <solution>/out/<build_dir>/args.gn in the """
+        """repository, write an args.gn in the new workdir that imports it, """
+        """so that both workdirs share the same build arguments.""",
     )
     args = parser.parse_args()
 
@@ -308,6 +316,40 @@ def create_git_worktree(src, workdir):
     )
 
 
+_SHARED_ARGS_GN_TEMPLATE = """\
+# Build arguments are shared with {src_args}.
+# Edit them there (e.g. with `gn args`); this build directory picks up changes
+# on its next build. Workdir-specific overrides can be added below the import.
+import("{src_args}")
+"""
+
+
+def share_gn_args(repository, new_workdir):
+    """Makes the build directories of new_workdir share repository's args.
+
+    For each <solution>/out/<build_dir>/args.gn in repository, writes an args.gn
+    at the same location in new_workdir that imports it. GN tracks imported
+    files, so later changes to the original args.gn are picked up by both.
+    """
+    pattern = os.path.join(repository, "*", "out", "*", "args.gn")
+    for src_args in sorted(glob.glob(pattern)):
+        rel_path = os.path.relpath(src_args, repository)
+        dest_args = os.path.join(new_workdir, rel_path)
+        # The build directory may be shared through a symlink (e.g. a
+        # symlinked out/ copied as-is by a snapshot). Writing to it would
+        # overwrite the original args.gn with an import of itself.
+        if os.path.exists(dest_args) and os.path.samefile(src_args, dest_args):
+            print("Skipping %s: already shared with the repository." % rel_path)
+            continue
+        # Remove any copied file or symlink rather than writing through it.
+        if os.path.lexists(dest_args):
+            os.remove(dest_args)
+        os.makedirs(os.path.dirname(dest_args), exist_ok=True)
+        with open(dest_args, "w") as f:
+            f.write(_SHARED_ARGS_GN_TEMPLATE.format(src_args=src_args))
+        print("Sharing GN args: %s" % rel_path)
+
+
 def main():
     args = parse_options()
 
@@ -423,6 +465,9 @@ def main():
                 link_git_repo(
                     root, workdir, use_copy_on_write=args.copy_on_write
                 )
+
+        if args.share_gn_args:
+            share_gn_args(args.repository, args.new_workdir)
 
         if args.copy_on_write:
             print(
