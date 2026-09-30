@@ -283,6 +283,29 @@ def CMDchanges(parser, args):
 
 
 @subcommand.usage("[args ...]")
+def CMDchecks(parser, args):
+    """Gets automated findings from the Gerrit Findings plugin."""
+    parser.add_option("-c", "--change", type=str, help="change id")
+    parser.add_option(
+        "-r",
+        "--revision",
+        default="current",
+        help="revision id (default: %default)",
+    )
+
+    (opt, args) = parser.parse_args(args)
+    if not opt.change:
+        parser.error("--change is required")
+
+    result = gerrit_util.CallGerritApi(
+        urllib.parse.urlparse(opt.host).netloc,
+        "changes/%s/revisions/%s/list_checks" % (opt.change, opt.revision),
+    )
+    logging.info(result)
+    write_result(result, opt)
+
+
+@subcommand.usage("[args ...]")
 def CMDcomments(parser, args):
     """Gets published comments for a given change."""
     parser.add_option("-c", "--change", type=str, help="change id")
