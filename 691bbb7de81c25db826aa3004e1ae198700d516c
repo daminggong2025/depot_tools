@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4adfcecd_2158150b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-10-01T16:28:18Z",
+      "side": 1,
+      "message": "if the goal is to track adoption, I don\u0027t think adding internal hashtags to user CLs is the best way to do it. depot_tools already has detailed telemetry on the  flags/commands and you can extend them like you\u0027re already doing in https://crrev.com/c/8494644. in that same CL you could also add changes/flows to `knownHTTPPaths`",
+      "revId": "691bbb7de81c25db826aa3004e1ae198700d516c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
