@@ -16,6 +16,24 @@
       "message": "if the goal is to track adoption, I don\u0027t think adding internal hashtags to user CLs is the best way to do it. depot_tools already has detailed telemetry on the  flags/commands and you can extend them like you\u0027re already doing in https://crrev.com/c/8494644. in that same CL you could also add changes/flows to `knownHTTPPaths`",
       "revId": "691bbb7de81c25db826aa3004e1ae198700d516c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8e865efd_71a88c34",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 4733581
+      },
+      "writtenOn": "2026-10-01T22:41:03Z",
+      "side": 1,
+      "message": "Done! Removed the Gerrit hashtags and updated this CL to add \"changes/flows\" to KNOWN_HTTP_PATHS in metrics_utils.py, and also added \"changes/flows\" to knownHTTPPaths in https://crrev.com/c/8494644.\nNote on landing order: we\u0027ll land and deploy https://crrev.com/c/8494644 (cit-cli-metrics) first before landing this CL so cit-cli-metrics doesn\u0027t return HTTP 400 on \"changes/flows\".\nQuick question: which group/ACL grants BigQuery read access to cit-cli-metrics.metrics.depot_tools so we can query the telemetry from our PLX dashboard?",
+      "parentUuid": "4adfcecd_2158150b",
+      "revId": "691bbb7de81c25db826aa3004e1ae198700d516c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
