@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8aeab274_f817977b",
+        "filename": "tests/run_in_virtual_path_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 226,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2026-10-01T06:46:34Z",
+      "side": 1,
+      "message": "Do we even need to support symlinked workspace when we use this tool...?",
+      "range": {
+        "startLine": 226,
+        "startChar": 0,
+        "endLine": 226,
+        "endChar": 46
+      },
+      "revId": "a3f4c2b9ec07ea65aa519b9eacd6a313700886bb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
