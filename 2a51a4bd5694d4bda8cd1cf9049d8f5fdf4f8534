@@ -33,6 +33,24 @@
       "message": "can you help me understand the workflow motivating this?",
       "revId": "2a51a4bd5694d4bda8cd1cf9049d8f5fdf4f8534",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9c5be692_58856f4b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1137015
+      },
+      "writtenOn": "2026-10-01T04:23:19Z",
+      "side": 1,
+      "message": "Sure.\n\nI\u0027m using the script but without a copy-on-write partition. In that case, the new worktree has no gn args available. I want to inherit the existing out dirs configurations I have in my original worktree.\n\nThis isnt an issue if you have copy-on-write as everything is \"copied\", including the full out dirs.\n\nNow the part where I\u0027m not sure is if the new worktree should get a copy of the args or the current implementation where they are shared to they stay in sync.",
+      "parentUuid": "46dfe4f5_002f61ba",
+      "revId": "2a51a4bd5694d4bda8cd1cf9049d8f5fdf4f8534",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
