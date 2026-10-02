@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f119e43f_35384ecf",
+        "filename": "tests/gclient_paths_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2026-10-02T03:49:12Z",
+      "side": 1,
+      "message": "Please fix this WARNING reported by crossbench-python-style: [crossbench-python-style] Missing return type annotation. Method return values s...\n\n[crossbench-python-style] Missing return type annotation. Method return values should be type annotated.\n\n**Suggestion**\n\n```python\n    def testGclientRootInParentDir_SymlinkedSubdir(self) -\u003e None:\n```",
+      "range": {
+        "startLine": 78,
+        "startChar": 0,
+        "endLine": 79,
+        "endChar": 0
+      },
+      "revId": "26029553db22af9cd7337f0f9797e459b45b5a90",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3a9f18ee_871ec4ae",
+        "filename": "tests/gclient_paths_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 229,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2026-10-02T03:49:12Z",
+      "side": 1,
+      "message": "Please fix this WARNING reported by crossbench-python-style: [crossbench-python-style] Missing return type annotation. Method return values s...\n\n[crossbench-python-style] Missing return type annotation. Method return values should be type annotated.\n\n**Suggestion**\n\n```python\n    def testGclientRootNotFound_GitMissing(self) -\u003e None:\n```",
+      "range": {
+        "startLine": 228,
+        "startChar": 0,
+        "endLine": 229,
+        "endChar": 0
+      },
+      "revId": "26029553db22af9cd7337f0f9797e459b45b5a90",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
