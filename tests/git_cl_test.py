@@ -2134,6 +2134,506 @@ class TestGitCl(unittest.TestCase):
             ],
         )
 
+    def test_get_refspec_options_base_commit(self):
+        cl = git_cl.Changelist()
+        options = optparse.Values()
+        options.title = None
+        options.message = None
+        options.topic = None
+        options.private = False
+        options.send_mail = False
+        options.hashtags = []
+        options.target_branch = None
+        options.squash = True
+        options.enable_auto_submit = False
+        options.enable_owners_override = False
+        options.set_bot_commit = False
+        options.use_commit_queue = False
+        options.cq_dry_run = False
+        change_desc = git_cl.ChangeDescription("Test change")
+
+        # 40-character hex SHA-1
+        sha40 = "1234567890abcdef1234567890abcdef12345678"
+        opts = cl._GetRefSpecOptions(options, change_desc, base_commit=sha40)
+        self.assertIn("base=" + sha40, opts)
+
+        # 64-character hex SHA-256
+        sha64 = "a" * 64
+        opts = cl._GetRefSpecOptions(options, change_desc, base_commit=sha64)
+        self.assertIn("base=" + sha64, opts)
+
+        # None
+        opts = cl._GetRefSpecOptions(options, change_desc, base_commit=None)
+        self.assertFalse(any(o.startswith("base=") for o in opts))
+
+        # Invalid non-SHA strings
+        for invalid in ["not-a-sha", "HEAD~1", "refs/heads/main", "1234"]:
+            opts = cl._GetRefSpecOptions(
+                options, change_desc, base_commit=invalid
+            )
+            self.assertFalse(any(o.startswith("base=") for o in opts))
+
+    @mock.patch(
+        "git_cl.Changelist.GetGerritHost",
+        return_value="chromium-review.googlesource.com",
+    )
+    @mock.patch(
+        "git_cl.Changelist.GetRemoteBranch",
+        return_value=("origin", "refs/remotes/origin/main"),
+    )
+    @mock.patch(
+        "git_cl.Changelist.GetCommonAncestorWithUpstream",
+        side_effect=["current-upstream-ancestor", "next-upstream-ancestor"],
+    )
+    @mock.patch("git_cl.Changelist.PostUploadUpdates")
+    @mock.patch("git_cl.Changelist._RunGitPushWithTraces")
+    @mock.patch("git_cl._UploadAllPrecheck")
+    @mock.patch("git_cl.Changelist.PrepareSquashedCommit")
+    def test_upload_all_squashed_with_push_base_flag(
+        self,
+        mockSquashedCommit,
+        mockUploadAllPrecheck,
+        mockRunGitPush,
+        mockPostUploadUpdates,
+        *_mocks,
+    ):
+        cls = [
+            git_cl.Changelist(
+                branchref="refs/heads/current-branch", issue="12345"
+            ),
+            git_cl.Changelist(branchref="refs/heads/upstream-branch"),
+        ]
+        mockUploadAllPrecheck.return_value = (cls, False)
+
+        reviewers = []
+        ccs = []
+        current_commit_to_push = "commit-to-push"
+        current_new_last_upload = "new-last-upload"
+        change_desc = git_cl.ChangeDescription("stonks\nChange-Id:ec15e81197380")
+        prev_patchset = 2
+        new_upload_current = git_cl._NewUpload(
+            reviewers,
+            ccs,
+            current_commit_to_push,
+            current_new_last_upload,
+            "next-upstream-ancestor",
+            change_desc,
+            prev_patchset,
+        )
+
+        upstream_desc = git_cl.ChangeDescription("kwak")
+        upstream_parent = "a" * 40
+        upstream_new_last_upload = "upstream-last-upload"
+        upstream_commit_to_push = "upstream_push_commit"
+        new_upload_upstream = git_cl._NewUpload(
+            reviewers,
+            ccs,
+            upstream_commit_to_push,
+            upstream_new_last_upload,
+            upstream_parent,
+            upstream_desc,
+            prev_patchset,
+        )
+        mockSquashedCommit.side_effect = [
+            new_upload_upstream,
+            new_upload_current,
+        ]
+
+        options = optparse.Values()
+        options.send_mail = options.private = False
+        options.squash = True
+        options.title = None
+        options.message = "honk stonk"
+        options.topic = "circus"
+        options.enable_auto_submit = False
+        options.enable_owners_override = False
+        options.set_bot_commit = False
+        options.cq_dry_run = False
+        options.use_commit_queue = False
+        options.hashtags = ["cow"]
+        options.target_branch = None
+        options.push_options = ["uploadvalidator~skip"]
+        options.push_base = True
+        orig_args = []
+
+        mockRunGitPush.return_value = (
+            "remote:   https://chromium-review."
+            "googlesource.com/c/chromium/circus/clown/+/1233 kwak\n"
+            "remote:   https://chromium-review."
+            "googlesource.com/c/chromium/circus/clown/+/1234 stonks"
+        )
+
+        self.calls = [
+            ((["git", "checkout", "-q", "--detach", "upstream-branch"],), ""),
+            ((["git", "checkout", "-q", "--detach", "current-branch"],), ""),
+            ((["git", "checkout", "-q", "main"],), ""),
+        ]
+
+        git_cl.UploadAllSquashed(options, orig_args)
+
+        expected_refspec = (
+            "commit-to-push:refs/for/refs/heads/main%topic=circus,hashtag=cow,base="
+            + ("a" * 40)
+        )
+        expected_refspec_opts = [
+            "topic=circus",
+            "hashtag=cow",
+            "base=" + ("a" * 40),
+        ]
+        mockRunGitPush.assert_called_once_with(
+            expected_refspec,
+            expected_refspec_opts,
+            mock.ANY,
+            options.push_options,
+        )
+
+    @mock.patch(
+        "git_cl.Changelist.GetGerritHost",
+        return_value="chromium-review.googlesource.com",
+    )
+    @mock.patch(
+        "git_cl.Changelist.GetRemoteBranch",
+        return_value=("origin", "refs/remotes/origin/main"),
+    )
+    @mock.patch(
+        "git_cl.Changelist.GetCommonAncestorWithUpstream",
+        side_effect=["current-upstream-ancestor", "next-upstream-ancestor"],
+    )
+    @mock.patch("git_cl.Changelist.PostUploadUpdates")
+    @mock.patch("git_cl.Changelist._RunGitPushWithTraces")
+    @mock.patch("git_cl._UploadAllPrecheck")
+    @mock.patch("git_cl.Changelist.PrepareSquashedCommit")
+    def test_upload_all_squashed_with_push_base_config(
+        self,
+        mockSquashedCommit,
+        mockUploadAllPrecheck,
+        mockRunGitPush,
+        mockPostUploadUpdates,
+        *_mocks,
+    ):
+        cls = [
+            git_cl.Changelist(
+                branchref="refs/heads/current-branch", issue="12345"
+            ),
+            git_cl.Changelist(branchref="refs/heads/upstream-branch"),
+        ]
+        mockUploadAllPrecheck.return_value = (cls, False)
+
+        reviewers = []
+        ccs = []
+        current_commit_to_push = "commit-to-push"
+        current_new_last_upload = "new-last-upload"
+        change_desc = git_cl.ChangeDescription("stonks\nChange-Id:ec15e81197380")
+        prev_patchset = 2
+        new_upload_current = git_cl._NewUpload(
+            reviewers,
+            ccs,
+            current_commit_to_push,
+            current_new_last_upload,
+            "next-upstream-ancestor",
+            change_desc,
+            prev_patchset,
+        )
+
+        upstream_desc = git_cl.ChangeDescription("kwak")
+        upstream_parent = "b" * 40
+        upstream_new_last_upload = "upstream-last-upload"
+        upstream_commit_to_push = "upstream_push_commit"
+        new_upload_upstream = git_cl._NewUpload(
+            reviewers,
+            ccs,
+            upstream_commit_to_push,
+            upstream_new_last_upload,
+            upstream_parent,
+            upstream_desc,
+            prev_patchset,
+        )
+        mockSquashedCommit.side_effect = [
+            new_upload_upstream,
+            new_upload_current,
+        ]
+
+        options = optparse.Values()
+        options.send_mail = options.private = False
+        options.squash = True
+        options.title = None
+        options.message = "honk stonk"
+        options.topic = "circus"
+        options.enable_auto_submit = False
+        options.enable_owners_override = False
+        options.set_bot_commit = False
+        options.cq_dry_run = False
+        options.use_commit_queue = False
+        options.hashtags = ["cow"]
+        options.target_branch = None
+        options.push_options = ["uploadvalidator~skip"]
+        orig_args = []
+
+        mockRunGitPush.return_value = (
+            "remote:   https://chromium-review."
+            "googlesource.com/c/chromium/circus/clown/+/1233 kwak\n"
+            "remote:   https://chromium-review."
+            "googlesource.com/c/chromium/circus/clown/+/1234 stonks"
+        )
+
+        self.calls = [
+            ((["git", "checkout", "-q", "--detach", "upstream-branch"],), ""),
+            ((["git", "checkout", "-q", "--detach", "current-branch"],), ""),
+            ((["git", "checkout", "-q", "main"],), ""),
+        ]
+
+        with mock.patch("scm.GIT.GetConfigBool", return_value=True):
+            git_cl.UploadAllSquashed(options, orig_args)
+
+        expected_refspec = (
+            "commit-to-push:refs/for/refs/heads/main%topic=circus,hashtag=cow,base="
+            + ("b" * 40)
+        )
+        expected_refspec_opts = [
+            "topic=circus",
+            "hashtag=cow",
+            "base=" + ("b" * 40),
+        ]
+        mockRunGitPush.assert_called_once_with(
+            expected_refspec,
+            expected_refspec_opts,
+            mock.ANY,
+            options.push_options,
+        )
+
+    @mock.patch(
+        "git_cl.Changelist.GetGerritHost",
+        return_value="chromium-review.googlesource.com",
+    )
+    @mock.patch(
+        "git_cl.Changelist.GetRemoteBranch",
+        return_value=("origin", "refs/remotes/origin/main"),
+    )
+    @mock.patch(
+        "git_cl.Changelist.GetCommonAncestorWithUpstream",
+        side_effect=["current-upstream-ancestor", "next-upstream-ancestor"],
+    )
+    @mock.patch("git_cl.Changelist.PostUploadUpdates")
+    @mock.patch("git_cl.Changelist._RunGitPushWithTraces")
+    @mock.patch("git_cl._UploadAllPrecheck")
+    @mock.patch("git_cl.Changelist.PrepareSquashedCommit")
+    def test_upload_all_squashed_no_push_base_flag_overrides_config(
+        self,
+        mockSquashedCommit,
+        mockUploadAllPrecheck,
+        mockRunGitPush,
+        mockPostUploadUpdates,
+        *_mocks,
+    ):
+        cls = [
+            git_cl.Changelist(
+                branchref="refs/heads/current-branch", issue="12345"
+            ),
+            git_cl.Changelist(branchref="refs/heads/upstream-branch"),
+        ]
+        mockUploadAllPrecheck.return_value = (cls, False)
+
+        reviewers = []
+        ccs = []
+        current_commit_to_push = "commit-to-push"
+        current_new_last_upload = "new-last-upload"
+        change_desc = git_cl.ChangeDescription("stonks\nChange-Id:ec15e81197380")
+        prev_patchset = 2
+        new_upload_current = git_cl._NewUpload(
+            reviewers,
+            ccs,
+            current_commit_to_push,
+            current_new_last_upload,
+            "next-upstream-ancestor",
+            change_desc,
+            prev_patchset,
+        )
+
+        upstream_desc = git_cl.ChangeDescription("kwak")
+        upstream_parent = "c" * 40
+        upstream_new_last_upload = "upstream-last-upload"
+        upstream_commit_to_push = "upstream_push_commit"
+        new_upload_upstream = git_cl._NewUpload(
+            reviewers,
+            ccs,
+            upstream_commit_to_push,
+            upstream_new_last_upload,
+            upstream_parent,
+            upstream_desc,
+            prev_patchset,
+        )
+        mockSquashedCommit.side_effect = [
+            new_upload_upstream,
+            new_upload_current,
+        ]
+
+        options = optparse.Values()
+        options.send_mail = options.private = False
+        options.squash = True
+        options.title = None
+        options.message = "honk stonk"
+        options.topic = "circus"
+        options.enable_auto_submit = False
+        options.enable_owners_override = False
+        options.set_bot_commit = False
+        options.cq_dry_run = False
+        options.use_commit_queue = False
+        options.hashtags = ["cow"]
+        options.target_branch = None
+        options.push_options = ["uploadvalidator~skip"]
+        options.push_base = False
+        orig_args = []
+
+        mockRunGitPush.return_value = (
+            "remote:   https://chromium-review."
+            "googlesource.com/c/chromium/circus/clown/+/1233 kwak\n"
+            "remote:   https://chromium-review."
+            "googlesource.com/c/chromium/circus/clown/+/1234 stonks"
+        )
+
+        self.calls = [
+            ((["git", "checkout", "-q", "--detach", "upstream-branch"],), ""),
+            ((["git", "checkout", "-q", "--detach", "current-branch"],), ""),
+            ((["git", "checkout", "-q", "main"],), ""),
+        ]
+
+        with mock.patch("scm.GIT.GetConfigBool", return_value=True):
+            git_cl.UploadAllSquashed(options, orig_args)
+
+        expected_refspec = (
+            "commit-to-push:refs/for/refs/heads/main%topic=circus,hashtag=cow"
+        )
+        expected_refspec_opts = ["topic=circus", "hashtag=cow"]
+        mockRunGitPush.assert_called_once_with(
+            expected_refspec,
+            expected_refspec_opts,
+            mock.ANY,
+            options.push_options,
+        )
+
+    @mock.patch(
+        "git_cl.Changelist.GetGerritHost",
+        return_value="chromium-review.googlesource.com",
+    )
+    @mock.patch(
+        "git_cl.Changelist.GetRemoteBranch",
+        return_value=("origin", "refs/remotes/origin/main"),
+    )
+    @mock.patch(
+        "git_cl.Changelist.GetCommonAncestorWithUpstream",
+        side_effect=["current-upstream-ancestor", "next-upstream-ancestor"],
+    )
+    @mock.patch("git_cl.Changelist.PostUploadUpdates")
+    @mock.patch("git_cl.Changelist._RunGitPushWithTraces")
+    @mock.patch("git_cl._UploadAllPrecheck")
+    @mock.patch("git_cl.Changelist.PrepareSquashedCommit")
+    def test_upload_all_squashed_push_base_rejected_retry(
+        self,
+        mockSquashedCommit,
+        mockUploadAllPrecheck,
+        mockRunGitPush,
+        mockPostUploadUpdates,
+        *_mocks,
+    ):
+        cls = [
+            git_cl.Changelist(
+                branchref="refs/heads/current-branch", issue="12345"
+            ),
+            git_cl.Changelist(branchref="refs/heads/upstream-branch"),
+        ]
+        mockUploadAllPrecheck.return_value = (cls, False)
+
+        reviewers = []
+        ccs = []
+        current_commit_to_push = "commit-to-push"
+        current_new_last_upload = "new-last-upload"
+        change_desc = git_cl.ChangeDescription("stonks\nChange-Id:ec15e81197380")
+        prev_patchset = 2
+        new_upload_current = git_cl._NewUpload(
+            reviewers,
+            ccs,
+            current_commit_to_push,
+            current_new_last_upload,
+            "next-upstream-ancestor",
+            change_desc,
+            prev_patchset,
+        )
+
+        upstream_desc = git_cl.ChangeDescription("kwak")
+        upstream_parent = "d" * 40
+        upstream_new_last_upload = "upstream-last-upload"
+        upstream_commit_to_push = "upstream_push_commit"
+        new_upload_upstream = git_cl._NewUpload(
+            reviewers,
+            ccs,
+            upstream_commit_to_push,
+            upstream_new_last_upload,
+            upstream_parent,
+            upstream_desc,
+            prev_patchset,
+        )
+        mockSquashedCommit.side_effect = [
+            new_upload_upstream,
+            new_upload_current,
+        ]
+
+        options = optparse.Values()
+        options.send_mail = options.private = False
+        options.squash = True
+        options.title = None
+        options.message = "honk stonk"
+        options.topic = "circus"
+        options.enable_auto_submit = False
+        options.enable_owners_override = False
+        options.set_bot_commit = False
+        options.cq_dry_run = False
+        options.use_commit_queue = False
+        options.hashtags = ["cow"]
+        options.target_branch = None
+        options.push_options = ["uploadvalidator~skip"]
+        options.push_base = True
+        orig_args = []
+
+        called_proc_err = subprocess2.CalledProcessError(
+            1,
+            ["git", "push"],
+            "cwd",
+            b"remote: error: base not found\nremote: fatal: base not found",
+            b"",
+        )
+        mockRunGitPush.side_effect = [
+            git_cl.GitPushError(
+                "Failed to create a change", push_error=called_proc_err
+            ),
+            (
+                "remote:   https://chromium-review."
+                "googlesource.com/c/chromium/circus/clown/+/1233 kwak\n"
+                "remote:   https://chromium-review."
+                "googlesource.com/c/chromium/circus/clown/+/1234 stonks"
+            ),
+        ]
+
+        self.calls = [
+            ((["git", "checkout", "-q", "--detach", "upstream-branch"],), ""),
+            ((["git", "checkout", "-q", "--detach", "current-branch"],), ""),
+            ((["git", "checkout", "-q", "main"],), ""),
+        ]
+
+        git_cl.UploadAllSquashed(options, orig_args)
+
+        self.assertEqual(mockRunGitPush.call_count, 2)
+        # First call has base=<sha>
+        first_refspec = mockRunGitPush.call_args_list[0][0][0]
+        first_refspec_opts = mockRunGitPush.call_args_list[0][0][1]
+        self.assertIn("base=" + ("d" * 40), first_refspec)
+        self.assertIn("base=" + ("d" * 40), first_refspec_opts)
+
+        # Second call stripped base
+        second_refspec = mockRunGitPush.call_args_list[1][0][0]
+        second_refspec_opts = mockRunGitPush.call_args_list[1][0][1]
+        self.assertNotIn("base=", second_refspec)
+        self.assertNotIn("base=" + ("d" * 40), second_refspec_opts)
+
     @mock.patch(
         "concurrent.futures.ThreadPoolExecutor",
         wraps=git_cl.concurrent.futures.ThreadPoolExecutor,
@@ -9547,6 +10047,16 @@ class CMDUploadTestCase(CMDTestCaseBase):
             self.assertFalse(cherry_pick)
             mock_hook.assert_not_called()
             mock_prompt.assert_not_called()
+
+    def test_upload_push_base_parser_options(self):
+        parser = optparse.OptionParser()
+        git_cl.CMDupload(parser, ["--git-completion-helper"])
+        opts, _ = parser.parse_args(["--push-base"])
+        self.assertTrue(opts.push_base)
+        opts, _ = parser.parse_args(["--no-push-base"])
+        self.assertFalse(opts.push_base)
+        opts, _ = parser.parse_args([])
+        self.assertIsNone(opts.push_base)
 
 
 class MakeRequestsHelperTestCase(unittest.TestCase):
