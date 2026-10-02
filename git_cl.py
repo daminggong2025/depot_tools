@@ -1443,6 +1443,46 @@ def _flush_stdout(_: str) -> None:
     sys.stdout.flush()
 
 
+def _IsPushBaseEnabled(options):
+    """Returns True if push_base is enabled via options or git config."""
+    push_base_enabled = getattr(options, "push_base", None)
+    if push_base_enabled is None:
+        push_base_enabled = scm.GIT.GetConfigBool(
+            settings.GetRoot(), "gerrit.push-base"
+        )
+    return bool(push_base_enabled)
+
+
+def _ExtractPushOutput(err):
+    """Extracts lowercase output string from a GitPushError."""
+    output = ""
+    if getattr(err, "push_error", None):
+
+        def _to_str(val):
+            if val is None:
+                return ""
+            if isinstance(val, bytes):
+                return val.decode("utf-8", "replace")
+            return str(val)
+
+        output = (
+            _to_str(getattr(err.push_error, "stdout", None))
+            + " "
+            + _to_str(getattr(err.push_error, "stderr", None))
+        )
+    return output.lower()
+
+
+def _IsBaseRejected(push_output_lower, refspec_opts):
+    """Returns True if the push was rejected because of the base= push option."""
+    return any(opt.startswith("base=") for opt in refspec_opts) and (
+        "base not found" in push_output_lower
+        or "invalid base" in push_output_lower
+        or "base must be a commit" in push_output_lower
+        or "implicit merge" in push_output_lower
+    )
+
+
 class Changelist(object):
     """Changelist works with one changelist in local branch.
 
@@ -2215,6 +2255,7 @@ class Changelist(object):
         change_desc: ChangeDescription,
         multi_change_upload: bool = False,
         dogfood_path: bool = False,
+        base_commit: Optional[str] = None,
     ) -> List[str]:
         # Extra options that can be specified at push time. Doc:
         # https://gerrit-review.googlesource.com/Documentation/user-upload.html
@@ -2278,6 +2319,9 @@ class Changelist(object):
         if not (self.GetIssue() and dogfood_path):
             hashtags.update(change_desc.get_hash_tags())
         refspec_opts.extend(["hashtag=%s" % t for t in hashtags])
+
+        if base_commit and re.match(r"^[0-9a-fA-F]{40,64}$", base_commit):
+            refspec_opts.append("base=" + base_commit)
 
         # Note: Reviewers, and ccs are handled individually for each
         # branch/change.
@@ -3953,7 +3997,23 @@ class Changelist(object):
 
         # Extra options that can be specified at push time. Doc:
         # https://gerrit-review.googlesource.com/Documentation/user-upload.html
-        refspec_opts = self._GetRefSpecOptions(options, change_desc)
+        push_base_enabled = _IsPushBaseEnabled(options)
+        base_commit = None
+        if push_base_enabled:
+            target_base = custom_cl_base
+            if not target_base:
+                try:
+                    target_base = self.GetCommonAncestorWithUpstream()
+                except Exception:
+                    pass
+            if target_base:
+                try:
+                    base_commit = RunGit(["rev-parse", target_base]).strip()
+                except Exception:
+                    pass
+        refspec_opts = self._GetRefSpecOptions(
+            options, change_desc, base_commit=base_commit
+        )
 
         for r in sorted(reviewers):
             if r in valid_accounts:
@@ -3993,9 +4053,38 @@ class Changelist(object):
         # increment later.
         latest_ps = self.GetMostRecentPatchset(update=False) or 0
 
-        push_stdout = self._RunGitPushWithTraces(
-            refspec, refspec_opts, git_push_metadata, options.push_options
-        )
+        while True:
+            try:
+                push_stdout = self._RunGitPushWithTraces(
+                    refspec,
+                    refspec_opts,
+                    git_push_metadata,
+                    options.push_options,
+                )
+                break
+            except GitPushError as e:
+                push_output_lower = _ExtractPushOutput(e)
+                if _IsBaseRejected(push_output_lower, refspec_opts):
+                    logging.warning(
+                        "Git push with base commit %s was rejected by Gerrit; retrying "
+                        "push without base option.",
+                        base_commit,
+                    )
+                    refspec_opts = [
+                        opt
+                        for opt in refspec_opts
+                        if not opt.startswith("base=")
+                    ]
+                    refspec_suffix = ""
+                    if refspec_opts:
+                        refspec_suffix = "%" + ",".join(refspec_opts)
+                    refspec = "%s:refs/for/%s%s" % (
+                        ref_to_push,
+                        branch,
+                        refspec_suffix,
+                    )
+                    continue
+                raise
 
         if options.squash:
             regex = re.compile(r"remote:\s+https?://[\w\-\.\+\/#]*/(\d+)\s?.*")
@@ -6935,6 +7024,20 @@ def CMDupload(parser, args):
         "if `-` is provided, force will be implicitly enabled.",
     )
     parser.add_option(
+        "--push-base",
+        action="store_true",
+        default=None,
+        dest="push_base",
+        help="Specify merge base to Gerrit (%base=<sha>) to avoid "
+        "unbounded branch head traversal on the server.",
+    )
+    parser.add_option(
+        "--no-push-base",
+        action="store_false",
+        dest="push_base",
+        help="Do not specify merge base to Gerrit.",
+    )
+    parser.add_option(
         "--git-completion-helper",
         action="store_true",
         help=optparse.SUPPRESS_HELP,
@@ -7258,11 +7361,19 @@ def UploadAllSquashed(
 
     # Create refspec options
     cl, new_upload = uploads_by_cl[-1]
+    push_base_enabled = _IsPushBaseEnabled(options)
+    base_commit = uploads_by_cl[0][1].parent if push_base_enabled else None
+    if base_commit and not re.match(r"^[0-9a-fA-F]{40,64}$", base_commit):
+        try:
+            base_commit = RunGit(["rev-parse", base_commit]).strip()
+        except Exception:
+            base_commit = None
     refspec_opts = cl._GetRefSpecOptions(
         options,
         new_upload.change_desc,
         multi_change_upload=len(uploads_by_cl) > 1,
         dogfood_path=True,
+        base_commit=base_commit,
     )
 
     # For single CL uploads, fold reviewers and CCs into push options (-o r=...,
@@ -7330,64 +7441,77 @@ def UploadAllSquashed(
         "description": new_upload.change_desc.description,
     }
     logging.debug("pushing to %s", refspec)
-    try:
-        push_stdout = cl._RunGitPushWithTraces(
-            refspec, refspec_opts, git_push_metadata, push_options
-        )
-    except GitPushError as e:
-        # If the push failed and push_options contained folded reviewers/CCs,
-        # check whether the remote server rejected the push because it does not
-        # support the :silent modifier or because a reviewer/CC account was not
-        # found. If so, strip the folded push options and retry, falling back to
-        # the sequential AddReviewers REST call.
-        push_output = ""
-        if e.push_error:
-
-            def _to_str(val):
-                if val is None:
-                    return ""
-                if isinstance(val, bytes):
-                    return val.decode("utf-8", "replace")
-                return str(val)
-
-            push_output = (
-                _to_str(getattr(e.push_error, "stdout", None))
-                + " "
-                + _to_str(getattr(e.push_error, "stderr", None))
-            )
-        push_output_lower = push_output.lower()
-        folded_rejected = (
-            any(opt.lower() in push_output_lower for opt in folded_push_options)
-            or ":silent" in push_output_lower
-            or (
-                any(
-                    keyword in push_output_lower
-                    for keyword in (
-                        "reviewer",
-                        "cc",
-                        "account",
-                    )
-                )
-                and any(
-                    user.lower() in push_output_lower
-                    for user in (folded_reviewers | folded_ccs)
-                )
-            )
-        )
-        if folded_push_options and folded_rejected:
-            logging.warning(
-                "Git push with folded reviewer/CC push options failed; retrying "
-                "push without folded reviewers/CCs and falling back to REST."
-            )
-            push_options = [
-                opt for opt in push_options if opt not in folded_push_options
-            ]
-            folded_reviewers.clear()
-            folded_ccs.clear()
+    while True:
+        try:
             push_stdout = cl._RunGitPushWithTraces(
                 refspec, refspec_opts, git_push_metadata, push_options
             )
-        else:
+            break
+        except GitPushError as e:
+            # If the push failed and push_options contained folded reviewers/CCs,
+            # check whether the remote server rejected the push because it does not
+            # support the :silent modifier or because a reviewer/CC account was not
+            # found. If so, strip the folded push options and retry, falling back to
+            # the sequential AddReviewers REST call.
+            # Likewise, if base commit option (%base=...) was rejected by Gerrit
+            # (e.g. "base not found" or "invalid base"), strip the base option and retry.
+            push_output_lower = _ExtractPushOutput(e)
+            retry_needed = False
+            folded_rejected = folded_push_options and (
+                any(
+                    opt.lower() in push_output_lower
+                    for opt in folded_push_options
+                )
+                or ":silent" in push_output_lower
+                or (
+                    any(
+                        keyword in push_output_lower
+                        for keyword in (
+                            "reviewer",
+                            "cc",
+                            "account",
+                        )
+                    )
+                    and any(
+                        user.lower() in push_output_lower
+                        for user in (folded_reviewers | folded_ccs)
+                    )
+                )
+            )
+            if folded_rejected:
+                logging.warning(
+                    "Git push with folded reviewer/CC push options failed; retrying "
+                    "push without folded reviewers/CCs and falling back to REST."
+                )
+                push_options = [
+                    opt for opt in push_options if opt not in folded_push_options
+                ]
+                folded_push_options = []
+                folded_reviewers.clear()
+                folded_ccs.clear()
+                retry_needed = True
+
+            if _IsBaseRejected(push_output_lower, refspec_opts):
+                logging.warning(
+                    "Git push with base commit %s was rejected by Gerrit; retrying "
+                    "push without base option.",
+                    base_commit,
+                )
+                refspec_opts = [
+                    opt for opt in refspec_opts if not opt.startswith("base=")
+                ]
+                refspec_suffix = ""
+                if refspec_opts:
+                    refspec_suffix = "%" + ",".join(refspec_opts)
+                refspec = "%s:refs/for/%s%s" % (
+                    new_upload.commit_to_push,
+                    branch,
+                    refspec_suffix,
+                )
+                retry_needed = True
+
+            if retry_needed:
+                continue
             raise
 
     # Strip folded reviewers and CCs only after git push has successfully executed,
