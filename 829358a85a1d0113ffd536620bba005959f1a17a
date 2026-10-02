@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "e061a938_ebf093b0",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002340
+      },
+      "writtenOn": "2026-10-02T21:58:03Z",
+      "side": 1,
+      "message": "Acknowledged",
+      "parentUuid": "7e9a7629_1efee540",
+      "revId": "829358a85a1d0113ffd536620bba005959f1a17a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "77666277_09105bb7",
@@ -31,6 +49,30 @@
       "writtenOn": "2026-10-02T09:03:54Z",
       "side": 1,
       "message": "Please fix this WARNING reported by crossbench-python-style: [crossbench-python-style] This line exceeds the 80-character line limit (it is 1...\n\n[crossbench-python-style] This line exceeds the 80-character line limit (it is 174 characters long).\n\n**Suggestion**\n\n```python\n    bash_cmd \u003d (\n        f\"mount --rbind {shlex.quote(primary_solution_path)} \"\n        f\"{shlex.quote(virtual_path)} \u0026\u0026 cd {shlex.quote(target_dir)} \"\n        f\"\u0026\u0026 unshare --map-user\u003d{uid} {shlex.join(cmd_args)}\"\n    )\n```",
+      "range": {
+        "startLine": 81,
+        "startChar": 0,
+        "endLine": 82,
+        "endChar": 0
+      },
+      "revId": "829358a85a1d0113ffd536620bba005959f1a17a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "65df70c2_2c8f5661",
+        "filename": "run_in_virtual_path.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1002340
+      },
+      "writtenOn": "2026-10-02T21:58:03Z",
+      "side": 1,
+      "message": "I rewrote it using `shlex.join()` to reduce the amount of explicit quoting needed. PTAL.",
+      "parentUuid": "77666277_09105bb7",
       "range": {
         "startLine": 81,
         "startChar": 0,
