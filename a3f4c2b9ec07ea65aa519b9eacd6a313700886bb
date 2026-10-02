@@ -22,6 +22,30 @@
       },
       "revId": "a3f4c2b9ec07ea65aa519b9eacd6a313700886bb",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "10d94d9d_15d1ceba",
+        "filename": "tests/run_in_virtual_path_test.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 226,
+      "author": {
+        "id": 1002340
+      },
+      "writtenOn": "2026-10-02T22:31:23Z",
+      "side": 1,
+      "message": "It\u0027s common to use symlinked workspaces as a way to avoid the situation where your agent UI shows you 10 workspaces all named \"src\". The tool I use to create workspaces does this.",
+      "parentUuid": "8aeab274_f817977b",
+      "range": {
+        "startLine": 226,
+        "startChar": 0,
+        "endLine": 226,
+        "endChar": 46
+      },
+      "revId": "a3f4c2b9ec07ea65aa519b9eacd6a313700886bb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
