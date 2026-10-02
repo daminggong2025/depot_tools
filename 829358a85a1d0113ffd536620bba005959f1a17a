@@ -16,6 +16,29 @@
       "message": "I\u0027m not sure why I can\u0027t submit this. Adding a second OWNER in case that\u0027s the problem.",
       "revId": "829358a85a1d0113ffd536620bba005959f1a17a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "77666277_09105bb7",
+        "filename": "run_in_virtual_path.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2026-10-02T09:03:54Z",
+      "side": 1,
+      "message": "Please fix this WARNING reported by crossbench-python-style: [crossbench-python-style] This line exceeds the 80-character line limit (it is 1...\n\n[crossbench-python-style] This line exceeds the 80-character line limit (it is 174 characters long).\n\n**Suggestion**\n\n```python\n    bash_cmd \u003d (\n        f\"mount --rbind {shlex.quote(primary_solution_path)} \"\n        f\"{shlex.quote(virtual_path)} \u0026\u0026 cd {shlex.quote(target_dir)} \"\n        f\"\u0026\u0026 unshare --map-user\u003d{uid} {shlex.join(cmd_args)}\"\n    )\n```",
+      "range": {
+        "startLine": 81,
+        "startChar": 0,
+        "endLine": 82,
+        "endChar": 0
+      },
+      "revId": "829358a85a1d0113ffd536620bba005959f1a17a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
