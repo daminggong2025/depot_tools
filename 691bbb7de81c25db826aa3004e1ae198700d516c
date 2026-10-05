@@ -34,6 +34,24 @@
       "parentUuid": "4adfcecd_2158150b",
       "revId": "691bbb7de81c25db826aa3004e1ae198700d516c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8900aca6_cd6a3ef6",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2026-10-05T16:35:14Z",
+      "side": 1,
+      "message": "SG, thanks. please join g2/cit-cli-metrics-access-users for access",
+      "parentUuid": "8e865efd_71a88c34",
+      "revId": "691bbb7de81c25db826aa3004e1ae198700d516c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
