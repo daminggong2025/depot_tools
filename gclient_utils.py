@@ -327,10 +327,15 @@ def rmtree(path):
 
     if sys.platform == "win32":
         # Give up and use cmd.exe's rd command.
-        path = os.path.normcase(path)
+        path = os.path.normcase(os.path.normpath(path))
+        if any(c in path for c in '&|^%<>!()\r\n"') or path.startswith("/"):
+            raise Error(
+                "Refusing to rmtree path with unsafe characters: %s" % path
+            )
         for _ in range(3):
             exitcode = subprocess.call(
-                ["cmd.exe", "/c", "rd", "/q", "/s", path]
+                ["cmd.exe", "/d", "/c", "rd", "/q", "/s", path],
+                shell=False,
             )
             if exitcode == 0:
                 return
@@ -582,6 +587,32 @@ class GClientChildren(object):
                     print("  ", zombie.pid, file=sys.stderr)
 
 
+_OSC_DCS_RE = re.compile(
+    r"(?:\x1b[\]PX^_]|[\x90\x98\x9d-\x9f])[^\x07\x1b\x9c]*(?:\x07|\x1b\\|\x9c|$)"
+)
+_CSI_RE = re.compile(r"(\x1b\[|\x9b)([\x30-\x3f]*)([\x20-\x2f]*)([\x40-\x7e]?)")
+_CONTROL_CHARS_RE = re.compile(r"[\x00-\x08\x0b-\x1a\x1c-\x1f\x7f-\x9f]")
+
+
+def _SanitizeTerminalOutput(text):
+    text = _OSC_DCS_RE.sub("", text)
+
+    def _keep_sgr_only(match):
+        prefix, params, intermediates, final = match.groups()
+        if (
+            prefix == "\x1b["
+            and final == "m"
+            and not intermediates
+            and all(c in "0123456789;" for c in params)
+        ):
+            return match.group(0)
+        return ""
+
+    text = _CSI_RE.sub(_keep_sgr_only, text)
+    text = re.sub(r"\x1b(?!\[[0-9;]*m)[\x20-\x2f]*[\x30-\x7e]?", "", text)
+    return _CONTROL_CHARS_RE.sub("", text)
+
+
 def CheckCallAndFilter(
     args,
     print_stdout=False,
@@ -636,10 +667,16 @@ def CheckCallAndFilter(
 
     def filter_line(command_output, line_start):
         """Extract the last line from command output and filter it."""
-        if not filter_fn or line_start is None:
+        if line_start is None:
             return
         command_output.seek(line_start)
-        filter_fn(command_output.read().decode("utf-8"))
+        sanitized = _SanitizeTerminalOutput(
+            command_output.read().decode("utf-8", errors="replace")
+        )
+        if print_stdout:
+            stdout_write(sanitized.encode("utf-8"))
+        if filter_fn:
+            filter_fn(sanitized)
 
     # Initialize stdout writer if needed. On Python 3, sys.stdout does not
     # accept byte inputs and sys.stdout.buffer must be used instead.
@@ -723,18 +760,18 @@ def CheckCallAndFilter(
                 if is_newline:
                     filter_line(command_output, line_start)
                     line_start = None
+                    stdout_write(in_byte)
+                    if print_stdout:
+                        sys.stdout.flush()
                 elif line_start is None:
                     line_start = command_output.tell()
 
-                stdout_write(in_byte)
-                if print_stdout and is_newline:
-                    sys.stdout.flush()
                 command_output.write(in_byte)
 
             # Flush the rest of buffered output.
-            sys.stdout.flush()
             if line_start is not None:
                 filter_line(command_output, line_start)
+            sys.stdout.flush()
 
             os.close(pipe_reader)
             rv = kid.wait()
@@ -798,6 +835,7 @@ class GitFilter(object):
         esc = line.find(chr(0o33))
         if esc > -1:
             line = line[:esc]
+        line = _SanitizeTerminalOutput(line)
         if self.predicate and not self.predicate(line):
             return
         now = time.time()
