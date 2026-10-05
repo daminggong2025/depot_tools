@@ -1886,6 +1886,96 @@ class ObjectFormatBootstrapTest(unittest.TestCase):
                     self.assertTrue(marker_exists)
 
 
+class MirrorSecurityHardeningTest(unittest.TestCase):
+    def setUp(self):
+        self.cache_dir = tempfile.mkdtemp(prefix="gc_sec_")
+        self.addCleanup(shutil.rmtree, self.cache_dir, ignore_errors=True)
+        git_cache.Mirror.SetCachePath(self.cache_dir)
+
+    def testRejectsInvalidCommitsAndFetchSpecs(self):
+        for bad_commit in (
+            "deadbeef:refs/heads/main",
+            "-upload-pack=evil",
+            "deadbeef & calc",
+            "deadbeef\nevil",
+            "deadbeef%PATH%",
+            "",
+        ):
+            with self.assertRaises(ValueError):
+                git_cache.Mirror(
+                    "https://chromium.googlesource.com/foo/bar",
+                    commits=[bad_commit],
+                )
+
+        for bad_spec in (
+            "-upload-pack=evil",
+            "refs/heads/main:-refs/heads/evil",
+            "refs/heads/main & calc",
+            "refs/heads/main\nevil",
+        ):
+            with self.assertRaises(ValueError):
+                git_cache.Mirror.parse_fetch_spec(bad_spec)
+
+    def testBootstrapRepoRemovesHooksAlternatesAndResetsConfig(self):
+        mirror = git_cache.Mirror("https://chromium.googlesource.com/foo/bar")
+
+        def fake_gsutil_cp(*args):
+            tempdir = args[-1]
+            hooks_dir = os.path.join(tempdir, "hooks")
+            os.makedirs(hooks_dir, exist_ok=True)
+            with open(os.path.join(hooks_dir, "post-checkout"), "w") as f:
+                f.write("#!/bin/sh\necho pwned\n")
+            info_dir = os.path.join(tempdir, "objects", "info")
+            os.makedirs(info_dir, exist_ok=True)
+            with open(os.path.join(info_dir, "alternates"), "w") as f:
+                f.write("/evil/objects\n")
+            with open(os.path.join(tempdir, "config"), "w") as f:
+                f.write("[core]\n\tfsmonitor = evil_cmd\n")
+            return 0
+
+        with (
+            mock.patch.object(
+                git_cache.Gsutil,
+                "check_call",
+                return_value=(
+                    0,
+                    "gs://chromium-git-cache/v2/foo-bar/100.ready\n"
+                    "gs://chromium-git-cache/v2/foo-bar/100/\n",
+                    "",
+                ),
+            ),
+            mock.patch.object(
+                git_cache.Gsutil, "call", side_effect=fake_gsutil_cp
+            ),
+        ):
+            target_dir = os.path.join(self.cache_dir, "bootstrapped_target")
+            self.assertTrue(mirror.bootstrap_repo(target_dir))
+
+        self.assertFalse(os.path.exists(os.path.join(target_dir, "hooks")))
+        self.assertFalse(
+            os.path.exists(
+                os.path.join(target_dir, "objects", "info", "alternates")
+            )
+        )
+        with open(os.path.join(target_dir, "config"), "r") as f:
+            config_text = f.read()
+        self.assertNotIn("fsmonitor", config_text)
+        self.assertNotIn("evil_cmd", config_text)
+
+    def testRunGitSetsNoDefaultCurrentDirectoryOnWindows(self):
+        mirror = git_cache.Mirror("https://chromium.googlesource.com/foo/bar")
+        self.assertEqual(mirror.git_exe, git_common.GIT_EXE)
+        with (
+            mock.patch("sys.platform", "win32"),
+            mock.patch("gclient_utils.CheckCallAndFilter") as mock_ccaf,
+        ):
+            mirror.RunGit(["status"], print_stdout=False)
+            _, kwargs = mock_ccaf.call_args
+            self.assertEqual(
+                kwargs["env"].get("NoDefaultCurrentDirectoryInExePath"), "1"
+            )
+
+
 if __name__ == "__main__":
     logging.basicConfig(
         level=logging.DEBUG if "-v" in sys.argv else logging.ERROR
