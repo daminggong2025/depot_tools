@@ -603,6 +603,35 @@ class DownloadTests(unittest.TestCase):
         self.assertEqual(self.gsutil.history, expected_calls)
         self.assertEqual(code, 0)
 
+    def test_construct_migration_file_name_sanitizes_backslashes(self):
+        name = download_from_google_storage.construct_migration_file_name(
+            "..\\..\\pwn/obj.tar.gz"
+        )
+        self.assertNotIn("\\", name)
+        self.assertNotIn("/", name)
+        self.assertEqual(name, ".______pwn_obj_tar_gz_is_first_class_gcs")
+
+    def test_reject_unsafe_shell_chars(self):
+        gsutil = download_from_google_storage.Gsutil(GSUTIL_DEFAULT_PATH, None)
+        with self.assertRaises(ValueError):
+            gsutil.check_call("cp", "gs://bucket/a&calc&b", "out")
+        with self.assertRaises(ValueError):
+            download_from_google_storage.download_from_google_storage(
+                input_filename="7871c8e24da15bad8b0be2c36edc9dc77e37727f",
+                base_url="gs://bucket&calc",
+                gsutil=self.gsutil,
+                num_threads=1,
+                directory=False,
+                recursive=False,
+                force=True,
+                output="out",
+                ignore_errors=False,
+                sha1_file=False,
+                verbose=False,
+                auto_platform=False,
+                extract=False,
+            )
+
 
 if __name__ == "__main__":
     unittest.main()
