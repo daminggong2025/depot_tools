@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bfab0aa1_6b105eaa",
+        "filename": "git_cl.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 1446,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-10-05T02:57:11Z",
+      "side": 1,
+      "message": "Can we have typing here and for the other functions?\n\nAdditionally function names are Py2, not Py3 standard, please use underscores instead of camel case",
+      "range": {
+        "startLine": 1446,
+        "startChar": 13,
+        "endLine": 1446,
+        "endChar": 32
+      },
+      "revId": "8f06c8214da64d79683f56feaa72a11e6de5298b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d1216bce_e68a8958",
+        "filename": "git_cl.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 4057,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-10-05T02:57:11Z",
+      "side": 1,
+      "message": "Are we confident it won\u0027t become a runaway loop?",
+      "range": {
+        "startLine": 4056,
+        "startChar": 7,
+        "endLine": 4057,
+        "endChar": 16
+      },
+      "revId": "8f06c8214da64d79683f56feaa72a11e6de5298b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "181d8ea4_10711e4b",
+        "filename": "git_cl.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 7368,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-10-05T02:57:11Z",
+      "side": 1,
+      "message": "No need to report what happened here as we catch Exception?",
+      "range": {
+        "startLine": 7368,
+        "startChar": 0,
+        "endLine": 7368,
+        "endChar": 68
+      },
+      "revId": "8f06c8214da64d79683f56feaa72a11e6de5298b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
