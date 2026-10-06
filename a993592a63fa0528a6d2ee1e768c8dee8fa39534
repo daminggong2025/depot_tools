@@ -188,6 +188,30 @@
       },
       "revId": "a993592a63fa0528a6d2ee1e768c8dee8fa39534",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "271705bd_924e9d7e",
+        "filename": "tests/owners_client_test.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 349,
+      "author": {
+        "id": 1244248
+      },
+      "writtenOn": "2026-10-06T08:52:15Z",
+      "side": 1,
+      "message": "Changed in the latest PS.",
+      "parentUuid": "21d92d5a_69f4ee07",
+      "range": {
+        "startLine": 349,
+        "startChar": 13,
+        "endLine": 349,
+        "endChar": 49
+      },
+      "revId": "a993592a63fa0528a6d2ee1e768c8dee8fa39534",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
