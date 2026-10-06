@@ -1,0 +1,1 @@
+Inspect Git setup, benchmark status, and summarize a Trace2 run.

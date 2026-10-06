@@ -1,0 +1,175 @@
+git-perf(1)
+===========
+
+NAME
+----
+git-perf -
+include::_git-perf_desc.helper.txt[]
+
+SYNOPSIS
+--------
+[verse]
+'git perf' [--verbose] [--json]
+'git perf check' [--verbose] [--json]
+'git perf bench' [--samples _N_] [--warmup _N_] [--deadline _SECONDS_] [--verbose] [--json]
+'git perf trace' [--deadline _SECONDS_] [--verbose] [--json]
+'git perf trace' --input _PATH_ [--verbose] [--json]
+'git perf diagnose' [--samples _N_] [--warmup _N_] [--deadline _SECONDS_] [--verbose] [--json]
+
+DESCRIPTION
+-----------
+
+`git perf` inspects repository setup and can measure or trace `git status`. With
+no subcommand, it runs `git perf check`.
+
+`git-perf` does not write Git configuration itself or select a setting for the
+user to change. The live measurement modes do run Git with the repository's
+current settings. A configured hook can make arbitrary changes, including
+changes to Git configuration. See EFFECTS below.
+
+`check` reads selected configuration, repository layout, and the index header.
+It does not run `git status`, execute an FSMonitor hook, or start the built-in
+FSMonitor daemon. Child Git processes have optional locks, credential prompts,
+and ambient trace output disabled.
+Checkout metadata must be regular files of at most 256 KiB each. Symlinks,
+FIFOs, expressions that expand data, and unsupported layouts leave the checkout
+role unavailable; Git facts collected independently remain available.
+
+`bench` runs this command with the repository's current settings:
+
+----
+git --no-pager status --porcelain=v2 -z --branch
+----
+
+The first run after setup is reported separately. Warmup runs are excluded from
+the result. If Git, its relevant settings, and the status output remain stable,
+the measured runs produce a median and median absolute deviation. The latter
+shows how far the run times typically spread from the median. A warmup does not
+prove that Git's caches or other system activity have stabilized.
+
+Elapsed time starts just before process creation and ends when a blocking waiter
+observes the child's exit. Pipe draining and cleanup after that point are
+reported separately. Process startup, scheduling, concurrent output parsing and
+pipe backpressure remain part of the observation. Nanosecond units do not imply
+nanosecond accuracy. The configuration comparison covers a selected allowlist;
+it does not establish that every input to Git remained unchanged.
+
+Live `trace` runs that command once with Git Trace2 EVENT capture. On supported
+POSIX systems, git-perf reads the events through a file descriptor instead of
+creating a trace file. It discards raw events after reducing listed region names
+to fixed phase names, relative durations, and counts. One trace can show
+where that run recorded time; it cannot show whether the timing is repeatable.
+
+`trace --input` reads a regular Trace2 EVENT file, or binary standard input when
+_PATH_ is `-`. The parser limits input size, line count, event count, sessions,
+threads, and nesting. This mode does not inspect a repository or run Git.
+Symlinks, devices, FIFOs, compressed files, and archives are not accepted as
+input files.
+
+The parser supports EVENT format versions 2, 3 and 4. Unknown or missing versions
+produce limited-quality results. Inclusive region durations use Git's `t_rel`;
+exclusive durations subtract immediate child regions on the same thread.
+Wall timestamps place regions on a timeline. A disagreement greater than 1 ms
+between elapsed and wall evidence limits temporal quality. This threshold allows
+for separately sampled clocks and event serialization; it is not a precision
+guarantee. Repeated start or end anchors also limit quality.
+
+`active_wall_ns` unions overlapping regions across a root session and its
+descendants, clipped to the root window. `aggregate_process_ns` instead sums
+per-process interval unions and is not CPU time. Unrelated offline sessions have
+no combined wall duration. Different phases can overlap, so their wall times
+must not be added to produce a command total.
+
+`diagnose` benchmarks `git status`, traces one additional run, and then checks
+whether the repository or Git executable changed during the diagnosis. All
+three parts share one deadline. The traced run is not included in the benchmark
+median.
+Comparisons use private repository identities, selected Git/config snapshots,
+and invocation-local status fingerprints. Only comparison states enter the
+report. Drift or missing observations make the combined diagnosis partial while
+preserving any independently valid benchmark summary.
+
+EFFECTS
+-------
+
+`bench`, live `trace`, and `diagnose` run `git status` after printing a warning
+to standard error. They do not ask for a second confirmation. Depending on the
+current Git configuration, an external hook or the built-in FSMonitor may run,
+initialized submodules may be inspected, and Git may update its index or
+optional caches.
+
+`git-perf` does not call `git config` to write a setting. It cannot make the
+same promise for a configured hook because a hook is an arbitrary program. A
+hook can make any change that the current user is allowed to make.
+
+git-perf refuses to run `git status` when it detects a partial clone or cannot
+determine whether the clone is partial. Status may fetch missing objects in a
+partial clone, and this prototype has not verified that it can prevent such a
+fetch with the selected Git version.
+
+OPTIONS
+-------
+
+--samples _N_::
+  Number of measured runs after the first run and any warmups. The default is
+  *7*.
+
+--warmup _N_::
+  Number of extra runs omitted from the timings after the first run. The
+  default is *1*.
+
+--deadline _SECONDS_::
+  Deadline for setup, Git runs, and follow-up checks. The default is *60
+  seconds* for `bench` and `diagnose`, and *30 seconds* for live `trace`.
+  Process cleanup and writing the final report may finish after the deadline.
+  Metadata reads are size/type bounded and check the shared deadline. This is
+  not a hard real-time limit on a stalled filesystem operation. If process or
+  reader cleanup remains uncertain, no further Git commands are scheduled.
+
+--input _PATH_::
+  Read an existing Trace2 EVENT stream instead of running Git. `-` selects
+  binary standard input. This option cannot be combined with `--deadline`.
+
+--verbose::
+  Show every fact used in the report and the limits on how it was collected.
+  This option does not collect more information.
+
+--json::
+  Write one experimental JSON document to standard output. `--verbose` does not
+  change JSON output. Schema version 2 distinguishes the corrected wall-time
+  fields; workload version 2 uses child-exit timing instead of reader completion.
+
+PRIVACY AND INTERPRETATION
+--------------------------
+
+The human and JSON reports omit raw child-process output, filenames, repository
+paths, remote identities, raw Trace2 events, process IDs, session IDs,
+wall-clock timestamps, and Trace2 labels that are not explicitly listed in the
+parser. Unknown phase labels count as `other`. git-perf must read some
+path-bearing Git output to find the
+repository and index, but it discards those values before building the report.
+
+Benchmark timings apply to this checkout, machine, and invocation. A trace
+shows one run and adds overhead that git-perf does not measure. Use these
+results to choose the next measurement, not as proof that a configuration
+change will improve performance.
+
+EXIT STATUS
+-----------
+
+*0*::
+  A complete or partial report was written. This status is also returned if the
+  consumer closes the pipe while reading a successful report.
+
+*2*::
+  Arguments were invalid, or git-perf could not produce the requested report.
+
+*130*::
+  Interrupted by `SIGINT`.
+
+*143*::
+  git-perf caught `SIGTERM` and attempted to clean up its child process.
+
+include::_footer.txt[]
+
+// vim: ft=asciidoc:
