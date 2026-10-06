@@ -17,6 +17,23 @@
       "isAi": true,
       "revId": "42bad39f5bc3739f5a551db44cce25e93cffe0b5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "087ebc6a_343a9a5c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-10-06T23:42:25Z",
+      "side": 1,
+      "message": "Can you add some unit tests to demonstrate where the issue happens and than the new code works?",
+      "revId": "42bad39f5bc3739f5a551db44cce25e93cffe0b5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
