@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "1a5e3df3_5ace58cd",
+        "filename": "git_cl.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 7420,
+      "author": {
+        "id": 1408727
+      },
+      "writtenOn": "2026-10-07T02:44:58Z",
+      "side": 1,
+      "message": "Done. Renamed to gerrit_url_regex.",
+      "parentUuid": "8feb6067_3e52a9b1",
+      "range": {
+        "startLine": 7420,
+        "startChar": 3,
+        "endLine": 7420,
+        "endChar": 73
+      },
+      "revId": "5eedb1de8782934799532e37c3bf5d4d7baefd4d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "b8739de6_41ea8d5d",
@@ -47,6 +71,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "598a4479_47a68212",
+        "filename": "git_cl.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 7439,
+      "author": {
+        "id": 1408727
+      },
+      "writtenOn": "2026-10-07T02:44:58Z",
+      "side": 1,
+      "message": "Done. Replaced the nested while loops with _is_continuation and a single for loop.",
+      "parentUuid": "b8739de6_41ea8d5d",
+      "range": {
+        "startLine": 7427,
+        "startChar": 3,
+        "endLine": 7439,
+        "endChar": 14
+      },
+      "revId": "5eedb1de8782934799532e37c3bf5d4d7baefd4d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "21437be2_f86e0108",
@@ -60,6 +108,30 @@
       "writtenOn": "2026-10-07T02:30:50Z",
       "side": 1,
       "message": "That\u0027s a disappointingly short else, how about we swap the condition?",
+      "range": {
+        "startLine": 7492,
+        "startChar": 4,
+        "endLine": 7497,
+        "endChar": 13
+      },
+      "revId": "5eedb1de8782934799532e37c3bf5d4d7baefd4d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b2ff28af_7fb34a5a",
+        "filename": "git_cl.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 7497,
+      "author": {
+        "id": 1408727
+      },
+      "writtenOn": "2026-10-07T02:44:58Z",
+      "side": 1,
+      "message": "Done. Swapped the condition to if len(change_numbers) \u003d\u003d len(uploads_by_cl): first.",
+      "parentUuid": "21437be2_f86e0108",
       "range": {
         "startLine": 7492,
         "startChar": 4,
