@@ -236,6 +236,30 @@
       },
       "revId": "a993592a63fa0528a6d2ee1e768c8dee8fa39534",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b4f31c78_90362a1b",
+        "filename": "tests/owners_client_test.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 349,
+      "author": {
+        "id": 1244248
+      },
+      "writtenOn": "2026-10-07T20:59:04Z",
+      "side": 1,
+      "message": "It looks like your +1 was reset by mistake?",
+      "parentUuid": "145fea9b_76ec109f",
+      "range": {
+        "startLine": 349,
+        "startChar": 13,
+        "endLine": 349,
+        "endChar": 49
+      },
+      "revId": "a993592a63fa0528a6d2ee1e768c8dee8fa39534",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
