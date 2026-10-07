@@ -45,6 +45,29 @@
       },
       "revId": "5eedb1de8782934799532e37c3bf5d4d7baefd4d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "21437be2_f86e0108",
+        "filename": "git_cl.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 7497,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-10-07T02:30:50Z",
+      "side": 1,
+      "message": "That\u0027s a disappointingly short else, how about we swap the condition?",
+      "range": {
+        "startLine": 7492,
+        "startChar": 4,
+        "endLine": 7497,
+        "endChar": 13
+      },
+      "revId": "5eedb1de8782934799532e37c3bf5d4d7baefd4d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
