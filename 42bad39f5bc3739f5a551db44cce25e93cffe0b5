@@ -34,6 +34,25 @@
       "message": "Can you add some unit tests to demonstrate where the issue happens and than the new code works?",
       "revId": "42bad39f5bc3739f5a551db44cce25e93cffe0b5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c321aab2_8097a1f9",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1408727
+      },
+      "writtenOn": "2026-10-07T01:35:11Z",
+      "side": 1,
+      "message": "Done. Rebased onto main and added unit tests in tests/git_cl_test.py covering wrapped remote URLs (including URLs split mid-path and mid-CL-number, with or without a \u0027remote:\u0027 prefix on continuation lines), partial/extra stacked-branch subject matching, and unmatched branch error handling.",
+      "parentUuid": "087ebc6a_343a9a5c",
+      "isAi": true,
+      "revId": "42bad39f5bc3739f5a551db44cce25e93cffe0b5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
