@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8feb6067_3e52a9b1",
+        "filename": "git_cl.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 7420,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-10-07T02:27:44Z",
+      "side": 1,
+      "message": "This is not your code but the variable name is next to useless, can you rename it to something more meaningful?",
+      "range": {
+        "startLine": 7420,
+        "startChar": 3,
+        "endLine": 7420,
+        "endChar": 73
+      },
+      "revId": "5eedb1de8782934799532e37c3bf5d4d7baefd4d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b8739de6_41ea8d5d",
+        "filename": "git_cl.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 7439,
+      "author": {
+        "id": 1552902
+      },
+      "writtenOn": "2026-10-07T02:27:44Z",
+      "side": 1,
+      "message": "I don\u0027t like whiles done this way, it\u0027s double the chance to blow the leg off. Gemini has proposed the following which I like more too:\n\n```\ndef _is_continuation(line: str) -\u003e bool:\n    return \"remote:\" not in line and not line.lstrip().startswith((\"To \", \"* \"))\n\n\njoined_lines \u003d []\nfor line in push_stdout.splitlines():\n    prev \u003d joined_lines[-1] if joined_lines else \"\"\n    prev_is_remote_url \u003d \"remote:\" in prev and (\"https://\" in prev or \"http://\" in prev)\n\n    if prev_is_remote_url and _is_continuation(line):\n        joined_lines[-1] \u003d prev.rstrip() + line.lstrip()\n    else:\n        joined_lines.append(line)\n```",
+      "range": {
+        "startLine": 7427,
+        "startChar": 3,
+        "endLine": 7439,
+        "endChar": 14
+      },
+      "revId": "5eedb1de8782934799532e37c3bf5d4d7baefd4d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
