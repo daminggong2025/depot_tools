@@ -557,6 +557,111 @@ def CMDaddpatchsetcomment(parser, args):
 
 
 @subcommand.usage("[args ...]")
+def CMDcreatedraft(parser, args):
+    """Creates a draft comment on a given change and revision."""
+    parser.add_option(
+        "-c",
+        "--change",
+        type=str,
+        help="This accepts both gerrit Change-ID or change number.",
+    )
+    parser.add_option(
+        "-r",
+        "--revision",
+        type=str,
+        default="current",
+        help="revision ID. See "
+        "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#revision-id "
+        "for acceptable format",
+    )
+    parser.add_option("-m", "--message", type=str, help="message to add")
+    parser.add_option(
+        "--path",
+        type=str,
+        help="file path for comment (defaults to /PATCHSET_LEVEL)",
+    )
+    parser.add_option(
+        "-l",
+        "--line",
+        type=int,
+        help="line number for comment",
+    )
+    parser.add_option(
+        "--side",
+        type=str,
+        help="side of the file for comment (REVISION or PARENT)",
+    )
+    parser.add_option(
+        "--in-reply-to",
+        "--in_reply_to",
+        dest="in_reply_to",
+        type=str,
+        help="UUID of comment to reply to",
+    )
+    parser.add_option(
+        "--unresolved",
+        action="store_true",
+        help="Mark the comment as unresolved",
+    )
+    parser.add_option(
+        "--resolved",
+        dest="unresolved",
+        action="store_false",
+        help="Mark the comment as resolved",
+    )
+    parser.add_option(
+        "--body",
+        dest="body",
+        help="CommentInput JSON body contents",
+    )
+    (opt, args) = parser.parse_args(args)
+    if not opt.change:
+        parser.error("--change is required")
+
+    body = {}
+    if opt.body is not None:
+        try:
+            parsed_body = json.loads(opt.body)
+        except ValueError as e:
+            parser.error(f"Invalid --body JSON: {e}")
+        if not isinstance(parsed_body, dict):
+            parser.error("--body must be a JSON object")
+        body.update(parsed_body)
+
+    if opt.message is not None:
+        body["message"] = opt.message
+    if opt.path is not None:
+        body["path"] = opt.path
+    if not body.get("path"):
+        body["path"] = "/PATCHSET_LEVEL"
+    if opt.line is not None:
+        body["line"] = opt.line
+    if body.get("line") is not None and body["path"] == "/PATCHSET_LEVEL":
+        parser.error("--path is required when --line is specified")
+    if opt.side is not None:
+        body["side"] = opt.side
+    if opt.in_reply_to is not None:
+        body["in_reply_to"] = opt.in_reply_to
+    if opt.unresolved is not None:
+        body["unresolved"] = opt.unresolved
+
+    if not body.get("message"):
+        parser.error("--message is required")
+
+    result = gerrit_util.CreateDraft(
+        urllib.parse.urlparse(opt.host).netloc,
+        opt.change,
+        revision=opt.revision,
+        body=body,
+    )
+    logging.info(result)
+    write_result(result, opt)
+
+
+CMDadddraft = CMDcreatedraft
+
+
+@subcommand.usage("[args ...]")
 def CMDaddMessage(parser, args):
     """Adds a message to a given change at given revision."""
     parser.add_option("-c", "--change", type=int, help="change number")

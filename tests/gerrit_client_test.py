@@ -357,6 +357,184 @@ class TestGerritClient(unittest.TestCase):
             automatic_attention_set_update=None,
         )
 
+    @mock.patch("gerrit_util.CreateDraft", return_value={})
+    def test_createdraft_defaults(self, util_mock):
+        gerrit_client.main(
+            [
+                "createdraft",
+                "--host",
+                "https://example.org/foo",
+                "-c",
+                "123",
+                "-m",
+                "Draft comment",
+            ]
+        )
+        util_mock.assert_called_once_with(
+            "example.org",
+            "123",
+            revision="current",
+            body={"path": "/PATCHSET_LEVEL", "message": "Draft comment"},
+        )
+
+    @mock.patch("gerrit_client.write_result")
+    @mock.patch("gerrit_util.CreateDraft")
+    def test_createdraft_options(self, util_mock, write_result_mock):
+        draft = {"id": "draft-1", "message": "Inline reply"}
+        util_mock.return_value = draft
+        gerrit_client.main(
+            [
+                "createdraft",
+                "--host",
+                "https://example.org/foo",
+                "-c",
+                "123",
+                "-r",
+                "2",
+                "--path",
+                "src/foo.cc",
+                "--line",
+                "42",
+                "--side",
+                "REVISION",
+                "--in-reply-to",
+                "comment-uuid",
+                "--unresolved",
+                "-m",
+                "Inline reply",
+                "--json_file",
+                "draft.json",
+            ]
+        )
+        util_mock.assert_called_once_with(
+            "example.org",
+            "123",
+            revision="2",
+            body={
+                "path": "src/foo.cc",
+                "line": 42,
+                "side": "REVISION",
+                "in_reply_to": "comment-uuid",
+                "unresolved": True,
+                "message": "Inline reply",
+            },
+        )
+        write_result_mock.assert_called_once()
+        result, opt = write_result_mock.call_args.args
+        self.assertIs(draft, result)
+        self.assertEqual("draft.json", opt.json_file)
+
+    @mock.patch("gerrit_util.CreateDraft", return_value={})
+    def test_adddraft_body_and_override(self, util_mock):
+        gerrit_client.main(
+            [
+                "adddraft",
+                "--host",
+                "https://example.org/foo",
+                "-c",
+                "123",
+                "--body",
+                '{"path": "src/foo.cc", "line": 10, "message": "From body"}',
+                "--resolved",
+            ]
+        )
+        util_mock.assert_called_once_with(
+            "example.org",
+            "123",
+            revision="current",
+            body={
+                "path": "src/foo.cc",
+                "line": 10,
+                "message": "From body",
+                "unresolved": False,
+            },
+        )
+
+    @mock.patch("gerrit_util.CreateDraft")
+    def test_createdraft_validation(self, util_mock):
+        for args, expected_err in [
+            (
+                ["createdraft", "--host", "https://example.org", "-m", "hi"],
+                "--change is required",
+            ),
+            (
+                ["createdraft", "--host", "https://example.org", "-c", "123"],
+                "--message is required",
+            ),
+            (
+                [
+                    "createdraft",
+                    "--host",
+                    "https://example.org",
+                    "-c",
+                    "123",
+                    "--body",
+                    "{bad",
+                ],
+                "Invalid --body JSON",
+            ),
+            (
+                [
+                    "createdraft",
+                    "--host",
+                    "https://example.org",
+                    "-c",
+                    "123",
+                    "--body",
+                    "[]",
+                ],
+                "--body must be a JSON object",
+            ),
+            (
+                [
+                    "createdraft",
+                    "--host",
+                    "https://example.org",
+                    "-c",
+                    "123",
+                    "--line",
+                    "42",
+                    "-m",
+                    "hi",
+                ],
+                "--path is required when --line is specified",
+            ),
+        ]:
+            stderr = io.StringIO()
+            with (
+                contextlib.redirect_stderr(stderr),
+                self.assertRaises(SystemExit) as error,
+            ):
+                gerrit_client.main(args)
+            self.assertEqual(2, error.exception.code)
+            self.assertIn(expected_err, stderr.getvalue())
+        util_mock.assert_not_called()
+
+    @mock.patch("gerrit_util.CallGerritApi", return_value={})
+    def test_rawapi(self, util_mock):
+        gerrit_client.main(
+            [
+                "rawapi",
+                "--host",
+                "https://example.org/foo",
+                "--path",
+                "/changes/123/revisions/current/drafts",
+                "--method",
+                "PUT",
+                "--accept_status",
+                "200,201",
+                "--body",
+                '{"path": "/PATCHSET_LEVEL", "message": "Draft"}',
+            ]
+        )
+        util_mock.assert_called_once_with(
+            "example.org",
+            "/changes/123/revisions/current/drafts",
+            reqtype="PUT",
+            accept_statuses=[200, 201],
+            body={"path": "/PATCHSET_LEVEL", "message": "Draft"},
+        )
+
     @mock.patch("gerrit_util.GetPatch", return_value=b"formatted patch\n")
     def test_patch_defaults(self, util_mock):
         with mock.patch("gerrit_client.sys.stdout") as stdout_mock:
