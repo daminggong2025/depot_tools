@@ -4008,12 +4008,7 @@ class Changelist(object):
         )
 
         if options.squash:
-            regex = re.compile(r"remote:\s+https?://[\w\-\.\+\/#]*/(\d+)\s?.*")
-            change_numbers = [
-                m.group(1)
-                for m in map(regex.search, push_stdout.splitlines())
-                if m
-            ]
+            change_numbers = [x[0] for x in _ParseGerritPushOutput(push_stdout)]
             if len(change_numbers) != 1:
                 DieWithError(
                     (
@@ -7417,29 +7412,70 @@ def UploadAllSquashed(
         )
 
     # Post push updates
-    regex = re.compile(r"remote:\s+https?://[\w\-\.\+\/#]*/(\d+)\s?.*")
-    change_numbers = [
-        m.group(1) for m in map(regex.search, push_stdout.splitlines()) if m
-    ]
+    parsed_outputs = _ParseGerritPushOutput(push_stdout)
+    change_numbers = [x[0] for x in parsed_outputs]
 
+    updated_uploads = []
     if len(change_numbers) != len(uploads_by_cl):
-        DieWithError(
-            "Created|Updated %d issues on Gerrit, but %d expected.\n"
-            "Detected change numbers: %s\n"
-            "Full git push output:\n%s"
-            % (
-                len(change_numbers),
-                len(uploads_by_cl),
-                change_numbers,
-                push_stdout,
-            )
+        print(
+            "WARNING: Number of uploaded changes (%d) does not match "
+            "number of branches in stack (%d)."
+            % (len(change_numbers), len(uploads_by_cl))
         )
+        print("Attempting to match changes by subject...")
+        matched_indices = set()
+        unmatched_branches = []
+        for cl, new_upload in uploads_by_cl:
+            desc_lines = new_upload.change_desc.description.splitlines()
+            subject = desc_lines[0].strip() if desc_lines else ""
+            found = False
+            for idx, (change_number, url_subject) in enumerate(parsed_outputs):
+                if idx in matched_indices:
+                    continue
+                if _SubjectsMatch(subject, url_subject):
+                    print(
+                        'Matched branch "%s" (subject: "%s") to CL %s'
+                        % (cl.GetBranch(), subject, change_number)
+                    )
+                    cl.PostUploadUpdates(
+                        options,
+                        new_upload,
+                        change_number,
+                        update_reviewers=False,
+                    )
+                    updated_uploads.append((cl, new_upload))
+                    matched_indices.add(idx)
+                    found = True
+                    break
+            if not found:
+                unmatched_branches.append((cl.GetBranch(), subject))
 
-    # Update local Git configurations sequentially to prevent .git/config.lock collisions.
-    for i, (cl, new_upload) in enumerate(uploads_by_cl):
-        cl.PostUploadUpdates(
-            options, new_upload, change_numbers[i], update_reviewers=False
-        )
+        if not updated_uploads or len(matched_indices) != min(
+            len(change_numbers), len(uploads_by_cl)
+        ):
+            unmatched_branch, unmatched_subject = unmatched_branches[0]
+            DieWithError(
+                "Created|Updated %d issues on Gerrit, but %d expected.\n"
+                'Could not find matching CL for branch "%s" '
+                '(subject: "%s").\n'
+                "Detected change numbers: %s\n"
+                "Full git push output:\n%s"
+                % (
+                    len(change_numbers),
+                    len(uploads_by_cl),
+                    unmatched_branch,
+                    unmatched_subject,
+                    change_numbers,
+                    push_stdout,
+                )
+            )
+    else:
+        # Update local Git configurations sequentially to prevent .git/config.lock collisions.
+        for i, (cl, new_upload) in enumerate(uploads_by_cl):
+            cl.PostUploadUpdates(
+                options, new_upload, change_numbers[i], update_reviewers=False
+            )
+            updated_uploads.append((cl, new_upload))
 
     # Run remote Gerrit reviewer updates concurrently across worker threads.
     def _AddRemoteReviewers(item):
@@ -7454,7 +7490,7 @@ def UploadAllSquashed(
             )
 
     pending_reviewer_updates = [
-        item for item in uploads_by_cl if item[1].reviewers or item[1].ccs
+        item for item in updated_uploads if item[1].reviewers or item[1].ccs
     ]
     if len(pending_reviewer_updates) == 1:
         _AddRemoteReviewers(pending_reviewer_updates[0])
@@ -7465,6 +7501,87 @@ def UploadAllSquashed(
             list(executor.map(_AddRemoteReviewers, pending_reviewer_updates))
 
     return 0
+
+
+def _ParseGerritPushOutput(push_stdout: str) -> List[Tuple[str, str]]:
+    """Parses Gerrit git push output into (change_number, subject) tuples.
+
+    Gerrit wraps remote progress messages at ~80 characters, which can split
+    long CL URLs or CL numbers across multiple lines (either with or without a
+    leading 'remote:' prefix on continuation lines).
+    """
+    regex = re.compile(r"remote:\s+https?://[\w\-\.\+\/#]*/(\d+)\s?(.*)")
+    url_start_re = re.compile(r"remote:\s+https?://")
+    incomplete_url_re = re.compile(r"remote:\s+https?://\S+$")
+    ansi_prefix_re = re.compile(r"^(?:\x1b\[[0-9;]*[a-zA-Z]|\s)+")
+
+    lines = push_stdout.splitlines()
+    joined_lines = []
+    i = 0
+    while i < len(lines):
+        line = lines[i]
+        if url_start_re.search(line):
+            while i + 1 < len(lines):
+                next_clean = ansi_prefix_re.sub("", lines[i + 1]).strip()
+                if not next_clean:
+                    break
+                if next_clean.startswith(("To ", "* ")):
+                    break
+                if "https://" in next_clean or "http://" in next_clean:
+                    break
+                if not next_clean.startswith("remote:"):
+                    sep = (
+                        " "
+                        if regex.search(line) and not next_clean[0].isdigit()
+                        else ""
+                    )
+                    line = line.rstrip() + sep + next_clean
+                    i += 1
+                    continue
+                after_remote = next_clean[len("remote:") :].strip()
+                if (
+                    after_remote
+                    and not after_remote.startswith(("http://", "https://"))
+                    and incomplete_url_re.search(line.strip())
+                    and (
+                        regex.search(line) is None
+                        or (
+                            line.rstrip()[-1].isdigit()
+                            and after_remote[0].isdigit()
+                        )
+                    )
+                ):
+                    line = line.rstrip() + after_remote
+                    i += 1
+                    continue
+                break
+        joined_lines.append(line)
+        i += 1
+
+    parsed_outputs = []
+    for line in joined_lines:
+        m = regex.search(line)
+        if m:
+            parsed_outputs.append((m.group(1), m.group(2).strip()))
+    return parsed_outputs
+
+
+def _SubjectsMatch(commit_subject: str, url_subject: str) -> bool:
+    """Returns True if a commit subject matches a Gerrit push URL subject."""
+    if not commit_subject or not url_subject:
+        return False
+    clean_url_subject = (
+        re.sub(r"(?:\s+\[[A-Za-z0-9_-]+\])+$", "", url_subject)
+        .strip()
+        .rstrip(".")
+    )
+    if not clean_url_subject:
+        return False
+    return (
+        url_subject.startswith(commit_subject)
+        or clean_url_subject.startswith(commit_subject)
+        or commit_subject.startswith(clean_url_subject)
+    )
 
 
 def _UploadAllPrecheck(

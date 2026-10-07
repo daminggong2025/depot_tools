@@ -3664,6 +3664,476 @@ class TestGitCl(unittest.TestCase):
 
     @mock.patch(
         "git_cl.Changelist.GetGerritHost",
+        return_value="chrome-internal-review.googlesource.com",
+    )
+    @mock.patch(
+        "git_cl.Changelist.GetRemoteBranch",
+        return_value=("origin", "refs/remotes/origin/main"),
+    )
+    @mock.patch(
+        "git_cl.Changelist.GetCommonAncestorWithUpstream",
+        side_effect=["current-upstream-ancestor", "next-upstream-ancestor"],
+    )
+    @mock.patch("git_cl.Changelist.PostUploadUpdates")
+    @mock.patch("git_cl.Changelist._RunGitPushWithTraces")
+    @mock.patch("git_cl._UploadAllPrecheck")
+    @mock.patch("git_cl.Changelist.PrepareSquashedCommit")
+    def test_upload_all_squashed_wrapped_url_split_cl_number(
+        self,
+        mockSquashedCommit,
+        mockUploadAllPrecheck,
+        mockRunGitPush,
+        mockPostUploadUpdates,
+        *_mocks,
+    ):
+        cls = [
+            git_cl.Changelist(
+                branchref="refs/heads/current-branch", issue="9350741"
+            ),
+            git_cl.Changelist(branchref="refs/heads/upstream-branch"),
+        ]
+        mockUploadAllPrecheck.return_value = (cls, False)
+
+        upstream_desc = git_cl.ChangeDescription(
+            "[canary] Disable wifi on Ubuntu\nChange-Id: Ia025698c2507c37"
+        )
+        new_upload_upstream = git_cl._NewUpload(
+            [],
+            [],
+            "upstream_push_commit",
+            "upstream-last-upload",
+            "origin-commit",
+            upstream_desc,
+            1,
+        )
+        current_desc = git_cl.ChangeDescription(
+            "[canary] Add mix of wifi cards to test wifi disable\n"
+            "Change-Id: Iab993ecfa7f64b8"
+        )
+        new_upload_current = git_cl._NewUpload(
+            [],
+            [],
+            "commit-to-push",
+            "new-last-upload",
+            "next-upstream-ancestor",
+            current_desc,
+            2,
+        )
+        mockSquashedCommit.side_effect = [
+            new_upload_upstream,
+            new_upload_current,
+        ]
+
+        options = optparse.Values()
+        options.send_mail = options.private = False
+        options.squash = True
+        options.title = None
+        options.message = None
+        options.topic = None
+        options.enable_auto_submit = False
+        options.enable_owners_override = False
+        options.set_bot_commit = False
+        options.cq_dry_run = False
+        options.use_commit_queue = False
+        options.hashtags = []
+        options.target_branch = None
+        options.push_options = []
+
+        # Simulate Gerrit wrapping 80-char progress lines:
+        # 1) First URL wrapped inside the project path before /+/9350740
+        # 2) Second URL wrapped directly inside the CL number (935 + 0741)
+        mockRunGitPush.return_value = (
+            "remote: Processing changes: updated: 2, done\n"
+            "remote:\n"
+            "remote: Updated Changes:\n"
+            "remote:   https://chrome-internal-review.googlesource.com/c/infra/"
+            "\n"
+            "puppet/+/9350740 [canary] Disable wifi on Ubuntu\n"
+            "remote:   https://chrome-internal-review.googlesource.com/c/infra/"
+            "puppet/+/935\n"
+            "0741 [canary] Add mix of wifi cards to test wifi disable\n"
+            "remote:\n"
+            "To https://chrome-internal.googlesource.com/infra/puppet.git\n"
+            " * [new branch]      commit-to-push -> refs/for/refs/heads/main\n"
+        )
+
+        self.calls = [
+            ((["git", "checkout", "-q", "--detach", "upstream-branch"],), ""),
+            ((["git", "checkout", "-q", "--detach", "current-branch"],), ""),
+            ((["git", "checkout", "-q", "main"],), ""),
+        ]
+
+        git_cl.UploadAllSquashed(options, [])
+
+        self.assertEqual(
+            mockPostUploadUpdates.mock_calls,
+            [
+                mock.call(
+                    options,
+                    new_upload_upstream,
+                    "9350740",
+                    update_reviewers=False,
+                ),
+                mock.call(
+                    options,
+                    new_upload_current,
+                    "9350741",
+                    update_reviewers=False,
+                ),
+            ],
+        )
+
+    @mock.patch(
+        "git_cl.Changelist.GetGerritHost",
+        return_value="chrome-internal-review.googlesource.com",
+    )
+    @mock.patch(
+        "git_cl.Changelist.GetRemoteBranch",
+        return_value=("origin", "refs/remotes/origin/main"),
+    )
+    @mock.patch(
+        "git_cl.Changelist.GetCommonAncestorWithUpstream",
+        side_effect=["current-upstream-ancestor", "next-upstream-ancestor"],
+    )
+    @mock.patch("git_cl.Changelist.PostUploadUpdates")
+    @mock.patch("git_cl.Changelist._RunGitPushWithTraces")
+    @mock.patch("git_cl._UploadAllPrecheck")
+    @mock.patch("git_cl.Changelist.PrepareSquashedCommit")
+    def test_upload_all_squashed_partial_stack_subject_matching(
+        self,
+        mockSquashedCommit,
+        mockUploadAllPrecheck,
+        mockRunGitPush,
+        mockPostUploadUpdates,
+        *_mocks,
+    ):
+        cls = [
+            git_cl.Changelist(branchref="refs/heads/current-branch"),
+            git_cl.Changelist(
+                branchref="refs/heads/upstream-branch", issue="9350740"
+            ),
+        ]
+        mockUploadAllPrecheck.return_value = (cls, False)
+
+        upstream_desc = git_cl.ChangeDescription(
+            "[canary] Disable wifi on Ubuntu\nChange-Id: Ia025698c2507c37"
+        )
+        new_upload_upstream = git_cl._NewUpload(
+            [],
+            [],
+            "upstream_push_commit",
+            "upstream-last-upload",
+            "origin-commit",
+            upstream_desc,
+            1,
+        )
+        current_desc = git_cl.ChangeDescription(
+            "[canary] Add actual bots with wifi cards to test wifi disable\n"
+            "Change-Id: I63cdcaf7292605f"
+        )
+        new_upload_current = git_cl._NewUpload(
+            [],
+            [],
+            "commit-to-push",
+            "new-last-upload",
+            "next-upstream-ancestor",
+            current_desc,
+            1,
+        )
+        mockSquashedCommit.side_effect = [
+            new_upload_upstream,
+            new_upload_current,
+        ]
+
+        options = optparse.Values()
+        options.send_mail = options.private = False
+        options.squash = True
+        options.title = None
+        options.message = None
+        options.topic = None
+        options.enable_auto_submit = False
+        options.enable_owners_override = False
+        options.set_bot_commit = False
+        options.cq_dry_run = False
+        options.use_commit_queue = False
+        options.hashtags = []
+        options.target_branch = None
+        options.push_options = []
+
+        # Upstream branch produced no new change on Gerrit; only the child
+        # branch is emitted in push_stdout with a truncated subject and [NEW].
+        mockRunGitPush.return_value = (
+            "remote: Processing changes: new: 1, done\n"
+            "remote:\n"
+            "remote: New Changes:\n"
+            "remote:   https://chrome-internal-review.googlesource.com/c/infra/"
+            "puppet/+/935\n"
+            "remote:   3300 [canary] Add actual bots with wifi cards... [NEW]\n"
+        )
+
+        self.calls = [
+            ((["git", "checkout", "-q", "--detach", "upstream-branch"],), ""),
+            ((["git", "checkout", "-q", "--detach", "current-branch"],), ""),
+            ((["git", "checkout", "-q", "main"],), ""),
+        ]
+
+        git_cl.UploadAllSquashed(options, [])
+
+        self.assertEqual(
+            mockPostUploadUpdates.mock_calls,
+            [
+                mock.call(
+                    options,
+                    new_upload_current,
+                    "9353300",
+                    update_reviewers=False,
+                ),
+            ],
+        )
+
+    @mock.patch(
+        "git_cl.Changelist.GetGerritHost",
+        return_value="chrome-internal-review.googlesource.com",
+    )
+    @mock.patch(
+        "git_cl.Changelist.GetRemoteBranch",
+        return_value=("origin", "refs/remotes/origin/main"),
+    )
+    @mock.patch(
+        "git_cl.Changelist.GetCommonAncestorWithUpstream",
+        side_effect=["current-upstream-ancestor", "next-upstream-ancestor"],
+    )
+    @mock.patch("git_cl.Changelist.PostUploadUpdates")
+    @mock.patch("git_cl.Changelist._RunGitPushWithTraces")
+    @mock.patch("git_cl._UploadAllPrecheck")
+    @mock.patch("git_cl.Changelist.PrepareSquashedCommit")
+    def test_upload_all_squashed_extra_output_subject_matching(
+        self,
+        mockSquashedCommit,
+        mockUploadAllPrecheck,
+        mockRunGitPush,
+        mockPostUploadUpdates,
+        *_mocks,
+    ):
+        cls = [
+            git_cl.Changelist(branchref="refs/heads/current-branch"),
+            git_cl.Changelist(branchref="refs/heads/upstream-branch"),
+        ]
+        mockUploadAllPrecheck.return_value = (cls, False)
+
+        upstream_desc = git_cl.ChangeDescription(
+            "First stacked change\nChange-Id: I111111111111111"
+        )
+        new_upload_upstream = git_cl._NewUpload(
+            [],
+            [],
+            "upstream_push_commit",
+            "upstream-last-upload",
+            "origin-commit",
+            upstream_desc,
+            1,
+        )
+        current_desc = git_cl.ChangeDescription(
+            "Second stacked change\nChange-Id: I222222222222222"
+        )
+        new_upload_current = git_cl._NewUpload(
+            [],
+            [],
+            "commit-to-push",
+            "new-last-upload",
+            "next-upstream-ancestor",
+            current_desc,
+            1,
+        )
+        mockSquashedCommit.side_effect = [
+            new_upload_upstream,
+            new_upload_current,
+        ]
+
+        options = optparse.Values()
+        options.send_mail = options.private = False
+        options.squash = True
+        options.title = None
+        options.message = None
+        options.topic = None
+        options.enable_auto_submit = False
+        options.enable_owners_override = False
+        options.set_bot_commit = False
+        options.cq_dry_run = False
+        options.use_commit_queue = False
+        options.hashtags = []
+        options.target_branch = None
+        options.push_options = []
+
+        mockRunGitPush.return_value = (
+            "remote:   https://chrome-internal-review.googlesource.com/c/infra/"
+            "puppet/+/1000 Unrelated base change\n"
+            "remote:   https://chrome-internal-review.googlesource.com/c/infra/"
+            "puppet/+/1001 First stacked change\n"
+            "remote:   https://chrome-internal-review.googlesource.com/c/infra/"
+            "puppet/+/1002 Second stacked change [NEW]\n"
+        )
+
+        self.calls = [
+            ((["git", "checkout", "-q", "--detach", "upstream-branch"],), ""),
+            ((["git", "checkout", "-q", "--detach", "current-branch"],), ""),
+            ((["git", "checkout", "-q", "main"],), ""),
+        ]
+
+        git_cl.UploadAllSquashed(options, [])
+
+        self.assertEqual(
+            mockPostUploadUpdates.mock_calls,
+            [
+                mock.call(
+                    options,
+                    new_upload_upstream,
+                    "1001",
+                    update_reviewers=False,
+                ),
+                mock.call(
+                    options,
+                    new_upload_current,
+                    "1002",
+                    update_reviewers=False,
+                ),
+            ],
+        )
+
+    @mock.patch("sys.stderr", io.StringIO())
+    @mock.patch(
+        "git_cl.Changelist.GetGerritHost",
+        return_value="chromium-review.googlesource.com",
+    )
+    @mock.patch(
+        "git_cl.Changelist.GetRemoteBranch",
+        return_value=("origin", "refs/remotes/origin/main"),
+    )
+    @mock.patch(
+        "git_cl.Changelist.GetCommonAncestorWithUpstream",
+        side_effect=["current-upstream-ancestor", "next-upstream-ancestor"],
+    )
+    @mock.patch("git_cl.Changelist.PostUploadUpdates")
+    @mock.patch("git_cl.Changelist._RunGitPushWithTraces")
+    @mock.patch("git_cl._UploadAllPrecheck")
+    @mock.patch("git_cl.Changelist.PrepareSquashedCommit")
+    def test_upload_all_squashed_subject_mismatch_dies(
+        self,
+        mockSquashedCommit,
+        mockUploadAllPrecheck,
+        mockRunGitPush,
+        mockPostUploadUpdates,
+        *_mocks,
+    ):
+        cls = [
+            git_cl.Changelist(branchref="refs/heads/current-branch"),
+            git_cl.Changelist(branchref="refs/heads/upstream-branch"),
+        ]
+        mockUploadAllPrecheck.return_value = (cls, False)
+
+        upstream_desc = git_cl.ChangeDescription(
+            "Expected upstream subject\nChange-Id: I111111111111111"
+        )
+        new_upload_upstream = git_cl._NewUpload(
+            [],
+            [],
+            "upstream_push_commit",
+            "upstream-last-upload",
+            "origin-commit",
+            upstream_desc,
+            1,
+        )
+        current_desc = git_cl.ChangeDescription(
+            "Expected current subject\nChange-Id: I222222222222222"
+        )
+        new_upload_current = git_cl._NewUpload(
+            [],
+            [],
+            "commit-to-push",
+            "new-last-upload",
+            "next-upstream-ancestor",
+            current_desc,
+            1,
+        )
+        mockSquashedCommit.side_effect = [
+            new_upload_upstream,
+            new_upload_current,
+        ]
+
+        options = optparse.Values()
+        options.send_mail = options.private = False
+        options.squash = True
+        options.title = None
+        options.message = None
+        options.topic = None
+        options.enable_auto_submit = False
+        options.enable_owners_override = False
+        options.set_bot_commit = False
+        options.cq_dry_run = False
+        options.use_commit_queue = False
+        options.hashtags = []
+        options.target_branch = None
+        options.push_options = []
+
+        mockRunGitPush.return_value = (
+            "remote:   https://chromium-review.googlesource.com/c/project/+/"
+            "1233 Completely different subject\n"
+        )
+
+        self.calls = [
+            ((["git", "checkout", "-q", "--detach", "upstream-branch"],), ""),
+            ((["git", "checkout", "-q", "--detach", "current-branch"],), ""),
+            ((["git", "checkout", "-q", "main"],), ""),
+        ]
+
+        with self.assertRaises(SystemExitMock):
+            git_cl.UploadAllSquashed(options, [])
+        self.assertIn(
+            'Could not find matching CL for branch "upstream-branch" '
+            '(subject: "Expected upstream subject").',
+            sys.stderr.getvalue(),
+        )
+
+    def test_parse_gerrit_push_output_and_subject_matching(self):
+        push_output = (
+            "remote: Processing changes: updated: 3, done\n"
+            "remote:\n"
+            "remote: Updated Changes:\n"
+            "remote:   https://chrome-internal-review.googlesource.com/c/"
+            "chromeos/overlays/\n"
+            "remote:   board-overlays/+/9350740 First change subject\n"
+            "remote:   https://chrome-internal-review.googlesource.com/c/infra/"
+            "puppet/+/935\n"
+            "0741 Second change with split CL ID\n"
+            "remote:   https://chrome-internal-review.googlesource.com/c/infra/"
+            "puppet/+/9350742 Third change with wrapped\n"
+            "subject line\n"
+            "To https://chrome-internal.googlesource.com/infra/puppet.git\n"
+        )
+        self.assertEqual(
+            git_cl._ParseGerritPushOutput(push_output),
+            [
+                ("9350740", "First change subject"),
+                ("9350741", "Second change with split CL ID"),
+                ("9350742", "Third change with wrapped subject line"),
+            ],
+        )
+        self.assertTrue(
+            git_cl._SubjectsMatch(
+                "First change subject", "First change subject [NEW]"
+            )
+        )
+        self.assertTrue(
+            git_cl._SubjectsMatch(
+                "Very long subject line that gets truncated by Gerrit",
+                "Very long subject line that gets... [NEW]",
+            )
+        )
+        self.assertFalse(git_cl._SubjectsMatch("First change", ""))
+        self.assertFalse(git_cl._SubjectsMatch("", "First change"))
+
+    @mock.patch(
+        "git_cl.Changelist.GetGerritHost",
         return_value="chromium-review.googlesource.com",
     )
     @mock.patch(
