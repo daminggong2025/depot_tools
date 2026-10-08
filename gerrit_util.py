@@ -119,7 +119,37 @@ class SSOHelper(object):
         """
         if self._sso_cmd is not None:
             return self._sso_cmd
-        cmd = shutil.which("git-remote-sso")
+        cwd = os.path.normcase(os.path.abspath(os.getcwd()))
+        raw_path = os.environ.get("PATH", "")
+        clean_dirs = [
+            p
+            for p in raw_path.split(os.pathsep)
+            if p and os.path.normcase(os.path.abspath(p)) != cwd
+        ]
+        clean_path = os.pathsep.join(clean_dirs)
+        cmd = shutil.which("git-remote-sso", path=clean_path)
+        if (
+            cmd
+            and os.path.normcase(os.path.abspath(os.path.dirname(cmd))) == cwd
+        ):
+            cmd = None
+            if sys.platform == "win32":
+                pathext = (
+                    os.environ.get("PATHEXT")
+                    or ".COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC"
+                )
+                exts = [ext for ext in pathext.split(os.pathsep) if ext]
+                names = [f"git-remote-sso{ext}" for ext in exts]
+            else:
+                names = ["git-remote-sso"]
+            for d in clean_dirs:
+                for name in names:
+                    candidate = shutil.which(os.path.join(d, name))
+                    if candidate:
+                        cmd = candidate
+                        break
+                if cmd:
+                    break
         if cmd is None:
             cmd = ""
         self._sso_cmd = cmd
