@@ -10940,7 +10940,10 @@ Change-Id: I25699146b24c7ad8776f17775f489b9d41499595
         )
         mockAddReviewers.assert_not_called()
         mockSetReview.assert_called_once_with(
-            "chromium-review.googlesource.com", 123, labels={"Commit-Queue": 1}
+            "chromium-review.googlesource.com",
+            123,
+            revision="current",
+            labels={"Commit-Queue": 1},
         )
 
     @mock.patch("gerrit_util.QueryChanges")
@@ -11018,6 +11021,98 @@ Change-Id: I25699146b24c7ad8776f17775f489b9d41499595
             123,
             reviewers=["rubber-stamper@appspot.gserviceaccount.com"],
         )
+
+    @mock.patch("gerrit_util.GetChangeDetail")
+    @mock.patch("gerrit_util.QueryChanges")
+    @mock.patch("gerrit_util.CherryPick")
+    @mock.patch("gerrit_util.SetReview")
+    @mock.patch("gerrit_util.GetChangePageUrl", return_value="url")
+    def testCherryPick_ChainPinsRevision(
+        self,
+        _mockGetUrl,
+        mockSetReview,
+        mockCherryPick,
+        mockQueryChanges,
+        mockGetChangeDetail,
+    ):
+        mockQueryChanges.side_effect = [
+            [
+                {
+                    "id": "change_1",
+                    "current_revision": "abc",
+                    "revisions": {"abc": {"commit": {"message": "msg1"}}},
+                }
+            ],
+            [
+                {
+                    "id": "change_2",
+                    "current_revision": "def",
+                    "revisions": {"def": {"commit": {"message": "msg2"}}},
+                }
+            ],
+        ]
+        mockCherryPick.side_effect = [
+            {"_number": 101, "current_revision": "pinned_rev_1"},
+            {"_number": 102, "current_revision": "pinned_rev_2"},
+        ]
+
+        self.assertEqual(
+            0,
+            git_cl.main(
+                [
+                    "cherry-pick",
+                    "--branch",
+                    "main",
+                    "--cq-dry-run",
+                    "abc",
+                    "def",
+                ]
+            ),
+        )
+        mockGetChangeDetail.assert_not_called()
+        self.assertEqual(
+            mockCherryPick.call_args_list[1].kwargs["base"], "pinned_rev_1"
+        )
+        mockSetReview.assert_has_calls(
+            [
+                mock.call(
+                    "chromium-review.googlesource.com",
+                    101,
+                    revision="pinned_rev_1",
+                    labels={"Commit-Queue": 1},
+                ),
+                mock.call(
+                    "chromium-review.googlesource.com",
+                    102,
+                    revision="pinned_rev_2",
+                    labels={"Commit-Queue": 1},
+                ),
+            ]
+        )
+
+    @mock.patch("sys.stderr", io.StringIO())
+    @mock.patch("gerrit_util.QueryChanges")
+    @mock.patch("gerrit_util.CherryPick")
+    @mock.patch("gerrit_util.GetChangePageUrl", return_value="url")
+    def testCherryPick_RejectsHijackedOwner(
+        self, _mockGetUrl, mockCherryPick, mockQueryChanges
+    ):
+        mockQueryChanges.return_value = [
+            {
+                "id": "change_id",
+                "current_revision": "abc",
+                "revisions": {"abc": {"commit": {"message": "msg"}}},
+            }
+        ]
+        mockCherryPick.return_value = {
+            "_number": 123,
+            "current_revision": "cp_rev",
+            "owner": {"_account_id": 999},
+            "revisions": {"cp_rev": {"uploader": {"_account_id": 111}}},
+        }
+
+        with self.assertRaises(SystemExit):
+            git_cl.main(["cherry-pick", "--branch", "main", "abc"])
 
 
 @unittest.skipIf(
