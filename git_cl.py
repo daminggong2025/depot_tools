@@ -269,13 +269,15 @@ def confirm_or_exit(prefix="", action="confirm"):
 
 def ask_for_explicit_yes(prompt):
     """Returns whether user typed 'y' or 'yes' to confirm the given prompt."""
-    result = gclient_utils.AskForData(prompt + " [Yes/No]: ").lower()
+    result = gclient_utils.AskForData(f"{prompt} [Yes/No]: ").strip().lower()
     while True:
-        if "yes".startswith(result):
+        if result and "yes".startswith(result):
             return True
-        if "no".startswith(result):
+        if result and "no".startswith(result):
             return False
-        result = gclient_utils.AskForData("Please, type yes or no: ").lower()
+        result = (
+            gclient_utils.AskForData("Please, type yes or no: ").strip().lower()
+        )
 
 
 def _get_properties_from_options(options):
@@ -4195,16 +4197,25 @@ class Changelist(object):
         for ps in range(external_ps, local_ps, -1):
             commit = ps_to_commit[ps][:8]
             desc = ps_to_info[ps].get("description", "")
-            print("Patchset %d [%s] %s" % (ps, commit, desc))
+            uploader = ps_to_info[ps].get("uploader", {}).get("email")
+            if uploader:
+                print(f"Patchset {ps} [{commit}] ({uploader}) {desc}")
+            else:
+                print(f"Patchset {ps} [{commit}] {desc}")
 
         print(
-            "\nSee diff at: %s/%d..%d"
-            % (self.GetIssueURL(short=True), local_ps, external_ps)
+            f"\nSee diff at: {self.GetIssueURL(short=True)}/{local_ps}..{external_ps}"
         )
         print("\nUploading without applying patches will override them.")
 
         if not ask_for_explicit_yes("Get the latest changes and apply on top?"):
             return
+
+        external_commit = ps_to_commit.get(external_ps, "")
+        if not gclient_utils.IsFullGitSha(external_commit):
+            DieWithError(
+                f"Invalid Gerrit revision commit hash: {external_commit}"
+            )
 
         # Get latest Gerrit merge base. Use the first parent even if multiple
         # exist.
@@ -4212,13 +4223,14 @@ class Changelist(object):
             "parents"
         ][0]
         external_base: str = external_parent["commit"]
+        if not gclient_utils.IsFullGitSha(external_base):
+            DieWithError(f"Invalid Gerrit parent commit hash: {external_base}")
 
         branch = git_common.current_branch()
         local_base = self.GetCommonAncestorWithUpstream()
         if local_base != external_base:
             print(
-                "\nLocal merge base %s is different from Gerrit %s.\n"
-                % (local_base, external_base)
+                f"\nLocal merge base {local_base} is different from Gerrit {external_base}.\n"
             )
             if git_common.upstream(branch):
                 confirm_or_exit(
@@ -4234,11 +4246,14 @@ class Changelist(object):
             revision=local_ps
         )["parents"][0]
         external_base_last_uploaded = external_parent_last_uploaded["commit"]
+        if not gclient_utils.IsFullGitSha(external_base_last_uploaded):
+            DieWithError(
+                f"Invalid Gerrit parent commit hash: {external_base_last_uploaded}"
+            )
 
         if external_base != external_base_last_uploaded:
             print(
-                "\nPatch set merge bases are different (%s, %s).\n"
-                % (external_base_last_uploaded, external_base)
+                f"\nPatch set merge bases are different ({external_base_last_uploaded}, {external_base}).\n"
             )
             confirm_or_exit(
                 "Can't apply the latest changes from Gerrit.\n"
@@ -4249,15 +4264,15 @@ class Changelist(object):
         # Fetch Gerrit's CL base if it doesn't exist locally.
         remote, _ = self.GetRemoteBranch()
         if not scm.GIT.IsValidRevision(settings.GetRoot(), external_base):
-            RunGitSilent(["fetch", remote, external_base])
+            RunGitSilent(["fetch", "--", remote, external_base])
 
         # Get the diff between local_ps and external_ps.
         print("Fetching changes...")
         issue = self.GetIssue()
-        changes_ref = "refs/changes/%02d/%d/" % (issue % 100, issue)
-        RunGitSilent(["fetch", remote, changes_ref + str(local_ps)])
+        changes_ref = f"refs/changes/{issue % 100:02d}/{issue}/"
+        RunGitSilent(["fetch", "--", remote, f"{changes_ref}{local_ps}"])
         last_uploaded = RunGitSilent(["rev-parse", "FETCH_HEAD"]).strip()
-        RunGitSilent(["fetch", remote, changes_ref + str(external_ps)])
+        RunGitSilent(["fetch", "--", remote, f"{changes_ref}{external_ps}"])
         latest_external = RunGitSilent(["rev-parse", "FETCH_HEAD"]).strip()
 
         # If the commit parents are different, don't apply the diff as it very

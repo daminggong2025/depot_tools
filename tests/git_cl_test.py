@@ -1169,6 +1169,54 @@ class TestGitCl(unittest.TestCase):
             "prompt [Yes/No]: Please, type yes or no: ", sys.stdout.getvalue()
         )
 
+    @mock.patch("sys.stdin", io.StringIO("\nno\n"))
+    @mock.patch("sys.stdout", io.StringIO())
+    def test_ask_for_explicit_yes_empty_input(self):
+        self.assertFalse(git_cl.ask_for_explicit_yes("prompt"))
+        self.assertEqual(
+            "prompt [Yes/No]: Please, type yes or no: ", sys.stdout.getvalue()
+        )
+
+    @mock.patch("sys.stdout", io.StringIO())
+    @mock.patch("sys.stderr", io.StringIO())
+    def test_update_with_external_changes_validation(self):
+        cl = git_cl.Changelist(issue=123)
+        mock.patch.object(cl, "GetPatchset", return_value=1).start()
+        mock.patch.object(cl, "GetMostRecentPatchset", return_value=2).start()
+        mock.patch.object(
+            cl, "_IsPatchsetRangeSignificant", return_value=True
+        ).start()
+        mock.patch.object(
+            cl, "GetIssueURL", return_value="https://crrev.com/c/123"
+        ).start()
+        mock.patch("git_cl.ask_for_explicit_yes", return_value=True).start()
+
+        rev1_sha = "1" * 40
+        rev2_sha = "2" * 40
+        mock.patch.object(
+            cl,
+            "_GetChangeDetail",
+            return_value={
+                "revisions": {
+                    rev1_sha: {"_number": 1, "description": "ps1"},
+                    rev2_sha: {
+                        "_number": 2,
+                        "description": "ps2",
+                        "uploader": {"email": "attacker@example.com"},
+                    },
+                }
+            },
+        ).start()
+        mock.patch.object(
+            cl,
+            "_GetChangeCommit",
+            return_value={"parents": [{"commit": "--upload-pack=evil"}]},
+        ).start()
+
+        with self.assertRaises(SystemExitMock):
+            cl._UpdateWithExternalChanges()
+        self.assertIn("attacker@example.com", sys.stdout.getvalue())
+
     def test_LoadCodereviewSettingsFromFile_gerrit(self):
         codereview_file = io.StringIO("GERRIT_HOST: true")
         self.calls = []
