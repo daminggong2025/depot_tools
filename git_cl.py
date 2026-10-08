@@ -3395,9 +3395,13 @@ class Changelist(object):
 
         if not self._GerritURLsEqual(remote_url, fetch_info["url"]):
             DieWithError(
-                "Trying to patch a change from %s but this repo appears "
-                "to be %s." % (fetch_info["url"], remote_url)
+                f"Trying to patch a change from {fetch_info['url']} but this "
+                f"repo appears to be {remote_url}."
             )
+        if not isinstance(fetch_info["ref"], str) or not fetch_info[
+            "ref"
+        ].startswith("refs/"):
+            DieWithError(f"Invalid Gerrit fetch ref: {fetch_info['ref']}")
 
         RunGit(["fetch", fetch_info["url"], fetch_info["ref"]])
 
@@ -8596,7 +8600,17 @@ def CMDdiff(parser, raw_args):
         detail = cl._GetChangeDetail(["CURRENT_REVISION", "CURRENT_COMMIT"])
         revision_info = detail["revisions"][detail["current_revision"]]
         fetch_info = revision_info["fetch"]["http"]
-        RunGit(["fetch", fetch_info["url"], fetch_info["ref"]])
+        fetch_url = fetch_info["url"].rstrip("/")
+        remote_url = cl.GetRemoteUrl()
+        if not cl._GerritURLsEqual(remote_url, fetch_url):
+            DieWithError(
+                f"Trying to diff a change from {fetch_url} but this repo "
+                f"appears to be {remote_url}."
+            )
+        fetch_ref = fetch_info["ref"]
+        if not isinstance(fetch_ref, str) or not fetch_ref.startswith("refs/"):
+            DieWithError(f"Invalid Gerrit fetch ref: {fetch_ref}")
+        RunGit(["fetch", "--", fetch_url, fetch_ref])
         base = "FETCH_HEAD"
 
     cmd = ["git", "diff"]
