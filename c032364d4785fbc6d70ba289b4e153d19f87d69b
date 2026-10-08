@@ -1,6 +1,29 @@
 {
   "comments": [
     {
+      "unresolved": true,
+      "key": {
+        "uuid": "f3ef4b67_4fd583aa",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 5
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 4995882
+      },
+      "writtenOn": "2026-10-08T17:39:54Z",
+      "side": 1,
+      "message": "from https://chromium-review.git.corp.google.com/c/chromium/tools/depot_tools/+/8496871: \"Open-source projects discourage AI conversation footers in commit messages.\"",
+      "range": {
+        "startLine": 20,
+        "startChar": 0,
+        "endLine": 21,
+        "endChar": 41
+      },
+      "revId": "c032364d4785fbc6d70ba289b4e153d19f87d69b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": false,
       "key": {
         "uuid": "321c7e56_9df4645f",
@@ -31,6 +54,29 @@
       "writtenOn": "2026-10-08T12:25:13Z",
       "side": 1,
       "message": "PTAL",
+      "revId": "c032364d4785fbc6d70ba289b4e153d19f87d69b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4825c25b_25b538b2",
+        "filename": "gerrit_client.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 581,
+      "author": {
+        "id": 4995882
+      },
+      "writtenOn": "2026-10-08T17:39:54Z",
+      "side": 1,
+      "message": "what happens if --in-reply-to is used on a comment on a file (not patchset level), and --path is unspecified?",
+      "range": {
+        "startLine": 581,
+        "startChar": 37,
+        "endLine": 581,
+        "endChar": 64
+      },
       "revId": "c032364d4785fbc6d70ba289b4e153d19f87d69b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
