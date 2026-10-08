@@ -16,6 +16,23 @@
       "message": "PTAL. The whole change is split in 3 CLs. I think all of them make sense by themselves.",
       "revId": "254a0466bbdc0c6849c6055fadb0f0ec63683961",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3dce0010_97c268ea",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1137015
+      },
+      "writtenOn": "2026-10-08T23:24:07Z",
+      "side": 1,
+      "message": "Thanks!",
+      "revId": "254a0466bbdc0c6849c6055fadb0f0ec63683961",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
