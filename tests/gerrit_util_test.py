@@ -300,6 +300,112 @@ class CookiesAuthenticatorTest(unittest.TestCase):
         )
         self.assertIsNone(cookieAuth._get_auth_for_host("fakegooglesource.com"))
 
+    def testDebugSummaryStateRedactsAllCookies(self):
+        raw_cookies = "\n".join(
+            [
+                "# Netscape HTTP Cookie File",
+                "\t".join(
+                    [
+                        "chromium.googlesource.com",
+                        "FALSE",
+                        "/",
+                        "TRUE",
+                        "2147483647",
+                        "o",
+                        "git-user.chromium.org=1/legacy-secret",
+                    ]
+                ),
+                "\t".join(
+                    [
+                        "chromium.googlesource.com",
+                        "FALSE",
+                        "/",
+                        "TRUE",
+                        "2147483647",
+                        "o",
+                        f"{'ya29.'}fake-bearer-token",
+                    ]
+                ),
+                "\t".join(
+                    [
+                        "gerrit.example.com",
+                        "FALSE",
+                        "/",
+                        "TRUE",
+                        "2147483647",
+                        "o",
+                        "git-user.example.com=custom-password-secret",
+                    ]
+                ),
+                "\t".join(
+                    [
+                        "#HttpOnly_.googlesource.com",
+                        "TRUE",
+                        "/",
+                        "TRUE",
+                        "2147483647",
+                        "SSO",
+                        "sso-session-secret",
+                    ]
+                ),
+            ]
+        )
+        with (
+            mock.patch("os.path.isfile", return_value=True),
+            mock.patch("gclient_utils.FileRead", return_value=raw_cookies),
+        ):
+            summary = gerrit_util.CookiesAuthenticator().debug_summary_state()
+        expected = "\n".join(
+            [
+                "# Netscape HTTP Cookie File",
+                "\t".join(
+                    [
+                        "chromium.googlesource.com",
+                        "FALSE",
+                        "/",
+                        "TRUE",
+                        "2147483647",
+                        "o",
+                        "git-user.chromium.org=REDACTED",
+                    ]
+                ),
+                "\t".join(
+                    [
+                        "chromium.googlesource.com",
+                        "FALSE",
+                        "/",
+                        "TRUE",
+                        "2147483647",
+                        "o",
+                        "REDACTED",
+                    ]
+                ),
+                "\t".join(
+                    [
+                        "gerrit.example.com",
+                        "FALSE",
+                        "/",
+                        "TRUE",
+                        "2147483647",
+                        "o",
+                        "git-user.example.com=REDACTED",
+                    ]
+                ),
+                "\t".join(
+                    [
+                        "#HttpOnly_.googlesource.com",
+                        "TRUE",
+                        "/",
+                        "TRUE",
+                        "2147483647",
+                        "SSO",
+                        "REDACTED",
+                    ]
+                ),
+            ]
+        )
+        self.assertEqual(summary, expected)
+
 
 class GceAuthenticatorTest(unittest.TestCase):
     def setUp(self):
