@@ -330,6 +330,7 @@ class CMDFormatTestCase(unittest.TestCase):
         mock_call.assert_called_once_with(
             ["vpython3", expected_node, expected_formatter, foo_html_ts],
             cwd=self._top_dir,
+            shell=False,
         )
 
         # 2. Dry-run mode: should pass --dry-run and return 2 when unformatted.
@@ -351,6 +352,7 @@ class CMDFormatTestCase(unittest.TestCase):
                 foo_html_ts,
             ],
             cwd=self._top_dir,
+            shell=False,
         )
 
         # 3. Diff mode: should pass --diff.
@@ -372,6 +374,7 @@ class CMDFormatTestCase(unittest.TestCase):
                 foo_html_ts,
             ],
             cwd=self._top_dir,
+            shell=False,
         )
 
     def _run_command_mock(self, return_value):
@@ -896,7 +899,8 @@ class CMDFormatTestCase(unittest.TestCase):
                 mock.ANY,
                 "fmt",
                 "test/main.star",
-            ]
+            ],
+            shell=False,
         )
         self.assertEqual(ret, 0)
 
@@ -912,7 +916,8 @@ class CMDFormatTestCase(unittest.TestCase):
                 "fmt",
                 "--dry-run",
                 "test/main.star",
-            ]
+            ],
+            shell=False,
         )
 
     @mock.patch("subprocess2.call")
@@ -1015,7 +1020,7 @@ class CMDFormatTestCase(unittest.TestCase):
                 stdout=cl_format.subprocess2.PIPE,
                 stderr=cl_format.subprocess2.PIPE,
                 cwd=self._top_dir,
-                shell=sys.platform == "win32",
+                shell=False,
             )
         finally:
             os.remove(input_diff.name)
@@ -1066,7 +1071,7 @@ class CMDFormatTestCase(unittest.TestCase):
                 stdout=cl_format.subprocess2.PIPE,
                 stderr=cl_format.subprocess2.PIPE,
                 cwd=self._top_dir,
-                shell=sys.platform == "win32",
+                shell=False,
             )
         finally:
             os.chdir(previous_cwd)
@@ -1120,7 +1125,7 @@ class CMDFormatTestCase(unittest.TestCase):
                 stdout=cl_format.subprocess2.PIPE,
                 stderr=cl_format.subprocess2.PIPE,
                 cwd=self._top_dir,
-                shell=sys.platform == "win32",
+                shell=False,
             )
         finally:
             os.chdir(previous_cwd)
@@ -2094,7 +2099,7 @@ class TestStdinFilenameFormatting(unittest.TestCase):
             stdout=cl_format.subprocess2.PIPE,
             stderr=cl_format.subprocess2.PIPE,
             cwd=self.test_dir,
-            shell=sys.platform == "win32",
+            shell=False,
         )
         self.assertEqual(b"x = 1 + 2\n", self._read(temp_file))
 
@@ -2121,6 +2126,88 @@ class TestStdinFilenameFormatting(unittest.TestCase):
             self.assertIn(
                 "cannot be used with --stdin-filename", stderr.getvalue()
             )
+
+    def test_find_files_to_format_rejects_symlinks_and_outside_paths(self):
+        outside_dir = self.enterContext(tempfile.TemporaryDirectory())
+        outside_file = os.path.join(outside_dir, "secret.py")
+        with open(outside_file, "wb") as f:
+            f.write(b"x=1\n")
+
+        valid_file = self._write("src/valid.py", b"x=1\n")
+        self.assertTrue(os.path.exists(valid_file))
+
+        symlink_file = os.path.join(self.test_dir, "src", "link.py")
+        os.symlink(outside_file, symlink_file)
+
+        symlink_dir = os.path.join(self.test_dir, "linked_dir")
+        os.symlink(outside_dir, symlink_dir)
+
+        self.assertTrue(
+            cl_format._IsSafePathToFormat(self.test_dir, "src/valid.py")
+        )
+        self.assertFalse(
+            cl_format._IsSafePathToFormat(self.test_dir, "src/link.py")
+        )
+        self.assertFalse(
+            cl_format._IsSafePathToFormat(self.test_dir, "linked_dir/secret.py")
+        )
+        self.assertFalse(
+            cl_format._IsSafePathToFormat(self.test_dir, "../outside.py")
+        )
+
+        mock_opts = mock.Mock(
+            input_diff_file=None,
+            stdin_filename=None,
+            full=True,
+        )
+        with mock.patch(
+            "cl_format.RunGitDiffCmd",
+            return_value="src/valid.py\nsrc/link.py\nlinked_dir/secret.py\n../outside.py\n",
+        ):
+            files, _ = cl_format._FindFilesToFormat(
+                mock_opts,
+                [],
+                "HEAD",
+                top_dir=self.test_dir,
+            )
+        self.assertEqual(["src/valid.py"], files)
+
+    def test_formatters_pass_shell_false_on_windows(self):
+        with (
+            mock.patch("sys.platform", "darwin"),
+            mock.patch(
+                "swift_format.FindSwiftFormatToolInChromiumTree",
+                return_value="swift-format",
+            ),
+            mock.patch("subprocess2.call", return_value=0) as mock_call,
+        ):
+            opts = mock.Mock(dry_run=False, diff=False, stdin_filename=None)
+            cl_format._RunSwiftFormat(opts, ["foo.swift"], self.test_dir, None)
+            self.assertFalse(mock_call.call_args.kwargs.get("shell", True))
+
+        with mock.patch("sys.platform", "win32"):
+            self._write(".style.mdformat", b"")
+            readme_path = self._write("README.md", b"# Title\n")
+            with mock.patch("subprocess2.call", return_value=0) as mock_call:
+                opts = mock.Mock(dry_run=False, diff=False, stdin_filename=None)
+                cl_format._RunMarkdownFormat(
+                    opts, [readme_path], self.test_dir, None
+                )
+                self.assertFalse(mock_call.call_args.kwargs.get("shell", True))
+
+            self._write("mojo/public/tools/mojom/mojom_format.py", b"")
+            with (
+                mock.patch(
+                    "gclient_paths.GetPrimarySolutionPath",
+                    return_value=self.test_dir,
+                ),
+                mock.patch("subprocess2.call", return_value=0) as mock_call,
+            ):
+                opts = mock.Mock(dry_run=False, diff=False, stdin_filename=None)
+                cl_format._RunMojomFormat(
+                    opts, ["foo.mojom"], self.test_dir, None
+                )
+                self.assertFalse(mock_call.call_args.kwargs.get("shell", True))
 
 
 if __name__ == "__main__":
