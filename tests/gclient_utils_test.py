@@ -180,6 +180,80 @@ class CheckCallAndFilterTestCase(unittest.TestCase):
             ],
         )
 
+    @mock.patch("subprocess2.Popen")
+    def testCheckCallAndFilter_SanitizesTerminalOutputAndInvalidUtf8(
+        self, mockPopen
+    ):
+        class RawProcessIdMock(object):
+            def __init__(self, raw_bytes, return_code=0):
+                self.stdout = raw_bytes
+                self.pid = 9284
+                self.return_code = return_code
+
+            def wait(self):
+                return self.return_code
+
+        raw_payload = (
+            b"safe\x1b]52;c;SGVsbG8=\x07_osc\n"
+            b"\x1bP+q544e\x1b\\dcs_\x1b[2J\x1b[6ncsi_\x1b[32mcolor\x1b[0m\n"
+            b"c1_\xc2\x9b2J\xc2\x9d0;title\xc2\x9c_badutf8_\xff\n"
+        )
+        self.kids = [RawProcessIdMock(raw_payload)]
+        mockPopen.side_effect = self.PopenMock
+
+        line_list = []
+        result = gclient_utils.CheckCallAndFilter(
+            ["boo"],
+            cwd="bleh",
+            show_header=False,
+            filter_fn=line_list.append,
+            print_stdout=True,
+        )
+
+        self.assertEqual(result, raw_payload)
+        self.assertEqual(
+            line_list,
+            [
+                "safe_osc",
+                "dcs_csi_\x1b[32mcolor\x1b[0m",
+                "c1__badutf8_\ufffd",
+            ],
+        )
+        stdout_text = self.stdout.getvalue().decode("utf-8")
+        self.assertNotIn("\x1b]52", stdout_text)
+        self.assertNotIn("\x1bP", stdout_text)
+        self.assertNotIn("\x1b[2J", stdout_text)
+        self.assertNotIn("\x1b[6n", stdout_text)
+        self.assertNotIn("\x9b", stdout_text)
+        self.assertNotIn("\x9d", stdout_text)
+        self.assertIn("\x1b[32mcolor\x1b[0m", stdout_text)
+        self.assertIn("c1__badutf8_\ufffd", stdout_text)
+
+
+class RmtreeWin32TestCase(unittest.TestCase):
+    @mock.patch("sys.platform", "win32")
+    @mock.patch("os.path.exists", return_value=True)
+    @mock.patch("os.path.islink", return_value=False)
+    @mock.patch("os.path.isdir", return_value=True)
+    @mock.patch("subprocess.call", return_value=0)
+    def testRmtreeRejectsUnsafeMetacharactersOnWin32(
+        self, mock_call, _mock_isdir, _mock_islink, _mock_exists
+    ):
+        for unsafe in (
+            r"C:\foo&calc.exe",
+            r"C:\foo|calc.exe",
+            r"C:\foo%PATH%",
+            r"C:\foo!VAR!",
+            r"C:\foo^bar",
+            "C:\\foo\ncalc",
+        ):
+            with self.assertRaises(gclient_utils.Error):
+                gclient_utils.rmtree(unsafe)
+        mock_call.assert_not_called()
+
+        gclient_utils.rmtree(r"C:\safe\dir_path")
+        mock_call.assert_called_once()
+
 
 class AnnotatedTestCase(unittest.TestCase):
     def setUp(self):
