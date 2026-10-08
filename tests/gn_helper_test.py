@@ -94,6 +94,57 @@ class GnHelperTest(trial_dir.TestCase):
             ],
         )
 
+    def test_import_path_traversal_rejected(self):
+        checkout = os.path.join(self.root_dir, "checkout")
+        out_dir = os.path.join(checkout, "out", "dir")
+        write(os.path.join(checkout, ".gn"), "")
+        write(os.path.join(self.root_dir, "outside.gni"), "is_debug = true")
+        write(
+            os.path.join(out_dir, "args.gn"),
+            'import("../../../outside.gni")',
+        )
+
+        with self.assertRaises(IOError):
+            list(gn_helper.lines(out_dir))
+
+    def test_import_root_traversal_rejected(self):
+        checkout = os.path.join(self.root_dir, "checkout")
+        out_dir = os.path.join(checkout, "out", "dir")
+        write(os.path.join(checkout, ".gn"), "")
+        write(os.path.join(self.root_dir, "outside.gni"), "is_debug = true")
+        write(
+            os.path.join(out_dir, "args.gn"),
+            'import("//../outside.gni")',
+        )
+
+        with self.assertRaises(IOError):
+            list(gn_helper.lines(out_dir))
+
+    @unittest.skipIf(
+        sys.platform.startswith("win"), "os.symlink requires privileges on win"
+    )
+    def test_import_symlink_escape_rejected(self):
+        checkout = os.path.join(self.root_dir, "checkout")
+        out_dir = os.path.join(checkout, "out", "dir")
+        write(os.path.join(checkout, ".gn"), "")
+        outside_file = os.path.join(self.root_dir, "outside.gni")
+        write(outside_file, "is_debug = true")
+        os.symlink(outside_file, os.path.join(checkout, "escaped.gni"))
+        write(os.path.join(out_dir, "args.gn"), 'import("//escaped.gni")')
+
+        with self.assertRaises(IOError):
+            list(gn_helper.lines(out_dir))
+
+    def test_import_cycle_rejected(self):
+        write(".gn", "")
+        out_dir = os.path.join("out", "dir")
+        write(os.path.join(out_dir, "args.gn"), 'import("//out/a.gni")')
+        write(os.path.join("out", "a.gni"), 'import("//out/b.gni")')
+        write(os.path.join("out", "b.gni"), 'import("//out/a.gni")')
+
+        with self.assertRaises(IOError):
+            list(gn_helper.lines(out_dir))
+
 
 if __name__ == "__main__":
     unittest.main()
