@@ -90,6 +90,19 @@ class TestConfigWizard(unittest.TestCase):
     def global_state(self):
         return dict(self._global_state_view)
 
+    def test_run_sets_protocol_sso_allow_user(self):
+        with (
+            mock.patch.object(self.wizard, "_fix_netrc"),
+            mock.patch.object(self.wizard, "_fix_gitcookies"),
+            mock.patch.object(
+                self.wizard, "_check_sso_helper", return_value=True
+            ),
+            mock.patch.object(self.wizard, "_check_gce"),
+            mock.patch.object(self.wizard, "_run_gerrit_host_configuration"),
+        ):
+            self.wizard.run(force_global=True)
+        self.assertEqual(self.global_state, {"protocol.sso.allow": ["user"]})
+
     def test_configure_sso_global(self):
         parts = urllib.parse.urlsplit(
             "https://chromium.googlesource.com/chromium/tools/depot_tools.git"

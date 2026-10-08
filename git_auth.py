@@ -177,7 +177,7 @@ class ConfigWizard(object):
         self._println("Checking for SSO helper...")
         if self._check_sso_helper():
             self._println("SSO helper is available.")
-            self._set_config("protocol.sso.allow", "always", scope="global")
+            self._set_config("protocol.sso.allow", "user", scope="global")
         self._check_gce()
         self._println()
         self._run_gerrit_host_configuration(force_global=force_global)
