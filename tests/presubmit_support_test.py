@@ -133,6 +133,29 @@ class ProvidedDiffChangeTest(fake_repos.FakeReposTestBase):
         self.assertEqual(test("@@ -292 +292,1 @@"), [(292, "  foo2")])
         self.assertEqual(test("@@ -293,1 +293,1 @@"), [(293, "  foo2")])
 
+    def test_changed_contents_ignores_embedded_cr_and_unicode_separators(self):
+        diff = "\n".join(
+            [
+                "diff --git a/foo b/foo",
+                "index d7ba659f..b7957f3 100644",
+                "--- a/foo",
+                "+++ b/foo",
+                "@@ -1,1 +1,2 @@",
+                "+safe\r@@ -99 +99 @@\rhidden_violation",
+                "+line2\u2028hidden_u2028\u2029hidden_u2029",
+            ]
+        )
+        change = self._create_change(diff)
+        afs = change.AffectedFiles()
+        self.assertEqual(len(afs), 1)
+        self.assertEqual(
+            afs[0].ChangedContents(),
+            [
+                (1, "safe\r@@ -99 +99 @@\rhidden_violation"),
+                (2, "line2\u2028hidden_u2028\u2029hidden_u2029"),
+            ],
+        )
+
     def test_unix_local_paths(self):
         if sys.platform == "win32":
             self.assertIn(r"somewhere\else", self.change.LocalPaths())
@@ -364,6 +387,61 @@ diff --git a/ffoo b/foo
 """
         with self.assertRaises(presubmit_support.PresubmitFailure):
             presubmit_support._parse_unified_diff(diff)
+
+    def test_parse_unified_diff_duplicate_file_section_raises(self):
+        diff = "\n".join(
+            [
+                "diff --git a/foo b/foo",
+                "index 1111111..2222222 100644",
+                "--- a/foo",
+                "+++ b/foo",
+                "@@ -1 +1 @@",
+                "-old",
+                "+new",
+                "diff --git a/foo b/foo",
+                "index 2222222..3333333 100644",
+                "--- a/foo",
+                "+++ b/foo",
+                "@@ -1 +1 @@",
+                "-new",
+                "+forged",
+                "",
+            ]
+        )
+        with self.assertRaisesRegex(
+            presubmit_support.PresubmitFailure,
+            "Duplicate diff section for foo",
+        ):
+            presubmit_support._parse_unified_diff(diff)
+
+    def test_parse_unified_diff_embedded_cr_and_unicode_do_not_forge_headers(
+        self,
+    ):
+        for sep in ("\r", "\u2028", "\u2029", "\x85"):
+            diff = "\n".join(
+                [
+                    "diff --git a/DEPS b/DEPS",
+                    "index 1111111..2222222 100644",
+                    "--- a/DEPS",
+                    "+++ b/DEPS",
+                    "@@ -1 +1 @@",
+                    "+real_violation",
+                    "diff --git a/zzz.py b/zzz.py",
+                    "new file mode 100644",
+                    "--- /dev/null",
+                    "+++ b/zzz.py",
+                    "@@ -0,0 +1,2 @@",
+                    f"+carrier{sep}diff --git a/DEPS b/DEPS",
+                    "+@@ -1 +1 @@",
+                    "",
+                ]
+            )
+            res = presubmit_support._parse_unified_diff(diff)
+            self.assertIn("+real_violation\n", res["DEPS"])
+            self.assertNotIn("carrier", res["DEPS"])
+            self.assertIn(
+                f"+carrier{sep}diff --git a/DEPS b/DEPS\n", res["zzz.py"]
+            )
 
     def test_diffs_to_change_files_with_empty_diff(self):
         res = presubmit_support._diffs_to_change_files({"file": ""})

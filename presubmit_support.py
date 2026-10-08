@@ -1081,9 +1081,9 @@ class AffectedFile(object):
         result = []
         line_num = 0
 
-        # The keeplinebreaks parameter to splitlines must be True or else the
-        # CheckForWindowsLineEndings presubmit will be a NOP.
-        for line in self.GenerateScmDiff().splitlines(keeplinebreaks):
+        # The keeplinebreaks parameter to _split_diff_lines must be True or else
+        # the CheckForWindowsLineEndings presubmit will be a NOP.
+        for line in _split_diff_lines(self.GenerateScmDiff(), keeplinebreaks):
             m = re.match(
                 r"^@@ -[0-9]+(?:,[0-9]+)? \+([0-9]+)(?:,[0-9]+)? @@", line
             )
@@ -2324,6 +2324,24 @@ def _parse_gerrit_options(parser, options):
     return gerrit_obj
 
 
+def _split_diff_lines(text, keepends=False):
+    """Splits diff text strictly on LF, avoiding universal-newline splits."""
+    if not text:
+        return []
+    parts = text.split("\n")
+    lines = [f"{p}\n" for p in parts[:-1]]
+    if parts[-1]:
+        lines.append(parts[-1])
+    if keepends:
+        return lines
+    return [
+        line[:-2]
+        if line.endswith("\r\n")
+        else (line[:-1] if line.endswith("\n") else line)
+        for line in lines
+    ]
+
+
 def _parse_unified_diff(diff):
     """Parses a unified git diff and returns a list of (path, diff) tuples."""
     diffs = {}
@@ -2335,13 +2353,18 @@ def _parse_unified_diff(diff):
     )
     current_diff = []
     keep_line_endings = True
-    for x in diff.splitlines(keep_line_endings):
+    for x in _split_diff_lines(diff, keep_line_endings):
         match = file_marker.match(x)
         if match:
+            filename = normpath(match.group("filename"))
+            if filename in diffs:
+                raise PresubmitFailure(
+                    f"Duplicate diff section for {match.group('filename')}"
+                )
             # Marks the start of a new per-file section.
-            diffs[match.group("filename")] = current_diff = [x]
+            diffs[filename] = current_diff = [x]
         elif x.startswith("diff --git"):
-            raise PresubmitFailure("Unexpected diff line: %s" % x)
+            raise PresubmitFailure(f"Unexpected diff line: {x}")
         else:
             current_diff.append(x)
 
@@ -2382,7 +2405,7 @@ def _diffs_to_change_files(diffs):
             change_files.append(("M", file))
             continue
 
-        header_line = file_diff.splitlines()[1]
+        header_line = _split_diff_lines(file_diff)[1]
         if not header_line:
             raise PresubmitFailure("diff header is empty")
         if header_line.startswith("new"):
