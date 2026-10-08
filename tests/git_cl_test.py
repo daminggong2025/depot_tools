@@ -6037,6 +6037,84 @@ class TestGitCl(unittest.TestCase):
     @unittest.skipIf(
         gclient_utils.IsEnvCog(), "not supported in non-git environment"
     )
+    @mock.patch("sys.stderr", io.StringIO())
+    def test_diff_fetch_validation(self):
+        mock.patch("git_common.current_branch", return_value="main").start()
+        scm.GIT.SetConfig("", "branch.main.gerritissue", "123")
+        scm.GIT.SetConfig(
+            "", "remote.origin.url", "https://chromium.googlesource.com/my/repo"
+        )
+
+        # Valid fetch URL and ref.
+        gerrit_util.GetChangeDetail.return_value = {
+            "current_revision": "rev1",
+            "revisions": {
+                "rev1": {
+                    "fetch": {
+                        "http": {
+                            "url": "https://chromium.googlesource.com/my/repo",
+                            "ref": "refs/changes/23/123/1",
+                        }
+                    }
+                }
+            },
+        }
+        self.calls = [
+            (
+                (
+                    [
+                        "git",
+                        "fetch",
+                        "--",
+                        "https://chromium.googlesource.com/my/repo",
+                        "refs/changes/23/123/1",
+                    ],
+                ),
+                "",
+            ),
+            ((["git", "diff", "FETCH_HEAD"],), ""),
+        ]
+        self.assertEqual(0, git_cl.main(["diff"]))
+
+        # Mismatched fetch URL is rejected.
+        git_cl.Changelist._DETAIL_CACHE.clear()
+        gerrit_util.GetChangeDetail.return_value = {
+            "current_revision": "rev1",
+            "revisions": {
+                "rev1": {
+                    "fetch": {
+                        "http": {
+                            "url": "https://evil.example.com/my/repo",
+                            "ref": "refs/changes/23/123/1",
+                        }
+                    }
+                }
+            },
+        }
+        with self.assertRaises(SystemExitMock):
+            git_cl.main(["diff"])
+
+        # Invalid fetch ref is rejected.
+        git_cl.Changelist._DETAIL_CACHE.clear()
+        gerrit_util.GetChangeDetail.return_value = {
+            "current_revision": "rev1",
+            "revisions": {
+                "rev1": {
+                    "fetch": {
+                        "http": {
+                            "url": "https://chromium.googlesource.com/my/repo",
+                            "ref": "--upload-pack=evil",
+                        }
+                    }
+                }
+            },
+        }
+        with self.assertRaises(SystemExitMock):
+            git_cl.main(["diff"])
+
+    @unittest.skipIf(
+        gclient_utils.IsEnvCog(), "not supported in non-git environment"
+    )
     def test_archive(self):
         self.calls = [
             (
