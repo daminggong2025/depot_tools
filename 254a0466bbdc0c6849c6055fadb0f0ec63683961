@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f7d1aaa3_f82a6a5f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1137015
+      },
+      "writtenOn": "2026-10-08T20:35:23Z",
+      "side": 1,
+      "message": "PTAL. The whole change is split in 3 CLs. I think all of them make sense by themselves.",
+      "revId": "254a0466bbdc0c6849c6055fadb0f0ec63683961",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
