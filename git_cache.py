@@ -76,7 +76,7 @@ class ClobberNeeded(Exception):
 
 
 class Mirror(object):
-    git_exe = "git.bat" if sys.platform.startswith("win") else "git"
+    git_exe = git_common.GIT_EXE
     gsutil_exe = os.path.join(
         os.path.dirname(os.path.abspath(__file__)), "gsutil.py"
     )
@@ -94,18 +94,41 @@ class Mirror(object):
         Returns (fetchspec, value_regex), where value_regex can be used
         with 'git config --replace-all'.
         """
+        if any(c.isspace() for c in spec) or any(
+            c in spec for c in "&|<>^%\r\n"
+        ):
+            raise ValueError(f"Invalid fetch spec: {spec!r}")
         parts = spec.split(":", 1)
         src = parts[0].lstrip("+").rstrip("/")
+        if src.startswith("-"):
+            raise ValueError(f"Invalid fetch spec: {spec!r}")
         if not src.startswith("refs/"):
-            src = "refs/heads/%s" % src
+            src = f"refs/heads/{src}"
         dest = parts[1].rstrip("/") if len(parts) > 1 else src
-        regex = r"\+%s:.*" % src.replace("*", r"\*")
-        return ("+%s:%s" % (src, dest), regex)
+        if dest.startswith("-"):
+            raise ValueError(f"Invalid fetch spec: {spec!r}")
+        escaped_src = src.replace("*", r"\*")
+        regex = rf"\+{escaped_src}:.*"
+        return (f"+{src}:{dest}", regex)
+
+    @staticmethod
+    def _validate_fetch_commit(commit):
+        if (
+            not commit
+            or commit.startswith("-")
+            or ":" in commit
+            or any(c.isspace() for c in commit)
+            or any(c in commit for c in "&|<>^%\r\n")
+        ):
+            raise ValueError(f"Invalid commit fetch spec: {commit!r}")
+        return commit
 
     def __init__(self, url, refs=None, commits=None, print_func=None):
         self.url = url
         self.fetch_specs = {self.parse_fetch_spec(ref) for ref in (refs or [])}
-        self.fetch_commits = set(commits or [])
+        self.fetch_commits = {
+            self._validate_fetch_commit(c) for c in (commits or [])
+        }
         self.basedir = self.UrlToCacheDir(url)
         self.mirror_path = os.path.join(self.GetCachePath(), self.basedir)
         if print_func:
@@ -286,6 +309,8 @@ class Mirror(object):
         env = kwargs.get("env") or kwargs.setdefault("env", os.environ.copy())
         env.setdefault("GIT_ASKPASS", "true")
         env.setdefault("SSH_ASKPASS", "true")
+        if sys.platform.startswith("win"):
+            env.setdefault("NoDefaultCurrentDirectoryInExePath", "1")
         self.print('running "git %s" in "%s"' % (" ".join(cmd), cwd))
         return gclient_utils.CheckCallAndFilter([self.git_exe] + cmd, **kwargs)
 
@@ -411,20 +436,36 @@ class Mirror(object):
             # are built with.
             init_cmd = ["init", "-b", "main", "--bare"] + _ref_format_args()
             self.RunGit(init_cmd, cwd=tempdir)
-            self.print(
-                "Downloading files in %s/* into %s." % (latest_dir, tempdir)
-            )
+            config_path = os.path.join(tempdir, "config")
+            clean_config = None
+            if os.path.isfile(config_path):
+                with open(config_path, "rb") as f:
+                    clean_config = f.read()
+            self.print(f"Downloading files in {latest_dir}/* into {tempdir}.")
             with self.print_duration_of("download"):
                 with GSUTIL_CP_SEMAPHORE:
                     code = gsutil.call(
-                        "-m", "cp", "-r", latest_dir + "/*", tempdir
+                        "-m", "cp", "-r", f"{latest_dir}/*", tempdir
                     )
             if code:
                 return False
+            # Remove untrusted hooks, alternates, and config from snapshot
+            # before running any git commands against tempdir.
+            gclient_utils.rmtree(os.path.join(tempdir, "hooks"))
+            alternates_path = os.path.join(
+                tempdir, "objects", "info", "alternates"
+            )
+            if os.path.exists(alternates_path):
+                os.remove(alternates_path)
+            if os.path.exists(config_path):
+                os.remove(config_path)
+            if clean_config is not None:
+                with open(config_path, "wb") as f:
+                    f.write(clean_config)
             # A quick validation that all references are valid.
             self.RunGit(["for-each-ref"], print_stdout=False, cwd=tempdir)
         except Exception as e:
-            self.print("Encountered error: %s" % str(e), file=sys.stderr)
+            self.print(f"Encountered error: {e}", file=sys.stderr)
             gclient_utils.rmtree(tempdir)
             return False
         # delete the old directory
@@ -886,9 +927,10 @@ class Mirror(object):
                     raise ClobberNeeded()  # Corrupted cache.
                 logging.warning("Fetch of %s failed" % spec)
         for commit in self.fetch_commits:
-            self.print("Fetching %s" % commit)
+            self._validate_fetch_commit(commit)
+            self.print(f"Fetching {commit}")
             try:
-                with self.print_duration_of("fetch %s" % commit):
+                with self.print_duration_of(f"fetch {commit}"):
                     self.RunGit(["fetch", "origin", commit], retry=True)
             except subprocess.CalledProcessError:
                 logging.warning("Fetch of %s failed" % commit)

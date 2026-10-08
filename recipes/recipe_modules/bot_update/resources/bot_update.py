@@ -50,7 +50,7 @@ BRANCH_HEADS_REFSPEC = "+refs/branch-heads/*"
 TAGS_REFSPEC = "+refs/tags/*"
 
 # Regular expression to match SHA-1 (Git 2) or SHA-256 (Git 3) git revision.
-COMMIT_HASH_RE = re.compile(r"[0-9a-f]{5,64}", re.IGNORECASE)
+COMMIT_HASH_RE = re.compile(r"^[0-9a-f]{5,64}$", re.IGNORECASE)
 
 # Regular expression that matches a single commit footer line.
 COMMIT_FOOTER_ENTRY_RE = re.compile(r"([^:]+):\s*(.*)")
@@ -632,7 +632,7 @@ def get_target_branch_and_revision(solution_name, git_url, revisions):
   solution_name = solution_name.strip("/")
   configured = revisions.get(solution_name) or revisions.get(git_url)
 
-  if configured is None or COMMIT_HASH_RE.match(configured):
+  if configured is None or COMMIT_HASH_RE.fullmatch(configured):
     # TODO(crbug.com/1104182): Get the default branch instead of assuming
     # 'main'.
     branch = "refs/remotes/origin/main"
@@ -763,7 +763,7 @@ def _git_checkout(
   url = sln["url"]
 
   branch, revision = get_target_branch_and_revision(name, url, revisions)
-  pin = revision if COMMIT_HASH_RE.match(revision) else None
+  pin = revision if COMMIT_HASH_RE.fullmatch(revision) else None
 
   populate_cmd = [
     "cache",

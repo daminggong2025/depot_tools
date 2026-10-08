@@ -407,6 +407,19 @@ class BotUpdateUnittests(unittest.TestCase):
         with self.assertRaises(ValueError):
             bot_update.parse_revisions([], "-bad_root")
 
+    def testGetTargetBranchAndRevisionRejectsRefspecWithHexPrefix(self):
+        branch, revision = bot_update.get_target_branch_and_revision(
+            "src",
+            "https://chromium.googlesource.com/chromium/src.git",
+            {"src": "deadbeef:refs/heads/main"},
+        )
+        self.assertEqual(branch, "refs/remotes/origin/deadbeef")
+        self.assertEqual(revision, "refs/heads/main")
+        self.assertIsNone(bot_update.COMMIT_HASH_RE.fullmatch(revision))
+        self.assertIsNone(
+            bot_update.COMMIT_HASH_RE.fullmatch("deadbeef:refs/heads/main")
+        )
+
 
 class CallUnitTest(unittest.TestCase):
     def testCall(self):
