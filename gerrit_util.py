@@ -1066,7 +1066,9 @@ class GitCredsAuthenticator(_Authenticator):
 
     @functools.cache
     def is_applicable(self, *, gerrit_host: Optional[str] = None):
-        if gerrit_host:
+        if gerrit_host and gerrit_host.split(":", 1)[0].lower().endswith(
+            ".googlesource.com"
+        ):
             return self.gerrit_account_exists(gerrit_host)
         return False
 

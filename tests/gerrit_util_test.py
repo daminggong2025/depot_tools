@@ -508,6 +508,32 @@ class GitCredsAuthenticatorTest(unittest.TestCase):
         self.assertTrue(bypassable, msg=err_msg)
         self.assertEqual(err_msg, "")
 
+    @mock.patch(
+        "gerrit_util.GitCredsAuthenticator.gerrit_account_exists",
+        return_value=True,
+    )
+    def testIsApplicableGooglesourceOnly(self, mock_exists):
+        auth_inst = gerrit_util.GitCredsAuthenticator()
+        self.assertTrue(
+            auth_inst.is_applicable(
+                gerrit_host="chromium-review.googlesource.com"
+            )
+        )
+        self.assertTrue(
+            auth_inst.is_applicable(
+                gerrit_host="CHROMIUM-REVIEW.GOOGLESOURCE.COM:443"
+            )
+        )
+        mock_exists.reset_mock()
+        self.assertFalse(
+            auth_inst.is_applicable(gerrit_host="review.coreboot.org")
+        )
+        self.assertFalse(
+            auth_inst.is_applicable(gerrit_host="googlesource.com.evil.com")
+        )
+        self.assertFalse(auth_inst.is_applicable(gerrit_host=None))
+        mock_exists.assert_not_called()
+
     @mock.patch("gerrit_util.EnsureAccountExists")
     def testGerritAccountExists_Success(self, mock_ensure_account):
         self.assertTrue(
