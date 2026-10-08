@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "af18f3df_239894c6",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1137015
+      },
+      "writtenOn": "2026-10-08T20:36:16Z",
+      "side": 1,
+      "message": "The bots are purple because of stacked changes, but I verified the tests work locally\n\nPTAL",
+      "revId": "4d77853e39347d773ff488ddff27994c570e4a6b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
