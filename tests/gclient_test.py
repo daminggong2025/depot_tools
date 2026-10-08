@@ -2743,6 +2743,294 @@ class GcsDependencyTest(trial_dir.TestCase):
         self.assertTrue(os.path.isdir(self.dep.output_dir))
         self.assertFalse(os.path.exists(content_file))
 
+    def test_gcs_file_name_sanitizes_backslashes(self):
+        dep = gclient.GcsDependency(
+            parent=self.parent_mock,
+            name="test_dep",
+            bucket="fake_bucket",
+            object_name="sub\\dir\\payload.tar.gz",
+            sha256sum="fake",
+            output_file=None,
+            size_bytes=100,
+            gcs_root=self.gcs_root_mock,
+            custom_vars={},
+            should_process=True,
+            relative=False,
+            condition=None,
+        )
+        self.assertEqual(dep.gcs_file_name, "sub_dir_payload.tar.gz")
+        self.assertTrue(
+            dep.migration_toggle_file.endswith(
+                ".sub_dir_payload_tar_gz_is_first_class_gcs"
+            )
+        )
+
+    def test_gcs_dependency_rejects_unsafe_fields(self):
+        for bad_bucket in ("-bucket", "a/b", "a\\b", "a..b", "a&b"):
+            with self.assertRaises(gclient_utils.Error):
+                gclient.GcsDependency(
+                    parent=self.parent_mock,
+                    name="test_dep",
+                    bucket=bad_bucket,
+                    object_name="payload.tar.gz",
+                    sha256sum="fake",
+                    output_file=None,
+                    size_bytes=100,
+                    gcs_root=self.gcs_root_mock,
+                    custom_vars={},
+                    should_process=True,
+                    relative=False,
+                    condition=None,
+                )
+        for bad_obj in ("-obj", "obj&calc", "obj\nname"):
+            with self.assertRaises(gclient_utils.Error):
+                gclient.GcsDependency(
+                    parent=self.parent_mock,
+                    name="test_dep",
+                    bucket="fake_bucket",
+                    object_name=bad_obj,
+                    sha256sum="fake",
+                    output_file=None,
+                    size_bytes=100,
+                    gcs_root=self.gcs_root_mock,
+                    custom_vars={},
+                    should_process=True,
+                    relative=False,
+                    condition=None,
+                )
+        for bad_sha in ("-sha", "abc/def", "abc&def"):
+            with self.assertRaises(gclient_utils.Error):
+                gclient.GcsDependency(
+                    parent=self.parent_mock,
+                    name="test_dep",
+                    bucket="fake_bucket",
+                    object_name="payload.tar.gz",
+                    sha256sum=bad_sha,
+                    output_file=None,
+                    size_bytes=100,
+                    gcs_root=self.gcs_root_mock,
+                    custom_vars={},
+                    should_process=True,
+                    relative=False,
+                    condition=None,
+                )
+        for bad_out in ("-o", "out&calc"):
+            dep = gclient.GcsDependency(
+                parent=self.parent_mock,
+                name="test_dep",
+                bucket="fake_bucket",
+                object_name="payload.tar.gz",
+                sha256sum="fake",
+                output_file=bad_out,
+                size_bytes=100,
+                gcs_root=self.gcs_root_mock,
+                custom_vars={},
+                should_process=True,
+                relative=False,
+                condition=None,
+            )
+            with self.assertRaises(Exception):
+                _ = dep.artifact_output_file
+
+    @unittest.skipIf(
+        sys.platform == "win32", "os.symlink requires elevation on Windows"
+    )
+    def test_maybe_extract_artifact_rejects_preexisting_symlink_target(self):
+        outside_dir = os.path.join(self.root_dir, "outside_victim")
+        os.makedirs(outside_dir, exist_ok=True)
+        os.symlink(
+            outside_dir, os.path.join(self.dep.output_dir, "extracted_dir")
+        )
+        tar_path = self._create_tar(
+            [
+                {"name": "extracted_dir/pwned.txt", "data": b"evil payload"},
+            ]
+        )
+        shutil.copy(tar_path, self.dep.artifact_output_file)
+        with self.assertRaises(gclient_utils.Error):
+            self.dep._MaybeExtractArtifact()
+        self.assertFalse(os.path.exists(os.path.join(outside_dir, "pwned.txt")))
+
+    def test_is_download_needed_verifies_artifact_and_extracted_contents(self):
+        tar_path = self._create_tar(
+            [
+                {"name": "extracted_dir/file.txt", "data": b"valid payload"},
+            ]
+        )
+        actual_sha = gclient.upload_to_google_storage_first_class.get_sha256sum(
+            tar_path
+        )
+        actual_size = os.path.getsize(tar_path)
+        dep = gclient.GcsDependency(
+            parent=self.parent_mock,
+            name="test_dep",
+            bucket="fake_bucket",
+            object_name="payload.tar.gz",
+            sha256sum=actual_sha,
+            output_file=None,
+            size_bytes=actual_size,
+            gcs_root=self.gcs_root_mock,
+            custom_vars={},
+            should_process=True,
+            relative=False,
+            condition=None,
+        )
+        shutil.copy(tar_path, dep.artifact_output_file)
+        dep.WriteToFile(actual_sha, dep.hash_file)
+        dep.WriteToFile("1", dep.migration_toggle_file)
+
+        with mock.patch.dict(os.environ, {"GCLIENT_TEST": "0"}):
+            # Missing .content_names / extracted files -> download needed.
+            self.assertTrue(dep.IsDownloadNeeded())
+            dep._MaybeExtractArtifact()
+            self.assertFalse(dep.IsDownloadNeeded())
+            # Corrupting artifact_output_file despite matching .hash -> download needed.
+            with open(dep.artifact_output_file, "ab") as f:
+                f.write(b"x")
+            self.assertTrue(dep.IsDownloadNeeded())
+
+
+class GclientSecurityHardeningTest(trial_dir.TestCase):
+    def setUp(self):
+        super(GclientSecurityHardeningTest, self).setUp()
+        parser = gclient.OptionParser()
+        self.options, _ = parser.parse_args([])
+
+    def test_update_protocol_restricts_host_and_scheme(self):
+        self.assertEqual(
+            gclient.GitDependency.updateProtocol(
+                "https://chromium.googlesource.com/chromium/src.git", "sso"
+            ),
+            "sso://chromium.googlesource.com/chromium/src.git",
+        )
+        self.assertEqual(
+            gclient.GitDependency.updateProtocol(
+                "https://attacker.example.com/repo.git", "sso"
+            ),
+            "https://attacker.example.com/repo.git",
+        )
+        self.assertEqual(
+            gclient.GitDependency.updateProtocol(
+                "https://github.com/nodejs/node.git", "sso"
+            ),
+            "https://github.com/nodejs/node.git",
+        )
+        with self.assertRaises(gclient_utils.Error):
+            gclient.GitDependency.updateProtocol(
+                "https://chromium.googlesource.com/chromium/src.git",
+                "ext::sh -c id",
+            )
+
+    def test_validate_safe_dep_path_blocks_traversal_and_git_dirs(self):
+        for bad_path in (
+            "../outside",
+            "src/../../outside",
+            "/abs/path",
+            "C:\\win\\path",
+            "src/.git",
+            "src/old_dep.git",
+        ):
+            with self.assertRaises(gclient_utils.Error):
+                gclient._ValidateSafeDepPath(self.root_dir, bad_path)
+            with self.assertRaises(gclient_utils.Error):
+                gclient.Hook(["echo"], cwd=bad_path, cwd_base=self.root_dir)
+
+    def test_set_config_rejects_in_tree_cache_dir(self):
+        client = gclient.GClient(self.root_dir, self.options)
+        with self.assertRaises(gclient_utils.Error):
+            client.SetConfig(
+                'solutions = []\ncache_dir = "third_party/git_cache"\n'
+            )
+
+    @mock.patch("scm.GIT.Capture")
+    def test_load_current_config_rejects_git_tracked_gclient(
+        self, mock_capture
+    ):
+        os.makedirs(os.path.join(self.root_dir, ".git"), exist_ok=True)
+        with open(os.path.join(self.root_dir, ".gclient"), "w") as f:
+            f.write("solutions = []\n")
+        mock_capture.return_value = ".gclient"
+        old_cwd = os.getcwd()
+        try:
+            os.chdir(self.root_dir)
+            with self.assertRaises(gclient_utils.Error):
+                gclient.GClient.LoadCurrentConfig(self.options)
+        finally:
+            os.chdir(old_cwd)
+
+    def test_subrepo_gcs_dep_cannot_escape_subtree_or_clobber_sibling(self):
+        client = gclient.GClient(self.root_dir, self.options)
+        client.SetConfig(
+            'solutions = [{"name": "src", "url": "https://example.com/src"}]'
+        )
+        src_dep = client.dependencies[0]
+        sub_dep = gclient.GitDependency(
+            parent=src_dep,
+            name="src/sub",
+            url="https://example.com/sub",
+            managed=True,
+            custom_deps=None,
+            custom_vars={},
+            custom_hooks=None,
+            deps_file="DEPS",
+            should_process=True,
+            should_recurse=True,
+            relative=False,
+            condition=None,
+        )
+        src_dep.add_dependency(sub_dep)
+        with self.assertRaises(gclient_utils.Error):
+            sub_dep._deps_to_objects(
+                {
+                    "src/sibling": {
+                        "dep_type": "gcs",
+                        "bucket": "b",
+                        "objects": [
+                            {
+                                "object_name": "o",
+                                "sha256sum": "abcd",
+                                "size_bytes": 10,
+                            }
+                        ],
+                    }
+                },
+                use_relative_paths=False,
+            )
+
+    @mock.patch("gclient_scm.scm.GIT.Capture")
+    def test_removed_cipd_entries_uses_double_dash_and_blocks_flags(
+        self, mock_capture
+    ):
+        client = gclient.GClient(self.root_dir, self.options)
+        client.SetConfig('solutions = [{"name": "src", "url": None}]\n')
+        client._cipd_root = mock.MagicMock()
+        with (
+            mock.patch.object(
+                client,
+                "_EnforcePatchRefsAndBranches",
+                return_value=({}, {}),
+            ),
+            mock.patch.object(
+                client, "_EnforceSkipSyncRevisions", return_value={}
+            ),
+            mock.patch.object(
+                client,
+                "_RemoveUnversionedGitDirs",
+                return_value=[
+                    "src/-q:pkg",
+                    "../escape/dir:pkg",
+                    "src/valid_dir:pkg",
+                ],
+            ),
+            mock.patch.object(client, "_WriteFileContents"),
+            mock.patch("git_common.check_git_version", return_value=None),
+        ):
+            client.RunOnDeps("update", [])
+        mock_capture.assert_called_once_with(
+            ["checkout", "--", "valid_dir"],
+            cwd=os.path.join(self.root_dir, "src"),
+        )
+
 
 if __name__ == "__main__":
     sys.stdout = gclient_utils.MakeFileAutoFlush(sys.stdout)
