@@ -752,8 +752,16 @@ class CookiesAuthenticator(_Authenticator):
         return gitcookies
 
     def _get_auth_for_host(self, host):
+        bare_host = host.split(":", 1)[0].lower()
         for domain, creds in self.gitcookies.items():
-            if http.cookiejar.domain_match(host, domain):
+            domain_low = domain.lower()
+            if bare_host == domain_low or (
+                domain_low.startswith(".")
+                and (
+                    bare_host == domain_low[1:]
+                    or bare_host.endswith(domain_low)
+                )
+            ):
                 return (creds[0], creds[1])
         return None
 
@@ -2739,8 +2747,7 @@ def CreateScheduledSubmitFlow(
     target_time = ComputeScheduleTime(issue, custom_time)
     cl_url = f"https://{host}/c/{issue}"
     condition = (
-        f"{cl_url} is is:submittable, "
-        f"wait until today at {target_time} in {tz}"
+        f"{cl_url} is is:submittable, wait until today at {target_time} in {tz}"
     )
     body = {
         "stage_expressions": [
@@ -2769,5 +2776,3 @@ def CreateScheduledSubmitFlow(
     except Exception as e:
         print(f"WARNING: Failed to create submit flow for CL {issue}: {e}")
         raise
-
-
