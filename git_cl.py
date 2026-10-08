@@ -925,8 +925,8 @@ def ParseIssueNumberArgument(arg):
     if not url.startswith("http"):
         return fail_result
     for gerrit_url, short_url in _KNOWN_GERRIT_TO_SHORT_URLS.items():
-        if url.startswith(short_url):
-            url = gerrit_url + url[len(short_url) :]
+        if url == short_url or url.startswith(f"{short_url}/"):
+            url = f"{gerrit_url}{url[len(short_url) :]}"
             break
 
     try:
@@ -3508,9 +3508,21 @@ class Changelist(object):
         the URL).
         """
         parts = urllib.parse.urlparse(x)
-        host = parts.netloc.split(".")[0]
-        if host.endswith("-review"):
-            host = host[: -len("-review")]
+        netloc = parts.netloc
+        googlesource_suffix = f".{_GOOGLESOURCE}"
+        if (
+            netloc.endswith(googlesource_suffix)
+            and "." not in netloc[: -len(googlesource_suffix)]
+        ):
+            host = netloc[: -len(googlesource_suffix)]
+            if host.endswith("-review"):
+                host = host[: -len("-review")]
+        elif parts.scheme == "sso" and "." not in netloc:
+            host = netloc
+            if host.endswith("-review"):
+                host = host[: -len("-review")]
+        else:
+            host = netloc
         repo = parts.path
         if repo.endswith(".git"):
             repo = repo[: -len(".git")]

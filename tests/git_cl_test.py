@@ -801,6 +801,13 @@ class TestParseIssueURL(unittest.TestCase):
             None,
             "chromium-review.googlesource.com",
         )
+        self._test(
+            "https://crrev.com.evil.com/c/12345",
+            12345,
+            None,
+            "crrev.com.evil.com",
+        )
+        self._test("https://crrev.com/c.evil.com/12345", fail=True)
 
     def test_missing_scheme(self):
         self._test(
@@ -8816,6 +8823,10 @@ class ChangelistTest(unittest.TestCase):
                 "https://chromium.googlesource.com/v8/v8",
                 "https://chrome-internal.googlesource.com/chrome/experimental/chromium/src",
             ),
+            (
+                "https://chromium.googlesource.com/chromium/src",
+                "https://chromium.evil.com/chromium/src",
+            ),
         ]
         for a, b in cases:
             with self.subTest(c=(a, b)):
@@ -8834,6 +8845,10 @@ class ChangelistTest(unittest.TestCase):
             (
                 "https://chrome-internal.googlesource.com/chrome/experimental/chromium/src",
                 ("chromium", "/chromium/src"),
+            ),
+            (
+                "https://chromium.evil.com/chromium/src",
+                ("chromium.evil.com", "/chromium/src"),
             ),
         ]
         for x, want in cases:
