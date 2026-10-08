@@ -55,6 +55,7 @@ windows-amd64    sha256  e88f9268c536bb88a7b45a73308a70cbc93438b771f2ad2b54e385e
 windows-arm64    sha256  45d2ae5ae31b9ac25277f25fde7eb26edf22458b89a55cffa5d9dccf6f117c44
 """
 
+
 class CipdBootstrapTest(unittest.TestCase):
     """Tests that CIPD client can bootstrap from scratch and self-update from some
     old version to a most recent one.
@@ -129,6 +130,18 @@ class CipdBootstrapTest(unittest.TestCase):
             self.fail(
                 "Update from %s to the tip fails:\n%s" % (OLD_VERSION, out)
             )
+
+    def test_cipd_bat_uses_file_and_validates_platform(self):
+        """Verifies cipd.bat invokes PowerShell with -File and validates platform."""
+        cipd_bat_path = os.path.join(ROOT_DIR, "cipd.bat")
+        with open(cipd_bat_path, "rt", encoding="utf-8") as f:
+            content = f.read()
+        self.assertNotIn("-Command", content)
+        self.assertIn('-File "%CIPD_IMPL%"', content)
+        self.assertIn('-CipdBinary "%CIPD_BINARY%"', content)
+        self.assertIn('-Platform "%CIPD_PLATFORM%"', content)
+        self.assertIn('findstr /r /v "^[0-9a-z\\-]*$"', content)
+
 
 if __name__ == "__main__":
     unittest.main()

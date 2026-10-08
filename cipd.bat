@@ -19,6 +19,11 @@ set CIPD_IMPL=%~dp0.cipd_impl.ps1
 
 :: A value in .cipd_client_platform overrides the "guessed" platform.
 if exist "%PLATFORM_OVERRIDE_FILE%" (
+  findstr /r /v "^[0-9a-z\-]*$" "%PLATFORM_OVERRIDE_FILE%" 1>nul 2>nul
+  if not errorlevel 1 (
+    echo Invalid platform override in %PLATFORM_OVERRIDE_FILE%. 1>&2
+    exit /b 1
+  )
   for /F usebackq %%l in ("%PLATFORM_OVERRIDE_FILE%") do (
     set CIPD_PLATFORM=%%l
   )
@@ -78,11 +83,11 @@ exit /b %EXPORT_ERRORLEVEL%
 :: in the file's properties dialog.
 echo.>"%CIPD_IMPL%:Zone.Identifier"
 powershell -NoProfile -ExecutionPolicy RemoteSigned ^
-    -Command "& \"%CIPD_IMPL%\"" ^
-    "-CipdBinary \"%CIPD_BINARY%\"" ^
-    "-Platform \"%CIPD_PLATFORM%\"" ^
-    "-BackendURL \"%CIPD_BACKEND%\"" ^
-    "-VersionFile \"%VERSION_FILE%\"" ^
+    -File "%CIPD_IMPL%" ^
+    -CipdBinary "%CIPD_BINARY%" ^
+    -Platform "%CIPD_PLATFORM%" ^
+    -BackendURL "%CIPD_BACKEND%" ^
+    -VersionFile "%VERSION_FILE%" ^
   <nul
 if %ERRORLEVEL% equ 0 (
   :: Need to call SELF_UPDATE to setup .cipd_version file.
