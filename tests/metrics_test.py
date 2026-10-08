@@ -148,14 +148,39 @@ class MetricsCollectorTest(unittest.TestCase):
         expected_metrics = self.default_metrics
         self.default_metrics.update(update_metrics or {})
         # Assert we invoked the script to upload them.
+        vpython_exe = "vpython3.bat" if sys.platform == "win32" else "vpython3"
         self.Popen.assert_called_with(
-            ["vpython3", metrics.UPLOAD_SCRIPT], stdin=metrics.subprocess2.PIPE
+            [
+                os.path.join(metrics.DEPOT_TOOLS, vpython_exe),
+                metrics.UPLOAD_SCRIPT,
+            ],
+            stdin=metrics.subprocess2.PIPE,
         )
         # Assert we collected the right metrics.
         write_call = self.Popen.return_value.stdin.write.call_args
         collected_metrics = json.loads(write_call[0][0])
         self.assertTrue(self.collector.collecting_metrics)
         self.assertEqual(collected_metrics, expected_metrics)
+
+    @mock.patch("metrics.sys.platform", "win32")
+    def test_upload_uses_absolute_vpython3_bat_on_windows(self):
+        """Tests that Windows metrics upload resolves vpython3.bat in DEPOT_TOOLS."""
+        self.FileRead.side_effect = [
+            '{"is-googler": true, "countdown": 0, "opt-in": null, "version": 0}'
+        ]
+
+        @self.collector.collect_metrics("fun")
+        def fun():
+            pass
+
+        fun()
+        self.Popen.assert_called_with(
+            [
+                os.path.join(metrics.DEPOT_TOOLS, "vpython3.bat"),
+                metrics.UPLOAD_SCRIPT,
+            ],
+            stdin=metrics.subprocess2.PIPE,
+        )
 
     def test_collects_system_information(self):
         """Tests that we collect information about the runtime environment."""
