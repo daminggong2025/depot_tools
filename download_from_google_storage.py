@@ -40,11 +40,12 @@ PLATFORM_MAPPING = {
 
 # (b/328065301): Remove when all GCS hooks are migrated to first class deps
 MIGRATION_TOGGLE_FILE_SUFFIX = "_is_first_class_gcs"
+_UNSAFE_GSUTIL_ARG_RE = re.compile(r"[\x00-\x1f\x7f&|<>^%]")
 
 
 def construct_migration_file_name(gcs_object_name):
-    # Remove any forward slashes
-    gcs_file_name = gcs_object_name.replace("/", "_")
+    # Remove any forward or backward slashes
+    gcs_file_name = gcs_object_name.replace("\\", "_").replace("/", "_")
     # Remove any dots
     gcs_file_name = gcs_file_name.replace(".", "_")
 
@@ -123,12 +124,22 @@ class Gsutil(object):
 
         return env
 
+    @staticmethod
+    def _validate_args(args):
+        for arg in args:
+            if _UNSAFE_GSUTIL_ARG_RE.search(str(arg)):
+                raise ValueError(
+                    f"Invalid gsutil argument {arg!r}: contains unsafe characters"
+                )
+
     def call(self, *args):
+        self._validate_args(args)
         cmd = [self.VPYTHON3, self.path]
         cmd.extend(args)
         return subprocess2.call(cmd, env=self.get_sub_env())
 
     def check_call(self, *args):
+        self._validate_args(args)
         cmd = [self.VPYTHON3, self.path]
         cmd.extend(args)
         ((out, err), code) = subprocess2.communicate(
@@ -562,6 +573,11 @@ def download_from_google_storage(
     extract,
 ):
 
+    if _UNSAFE_GSUTIL_ARG_RE.search(str(base_url)):
+        raise ValueError(
+            f"Invalid base_url {base_url!r}: contains unsafe characters"
+        )
+
     # Tuples of sha1s and paths.
     input_data = list(
         enumerate_input(
@@ -574,6 +590,13 @@ def download_from_google_storage(
             auto_platform,
         )
     )
+    for sha1, path in input_data:
+        if _UNSAFE_GSUTIL_ARG_RE.search(str(sha1)) or (
+            path and _UNSAFE_GSUTIL_ARG_RE.search(str(path))
+        ):
+            raise ValueError(
+                f"Invalid download input ({sha1!r}, {path!r}): contains unsafe characters"
+            )
 
     # Sequentially check for the most common case and see if we can bail out
     # early before making any slow calls to gsutil.
