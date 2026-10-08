@@ -196,12 +196,60 @@ def format_branch_name(branch):
     return BRIGHT + branch + RESET
 
 
+def get_descendants(branch, branch_tree):
+    """Returns the descendants of `branch` in `branch_tree`, nearest first."""
+    children = collections.defaultdict(list)
+    for child, parent in branch_tree.items():
+        children[parent].append(child)
+    descendants = []
+    queue = collections.deque(sorted(children[branch]))
+    while queue:
+        descendant = queue.popleft()
+        descendants.append(descendant)
+        queue.extend(sorted(children[descendant]))
+    return descendants
+
+
+def reset_if_landed_with_descendant(branch, parent, start_hash, descendants):
+    """Resets `branch` to `parent` if it landed along with a descendant.
+
+    Rebasing a landed branch conflicts when later commits that landed after it,
+    e.g. a stacked child CL, modified the same lines. In that case, the changes
+    of the whole stack from `branch` up to that descendant are contained in
+    `parent`.
+
+    Returns True if `branch` was reset.
+    """
+    for descendant in descendants:
+        # Ignore descendants that are not based on the current `branch`, e.g.
+        # when it was amended after they were last rebased: they would not
+        # reflect the latest changes of `branch`.
+        if (
+            git.run_with_retcode(
+                "merge-base", "--is-ancestor", branch, descendant
+            )
+            != 0
+        ):
+            continue
+        if git.is_branch_contained_in(descendant, start_hash, parent):
+            print(
+                "%s landed upstream along with %s"
+                % (format_branch_name(branch), format_branch_name(descendant))
+            )
+            if git.in_rebase():
+                git.run_with_retcode("rebase", "--abort")
+            git.run("reset", "--keep", parent)
+            return True
+    return False
+
+
 def rebase_branch(
     branch,
     parent,
     start_hash,
     no_squash,
     branches_in_other_worktrees,
+    descendants=(),
 ):
     """Rebases `branch` onto `parent` from `start_hash`.
 
@@ -216,6 +264,8 @@ def rebase_branch(
         start_hash: The merge-base commit SHA between branch and parent.
         no_squash: If True, disables automated commit squashing on rebase failure.
         branches_in_other_worktrees: Set of branch names checked out in other worktrees.
+        descendants: Descendants of `branch`, nearest first. Used to detect that
+            `branch` landed when its rebase conflicts.
 
     Returns:
         True if the branch rebased successfully, False on failure.
@@ -296,6 +346,12 @@ def rebase_branch(
                 % branch
             )
             if not consider_squashing:
+                if reset_if_landed_with_descendant(
+                    branch, parent, start_hash, descendants
+                ):
+                    git.remove_merge_base(branch)
+                    git.get_or_create_merge_base(branch, orig_parent)
+                    return True
                 print(mid_rebase_message)
                 return False
             print(
@@ -323,6 +379,12 @@ def rebase_branch(
                 git.rebase(parent, start_hash, branch)
             else:
                 print("Failed!")
+                if reset_if_landed_with_descendant(
+                    branch, parent, start_hash, descendants
+                ):
+                    git.remove_merge_base(branch)
+                    git.get_or_create_merge_base(branch, orig_parent)
+                    return True
                 print()
 
                 # rebase and leave in mid-rebase state.
@@ -505,6 +567,7 @@ def main(args=None):
                 merge_base[branch],
                 opts.no_squash,
                 branches_in_other_worktrees,
+                get_descendants(branch, branch_tree),
             )
             if not ret:
                 retcode = 1
