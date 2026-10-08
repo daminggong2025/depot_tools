@@ -274,6 +274,7 @@ class Authenticator(object):
                 ["luci-auth", "token"] + args + ["-json-output", "-"],
                 stdout=subprocess2.PIPE,
                 stderr=subprocess2.PIPE,
+                shell=False,
             )
             logging.debug("luci-auth token stderr:\n%s", err)
             token_info = json.loads(out)
@@ -323,6 +324,7 @@ class GerritAuthenticator(object):
             stdout=subprocess2.PIPE,
             stderr=subprocess2.PIPE,
             env=env,
+            shell=False,
         )
         out = self._parse_creds_helper_out(out_bytes)
         if password := out.get("password", None):
@@ -350,6 +352,7 @@ class GerritAuthenticator(object):
             stdin=creds_attrs,
             stdout=subprocess2.PIPE,
             stderr=subprocess2.PIPE,
+            shell=False,
         )
         if header := self._extract_authorization_header(out_bytes):
             return header
@@ -397,6 +400,7 @@ class GerritAuthenticator(object):
             GitReAuthRequiredError
             GitUnknownError
         """
+        kwargs.setdefault("shell", False)
         stdout_stderr, exitcode = subprocess2.communicate(args, **kwargs)
         stdout, stderr = stdout_stderr
         logging.debug("git-credential-luci stderr:\n%s", stderr)
