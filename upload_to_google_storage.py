@@ -82,15 +82,16 @@ def _upload_worker(
         filename, sha1_sum = upload_queue.get()
         if not filename:
             break
-        file_url = "%s/%s" % (base_url, sha1_sum)
+        file_url = f"{base_url}/{sha1_sum}"
         if gsutil.check_call("ls", file_url)[0] == 0 and not force:
             # File exists, check MD5 hash.
             _, out, _ = gsutil.check_call_with_retries("ls", "-L", file_url)
+            if isinstance(out, bytes):
+                out = out.decode("utf-8", errors="replace")
             etag_match = re.search(r"ETag:\s+\S+", out)
             if etag_match:
                 stdout_queue.put(
-                    "%d> File with url %s already exists"
-                    % (thread_num, file_url)
+                    f"{thread_num}> File with url {file_url} already exists"
                 )
                 remote_md5 = etag_match.group(0).split()[1]
                 # Calculate the MD5 checksum to match it to Google Storage's
@@ -102,11 +103,20 @@ def _upload_worker(
                         local_md5 = get_md5(filename)
                 if local_md5 == remote_md5:
                     stdout_queue.put(
-                        "%d> File %s already exists and MD5 matches, upload "
-                        "skipped" % (thread_num, filename)
+                        f"{thread_num}> File {filename} already exists and MD5 "
+                        "matches, upload skipped"
                     )
                     continue
-        stdout_queue.put("%d> Uploading %s..." % (thread_num, filename))
+                ret_codes.put(
+                    (
+                        1,
+                        f"File {filename} already exists at {file_url} with "
+                        f"different MD5 ({local_md5} != {remote_md5}); "
+                        "refusing to overwrite without --force",
+                    )
+                )
+                continue
+        stdout_queue.put(f"{thread_num}> Uploading {filename}...")
         gsutil_args = ["-h", "Cache-Control:public, max-age=31536000"]
 
         # Mark executable files with the header "x-goog-meta-executable: 1"

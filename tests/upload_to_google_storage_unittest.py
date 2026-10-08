@@ -156,6 +156,69 @@ class UploadTests(unittest.TestCase):
         os.remove(output_filename)
         self.assertEqual(code, 0)
 
+    def test_upload_single_file_remote_exists_md5_mismatch_refuses_overwrite(
+        self,
+    ):
+        filenames = [self.lorem_ipsum]
+        output_filename = f"{self.lorem_ipsum}.sha1"
+        etag_string = b"ETag: 00000000000000000000000000000000"
+        self.gsutil.add_expected(0, b"", b"")
+        self.gsutil.add_expected(0, etag_string, b"")
+        code = upload_to_google_storage.upload_to_google_storage(
+            filenames, self.base_url, self.gsutil, False, False, 1, False, None
+        )
+        self.assertEqual(
+            self.gsutil.history,
+            [
+                (
+                    "check_call",
+                    ("ls", f"{self.base_url}/{self.lorem_ipsum_sha1}"),
+                ),
+                (
+                    "check_call",
+                    (
+                        "ls",
+                        "-L",
+                        f"{self.base_url}/{self.lorem_ipsum_sha1}",
+                    ),
+                ),
+            ],
+        )
+        os.remove(output_filename)
+        self.assertEqual(code, 1)
+
+    def test_upload_single_file_remote_exists_md5_mismatch_force_overwrites(
+        self,
+    ):
+        filenames = [self.lorem_ipsum]
+        output_filename = f"{self.lorem_ipsum}.sha1"
+        self.gsutil.add_expected(0, b"", b"")
+        self.gsutil.add_expected(0, b"", b"")
+        code = upload_to_google_storage.upload_to_google_storage(
+            filenames, self.base_url, self.gsutil, True, False, 1, False, None
+        )
+        self.assertEqual(
+            self.gsutil.history,
+            [
+                (
+                    "check_call",
+                    ("ls", f"{self.base_url}/{self.lorem_ipsum_sha1}"),
+                ),
+                (
+                    "check_call",
+                    (
+                        "-h",
+                        "Cache-Control:public, max-age=31536000",
+                        "cp",
+                        filenames[0],
+                        f"{self.base_url}/{self.lorem_ipsum_sha1}",
+                    ),
+                ),
+            ],
+        )
+        os.remove(output_filename)
+        self.assertEqual(code, 0)
+
     def test_upload_worker_errors(self):
         work_queue = queue.Queue()
         work_queue.put((self.lorem_ipsum, self.lorem_ipsum_sha1))
