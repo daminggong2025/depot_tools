@@ -82,6 +82,7 @@ class AuthenticatorTest(unittest.TestCase):
             ],
             stdout=subprocess2.PIPE,
             stderr=subprocess2.PIPE,
+            shell=False,
         )
 
     def testGetAccessToken_DifferentScope(self):
@@ -105,6 +106,7 @@ class AuthenticatorTest(unittest.TestCase):
             ],
             stdout=subprocess2.PIPE,
             stderr=subprocess2.PIPE,
+            shell=False,
         )
 
     def testAuthorize_AccessToken(self):
@@ -172,6 +174,7 @@ class AuthenticatorTest(unittest.TestCase):
             ],
             stdout=subprocess2.PIPE,
             stderr=subprocess2.PIPE,
+            shell=False,
         )
 
     def testAuthorize_IdToken(self):
@@ -313,6 +316,7 @@ class GerritAuthenticatorTest(unittest.TestCase):
         args, kwargs = subprocess2.communicate.call_args
         self.assertEqual(args[0], ["git-credential-luci", "get"])
         self.assertEqual(kwargs["env"]["LUCI_ENABLE_REAUTH"], "0")
+        self.assertIs(kwargs["shell"], False)
 
         # Check that the access token is extracted correctly.
         self.assertEqual(out, "decacafe")
@@ -339,6 +343,7 @@ class GerritAuthenticatorTest(unittest.TestCase):
         args, kwargs = subprocess2.communicate.call_args
         self.assertEqual(args[0], ["git-credential-luci", "get"])
         self.assertNotIn("env", kwargs)
+        self.assertIs(kwargs["shell"], False)
 
         # Check we pass ReAuth context to `git-credential-luci`.
         self.assertEqual(
@@ -379,6 +384,13 @@ class GerritAuthenticatorTest(unittest.TestCase):
         context = auth.ReAuthContext(host="chromium", project="infra/infra")
         with self.assertRaises(auth.GitLoginRequiredError):
             self.authenticator.get_authorization_header(context)
+
+    def testCallHelperDisablesShell(self):
+        self._set_gcl_result(exitcode=0, stdout=b"ok\n", stderr=b"")
+        out = self.authenticator._call_helper(["git-credential-luci", "get"])
+        self.assertEqual(out, b"ok\n")
+        _, kwargs = subprocess2.communicate.call_args
+        self.assertIs(kwargs["shell"], False)
 
 
 if __name__ == "__main__":
