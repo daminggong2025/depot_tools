@@ -16,6 +16,7 @@
 # It uses this to extract VERSION.
 
 $VerifiedPlatform windows-amd64 windows-arm64 linux-amd64 mac-amd64 mac-arm64
+$ResolvedVersions manifest.versions
 
 @Subdir python3
 infra/3pp/tools/cpython3/${platform} version:2@3.11.8.chromium.35
